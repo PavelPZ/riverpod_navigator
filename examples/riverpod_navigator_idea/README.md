@@ -1,6 +1,6 @@
 # riverpod_navigator_about
 
-Strictly typed flutter Navigation 2.0 driven by riverpod state
+Strictly typed flutter Navigation 2.0 driven by riverpod state. 
 
 -----------------
 
@@ -73,7 +73,7 @@ class ExampleRiverpodNavigator extends RiverpodNavigator {
 
 ### Provide "ExampleRiverpodNavigator" to whole app
 
-final exampleRiverpodNavigator = Provider<ExampleRiverpodNavigator>((_) => ExampleRiverpodNavigator());
+final exampleRiverpodNavigatorProvider = Provider<ExampleRiverpodNavigator>((_) => ExampleRiverpodNavigator());
 
 ```
 ### Testing app navigation with no dependency on Flutter
