@@ -1,8 +1,22 @@
-# riverpod_navigator_about
+# riverpod_navigator_idea
 
-Strictly typed flutter Navigation 2.0 driven by riverpod state. 
+Demonstration of ideas on how to use [riverpod](https://riverpod.dev/) and [freezed](https://github.com/rrousselGit/freezed) 
+to simplify the use of Flutter [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade).
+
+The example solves the following problems on classic Home => Books => Book* app:
+
+- **Strictly typed navigation:** use ```dart navigateTo([Home(), Books(), Book(id: bookId)])``` instead of ```dart navigateTo('home/books/$bookId')```.
+- **Easy testig app navigation logic with no dependency on Flutter:** Riverpod offers this feature too. 
+- **Simple codebase:** This example consists of 118 lines of generic code (which can be used in other app) and 120 lines of app code (generated *.g.dart, *.freezed.dart code lines excluded).
 
 -----------------
+
+## Using example
+After clonning repository:
+
+- execute ```flutter create .```
+- execute ```flutter pub get```
+- execute ```flutter pub run build_runner watch --delete-conflicting-outputs```
 
 I will try to explain the idea with the classic simple example of Home=>Books=>Book applicaton.
 

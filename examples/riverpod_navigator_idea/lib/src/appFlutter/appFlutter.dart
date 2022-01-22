@@ -3,8 +3,8 @@ import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../appDart/appDart.dart';
-import '../packageDart/packageDart.dart';
-import '../packageFlutter/packageFlutter.dart';
+import '../packageDart.dart';
+import '../packageFlutter.dart';
 
 // flutter pub run build_runner watch
 part 'appFlutter.g.dart';
@@ -16,7 +16,7 @@ Widget pageBuilder(TypedSegment segment) => (segment as ExampleSegments).map(
     );
 
 @hcwidget
-Widget booksExampleApp(WidgetRef ref) {
+Widget exampleApp(WidgetRef ref) {
   final navigator = ref.read(exampleRiverpodNavigatorProvider);
   final delegate = RiverpodRouterDelegate(navigator, pageBuilder: pageBuilder, initPath: [HomeSegment()]);
   ref.listen(typedPathNotifierProvider, (_, __) => delegate.notifyListeners());
@@ -26,8 +26,6 @@ Widget booksExampleApp(WidgetRef ref) {
     routeInformationParser: RouteInformationParserImpl((jsonMap) => ExampleSegments.fromJson(jsonMap)),
   );
 }
-
-const booksLen = 5;
 
 @hcwidget
 Widget homePage(WidgetRef ref, HomeSegment segment) => PageHelper(

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import '../packageDart/packageDart.dart';
+import 'packageDart.dart';
 
 typedef PageBuilder = Widget Function(TypedSegment segment);
 typedef NavigatorWidgetBuilder = Widget Function(BuildContext, Navigator);

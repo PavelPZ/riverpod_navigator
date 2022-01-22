@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../packageDart/packageDart.dart';
+import '../packageDart.dart';
 
 part 'appDart.freezed.dart';
 part 'appDart.g.dart';
