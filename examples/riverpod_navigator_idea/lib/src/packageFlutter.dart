@@ -25,9 +25,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
     if (typedPath.isEmpty) return SizedBox();
     return Navigator(
         key: navigatorKey,
-        pages: [
-          for (final segment in typedPath) TypedSegmentPage(segment, pageBuilder)
-        ], //MaterialPage(key: ValueKey(segment.key), child: TypedSegmentPage(pageBuilder,segment)))],
+        pages: [for (final segment in typedPath) TypedSegmentPage(segment, pageBuilder)],
         onPopPage: (route, result) {
           if (!route.didPop(result)) return false;
           return _navigator.pop(); // remove last segment from path
@@ -63,10 +61,13 @@ class TypedSegmentPage extends Page {
 
   @override
   Route createRoute(BuildContext context) {
-    print(toString());
+    // this line solved https://github.com/PavelPZ/riverpod_navigator/issues/2
+    // https://github.com/flutter/flutter/issues/11655#issuecomment-469221502
+    final child = pageBuilder(typedSegment);
     return MaterialPageRoute(
       settings: this,
-      builder: (BuildContext context) => pageBuilder(typedSegment),
+      builder: (BuildContext context) => child,
+      maintainState: false,
     );
   }
 }

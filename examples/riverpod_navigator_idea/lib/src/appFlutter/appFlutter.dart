@@ -22,6 +22,7 @@ Widget exampleApp(WidgetRef ref) {
     title: 'Books App',
     routerDelegate: delegate,
     routeInformationParser: RouteInformationParserImpl((jsonMap) => ExampleSegments.fromJson(jsonMap)),
+    debugShowCheckedModeBanner: false,
   );
 }
 
