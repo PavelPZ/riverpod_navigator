@@ -1,16 +1,19 @@
-# riverpod_navigator_ideas
+# Riverpod, freezed and Navogator 2.0 e
 
 ... how to use [riverpod](https://riverpod.dev/) and [freezed](https://github.com/rrousselGit/freezed) 
 to simplify Flutter [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade) usage.
 
 -----------------
 
-This example of classic ```Home => Books => Book*``` app solves the following problems:
+This is an example of classic ```Home => Books => Book*``` navigation app. 
 
-- **Strictly typed navigation:** use ```dart navigate([Home(), Books(), Book(id: bookId)])``` instead of ```dart navigate('home/books/$bookId')```.
-- **Easier coding:** Problem of the navigation is reduced to manipulating a immutable collection.
+It solves the following problems:
+
+- **Strictly typed navigation:** 
+    use ```navigate([Home(), Books(), Book(id: bookId)])``` instead of ```navigate('home/books/$bookId')```.
+- **Easier coding:** Problem of the navigation is reduced to manipulating of a immutable collection.
 - **Better separation of concerns: UI x Model** (riverpod offers this feature too): 
-  Whole app state management (including navigation) can be tested in Dart environment only without typing a single line of widget code.
+  Whole app state management (including navigation) can be tested in Dart environment. And without typing a single widget.
 - **Clean codebase:** This example consists of only 118 lines of generic code (which can be used in other app) and 120 lines of app specific code.
 
 What is not solved:
@@ -25,7 +28,7 @@ Those problems will be solved by two packages (riverpod_navigator and riverpod_n
 
 ## Using example
 
-After clonning repository, in ```examples\riverpod_navigator_idea``` subdirectory execute:
+After clonning repository, go to ```examples\riverpod_navigator_idea``` subdirectory and execute:
 
 - ```flutter create .```
 - ```flutter pub get```
