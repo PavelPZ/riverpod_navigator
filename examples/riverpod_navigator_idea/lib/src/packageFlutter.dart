@@ -67,7 +67,6 @@ class TypedSegmentPage extends Page {
     return MaterialPageRoute(
       settings: this,
       builder: (BuildContext context) => child,
-      maintainState: false,
     );
   }
 }
