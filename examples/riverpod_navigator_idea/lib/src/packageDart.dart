@@ -30,10 +30,9 @@ final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, Typed
 
 /// Helper singleton
 class RiverpodNavigator {
-  RiverpodNavigator(this._ref, {this.initPath});
+  RiverpodNavigator(this._ref);
 
   final Ref _ref;
-  final TypedPath? initPath;
 
   void navigate(TypedPath newTypedPath) => _ref.read(typedPathNotifierProvider.notifier).setNewTypedPath(newTypedPath);
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -10,9 +11,6 @@ import '../packageFlutter.dart';
 part 'appFlutter.g.dart';
 
 /// Flutter app root
-///
-/// The weakest part of the example code is relation between [RiverpodNavigator] <=> [TypedPathNotifier]<=> [RiverpodRouterDelegate] <=> [ExampleApp]
-// TODO(PZ): check first four lines of exampleApp code
 @hcwidget
 Widget exampleApp(WidgetRef ref) {
   final navigator = ref.read(exampleRiverpodNavigatorProvider);
@@ -78,8 +76,20 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
     body: Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: buildChildren(navigator).map((e) => [SizedBox(height: 20), e]).expand((e) => e).toList(),
+        children: (() {
+          final res = <Widget>[SizedBox(height: 20)];
+          for (final w in buildChildren(navigator)) res.addAll([w, SizedBox(height: 20)]);
+          res.add(CountBuilds());
+          return res;
+        })(),
       ),
     ),
   );
+}
+
+@hcwidget
+Widget countBuilds() {
+  final count = useState(0);
+  count.value++;
+  return Text('Builded ${count.value} times.');
 }
