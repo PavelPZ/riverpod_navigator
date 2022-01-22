@@ -1,7 +1,7 @@
 # riverpod_navigator_ideas
 
-Demonstration of ideas on how to use [riverpod](https://riverpod.dev/) and [freezed](https://github.com/rrousselGit/freezed) 
-to simplify the use of Flutter [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade).
+... how to use [riverpod](https://riverpod.dev/) and [freezed](https://github.com/rrousselGit/freezed) 
+to simplify Flutter [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade) usage.
 
 -----------------
 
@@ -32,18 +32,18 @@ After clonning repository, in ```examples\riverpod_navigator_idea``` subdirector
 - ```flutter pub run build_runner watch --delete-conflicting-outputs```
 - ```flutter create .```
 
-## Documentation
+## Source code
 
-See the example code. 
+The best documentation is the simple source code.
 
-Generic x app vs. dart x flutter code yelds in this source code matrix:
+To better understand it, see the following matrix (regarding generic x app specific, dart code x flutter code):
 
 | | dart | flutter |
 |---|---|--- |
 | **generic** | *lib/src/packageDart.dart* | *lib/src/packageFlutter.dart* |
 | **app specific** | *lib/src/appDart/appDart.dart* | *lib/src/appFlutter/appFlutter.dart/*  |
 
-Testing without flutter is in *test/example_test.dart*
+Testing without flutter is available in *test/example_test.dart*
 
 ## Next steps
 
