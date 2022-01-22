@@ -36,16 +36,18 @@ After clonning repository, go to ```examples\riverpod_navigator_idea``` subdirec
 
 ## Source code
 
-The best documentation is a simple source code.
+The best documentation is a simple source code. 
 
 To better understand it, see the following matrix (regarding generic x app specific, dart code x flutter code):
 
 | | dart | flutter |
 |---|---|--- |
-| **generic** | *lib/src/packageDart.dart* | *lib/src/packageFlutter.dart* |
-| **app specific** | *lib/src/appDart/appDart.dart* | *lib/src/appFlutter/appFlutter.dart/*  |
+| **generic** | [packageDart.dart](lib/src/packageDart.dart) | [packageFlutter.dart](lib/src/packageFlutter.dart) |
+| **app specific** | [appDart.dart](lib/src/appDart/appDart.dart) | [appFlutter.dart](lib/src/appFlutter/appFlutter.dart)  |
 
-Testing without flutter is available in [example_test.dart](test/example_test.dart)
+Testing without flutter is available in [example_test.dart](test/example_test.dart).
+
+I am using [functional_widget](https://github.com/rrousselGit/functional_widget) to be less verbose.
 
 ## Next steps
 
