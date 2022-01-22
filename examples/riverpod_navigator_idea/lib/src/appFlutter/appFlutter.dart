@@ -28,6 +28,8 @@ Widget exampleApp(WidgetRef ref) {
 }
 
 /// Which widget will be builded for which typed segment
+///
+/// used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
 Widget _pageBuilder(TypedSegment segment) => (segment as ExampleSegments).map(
       home: (homeSegment) => HomePage(homeSegment),
       books: (booksSegment) => BooksPage(booksSegment),

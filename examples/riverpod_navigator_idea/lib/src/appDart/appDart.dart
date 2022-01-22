@@ -6,7 +6,7 @@ import '../packageDart.dart';
 part 'appDart.freezed.dart';
 part 'appDart.g.dart';
 
-/// TypedSegment's for this example
+/// [TypedSegment]'s for this example
 @freezed
 class ExampleSegments with _$ExampleSegments, TypedSegment {
   ExampleSegments._();

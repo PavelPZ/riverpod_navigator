@@ -5,7 +5,7 @@ import 'packageDart.dart';
 
 typedef PageBuilder = Widget Function(TypedSegment segment);
 
-/// Flutter 2.0 RouterDelegate override
+/// Flutter 2.0 [RouterDelegate] override
 class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
   RiverpodRouterDelegate(this._navigator, {required this.pageBuilder, required this.initPath});
 

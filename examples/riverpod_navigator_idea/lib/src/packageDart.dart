@@ -17,7 +17,7 @@ abstract class TypedSegment {
 /// Typed variant of Uri path
 typedef TypedPath = List<TypedSegment>;
 
-/// Notifies Navigator 2.0 RouterDelegate when to change navigation stack
+/// Notifies Navigator 2.0 [RiverpodRouterDelegate] when to change navigation stack
 class TypedPathNotifier extends StateNotifier<TypedPath> {
   TypedPathNotifier() : super([]);
 
@@ -25,7 +25,7 @@ class TypedPathNotifier extends StateNotifier<TypedPath> {
   void setNewTypedPath(TypedPath newTypedPath) => state = newTypedPath;
 }
 
-/// Will provided TypedPathNotifier to whole app
+/// Will provided [TypedPathNotifier] to whole app
 final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());
 
 /// Helper singleton
