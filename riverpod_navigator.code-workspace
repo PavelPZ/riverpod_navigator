@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "packages\\riverpod_navigator"
+		},
+		{
+			"path": "examples\\riverpod_navigator_idea"
 		}
 	],
 	"settings": {}
