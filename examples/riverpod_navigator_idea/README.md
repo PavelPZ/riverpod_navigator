@@ -8,4 +8,3 @@ Strictly typed flutter Navigation 2.0 driven by riverpod state
 | --- | --------------------------- |
 | **url segments as string**: | 'home', 'books', 'book;id-3' |
 
-
