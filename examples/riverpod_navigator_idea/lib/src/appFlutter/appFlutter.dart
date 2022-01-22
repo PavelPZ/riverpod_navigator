@@ -61,7 +61,7 @@ Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedB
     );
 
 @hcwidget
-Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> children(ExampleRiverpodNavigator navigator), bool? isLoginPage}) {
+Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> children(ExampleRiverpodNavigator navigator)}) {
   final navigator = ref.read(exampleRiverpodNavigatorProvider);
   return Scaffold(
     appBar: AppBar(
@@ -70,7 +70,7 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> c
     body: Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: children(navigator).map((e) => [e, SizedBox(height: 20)]).expand((e) => e).toList(),
+        children: children(navigator).map((e) => [SizedBox(height: 20), e]).expand((e) => e).toList(),
       ),
     ),
   );
