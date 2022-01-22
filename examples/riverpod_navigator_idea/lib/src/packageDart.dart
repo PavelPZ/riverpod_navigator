@@ -17,20 +17,18 @@ abstract class TypedSegment {
 /// Typed variant of Uri path
 typedef TypedPath = List<TypedSegment>;
 
-/// App navigation is driven by this StateNavigator
-///
-///
+/// Notifies Navigator 2.0 RouterDelegate when to change navigation stack
 class TypedPathNotifier extends StateNotifier<TypedPath> {
   TypedPathNotifier() : super([]);
+
+  /// change state
   void setNewTypedPath(TypedPath newTypedPath) => state = newTypedPath;
 }
 
 /// Will provided TypedPathNotifier to whole app
 final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());
 
-typedef ListenByChangeNotifier = void Function(Function notifyListener);
-
-///
+/// Helper singleton
 class RiverpodNavigator {
   RiverpodNavigator(this._ref, {this.initPath});
 
@@ -41,9 +39,6 @@ class RiverpodNavigator {
 
   TypedPath get actualTypedPath => _ref.read(typedPathNotifierProvider);
   String get actualTypedPathAsString => actualTypedPath.map((s) => s.key).join(' / ');
-
-  /// for connectiong to RouterDelegate
-  void listenByChangeNotifier(Function notifyListeners) => _ref.listen(typedPathNotifierProvider, (_, __) => notifyListeners());
 
   /* --- common navigation agnostic actions --- */
   bool pop() {
@@ -57,6 +52,7 @@ class RiverpodNavigator {
 
 typedef Json2Segment = TypedSegment Function(JsonMap jsonMap);
 
+/// Simple Uri parser, just for demonstration or for non Flutter web apps.
 class PathParser {
   PathParser(this.json2Segment);
 

@@ -10,10 +10,16 @@ import '../packageFlutter.dart';
 part 'appFlutter.g.dart';
 
 /// Flutter app root
+///
+/// The weakest part of the example code is relation between [RiverpodNavigator] <=> [TypedPathNotifier]<=> [RiverpodRouterDelegate] <=> [ExampleApp]
+// TODO(PZ): check first four lines of exampleApp code
 @hcwidget
 Widget exampleApp(WidgetRef ref) {
   final navigator = ref.read(exampleRiverpodNavigatorProvider);
+  // RouterDelegate reguired by [MaterialApp.router]
   final delegate = RiverpodRouterDelegate(navigator, pageBuilder: _pageBuilder, initPath: [HomeSegment()]);
+  // changing TypedPath => calling RiverpodRouterDelegate.notifyListeners => Flutter Navigation 2.0 rebuilds navigation stack
+  ref.listen(typedPathNotifierProvider, (_, __) => delegate.notifyListeners());
   return MaterialApp.router(
     title: 'Books App',
     routerDelegate: delegate,

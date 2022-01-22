@@ -5,10 +5,9 @@ import 'packageDart.dart';
 
 typedef PageBuilder = Widget Function(TypedSegment segment);
 
+/// Flutter 2.0 RouterDelegate override
 class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
-  RiverpodRouterDelegate(this._navigator, {required this.pageBuilder, required this.initPath}) {
-    _navigator.listenByChangeNotifier(notifyListeners);
-  }
+  RiverpodRouterDelegate(this._navigator, {required this.pageBuilder, required this.initPath});
 
   final TypedPath initPath;
   final RiverpodNavigator _navigator;
@@ -38,8 +37,13 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
 
   @override
   Future<void> setInitialRoutePath(TypedPath configuration) async => _navigator.navigate(initPath);
+
+  @override
+  // ignore: unnecessary_overrides
+  void notifyListeners() => super.notifyListeners();
 }
 
+/// Wrap [PathParser] to [RouteInformationParser]. [RouteInformationParser] is required for [MaterialApp.router] constructor.
 class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
   RouteInformationParserImpl(Json2Segment json2Segment) : _pathParser = PathParser(json2Segment);
   final PathParser _pathParser;

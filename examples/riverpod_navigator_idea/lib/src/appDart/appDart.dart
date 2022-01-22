@@ -6,7 +6,7 @@ import '../packageDart.dart';
 part 'appDart.freezed.dart';
 part 'appDart.g.dart';
 
-/// TypedSegment's for example
+/// TypedSegment's for this example
 @freezed
 class ExampleSegments with _$ExampleSegments, TypedSegment {
   ExampleSegments._();
@@ -23,12 +23,12 @@ class ExampleSegments with _$ExampleSegments, TypedSegment {
       );
 }
 
-/// number of books in example
+/// Number of virtual books in example. There are not any Book data.
 const booksLen = 5;
 
-/// app navigation agnostic actions
+/// Singleton class with app navigation agnostic actions
 class ExampleRiverpodNavigator extends RiverpodNavigator {
-  ExampleRiverpodNavigator(Ref ref, {TypedPath? initPath}) : super(ref, initPath: initPath);
+  ExampleRiverpodNavigator(Ref ref) : super(ref);
 
   void toHome() => navigate([HomeSegment()]);
   void toBooks() => navigate([HomeSegment(), BooksSegment()]);
@@ -44,4 +44,4 @@ class ExampleRiverpodNavigator extends RiverpodNavigator {
   }
 }
 
-final exampleRiverpodNavigatorProvider = Provider<ExampleRiverpodNavigator>((ref) => ExampleRiverpodNavigator(ref, initPath: [HomeSegment()]));
+final exampleRiverpodNavigatorProvider = Provider<ExampleRiverpodNavigator>((ref) => ExampleRiverpodNavigator(ref));
