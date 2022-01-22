@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "packages\\riverpod_navigator_dart"
+		},
+		{
+			"path": "packages\\riverpod_navigator"
+		}
+	],
+	"settings": {}
+}
