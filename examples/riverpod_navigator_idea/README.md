@@ -51,6 +51,7 @@ I am using [functional_widget](https://github.com/rrousselGit/functional_widget)
 
 ## Next steps
 
-Feel free to create issue with your ideas. This project is intended as a platform for better understanding and using of Flutter Navigation 2.0.
+Feel free to create issue with your ideas. 
+This project is intended as a platform for better understanding and using of Flutter Navigation 2.0.
 
 And sorry for my english :-)

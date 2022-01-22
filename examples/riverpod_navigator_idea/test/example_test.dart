@@ -1,5 +1,5 @@
 import 'package:riverpod/riverpod.dart';
-import 'package:riverpod_navigator_idea/riverpod_navigator_idea-dart.dart';
+import 'package:riverpod_navigator_idea/riverpod_navigator_idea_dart.dart';
 import 'package:test/test.dart';
 
 void main() {
