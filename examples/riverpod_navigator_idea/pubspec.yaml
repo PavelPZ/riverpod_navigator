@@ -1,5 +1,5 @@
 name: riverpod_navigator_idea
-description: Explains a principle od flutter_navigator
+description: Simple Flutter Navigation 2.0 with riverpod and freezed
 version: 0.1.0
 homepage: https://github.com/PavelPZ/riverpod_navigator
 repository: https://github.com/PavelPZ/riverpod_navigator
@@ -17,7 +17,6 @@ dependencies:
   functional_widget_annotation:
   hooks_riverpod:
   json_annotation:
-  tuple:
 
 dev_dependencies: 
   build_runner:
@@ -26,7 +25,6 @@ dev_dependencies:
   freezed:
   functional_widget:
   json_serializable:
-  mockito:
   test:
 
 flutter:

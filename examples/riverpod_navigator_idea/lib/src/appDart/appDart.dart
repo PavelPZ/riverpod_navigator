@@ -8,6 +8,7 @@ part 'appDart.g.dart';
 
 @freezed
 class ExampleSegments with _$ExampleSegments, TypedSegment {
+  ExampleSegments._();
   factory ExampleSegments.home() = HomeSegment;
   factory ExampleSegments.books() = BooksSegment;
   factory ExampleSegments.book({required int id}) = BookSegment;

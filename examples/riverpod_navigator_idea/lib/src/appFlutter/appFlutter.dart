@@ -10,9 +10,9 @@ import '../packageFlutter.dart';
 part 'appFlutter.g.dart';
 
 Widget pageBuilder(TypedSegment segment) => (segment as ExampleSegments).map(
-      home: (homeSegment) => SizedBox(),
-      books: (booksSegment) => SizedBox(),
-      book: (bookSegment) => SizedBox(),
+      home: (homeSegment) => HomePage(homeSegment),
+      books: (booksSegment) => BooksPage(booksSegment),
+      book: (bookSegment) => BookPage(bookSegment),
     );
 
 @hcwidget

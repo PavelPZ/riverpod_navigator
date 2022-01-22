@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'packageDart.dart';
 
 typedef PageBuilder = Widget Function(TypedSegment segment);
-typedef NavigatorWidgetBuilder = Widget Function(BuildContext, Navigator);
 
 class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
   RiverpodRouterDelegate(this._navigator, {required this.pageBuilder, required this.initPath});
@@ -46,12 +45,9 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
 
 class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
   RouteInformationParserImpl(Json2Segment json2Segment) : _pathParser = PathParser(json2Segment);
-
   final PathParser _pathParser;
-
   @override
   Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) => Future.value(_pathParser.path2TypedPath(routeInformation.location));
-
   @override
   RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: _pathParser.typedPath2Path(configuration));
 }

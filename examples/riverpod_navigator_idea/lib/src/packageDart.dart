@@ -31,6 +31,7 @@ class RiverpodNavigator {
   void setNewTypedPath(TypedPath newTypedPath) => ref.read(typedPathNotifierProvider.notifier).state = newTypedPath;
 
   TypedPath get actualTypedPath => ref.read(typedPathNotifierProvider);
+  String get actualTypedPathAsString => actualTypedPath.map((s) => s.key).join(' / ');
 
   /*   common navigation agnostic actions     */
   bool pop() {
