@@ -10,16 +10,16 @@ This is an example of the classic ```Home => Books => Book*``` navigation app.
 ### It solves the following problems:
 
 - **Strictly typed navigation:** <br>use ```navigate([Home(), Books(), Book(id: bookId)])``` instead of ```navigate('home/books/$bookId')```.
-- **Easier coding:** <br>Problem of the navigation is reduced to manipulating of a immutable collection.
+- **Easier coding:** <br>Problem of the navigation is reduced to immutable collection manipulation.
 - **Better separation of concerns: UI x Model** (riverpod offers this feature too): <br>
-  Whole app state management (including navigation) can be tested in Dart environment. And without typing a single widget.
-- **Clean codebase:** <br>This example consists of only 118 lines of generic code (which can be used in other app) and 120 lines of app specific code.
+  Whole app state management (including navigation) can be developed and tested in Dart environment. And without typing a single widget.
+- **Clean codebase:** <br>This example consists of only 120 lines of the generic code (which can be used in other app) and 120 lines of the app specific code.
 
 ### What is not solved:
 
-- better and nice URL parser for Flutter Web app (parser in this example is really horrible - just Uri-encode x -decode JSON string)
+- better and nice URL parser for Flutter Web app (url visible in browser is really horrible - just Uri encoded/decoded JSON string)
 - introduction of the "route" concept. Route can easy customize different navigation aspects
-- async navigation (for cases when page needs some async action during activating x deactivating)
+- async navigation for cases when the page needs some async action before first display/deactivation
 - navigation for authentication, route guards etc.
 - more ExampleSegments-like classes in single app
 
