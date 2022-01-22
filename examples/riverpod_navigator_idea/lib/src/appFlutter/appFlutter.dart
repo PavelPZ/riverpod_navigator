@@ -9,18 +9,11 @@ import '../packageFlutter.dart';
 // flutter pub run build_runner watch
 part 'appFlutter.g.dart';
 
-/// which widget will be builded for which url segment
-Widget pageBuilder(TypedSegment segment) => (segment as ExampleSegments).map(
-      home: (homeSegment) => HomePage(homeSegment),
-      books: (booksSegment) => BooksPage(booksSegment),
-      book: (bookSegment) => BookPage(bookSegment),
-    );
-
 /// Flutter app root
 @hcwidget
 Widget exampleApp(WidgetRef ref) {
   final navigator = ref.read(exampleRiverpodNavigatorProvider);
-  final delegate = RiverpodRouterDelegate(navigator, pageBuilder: pageBuilder, initPath: [HomeSegment()]);
+  final delegate = RiverpodRouterDelegate(navigator, pageBuilder: _pageBuilder, initPath: [HomeSegment()]);
   return MaterialApp.router(
     title: 'Books App',
     routerDelegate: delegate,
@@ -28,29 +21,36 @@ Widget exampleApp(WidgetRef ref) {
   );
 }
 
+/// Which widget will be builded for which typed segment
+Widget _pageBuilder(TypedSegment segment) => (segment as ExampleSegments).map(
+      home: (homeSegment) => HomePage(homeSegment),
+      books: (booksSegment) => BooksPage(booksSegment),
+      book: (bookSegment) => BookPage(bookSegment),
+    );
+
 @hcwidget
 Widget homePage(WidgetRef ref, HomeSegment segment) => PageHelper(
       title: 'Home Page',
-      children: (_) => [
-        linkHelper(title: 'Books Page', onPressed: ref.read(exampleRiverpodNavigatorProvider).toBooks),
+      buildChildren: (_) => [
+        LinkHelper(title: 'Books Page', onPressed: ref.read(exampleRiverpodNavigatorProvider).toBooks),
       ],
     );
 
 @hcwidget
 Widget booksPage(WidgetRef ref, BooksSegment segment) => PageHelper(
       title: 'Books Page',
-      children: (_) => [
+      buildChildren: (_) => [
         for (var id = 0; id < booksLen; id++)
-          linkHelper(title: 'Book, id=$id', onPressed: () => ref.read(exampleRiverpodNavigatorProvider).toBook(id: id))
+          LinkHelper(title: 'Book, id=$id', onPressed: () => ref.read(exampleRiverpodNavigatorProvider).toBook(id: id))
       ],
     );
 
 @hcwidget
 Widget bookPage(WidgetRef ref, BookSegment segment) => PageHelper(
       title: 'Book Page, id=${segment.id}',
-      children: (_) => [
-        linkHelper(title: 'Next >>', onPressed: ref.read(exampleRiverpodNavigatorProvider).bookNextPrevButton),
-        linkHelper(title: '<< Prev', onPressed: () => ref.read(exampleRiverpodNavigatorProvider).bookNextPrevButton(isPrev: true)),
+      buildChildren: (_) => [
+        LinkHelper(title: 'Next >>', onPressed: ref.read(exampleRiverpodNavigatorProvider).bookNextPrevButton),
+        LinkHelper(title: '<< Prev', onPressed: () => ref.read(exampleRiverpodNavigatorProvider).bookNextPrevButton(isPrev: true)),
       ],
     );
 
@@ -61,7 +61,7 @@ Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedB
     );
 
 @hcwidget
-Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> children(ExampleRiverpodNavigator navigator)}) {
+Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(ExampleRiverpodNavigator navigator)}) {
   final navigator = ref.read(exampleRiverpodNavigatorProvider);
   return Scaffold(
     appBar: AppBar(
@@ -70,7 +70,7 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> c
     body: Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: children(navigator).map((e) => [SizedBox(height: 20), e]).expand((e) => e).toList(),
+        children: buildChildren(navigator).map((e) => [SizedBox(height: 20), e]).expand((e) => e).toList(),
       ),
     ),
   );
