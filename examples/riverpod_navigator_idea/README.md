@@ -45,7 +45,7 @@ To better understand it, see the following matrix (regarding generic x app speci
 | **generic** | *lib/src/packageDart.dart* | *lib/src/packageFlutter.dart* |
 | **app specific** | *lib/src/appDart/appDart.dart* | *lib/src/appFlutter/appFlutter.dart/*  |
 
-Testing without flutter is available in [example_test.dart](riverpod_navigator_idea/test/example_test.dart)
+Testing without flutter is available in [example_test.dart](test/example_test.dart)
 
 ## Next steps
 
