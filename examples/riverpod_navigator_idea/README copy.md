@@ -19,6 +19,7 @@ What is not solved:
 - introduction of the "route" concept. Route can easy customize different navigation aspects
 - async navigation (for cases when page needs some async action during activating x deactivating)
 - navigation for authentication, route guards etc.
+- more 
 
 Those problems will be solved by two packages (riverpod_navigator and riverpod_navigator_dart). Preview version of them will be published in a few days.
 

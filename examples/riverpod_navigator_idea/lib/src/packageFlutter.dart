@@ -6,7 +6,9 @@ import 'packageDart.dart';
 typedef PageBuilder = Widget Function(TypedSegment segment);
 
 class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
-  RiverpodRouterDelegate(this._navigator, {required this.pageBuilder, required this.initPath});
+  RiverpodRouterDelegate(this._navigator, {required this.pageBuilder, required this.initPath}) {
+    _navigator.listenByChangeNotifier(notifyListeners);
+  }
 
   final TypedPath initPath;
   final RiverpodNavigator _navigator;
@@ -36,11 +38,6 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
 
   @override
   Future<void> setInitialRoutePath(TypedPath configuration) async => _navigator.navigate(initPath);
-
-  /// override to be public
-  @override
-  // ignore: unnecessary_overrides
-  void notifyListeners() => super.notifyListeners();
 }
 
 class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {

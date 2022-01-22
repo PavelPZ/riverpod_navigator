@@ -4,6 +4,7 @@ import 'package:riverpod/riverpod.dart';
 
 typedef JsonMap = Map<String, dynamic>;
 
+/// Typed variant of Uri path segment
 abstract class TypedSegment {
   TypedSegment copy();
   JsonMap toJson();
@@ -13,27 +14,38 @@ abstract class TypedSegment {
   String? _key;
 }
 
+/// Typed variant of Uri path
 typedef TypedPath = List<TypedSegment>;
 
-class TypedPathNotifier extends StateController<TypedPath> {
-  TypedPathNotifier({TypedPath? initPath}) : super(initPath ?? []);
+/// App navigation is driven by this StateNavigator
+///
+///
+class TypedPathNotifier extends StateNotifier<TypedPath> {
+  TypedPathNotifier() : super([]);
+  void setNewTypedPath(TypedPath newTypedPath) => state = newTypedPath;
 }
 
+/// Will provided TypedPathNotifier to whole app
 final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());
 
+typedef ListenByChangeNotifier = void Function(Function notifyListener);
+
+///
 class RiverpodNavigator {
-  RiverpodNavigator(this.ref, {this.initPath});
-  final Ref ref;
+  RiverpodNavigator(this._ref, {this.initPath});
+
+  final Ref _ref;
   final TypedPath? initPath;
 
-  void navigate(TypedPath newTypedPath) => setNewTypedPath(newTypedPath);
+  void navigate(TypedPath newTypedPath) => _ref.read(typedPathNotifierProvider.notifier).setNewTypedPath(newTypedPath);
 
-  void setNewTypedPath(TypedPath newTypedPath) => ref.read(typedPathNotifierProvider.notifier).state = newTypedPath;
-
-  TypedPath get actualTypedPath => ref.read(typedPathNotifierProvider);
+  TypedPath get actualTypedPath => _ref.read(typedPathNotifierProvider);
   String get actualTypedPathAsString => actualTypedPath.map((s) => s.key).join(' / ');
 
-  /*   common navigation agnostic actions     */
+  /// for connectiong to RouterDelegate
+  void listenByChangeNotifier(Function notifyListeners) => _ref.listen(typedPathNotifierProvider, (_, __) => notifyListeners());
+
+  /* --- common navigation agnostic actions --- */
   bool pop() {
     if (actualTypedPath.length <= 1) return false;
     navigate([for (var i = 0; i < actualTypedPath.length - 1; i++) actualTypedPath[i]]);

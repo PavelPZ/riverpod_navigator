@@ -19,6 +19,7 @@ What is not solved:
 - introduction of the "route" concept. Route can easy customize different navigation aspects
 - async navigation (for cases when page needs some async action during activating x deactivating)
 - navigation for authentication, route guards etc.
+- more TypedSegments namespaces (more ExampleSegments-like classes in app)
 
 Those problems will be solved by two packages (riverpod_navigator and riverpod_navigator_dart). Preview version of them will be published in a few days.
 
@@ -46,6 +47,6 @@ Testing without flutter is in *test/example_test.dart*
 
 ## Next steps
 
-Feel free to create issue with your ideas. The project is intended as a platform for better understanding and use of Flutter Navigation 2.0.
+Feel free to create issue with your ideas. The project is intended as a platform for better understanding and using of Flutter Navigation 2.0.
 
 And sorry for my english :-)

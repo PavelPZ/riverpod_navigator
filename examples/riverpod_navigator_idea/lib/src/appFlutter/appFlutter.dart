@@ -9,17 +9,18 @@ import '../packageFlutter.dart';
 // flutter pub run build_runner watch
 part 'appFlutter.g.dart';
 
+/// which widget will be builded for which url segment
 Widget pageBuilder(TypedSegment segment) => (segment as ExampleSegments).map(
       home: (homeSegment) => HomePage(homeSegment),
       books: (booksSegment) => BooksPage(booksSegment),
       book: (bookSegment) => BookPage(bookSegment),
     );
 
+/// Flutter app root
 @hcwidget
 Widget exampleApp(WidgetRef ref) {
   final navigator = ref.read(exampleRiverpodNavigatorProvider);
   final delegate = RiverpodRouterDelegate(navigator, pageBuilder: pageBuilder, initPath: [HomeSegment()]);
-  ref.listen(typedPathNotifierProvider, (_, __) => delegate.notifyListeners());
   return MaterialApp.router(
     title: 'Books App',
     routerDelegate: delegate,
