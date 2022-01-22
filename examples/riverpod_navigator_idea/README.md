@@ -25,40 +25,6 @@ This is an example of the classic ```Home => Books => Book*``` navigation app.
 
 Those problems will be solved by two packages (riverpod_navigator and riverpod_navigator_dart). Preview version of them will be published in a few days.
 
-## String vs. strictly typed navigation: freezed package
-
-**"String-url-path"** (e.g. ```'home/books/book;id-3'```) consists of three **"string-url-segments"** (```'home', 'books', 'book;id-3'```).
-
-From Flutter Navigator point of view, this string-url-path represents navigation stack "HomePage => BooksPage => BookPage for book with id=3".
-
-Using **Strictly typed navigation**, instead of string-url-path and string-url-segments we will use TypedPath and TypedSegment, e.g.:
-
-Thanks to the excelend [freezed](https://github.com/rrousselGit/freezed) package, we can define TypedSegment segments as follows:
-
-```dart
-abstract class TypedSegment {}
-
-@freezed
-class ExampleSegments with _$ExampleSegments, TypedSegment {
-  factory ExampleSegments.home() = HomeSegment;
-  factory ExampleSegments.books() = BooksSegment;
-  factory ExampleSegments.book({required int id}) = BookSegment;
-}
-
-typedef TypedPath = List<TypedSegment>;
-```
-
-## StateNotifier as a source of true: riverpod
-
-```dart
-class TypedPathNotifier extends StateNotifier<TypedPath> {
-  TypedPathNotifier() : super([]);
-  void setNewTypedPath(TypedPath newTypedPath) => state = newTypedPath;
-}
-
-final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());
-``` 
-
 ## Installing the example
 
 After clonning repository, go to ```examples\riverpod_navigator_idea``` subdirectory and execute:

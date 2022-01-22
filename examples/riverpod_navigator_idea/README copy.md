@@ -192,3 +192,42 @@ class RiverpodNavigator {
 ```
 
 ### Flutter part
+
+
+## String- vs. typed-segments: freezed package
+
+**"String-url-path"** (e.g. ```'home/books/book;id-3'```) consists of three **"string-url-segments"** (```'home', 'books', 'book;id-3'```).
+
+From Flutter Navigator point of view, this string-url-path represents navigation stack "HomePage => BooksPage => BookPage for book with id=3".
+
+Using **Strictly typed navigation**, instead of string-url-path and string-url-segments we will use TypedPath and TypedSegment.
+Thanks to the excelend [freezed](https://github.com/rrousselGit/freezed) package, we can define TypedSegment as follows:
+
+```dart
+abstract class TypedSegment {}
+
+@freezed
+class ExampleSegments with _$ExampleSegments, TypedSegment {
+  factory ExampleSegments.home() = HomeSegment;
+  factory ExampleSegments.books() = BooksSegment;
+  factory ExampleSegments.book({required int id}) = BookSegment;
+}
+
+typedef TypedPath = List<TypedSegment>;
+```
+
+## StateNotifier as a source of true: riverpod
+
+```dart
+class TypedPathNotifier extends StateNotifier<TypedPath> {
+  TypedPathNotifier() : super([]);
+  void setNewTypedPath(TypedPath newTypedPath) => state = newTypedPath;
+}
+
+final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());
+``` 
+
+```dart
+void listenByChangeNotifier(WidgetRef ref, Function notifyListeners) => ref.listen(typedPathNotifierProvider, (_, __) => notifyListeners());
+```
+
