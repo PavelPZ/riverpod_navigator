@@ -10,6 +10,7 @@ android/
 .idea/
 build/
 ios/
+web_/
 pubspec.lock
 windows/
 **/*.g.dart

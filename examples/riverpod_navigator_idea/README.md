@@ -17,11 +17,11 @@ This is an example of the classic ```Home => Books => Book*``` navigation app.
 
 ### What is not solved:
 
-- better and nice URL parser for Flutter Web app (url visible in browser is really horrible - just Uri encoded/decoded JSON string)
+- better and nice URL parser for Flutter Web app (the url visible in a browser is really horrible - just Uri encoded/decoded JSON string)
 - introduction of the "route" concept. Route can easy customize different navigation aspects
 - async navigation for cases when the page needs some async action before first display/deactivation
 - navigation for authentication, route guards etc.
-- more ExampleSegments-like classes in single app
+- more TypedSegment-like classes in single app
 
 Those problems will be solved by two packages (riverpod_navigator and riverpod_navigator_dart). Preview version of them will be published in a few days.
 
@@ -36,7 +36,7 @@ After clonning repository, go to ```examples\riverpod_navigator_idea``` subdirec
 
 ## Source code
 
-The best documentation is the simple source code.
+The best documentation is a simple source code.
 
 To better understand it, see the following matrix (regarding generic x app specific, dart code x flutter code):
 
@@ -49,6 +49,6 @@ Testing without flutter is available in *test/example_test.dart*
 
 ## Next steps
 
-Feel free to create issue with your ideas. The project is intended as a platform for better understanding and using of Flutter Navigation 2.0.
+Feel free to create issue with your ideas. This project is intended as a platform for better understanding and using of Flutter Navigation 2.0.
 
 And sorry for my english :-)
