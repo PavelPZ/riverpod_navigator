@@ -25,7 +25,9 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
     if (typedPath.isEmpty) return SizedBox();
     return Navigator(
         key: navigatorKey,
-        pages: [for (final segment in typedPath) MaterialPage(key: ValueKey(segment.key), child: pageBuilder(segment))],
+        pages: [
+          for (final segment in typedPath) TypedSegmentPage(segment, pageBuilder)
+        ], //MaterialPage(key: ValueKey(segment.key), child: TypedSegmentPage(pageBuilder,segment)))],
         onPopPage: (route, result) {
           if (!route.didPop(result)) return false;
           return _navigator.pop(); // remove last segment from path
@@ -51,4 +53,20 @@ class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
   Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) => Future.value(_pathParser.path2TypedPath(routeInformation.location));
   @override
   RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: _pathParser.typedPath2Path(configuration));
+}
+
+class TypedSegmentPage extends Page {
+  TypedSegmentPage(this.typedSegment, this.pageBuilder) : super(key: ValueKey(typedSegment.key));
+
+  final TypedSegment typedSegment;
+  final PageBuilder pageBuilder;
+
+  @override
+  Route createRoute(BuildContext context) {
+    print(toString());
+    return MaterialPageRoute(
+      settings: this,
+      builder: (BuildContext context) => pageBuilder(typedSegment),
+    );
+  }
 }
