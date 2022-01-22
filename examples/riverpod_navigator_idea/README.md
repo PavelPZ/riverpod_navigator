@@ -1,24 +1,33 @@
-# riverpod_navigator_idea
+# riverpod_navigator_ideas
 
 Demonstration of ideas on how to use [riverpod](https://riverpod.dev/) and [freezed](https://github.com/rrousselGit/freezed) 
 to simplify the use of Flutter [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade).
 
-The example solves the following problems on classic Home => Books => Book* app:
+This example of classic ```Home => Books => Book*``` app solves the following problems:
 
-- **Strictly typed navigation:** use ```dart navigateTo([Home(), Books(), Book(id: bookId)])``` instead of ```dart navigateTo('home/books/$bookId')```.
-- **Easy testig app navigation logic with no dependency on Flutter:** Riverpod offers this feature too. 
-- **Simple codebase:** This example consists of 118 lines of generic code (which can be used in other app) and 120 lines of app code (generated *.g.dart, *.freezed.dart code lines excluded).
+- **Strictly typed navigation:** use ```dart navigate([Home(), Books(), Book(id: bookId)])``` instead of ```dart navigate('home/books/$bookId')```.
+- **Easier coding:** Problem of the navigation is reduced to manipulating a immutable collection.
+- **Better separation of concerns: UI x Model** (riverpod offers this feature too): 
+  Whole app state management (including navigation) can be tested in Dart environment only without typing a single line of widget code.
+- **Clean codebase:** This example consists of only 118 lines of generic code (which can be used in other app) and 120 lines of app specific code. 
+
+What is not solved:
+
+- better and nice URL parser for Flutter Web app (parser in this example is really horrible - just Uri-encode x -decode JSON string)
+- introduction of the "route" concept. Route can easy customize different navigation aspects
+- async navigation (for cases when page needs some async action during activating x deactivating)
+- navigation for authentication, route guards etc.
+
+Those problems will be solved by two packages (riverpod_navigator and riverpod_navigator_dart). Preview version of them will be published in a few days.
 
 -----------------
 
 ## Using example
-After clonning repository:
+After clonning repository, in ```examples\riverpod_navigator_idea``` directory execute:
 
-- execute ```flutter create .```
-- execute ```flutter pub get```
-- execute ```flutter pub run build_runner watch --delete-conflicting-outputs```
-
-I will try to explain the idea with the classic simple example of Home=>Books=>Book applicaton.
+- ```flutter create .```
+- ```flutter pub get```
+- ```flutter pub run build_runner watch --delete-conflicting-outputs```
 
 ## What does mean "Strictly typed"
 
