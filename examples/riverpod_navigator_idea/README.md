@@ -15,16 +15,6 @@ This is an example of the classic ```Home => Books => Book*``` navigation app.
   Whole app state management (including navigation) can be developed and tested in Dart environment. Without typing a single flutter widget.
 - **Small codebase:** <br>This example consists of only 150 lines of the generic code (which can be used in other app) and 150 lines of the app specific code.
 
-### What is not solved:
-
-- better and nicer URL parser for Flutter Web app (the url visible in a browser is really horrible - just Uri encoded/decoded JSON string)
-- introduction of the "route" concept. Route can easy customize different navigation aspects
-- async navigation for cases when the page needs some async action before first-display/deactivation
-- navigation for authentication, route guards etc.
-- more TypedSegment-like classes in single app
-
-Those problems will be solved by two packages (riverpod_navigator and riverpod_navigator_dart). Preview version of them will be published in a few days.
-
 ## Navigation job
 
 Let's look at the following table:
@@ -36,6 +26,14 @@ Let's look at the following table:
 | 3. navigation stack | HomePage(Home s) =>| BooksPage(Books s) =>| BookPage(Book s) |
 
 Navigation job is to keep **all 3 rows in sync**.
+
+### What is not solved:
+
+- better and nicer URL parser for Flutter Web app (the url visible in a browser is really horrible - just Uri encoded/decoded JSON string)
+- introduction of the "route" concept. Route can easy customize different navigation aspects
+- async navigation for cases when the page needs some async action before first-display/deactivation
+- navigation for authentication, route guards etc.
+- more TypedSegment-like classes in single app
 
 ## Source code
 
