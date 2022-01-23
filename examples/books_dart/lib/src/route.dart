@@ -1,6 +1,6 @@
 import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
-import 'model.dart';
+import 'model/model.dart';
 
 TypedSegment json2Segment(JsonMap jsonMap, String unionKey) {
   switch (unionKey) {
@@ -64,6 +64,3 @@ final HomeRoute4Model _debugModelHomeRoute = HomeRoute4Model();
 final BooksRoute4Model _debugModelBooksRoute = BooksRoute4Model();
 final BookRoute4Model _debugModelBookRoute = BookRoute4Model();
 final Login4Model _debugModelLoginRoute = Login4Model();
-
-// final br2 = BookRoute();
-// final xx = br2.needsLogin(BookSegment(id: 1));

@@ -1,24 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
-part 'model.freezed.dart';
-part 'model.g.dart';
-
-@freezed
-class AppSegments with _$AppSegments, TypedSegment {
-  AppSegments._();
-  factory AppSegments.home() = HomeSegment;
-  factory AppSegments.books() = BooksSegment;
-  factory AppSegments.book({required int id}) = BookSegment;
-
-  factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
-  @override
-  AppSegments copy() => map(
-        home: (_) => HomeSegment(),
-        books: (_) => BooksSegment(),
-        book: (route) => route.copyWith(),
-      );
-}
+part 'login.freezed.dart';
+part 'login.g.dart';
 
 @Freezed(unionKey: LoginSegments.jsonNameSpace)
 class LoginSegments with _$LoginSegments, TypedSegment {

@@ -1,3 +1,5 @@
+@Timeout(Duration(minutes: 30))
+
 import 'dart:convert';
 
 import 'package:books_dart/books_dart.dart';
@@ -13,67 +15,135 @@ void main() {
   test('navig to login page', () async {
     final container = createContainer();
     final navigator = container.read(appNavigatorProvider4Model);
-    final log = <String>[];
-    navigator.onAsyncChange = onAsyncChangeFunc(log, navigator);
+
     await navigator.toBook(id: 2);
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.toBook(id: 1); // needs login => goto login page
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.loginPageCancel(); // cancel in login page => not logged, goto last page before login needed: toBook(id: 2)
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.toBook(id: 1); // needs login => goto login page
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.loginPageOK(); // ok in login page => logged, goto page which needs login: toBook(id: 1)
-    print(log.join('\r\n'));
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     return;
   });
   test('navigate to login page when logged', () async {
     final container = createContainer();
     final navigator = container.read(appNavigatorProvider4Model);
-    final log = <String>[];
-    navigator.onAsyncChange = onAsyncChangeFunc(log, navigator);
+
     await navigator.globalLoginButton();
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.loginPageOK();
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.navigate([LoginHomeSegment()]); // redircet to home
-    print(log.join('\r\n'));
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     return;
   });
   test('logout when on page which needs login', () async {
     final container = createContainer();
     final navigator = container.read(appNavigatorProvider4Model);
-    final log = <String>[];
-    navigator.onAsyncChange = onAsyncChangeFunc(log, navigator);
+
     await navigator.toBook(id: 1);
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.loginPageOK(); // logged, in Book(id: 1)
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.globalLogoutButton(); // refresh => needs login => goto login page
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.loginPageCancel(); // cancel when canceledUrl:null => Home
-    print(log.join('\r\n'));
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     return;
   });
   test('login', () async {
     final container = createContainer();
     final navigator = container.read(appNavigatorProvider4Model);
-    final log = <String>[];
-    navigator.onAsyncChange = onAsyncChangeFunc(log, navigator);
+
     await navigator.toBooks();
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.globalLoginButton();
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.loginPageOK();
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.toBook(id: 1);
-    print(log.join('\r\n'));
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     return;
   });
   test('next x prev button in book page', () async {
     final container = createContainer();
     final navigator = container.read(appNavigatorProvider4Model);
-    final log = <String>[];
-    navigator.onAsyncChange = onAsyncChangeFunc(log, navigator);
+
     await navigator.globalLoginButton();
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.loginPageOK();
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.toBook(id: 1);
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.bookNextPrevButton();
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.bookNextPrevButton();
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.bookNextPrevButton();
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.bookNextPrevButton();
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.bookNextPrevButton();
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.bookNextPrevButton(isPrev: true);
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     await navigator.bookNextPrevButton(isPrev: true);
-    print(log.join('\r\n'));
+    await container.pump();
+    print(navigator.actualTypedPathAsString);
+
     return;
   });
   test('key', () {

@@ -2,7 +2,7 @@ import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
 import 'dataLayer.dart';
-import 'model.dart';
+import 'model/model.dart';
 import 'provider.dart';
 import 'route.dart';
 
@@ -24,7 +24,7 @@ class AppNavigator extends SimpleNavigator {
       // login needed => redirect to login page
       if (pathNeedsLogin) {
         final loggedUrl = pathParser.typedPath2Path(newPath);
-        var canceledUrl = oldPath.last is LoginHomeSegment ? '' : pathParser.typedPath2Path(oldPath);
+        var canceledUrl = oldPath.isEmpty || oldPath.last is LoginHomeSegment ? '' : pathParser.typedPath2Path(oldPath);
         // logout on page which needs login - called refresh() {navigate([...actualTypedPath]);}
         if (loggedUrl == canceledUrl) canceledUrl = '';
         return [LoginHomeSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];

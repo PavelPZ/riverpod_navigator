@@ -1,5 +1,6 @@
 import 'package:books_dart/books_dart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -73,8 +74,21 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> c
     body: Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: children(navigator).map((e) => [e, SizedBox(height: 20)]).expand((e) => e).toList(),
+        children: (() {
+          final res = <Widget>[SizedBox(height: 20)];
+          for (final w in children(navigator)) res.addAll([w, SizedBox(height: 20)]);
+          res.add(CountBuilds());
+          return res;
+        })(),
+        //children(navigator).map((e) => [e, SizedBox(height: 20)]).expand((e) => e).toList(),
       ),
     ),
   );
+}
+
+@hcwidget
+Widget countBuilds() {
+  final count = useState(0);
+  count.value++;
+  return Text('Builded ${count.value} times.');
 }

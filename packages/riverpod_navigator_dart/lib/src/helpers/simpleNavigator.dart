@@ -36,6 +36,7 @@ abstract class SimpleNavigator extends RiverpodNavigator {
     } catch (e) {
       // show error (no state changed)
       onAsyncChange?.call(false, e);
+      rethrow;
     }
   }
 
