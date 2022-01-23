@@ -13,7 +13,7 @@ This is an example of the classic ```Home => Books => Book*``` navigation app.
 - **Easier coding:** <br>Problem of the navigation is reduced to immutable collection manipulation.
 - **Better separation of concerns: UI x Model** (riverpod offers this feature too): <br>
   Whole app state management (including navigation) can be developed and tested in Dart environment. Without typing a single flutter widget.
-- **Clean codebase:** <br>This example consists of only 150 lines of the generic code (which can be used in other app) and 150 lines of the app specific code.
+- **Small codebase:** <br>This example consists of only 150 lines of the generic code (which can be used in other app) and 150 lines of the app specific code.
 
 ### What is not solved:
 
