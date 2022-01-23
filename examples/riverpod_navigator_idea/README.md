@@ -15,31 +15,19 @@ This is an example of the classic ```Home => Books => Book*``` navigation app.
   Whole app state management (including navigation) can be developed and tested in Dart environment. Without typing a single flutter widget.
 - **Small codebase:** <br>This example consists of only 150 lines of the generic code (which can be used in other app) and 150 lines of the app specific code.
 
-## Navigation job
-
-Let's look at the following table:
-
-| | | | |
-| --- | --- | --- | --- |
-| 1. string segments in web browser | 'home'/ | 'books'/ | 'book;id=3' |
-| 2. typed segments | [ Home(), | Books(), | Book(id: bookId) ] |
-| 3. navigation stack | HomePage(Home s) =>| BooksPage(Books s) =>| BookPage(Book s) |
-
-Navigation have to **keep all 3 rows in sync**.
-
 ## Source code
 
 The best documentation is a simple source code. 
 
-The source code of the example is in five files. 
-To better understand it, see the following matrix (regarding generic x app specific, dart code x flutter code):
+The source code is contained in five files.
+To better understand it, see the following matrix:
 
 | | dart | flutter |
 |---|---|--- |
 | **generic** | [packageDart.dart](lib/src/packageDart.dart) | [packageFlutter.dart](lib/src/packageFlutter.dart) |
 | **app specific** | [appDart.dart](lib/src/appDart/appDart.dart) | [appFlutter.dart](lib/src/appFlutter/appFlutter.dart)  |
 
-Testing without flutter is available in [example_test.dart](test/example_test.dart).
+Testing without flutter (dart only) is available in [example_test.dart](test/example_test.dart).
 
 Note: I am using [functional_widget](https://github.com/rrousselGit/functional_widget) to be less verbose.
 
@@ -56,5 +44,3 @@ After clonning repository, go to ```examples\riverpod_navigator_idea``` subdirec
 
 Feel free to create issue with your ideas. 
 This project is intended as a platform for better understanding and using of Flutter Navigation 2.0.
-
-And sorry for my english :-)
