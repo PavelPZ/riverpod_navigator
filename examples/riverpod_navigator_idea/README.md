@@ -37,15 +37,6 @@ Let's look at the following table:
 
 Navigation job is to keep **all 3 rows in sync**.
 
-## Installing the example
-
-After clonning repository, go to ```examples\riverpod_navigator_idea``` subdirectory and execute:
-
-- ```flutter create .```
-- ```flutter pub get```
-- ```flutter pub run build_runner watch --delete-conflicting-outputs```
-- ```flutter create .```
-
 ## Source code
 
 The best documentation is a simple source code. 
@@ -61,6 +52,20 @@ To better understand it, see the following matrix (regarding generic x app speci
 Testing without flutter is available in [example_test.dart](test/example_test.dart).
 
 Note: I am using [functional_widget](https://github.com/rrousselGit/functional_widget) to be less verbose.
+
+## Installing the example
+
+After clonning repository, go to ```examples\riverpod_navigator_idea``` subdirectory and execute:
+
+- ```flutter create .```
+- ```flutter pub get```
+- ```flutter pub run build_runner watch --delete-conflicting-outputs```
+- ```flutter create .```
+
+## To solve
+
+I'm not sure about the code described in [this issue](https://github.com/PavelPZ/riverpod_navigator/issues/1).
+Any ideas welcome.
 
 ## Next steps
 
