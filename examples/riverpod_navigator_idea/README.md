@@ -3,18 +3,6 @@
 ... how to use [riverpod](https://riverpod.dev/) and [freezed](https://github.com/rrousselGit/freezed) 
 to simplify Flutter [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade) usage.
 
------------------
-
-This is an example of the classic ```Home => Books => Book*``` navigation app. 
-
-### It solves the following navigation problems:
-
-- **Strictly typed navigation:** <br>use ```navigate([Home(), Books(), Book(id: bookId)])``` instead of ```navigate('home/books/$bookId')```.
-- **Easier coding:** <br>Problem of the navigation is reduced to immutable collection manipulation.
-- **Better separation of concerns: UI x Model** (riverpod offers this feature too): <br>
-  Whole app state management (including navigation) can be developed and tested in Dart environment. Without typing a single flutter widget.
-- **Small codebase:** <br>This example consists of only 150 lines of the generic code (which can be used in other app) and 150 lines of the app specific code.
-
 ## Navigation job
 
 Let's look at the following table:
@@ -26,6 +14,18 @@ Let's look at the following table:
 | 3. navigation stack | HomePage(Home s) =>| BooksPage(Books s) =>| BookPage(Book s) |
 
 Navigation job is to keep **all 3 rows in sync**.
+
+-----------------
+
+This is an example of the classic ```Home => Books => Book*``` navigation app. 
+
+### It solves the following navigation problems:
+
+- **Strictly typed navigation:** <br>use ```navigate([Home(), Books(), Book(id: bookId)])``` instead of ```navigate('home/books/$bookId')```.
+- **Easier coding:** <br>Problem of the navigation is reduced to immutable collection manipulation.
+- **Better separation of concerns: UI x Model** (riverpod offers this feature too): <br>
+  Whole app state management (including navigation) can be developed and tested in Dart environment. Without typing a single flutter widget.
+- **Small codebase:** <br>This example consists of only 150 lines of the generic code (which can be used in other app) and 150 lines of the app specific code.
 
 ### What is not solved:
 
