@@ -25,5 +25,7 @@
 			"path": "examples\\riverpod_navigator_idea"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "riverpod_navigator"
+	}
 }
