@@ -47,6 +47,8 @@ class RiverpodNavigator {
   }
 
   void push(TypedSegment segment) => navigate([...actualTypedPath, segment]);
+
+  void replaceLast(TypedSegment segment) => navigate([for (var i = 0; i < actualTypedPath.length - 1; i++) actualTypedPath[i], segment]);
 }
 
 typedef Json2Segment = TypedSegment Function(JsonMap jsonMap);

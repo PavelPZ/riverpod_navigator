@@ -7,33 +7,29 @@ import 'pathParser.dart';
 import 'provider.dart';
 import 'route.dart';
 
-abstract class INavigator {
-  //extends StateNotifier<TypedPath> {
-  INavigator(this.ref, this.getRouteWithSegment, this.pathParser, {this.initPath});
+abstract class RiverpodNavigator {
+  RiverpodNavigator(this.ref, this.getRouteWithSegment, this.pathParser, {this.initPath});
   final Ref ref;
   final TypedPath? initPath;
-
-  Future<void> navigate(TypedPath newTypedPath) async => setNewTypedPath(newTypedPath);
-
-  void setNewTypedPath(TypedPath newTypedPath) => ref.read(typedPathNotifierProvider.notifier).state = newTypedPath;
-
-  //set actualTypedPath(TypedPath value) => ref.read(typedPathNotifierProvider.notifier).state = value;
-  // TypedPath get actualTypedPath => ref.read(typedPathNotifierProvider);
-  //String get actualTypedPathAsString => actualTypedPath.map((s) => s.key).join(' / ');
-  TypedPath get actualTypedPath => ref.read(typedPathNotifierProvider);
-
   final GetRoute4Segment getRouteWithSegment;
   final PathParser pathParser;
 
-  /* ******************************************** */
-  /*   common navigation agnostic app actions     */
-  /* ******************************************** */
+  Future<void> navigate(TypedPath newTypedPath) async => actualTypedPath = newTypedPath;
 
+  TypedPath get actualTypedPath => ref.read(typedPathNotifierProvider);
+  set actualTypedPath(TypedPath value) => ref.read(typedPathNotifierProvider.notifier).setNewTypedPath(value);
+  String get actualTypedPathAsString => actualTypedPath.map((s) => s.key).join(' / ');
+
+  /// for RouterDelegate
   bool onPopRoute() {
     if (actualTypedPath.length <= 1) return false;
     unawaited(navigate([for (var i = 0; i < actualTypedPath.length - 1; i++) actualTypedPath[i]]));
     return true;
   }
+
+  /* ******************************************** */
+  /*   common navigation agnostic app actions     */
+  /* ******************************************** */
 
   Future<bool> pop() async {
     if (actualTypedPath.length <= 1) return false;
@@ -42,4 +38,6 @@ abstract class INavigator {
   }
 
   Future<void> push(TypedSegment segment) => navigate([...actualTypedPath, segment]);
+
+  Future<void> replaceLast(TypedSegment segment) => navigate([for (var i = 0; i < actualTypedPath.length - 1; i++) actualTypedPath[i], segment]);
 }

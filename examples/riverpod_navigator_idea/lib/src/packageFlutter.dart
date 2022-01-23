@@ -54,16 +54,16 @@ class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
 }
 
 class TypedSegmentPage extends Page {
-  TypedSegmentPage(this.typedSegment, this.pageBuilder) : super(key: ValueKey(typedSegment.key));
+  TypedSegmentPage(this._typedSegment, this._pageBuilder) : super(key: ValueKey(_typedSegment.key));
 
-  final TypedSegment typedSegment;
-  final PageBuilder pageBuilder;
+  final TypedSegment _typedSegment;
+  final PageBuilder _pageBuilder;
 
   @override
   Route createRoute(BuildContext context) {
     // this line solved https://github.com/PavelPZ/riverpod_navigator/issues/2
     // https://github.com/flutter/flutter/issues/11655#issuecomment-469221502
-    final child = pageBuilder(typedSegment);
+    final child = _pageBuilder(_typedSegment);
     return MaterialPageRoute(
       settings: this,
       builder: (BuildContext context) => child,

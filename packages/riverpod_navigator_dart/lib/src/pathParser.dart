@@ -20,6 +20,4 @@ class PathParser {
         if (s.isNotEmpty) json2Segment(jsonDecode(Uri.decodeFull(s)), defaultJsonUnionKey)
     ];
   }
-
-  String urlEncodeTypedPath2Path(TypedPath typedPath) => typedPath2Path(typedPath);
 }

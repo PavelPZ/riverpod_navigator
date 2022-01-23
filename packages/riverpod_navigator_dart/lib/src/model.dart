@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:riverpod/riverpod.dart';
 
-typedef TypedPath = List<TypedSegment>;
 typedef JsonMap = Map<String, dynamic>;
 
+/// Typed variant of Uri path segment
 abstract class TypedSegment {
   TypedSegment copy();
   JsonMap toJson();
@@ -14,6 +14,16 @@ abstract class TypedSegment {
   String? _key;
 }
 
-class TypedPathNotifier extends StateController<TypedPath> {
-  TypedPathNotifier({TypedPath? initPath}) : super(initPath ?? []);
+/// Typed variant of Uri path
+typedef TypedPath = List<TypedSegment>;
+
+/// Notifies Navigator 2.0 [RiverpodRouterDelegate] when to change navigation stack
+class TypedPathNotifier extends StateNotifier<TypedPath> {
+  TypedPathNotifier() : super([]);
+
+  /// change state
+  void setNewTypedPath(TypedPath newTypedPath) => state = newTypedPath;
 }
+
+/// Will provided [TypedPathNotifier] to whole app
+//final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());

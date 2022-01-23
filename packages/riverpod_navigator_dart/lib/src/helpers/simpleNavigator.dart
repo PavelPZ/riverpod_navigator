@@ -10,7 +10,7 @@ import '../pathParser.dart';
 import '../route.dart';
 
 /// one of the strategy how to react to state change
-abstract class SimpleNavigator extends INavigator {
+abstract class SimpleNavigator extends RiverpodNavigator {
   SimpleNavigator(Ref ref, GetRoute4Segment getRouteForSegment, PathParser pathParser, {TypedPath? initPath})
       : super(ref, getRouteForSegment, pathParser, initPath: initPath);
 
@@ -31,7 +31,7 @@ abstract class SimpleNavigator extends INavigator {
       // unawaited(Future.delayed(Duration(milliseconds: 300)).then((_) => onAsyncChangeEnd()));
 
       // state change => flutter navigation
-      setNewTypedPath(newTypedPath);
+      actualTypedPath = newTypedPath;
       onAsyncChange?.call(false);
     } catch (e) {
       // show error (no state changed)

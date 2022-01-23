@@ -12,7 +12,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
 
   final NavigatorWidgetBuilder? navigatorWidgetBuilder;
   final TypedPath initPath;
-  final INavigator _navigator;
+  final RiverpodNavigator _navigator;
 
   @override
   TypedPath get currentConfiguration => _navigator.actualTypedPath;
@@ -22,7 +22,6 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
 
   @override
   Widget build(BuildContext context) {
-    // final navigator = _ref.read(_navigatorProvider.notifier);
     final typedPath = _navigator.actualTypedPath;
     if (typedPath.isEmpty) return SizedBox();
     final navigatorWidget = Navigator(
@@ -30,7 +29,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
         // segment => route => route.build(segment)
         pages: typedPath.map((segment) {
           final route = _navigator.getRouteWithSegment(segment).route as NavigRoute;
-          return MaterialPage(key: ValueKey(segment.key), child: route.buildPage(segment));
+          return _TypedSegmentPage(segment, route.buildPage);
         }).toList(),
         onPopPage: (route, result) {
           if (!route.didPop(result)) return false;
@@ -50,4 +49,34 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
   @override
   // ignore: unnecessary_overrides
   void notifyListeners() => super.notifyListeners();
+}
+
+class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
+  RouteInformationParserImpl(this._pathParser);
+  final PathParser _pathParser;
+  @override
+  Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) => Future.value(_pathParser.path2TypedPath(routeInformation.location));
+
+  @override
+  RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: _pathParser.typedPath2Path(configuration));
+}
+
+typedef _PageBuilder = Widget Function(TypedSegment segment);
+
+class _TypedSegmentPage extends Page {
+  _TypedSegmentPage(this._typedSegment, this._pageBuilder) : super(key: ValueKey(_typedSegment.key));
+
+  final TypedSegment _typedSegment;
+  final _PageBuilder _pageBuilder;
+
+  @override
+  Route createRoute(BuildContext context) {
+    // this line solved https://github.com/PavelPZ/riverpod_navigator/issues/2
+    // https://github.com/flutter/flutter/issues/11655#issuecomment-469221502
+    final child = _pageBuilder(_typedSegment);
+    return MaterialPageRoute(
+      settings: this,
+      builder: (BuildContext context) => child,
+    );
+  }
 }
