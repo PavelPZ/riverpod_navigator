@@ -43,4 +43,3 @@ After clonning repository, go to ```examples\riverpod_navigator_idea``` subdirec
 ## Next steps
 
 Feel free to create issue with your ideas. 
-This project is intended as a platform for better understanding and using of Flutter Navigation 2.0.
