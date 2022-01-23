@@ -62,11 +62,6 @@ After clonning repository, go to ```examples\riverpod_navigator_idea``` subdirec
 - ```flutter pub run build_runner watch --delete-conflicting-outputs```
 - ```flutter create .```
 
-## To solve
-
-I'm not sure about the code described in [this issue](https://github.com/PavelPZ/riverpod_navigator/issues/1).
-Any ideas welcome.
-
 ## Next steps
 
 Feel free to create issue with your ideas. 

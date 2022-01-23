@@ -13,8 +13,7 @@ part 'appFlutter.g.dart';
 /// Flutter app root
 @hcwidget
 Widget exampleApp(WidgetRef ref) {
-  final navigator = ref.read(exampleRiverpodNavigatorProvider);
-  // RouterDelegate reguired by [MaterialApp.router]
+  final navigator = ref.watch(exampleRiverpodNavigatorProvider);
   final delegate = RiverpodRouterDelegate(navigator, pageBuilder: _pageBuilder, initPath: [HomeSegment()]);
   // changing TypedPath => calling RiverpodRouterDelegate.notifyListeners => Flutter Navigation 2.0 rebuilds navigation stack
   ref.listen(typedPathNotifierProvider, (_, __) => delegate.notifyListeners());
