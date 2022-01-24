@@ -25,7 +25,7 @@ typedef TypedPath = List<TypedSegment>;
 class TypedPathNotifier extends StateNotifier<TypedPath> {
   TypedPathNotifier() : super([]);
 
-  /// change state
+  /// change state, which is called typedPath
   set typedPath(TypedPath newTypedPath) => state = newTypedPath;
   TypedPath get typedPath => state;
 }
@@ -39,12 +39,12 @@ abstract class RiverpodNavigator {
   final GetRoute4Segment getRouteWithSegment;
   final PathParser pathParser;
 
-  TypedPathNotifier getNotifier() => ref.read(typedPathNotifierProvider.notifier);
-  Future<void> navigate(TypedPath newTypedPath) async => getNotifier().typedPath = newTypedPath;
+  Future<void> navigate(TypedPath newTypedPath) async => setActualTypedPath(newTypedPath);
 
-  TypedPath getActualTypedPath() => getNotifier().typedPath;
+  TypedPathNotifier getPathNotifier() => ref.read(typedPathNotifierProvider.notifier);
+  TypedPath getActualTypedPath() => getPathNotifier().typedPath;
   String getActualTypedPathAsString() => getActualTypedPath().map((s) => s.key).join(' / ');
-  void setActualTypedPath(TypedPath value) => getNotifier().typedPath = value;
+  void setActualTypedPath(TypedPath value) => getPathNotifier().typedPath = value;
 
   /// for RouterDelegate
   bool onPopRoute() {
