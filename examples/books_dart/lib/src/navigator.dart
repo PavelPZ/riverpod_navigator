@@ -23,8 +23,8 @@ class AppNavigator extends SimpleNavigator {
       });
       // login needed => redirect to login page
       if (pathNeedsLogin) {
-        final loggedUrl = Extensions4Dart.value.pathParser.typedPath2Path(newPath);
-        var canceledUrl = oldPath.isEmpty || oldPath.last is LoginHomeSegment ? '' : Extensions4Dart.value.pathParser.typedPath2Path(oldPath);
+        final loggedUrl = config4Dart.pathParser.typedPath2Path(newPath);
+        var canceledUrl = oldPath.isEmpty || oldPath.last is LoginHomeSegment ? '' : config4Dart.pathParser.typedPath2Path(oldPath);
         // logout on page which needs login - called refresh() {navigate([...actualTypedPath]);}
         if (loggedUrl == canceledUrl) canceledUrl = '';
         return [LoginHomeSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
@@ -72,7 +72,7 @@ class AppNavigator extends SimpleNavigator {
     final isLogged = ref.read(userIsLoggedProvider.notifier);
     assert(!isLogged.state); // is logoff?
     // navigate to login page
-    final segment = Extensions4Dart.value.pathParser.typedPath2Path(actPath);
+    final segment = config4Dart.pathParser.typedPath2Path(actPath);
     return navigate([LoginHomeSegment(loggedUrl: segment, canceledUrl: segment)]);
   }
 
@@ -90,8 +90,8 @@ class AppNavigator extends SimpleNavigator {
       ref.read(userIsLoggedProvider.notifier).state = true; // lofin successfull => set to provider
 
     final newSegment = cancel
-        ? Extensions4Dart.value.pathParser.path2TypedPath(loginHomeSegment.canceledUrl)
-        : Extensions4Dart.value.pathParser.path2TypedPath(loginHomeSegment.loggedUrl);
+        ? config4Dart.pathParser.path2TypedPath(loginHomeSegment.canceledUrl)
+        : config4Dart.pathParser.path2TypedPath(loginHomeSegment.loggedUrl);
     await navigate(newSegment.isEmpty ? [HomeSegment()] : newSegment);
   }
 }

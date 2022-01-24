@@ -1,7 +1,10 @@
 import 'package:flutter/widgets.dart';
-import 'package:riverpod_navigator/riverpod_navigator.dart';
+import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
-import 'screenWrappers.dart';
+import '../routerDelegate.dart';
+import 'extensions.dart';
+
+export 'screenWrappers.dart';
 
 typedef Screen2Page = Page Function(TypedSegment segment, ScreenBuilder screenBuilder);
 
@@ -11,7 +14,7 @@ class Extensions extends Extensions4Dart {
     Screen2Page? screen2Page,
     required this.initPath,
     this.navigatorWidgetBuilder,
-    // for Dart extensions:
+    // extensions for Dart:
     required Json2Segment json2Segment,
     PathParser? pathParser,
   })  : screen2Page = screen2Page ?? screen2PageDefault,
@@ -23,6 +26,6 @@ class Extensions extends Extensions4Dart {
   final ScreenBuilder screenBuilder;
   final TypedPath initPath;
   final NavigatorWidgetBuilder? navigatorWidgetBuilder;
-
-  static Extensions get value => Extensions4Dart.value as Extensions;
 }
+
+Extensions get config => config4Dart as Extensions;

@@ -24,20 +24,20 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
     final navigatorWidget = Navigator(
         key: navigatorKey,
         // segment => screen
-        pages: actPath.map((segment) => Extensions.value.screen2Page(segment, Extensions.value.screenBuilder)).toList(),
+        pages: actPath.map((segment) => config.screen2Page(segment, config.screenBuilder)).toList(),
         onPopPage: (route, result) {
           if (!route.didPop(result)) return false;
           // remove last segment from path
           return _navigator.onPopRoute();
         });
-    return Extensions.value.navigatorWidgetBuilder == null ? navigatorWidget : Extensions.value.navigatorWidgetBuilder!(context, navigatorWidget);
+    return config.navigatorWidgetBuilder == null ? navigatorWidget : config.navigatorWidgetBuilder!(context, navigatorWidget);
   }
 
   @override
   Future<void> setNewRoutePath(TypedPath configuration) => _navigator.navigate(configuration);
 
   @override
-  Future<void> setInitialRoutePath(TypedPath configuration) => _navigator.navigate(Extensions.value.initPath);
+  Future<void> setInitialRoutePath(TypedPath configuration) => _navigator.navigate(config.initPath);
 
   /// override, to be public
   @override
@@ -49,11 +49,11 @@ class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
   RouteInformationParserImpl();
   @override
   Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
-      Future.value(Extensions4Dart.value.pathParser.path2TypedPath(routeInformation.location));
+      Future.value(config4Dart.pathParser.path2TypedPath(routeInformation.location));
 
   @override
   RouteInformation restoreRouteInformation(TypedPath configuration) =>
-      RouteInformation(location: Extensions4Dart.value.pathParser.typedPath2Path(configuration));
+      RouteInformation(location: config4Dart.pathParser.typedPath2Path(configuration));
 }
 
 // class _TypedSegmentScreen extends Page {

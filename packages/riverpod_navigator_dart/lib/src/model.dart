@@ -85,7 +85,7 @@ class PathParser {
     if (path == null || path.isEmpty) return [];
     return [
       for (final s in path.split('/'))
-        if (s.isNotEmpty) Extensions4Dart.value.json2Segment(jsonDecode(Uri.decodeFull(s)), defaultJsonUnionKey)
+        if (s.isNotEmpty) config4Dart.json2Segment(jsonDecode(Uri.decodeFull(s)), defaultJsonUnionKey)
     ];
   }
 }

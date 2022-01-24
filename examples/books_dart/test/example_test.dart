@@ -3,11 +3,13 @@
 import 'dart:convert';
 
 import 'package:books_dart/books_dart.dart';
+import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 import 'package:test/test.dart';
 
 import 'testLib.dart';
 
 void main() {
+  Extensions4Dart(json2Segment: json2Segment);
   test('timer', () async {
     await Future.delayed(Duration(seconds: 2));
     return;
