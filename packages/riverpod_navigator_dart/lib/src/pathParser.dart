@@ -11,7 +11,7 @@ class PathParser {
 
   final Json2Segment json2Segment;
 
-  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(jsonEncode(s.toJson()))).join('/');
+  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.key/*=jsonEncode(s.toJson())*/)).join('/');
 
   TypedPath path2TypedPath(String? path) {
     if (path == null || path.isEmpty) return [];

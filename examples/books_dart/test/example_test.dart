@@ -18,23 +18,23 @@ void main() {
 
     await navigator.toBook(id: 2);
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.toBook(id: 1); // needs login => goto login page
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.loginPageCancel(); // cancel in login page => not logged, goto last page before login needed: toBook(id: 2)
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.toBook(id: 1); // needs login => goto login page
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.loginPageOK(); // ok in login page => logged, goto page which needs login: toBook(id: 1)
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     return;
   });
@@ -44,15 +44,15 @@ void main() {
 
     await navigator.globalLoginButton();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.loginPageOK();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.navigate([LoginHomeSegment()]); // redircet to home
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     return;
   });
@@ -62,19 +62,19 @@ void main() {
 
     await navigator.toBook(id: 1);
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.loginPageOK(); // logged, in Book(id: 1)
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.globalLogoutButton(); // refresh => needs login => goto login page
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.loginPageCancel(); // cancel when canceledUrl:null => Home
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     return;
   });
@@ -84,19 +84,19 @@ void main() {
 
     await navigator.toBooks();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.globalLoginButton();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.loginPageOK();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.toBook(id: 1);
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     return;
   });
@@ -106,43 +106,43 @@ void main() {
 
     await navigator.globalLoginButton();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.loginPageOK();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.toBook(id: 1);
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.bookNextPrevButton();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.bookNextPrevButton();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.bookNextPrevButton();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.bookNextPrevButton();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.bookNextPrevButton();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.bookNextPrevButton(isPrev: true);
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     await navigator.bookNextPrevButton(isPrev: true);
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    print(navigator.getActualTypedPathAsString());
 
     return;
   });

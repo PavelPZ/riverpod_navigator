@@ -15,19 +15,19 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
   final RiverpodNavigator _navigator;
 
   @override
-  TypedPath get currentConfiguration => _navigator.actualTypedPath;
+  TypedPath get currentConfiguration => _navigator.getActualTypedPath();
 
   @override
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    final typedPath = _navigator.actualTypedPath;
-    if (typedPath.isEmpty) return SizedBox();
+    final actPath = _navigator.getActualTypedPath();
+    if (actPath.isEmpty) return SizedBox();
     final navigatorWidget = Navigator(
         key: navigatorKey,
         // segment => route => route.build(segment)
-        pages: typedPath.map((segment) {
+        pages: actPath.map((segment) {
           final route = _navigator.getRouteWithSegment(segment).route as NavigRoute;
           return _TypedSegmentPage(segment, route.buildPage);
         }).toList(),

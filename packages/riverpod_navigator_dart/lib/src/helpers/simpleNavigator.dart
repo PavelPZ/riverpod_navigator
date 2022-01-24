@@ -10,27 +10,27 @@ import '../route.dart';
 
 /// one of the strategy how to react to state change
 abstract class SimpleNavigator extends RiverpodNavigator {
-  SimpleNavigator(Ref ref, GetRoute4Segment getRouteForSegment, PathParser pathParser, {TypedPath? initPath})
-      : super(ref, getRouteForSegment, pathParser, initPath: initPath);
+  SimpleNavigator(Ref ref, GetRoute4Segment getRouteForSegment, PathParser pathParser) : super(ref, getRouteForSegment, pathParser);
 
   /// state change is doing ONLY here
   @override
   Future<void> navigate(TypedPath newTypedPath) async {
+    final actPath = getActualTypedPath();
     onAsyncChange?.call(true);
     try {
       // app logic
-      newTypedPath = appNavigationLogic(actualTypedPath, newTypedPath);
+      newTypedPath = appNavigationLogic(actPath, newTypedPath);
 
       // normalize newTypedPath
-      newTypedPath = _eq2Identical(actualTypedPath, newTypedPath);
-      if (identical(actualTypedPath, newTypedPath)) return;
+      newTypedPath = _eq2Identical(actPath, newTypedPath);
+      if (identical(getActualTypedPath, newTypedPath)) return;
 
       // call async route action: Route4Model.creating, Route4Model.deactivating, Route4Model.merging
-      await waitForRouteChanging(actualTypedPath, newTypedPath);
+      await waitForRouteChanging(actPath, newTypedPath);
       // unawaited(Future.delayed(Duration(milliseconds: 300)).then((_) => onAsyncChangeEnd()));
 
       // state change => flutter navigation
-      actualTypedPath = newTypedPath;
+      setActualTypedPath(newTypedPath);
       onAsyncChange?.call(false);
     } catch (e) {
       // show error (no state changed)
@@ -42,7 +42,7 @@ abstract class SimpleNavigator extends RiverpodNavigator {
   /// start- and end-navigation callback (with possible error at the end)
   void Function(bool inStart, [Object? error])? onAsyncChange;
 
-  Future<void> refresh() => navigate([...actualTypedPath]); // navigate to self
+  Future<void> refresh() => navigate([...getActualTypedPath()]); // navigate to self
 
   /// all async route operations ([Route4Model.creating], [Route4Model.deactivating], [Route4Model.merging]) run in parallel
   /// other scenario is possible

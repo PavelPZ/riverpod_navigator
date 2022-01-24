@@ -46,8 +46,9 @@ class AppNavigator extends SimpleNavigator {
   Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
 
   Future<void> bookNextPrevButton({bool? isPrev}) {
-    assert(actualTypedPath.last is BookSegment);
-    var id = (actualTypedPath.last as BookSegment).id;
+    final actPath = getActualTypedPath();
+    assert(actPath.last is BookSegment);
+    var id = (actPath.last as BookSegment).id;
     if (isPrev == true)
       id = id == 0 ? booksLen - 1 : id - 1;
     else
@@ -66,11 +67,12 @@ class AppNavigator extends SimpleNavigator {
   }
 
   Future<void> globalLoginButton() {
+    final actPath = getActualTypedPath();
     // checking
     final isLogged = ref.read(userIsLoggedProvider.notifier);
     assert(!isLogged.state); // is logoff?
     // navigate to login page
-    final segment = pathParser.typedPath2Path(actualTypedPath);
+    final segment = pathParser.typedPath2Path(actPath);
     return navigate([LoginHomeSegment(loggedUrl: segment, canceledUrl: segment)]);
   }
 
@@ -78,8 +80,9 @@ class AppNavigator extends SimpleNavigator {
   Future<void> loginPageOK() => _loginPageButtons(false);
 
   Future<void> _loginPageButtons(bool cancel) async {
-    assert(actualTypedPath.last is LoginHomeSegment);
-    final loginHomeSegment = actualTypedPath.last as LoginHomeSegment;
+    final actPath = getActualTypedPath();
+    assert(actPath.last is LoginHomeSegment);
+    final loginHomeSegment = actPath.last as LoginHomeSegment;
 
     if (cancel) {
       assert(!ref.read(userIsLoggedProvider)); // not loged
