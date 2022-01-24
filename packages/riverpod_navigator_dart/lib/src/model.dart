@@ -26,4 +26,4 @@ class TypedPathNotifier extends StateNotifier<TypedPath> {
 }
 
 /// Will provided [TypedPathNotifier] to whole app
-//final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());
+final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());

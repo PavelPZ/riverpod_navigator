@@ -4,7 +4,6 @@ import 'package:riverpod/riverpod.dart';
 
 import 'model.dart';
 import 'pathParser.dart';
-import 'provider.dart';
 import 'route.dart';
 
 abstract class RiverpodNavigator {
