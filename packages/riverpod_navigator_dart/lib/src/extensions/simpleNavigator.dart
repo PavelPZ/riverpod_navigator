@@ -5,12 +5,11 @@ import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../model.dart';
-import '../pathParser.dart';
 import '../route.dart';
 
 /// one of the strategy how to react to state change
 abstract class SimpleNavigator extends RiverpodNavigator {
-  SimpleNavigator(Ref ref, GetRoute4Segment getRouteForSegment, PathParser pathParser) : super(ref, getRouteForSegment, pathParser);
+  SimpleNavigator(Ref ref, GetRoute4Segment getRouteForSegment) : super(ref, getRouteForSegment);
 
   /// state change is doing ONLY here
   @override

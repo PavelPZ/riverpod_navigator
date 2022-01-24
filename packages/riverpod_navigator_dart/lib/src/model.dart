@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:riverpod/riverpod.dart';
 
-import 'pathParser.dart';
+import 'extensions/extensions.dart';
 import 'route.dart';
 
 typedef JsonMap = Map<String, dynamic>;
@@ -34,10 +34,9 @@ class TypedPathNotifier extends StateNotifier<TypedPath> {
 final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());
 
 abstract class RiverpodNavigator {
-  RiverpodNavigator(this.ref, this.getRouteWithSegment, this.pathParser);
-  final Ref ref;
+  RiverpodNavigator(this.ref, this.getRouteWithSegment);
   final GetRoute4Segment getRouteWithSegment;
-  final PathParser pathParser;
+  Ref ref;
 
   Future<void> navigate(TypedPath newTypedPath) async => setActualTypedPath(newTypedPath);
 
@@ -46,7 +45,7 @@ abstract class RiverpodNavigator {
   String getActualTypedPathAsString() => getActualTypedPath().map((s) => s.key).join(' / ');
   void setActualTypedPath(TypedPath value) => getPathNotifier().typedPath = value;
 
-  /// for RouterDelegate
+  /// for [Navigator.onPopPage] in [RiverpodRouterDelegate.build]
   bool onPopRoute() {
     final actPath = getActualTypedPath();
     if (actPath.length <= 1) return false;
@@ -70,5 +69,23 @@ abstract class RiverpodNavigator {
   Future<void> replaceLast(TypedSegment segment) {
     final actPath = getActualTypedPath();
     return navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i], segment]);
+  }
+}
+
+mixin PathParserExtension {
+  PathParser pathParser = PathParser();
+}
+
+class PathParser {
+  static const String defaultJsonUnionKey = 'runtimeType';
+
+  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.key/*=jsonEncode(s.toJson())*/)).join('/');
+
+  TypedPath path2TypedPath(String? path) {
+    if (path == null || path.isEmpty) return [];
+    return [
+      for (final s in path.split('/'))
+        if (s.isNotEmpty) Extensions4Dart.value.json2Segment(jsonDecode(Uri.decodeFull(s)), defaultJsonUnionKey)
+    ];
   }
 }

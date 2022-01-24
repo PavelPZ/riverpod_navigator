@@ -3,14 +3,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'provider.dart';
 
 // flutter pub run build_runner watch
 part 'pages.g.dart';
 
+Widget screenBuilder(TypedSegment segment) {
+  if (segment is AppSegments)
+    return segment.map<Widget>(
+      home: (segment) => HomeScreen(segment),
+      books: (segment) => BooksScreen(segment),
+      book: (segment) => BookScreen(segment),
+    );
+  else if (segment is LoginSegments)
+    return segment.map<Widget>(
+      (segment) => throw UnimplementedError(),
+      home: (segment) => LoginScreen(segment),
+    );
+  else
+    throw UnimplementedError();
+}
+
 @hcwidget
-Widget homePage(WidgetRef ref, HomeSegment segment) => PageHelper(
+Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
       title: 'Home Page',
       children: (_) => [
         linkHelper(title: 'Books Page', onPressed: ref.read(appNavigatorProvider).toBooks),
@@ -18,14 +35,14 @@ Widget homePage(WidgetRef ref, HomeSegment segment) => PageHelper(
     );
 
 @hcwidget
-Widget booksPage(WidgetRef ref, BooksSegment segment) => PageHelper(
+Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
       title: 'Books Page',
       children: (_) =>
           [for (var id = 0; id < booksLen; id++) linkHelper(title: 'Book, id=$id', onPressed: () => ref.read(appNavigatorProvider).toBook(id: id))],
     );
 
 @hcwidget
-Widget bookPage(WidgetRef ref, BookSegment segment) => PageHelper(
+Widget bookScreen(WidgetRef ref, BookSegment segment) => PageHelper(
       title: 'Book Page, id=${segment.id}',
       children: (_) => [
         linkHelper(title: 'Next >>', onPressed: ref.read(appNavigatorProvider).bookNextPrevButton),
@@ -34,7 +51,7 @@ Widget bookPage(WidgetRef ref, BookSegment segment) => PageHelper(
     );
 
 @hcwidget
-Widget loginPage(WidgetRef ref, LoginHomeSegment segment) => PageHelper(
+Widget loginScreen(WidgetRef ref, LoginHomeSegment segment) => PageHelper(
       title: 'Login Page',
       isLoginPage: true,
       children: (_) => [

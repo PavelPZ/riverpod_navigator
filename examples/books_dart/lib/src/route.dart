@@ -2,17 +2,6 @@ import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
 import 'model/model.dart';
 
-TypedSegment json2Segment(JsonMap jsonMap, String unionKey) {
-  switch (unionKey) {
-    case PathParser.defaultJsonUnionKey:
-      return AppSegments.fromJson(jsonMap);
-    case LoginSegments.jsonNameSpace:
-      return LoginSegments.fromJson(jsonMap);
-    default:
-      throw UnimplementedError();
-  }
-}
-
 Route4Segment appRouteWithSegment4Model(TypedSegment segment) {
   if (segment is AppSegments)
     return segment.map(

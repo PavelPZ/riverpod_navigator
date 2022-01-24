@@ -1,9 +1,12 @@
+import 'package:riverpod_navigator_dart/src/extensions/extensions.dart';
+
 import '../model.dart';
-import '../pathParser.dart';
+
+mixin SimplePathParserExtension {
+  PathParser pathParser = SimplePathParser();
+}
 
 class SimplePathParser extends PathParser {
-  SimplePathParser(Json2Segment json2Segment) : super(json2Segment);
-
   @override
   TypedPath path2TypedPath(String? path) {
     final res = <TypedSegment>[];
@@ -30,7 +33,7 @@ class SimplePathParser extends PathParser {
         assert(nameValue.length == 2);
         _addNameValue(segmentMap, nameValue);
       }
-      final typedSegment = json2Segment(segmentMap, unionKey);
+      final typedSegment = Extensions4Dart.value.json2Segment(segmentMap, unionKey);
       res.add(typedSegment);
     }
     return res;
