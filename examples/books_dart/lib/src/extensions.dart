@@ -1,4 +1,4 @@
-import 'package:riverpod_navigator/riverpod_navigator.dart';
+import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
 import 'model/model.dart';
 

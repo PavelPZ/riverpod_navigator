@@ -2,9 +2,9 @@ import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
 import 'dataLayer.dart';
+import 'extensions.dart';
 import 'model/model.dart';
 import 'provider.dart';
-import 'route.dart';
 
 class AppNavigator extends SimpleNavigator {
   AppNavigator(Ref ref, GetRoute4Segment getRouteForSegment) : super(ref, getRouteForSegment);
@@ -13,20 +13,12 @@ class AppNavigator extends SimpleNavigator {
   TypedPath appNavigationLogic(TypedPath oldPath, TypedPath newPath) {
     if (!ref.read(userIsLoggedProvider)) {
       // user not logged => check in navigation stack is ppage which needs login
-      final routeWithSegments = newPath.map((s) => getRouteWithSegment(s)).toList();
-      // check if there is any route which needs login
-      final pathNeedsLogin = routeWithSegments.any((rs) {
-        if (rs.route is RouteNeedsLogin)
-          return (rs.route as RouteNeedsLogin).needsLogin(rs.segment);
-        else
-          return false;
-      });
-      // login needed => redirect to login page
-      if (pathNeedsLogin) {
+      // if there is any route which needs login
+      if (newPath.any((segment) => needsLogin(segment))) {
+        // navigate to login page
         final loggedUrl = config4Dart.pathParser.typedPath2Path(newPath);
         var canceledUrl = oldPath.isEmpty || oldPath.last is LoginHomeSegment ? '' : config4Dart.pathParser.typedPath2Path(oldPath);
-        // logout on page which needs login - called refresh() {navigate([...actualTypedPath]);}
-        if (loggedUrl == canceledUrl) canceledUrl = '';
+        if (loggedUrl == canceledUrl) canceledUrl = ''; // logout on page which needs login - called refresh() {navigate([...actualTypedPath]);}
         return [LoginHomeSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
       }
     } else {
@@ -57,23 +49,21 @@ class AppNavigator extends SimpleNavigator {
   }
 
   Future<void> globalLogoutButton() {
-    // checking
     final isLogged = ref.read(userIsLoggedProvider.notifier);
     assert(isLogged.state); // is logged?
     // change login state
     isLogged.state = false;
-    // e.g. logout needs refresh (when some of the pages in navigation stack could need login)
+    // logout needs refresh (when some of the pages in navigation stack could need login)
     return refresh();
   }
 
   Future<void> globalLoginButton() {
     final actPath = getActualTypedPath();
-    // checking
     final isLogged = ref.read(userIsLoggedProvider.notifier);
     assert(!isLogged.state); // is logoff?
     // navigate to login page
-    final segment = config4Dart.pathParser.typedPath2Path(actPath);
-    return navigate([LoginHomeSegment(loggedUrl: segment, canceledUrl: segment)]);
+    final path2String = config4Dart.pathParser.typedPath2Path(actPath);
+    return navigate([LoginHomeSegment(loggedUrl: path2String, canceledUrl: path2String)]);
   }
 
   Future<void> loginPageCancel() => _loginPageButtons(true);
@@ -87,11 +77,10 @@ class AppNavigator extends SimpleNavigator {
     if (cancel) {
       assert(!ref.read(userIsLoggedProvider)); // not loged
     } else
-      ref.read(userIsLoggedProvider.notifier).state = true; // lofin successfull => set to provider
+      ref.read(userIsLoggedProvider.notifier).state = true; // login successfull => change userIsLogged state
 
-    final newSegment = cancel
-        ? config4Dart.pathParser.path2TypedPath(loginHomeSegment.canceledUrl)
-        : config4Dart.pathParser.path2TypedPath(loginHomeSegment.loggedUrl);
+    final newSegment = config4Dart.pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
+
     await navigate(newSegment.isEmpty ? [HomeSegment()] : newSegment);
   }
 }

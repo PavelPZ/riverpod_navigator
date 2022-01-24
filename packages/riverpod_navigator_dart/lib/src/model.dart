@@ -41,9 +41,12 @@ abstract class RiverpodNavigator {
   Future<void> navigate(TypedPath newTypedPath) async => setActualTypedPath(newTypedPath);
 
   TypedPathNotifier getPathNotifier() => ref.read(typedPathNotifierProvider.notifier);
+
   TypedPath getActualTypedPath() => getPathNotifier().typedPath;
-  String getActualTypedPathAsString() => getActualTypedPath().map((s) => s.key).join(' / ');
   void setActualTypedPath(TypedPath value) => getPathNotifier().typedPath = value;
+
+  String getActualTypedPathAsString() =>
+      config4Dart.pathParser.typedPath2Path(getActualTypedPath()); // getActualTypedPath().map((s) => s.key).join(' / ');
 
   /// for [Navigator.onPopPage] in [RiverpodRouterDelegate.build]
   bool onPopRoute() {

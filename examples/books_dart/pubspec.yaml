@@ -10,8 +10,8 @@ dependencies:
   freezed_annotation:
   json_annotation:
   riverpod:
-  riverpod_navigator:
-    path: ../../packages/riverpod_navigator
+  riverpod_navigator_dart:
+    path: ../../packages/riverpod_navigator_dart
 
 dev_dependencies: 
   build_runner:
