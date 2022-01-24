@@ -5,7 +5,6 @@ import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../model.dart';
-import '../navigator.dart';
 import '../pathParser.dart';
 import '../route.dart';
 

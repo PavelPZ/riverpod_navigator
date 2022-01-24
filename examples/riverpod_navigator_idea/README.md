@@ -29,7 +29,7 @@ To better understand it, see the following matrix:
 
 Testing without flutter (dart only) is available in [example_test.dart](test/example_test.dart).
 
-Note: I am using [functional_widget](https://github.com/rrousselGit/functional_widget) to be less verbose.
+Note: I am using [functional_widget](https://github.com/rrousselGit/functional_widget) and [flutter_hooks](https://github.com/rrousselGit/flutter_hooks) to be less verbose.
 
 ## Installing the example
 
