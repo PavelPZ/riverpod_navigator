@@ -122,8 +122,6 @@ class Config4Dart {
 
   /// How to convert [TypedSegment] to json
   final Json2Segment json2Segment;
-
-  /// screen async navigation action
 }
 
 Config4Dart get config4Dart {

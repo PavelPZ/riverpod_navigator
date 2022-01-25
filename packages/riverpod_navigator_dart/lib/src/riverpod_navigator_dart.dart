@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:riverpod/riverpod.dart';
 
+import '../riverpod_navigator_dart.dart';
+
 typedef JsonMap = Map<String, dynamic>;
 
 // ********************************************
@@ -85,13 +87,14 @@ abstract class RiverpodNavigator {
 //   parser
 // ********************************************
 
+/// String path <==> TypedPath
 class PathParser {
   static const String defaultJsonUnionKey = 'runtimeType';
 
-  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.asJson/*=jsonEncode(s.toJson())*/)).join('/');
+  /// String path => TypedPath
+  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.asJson)).join('/');
 
-  String debugTypedPath2String(TypedPath typedPath) => typedPath.map((s) => s.asJson/*=jsonEncode(s.toJson())*/).join(' / ');
-
+  /// TypedPath => String path, suitable for browser
   TypedPath path2TypedPath(String? path) {
     if (path == null || path.isEmpty) return [];
     return [
@@ -99,6 +102,9 @@ class PathParser {
         if (s.isNotEmpty) config4Dart.json2Segment(jsonDecode(Uri.decodeFull(s)), defaultJsonUnionKey)
     ];
   }
+
+  /// Friendly display of TypedPath
+  String debugTypedPath2String(TypedPath typedPath) => typedPath.map((s) => s.asJson).join(' / ');
 }
 
 // ********************************************
@@ -136,7 +142,7 @@ class Config4Dart {
     PathParser? pathParser,
     this.segment2AsyncScreenActions,
   })  : assert(_value == null, 'Extension.init called multipple times'),
-        pathParser = pathParser ?? PathParser() {
+        pathParser = pathParser ?? SimplePathParser() /* PathParser */ {
     _value = this;
   }
 
@@ -146,7 +152,7 @@ class Config4Dart {
   /// How to convert [TypedSegment] to json
   final Json2Segment json2Segment;
 
-  /// screen async navigation action
+  /// screen async-navigation action
   final Segment2AsyncScreenActions? segment2AsyncScreenActions;
 }
 

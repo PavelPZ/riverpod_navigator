@@ -29,11 +29,11 @@ Those problems will be solved by two packages (riverpod_navigator and riverpod_n
 
 Let's look at the following table:
 
-| | | | |
+| | 1. root segment | 2. segment | 3. visible segment |
 | --- | --- | --- | --- |
-| 1. string segments in web browser | 'home'/ | 'books'/ | 'book;id=3' |
-| 2. typed segments | [ Home(), | Books(), | Book(id: bookId) ] |
-| 3. navigation stack | HomePage(Home s) =>| BooksPage(Books s) =>| BookPage(Book s) |
+| string segments in web browser | 'home'/ | 'books'/ | 'book;id=3' |
+| typed segments | [ Home(), | Books(), | Book(id: bookId) ] |
+| navigation stack | HomePage(Home s) =>| BooksPage(Books s) =>| BookPage(Book s) |
 
 Navigation job is to keep **all 3 rows in sync**.
 

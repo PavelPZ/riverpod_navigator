@@ -1,9 +1,5 @@
 import '../riverpod_navigator_dart.dart';
 
-mixin SimplePathParserExtension {
-  PathParser pathParser = SimplePathParser();
-}
-
 class SimplePathParser extends PathParser {
   @override
   TypedPath path2TypedPath(String? path) {
