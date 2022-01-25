@@ -5,11 +5,11 @@ import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../model.dart';
-import '../route.dart';
+import 'route.dart';
 
 /// one of the strategies for responding to an asynchronous TypeedPath change
 abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
-  AsyncRiverpodNavigator(Ref ref, GetRoute4Segment getRouteForSegment) : super(ref, getRouteForSegment);
+  AsyncRiverpodNavigator(Ref ref) : super(ref);
 
   /// put all change-route application logic here
   /// (redirect to other page during login x logoff, other guards, redirect, ...)
@@ -63,28 +63,29 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
   Future<void> waitForRouteChanging(TypedPath oldPath, TypedPath newPath) async {
     final minLen = min(oldPath.length, newPath.length);
     final futures = <Future?>[];
-    // get routes from segments
-    final olds = oldPath.map((s) => getRouteWithSegment(s)).toList();
-    final news = newPath.map((s) => getRouteWithSegment(s)).toList();
     // merge old and new
     for (var i = 0; i < minLen; i++) {
-      final o = olds[i];
-      final n = news[i];
+      final o = oldPath[i];
+      final n = newPath[i];
       // nothing to merge
-      if (identical(o.segment, n.segment)) continue;
-      if (o.route == n.route)
+      if (identical(o, n)) continue;
+      final oAsyncs = config4Dart.segment2AsyncScreenActions!(o);
+      final nAsyncs = config4Dart.segment2AsyncScreenActions!(n);
+      if (o.runtimeType == n.runtimeType)
         // old and new has the same route => merging
-        futures.add(o.route.merging(o.segment, n.segment));
+        futures.add(oAsyncs?.callMerging(o, n));
       else {
         // old and new has different route => deactivanting old, creating new
-        futures.add(o.route.deactivating(o.segment));
-        futures.add(n.route.creating(n.segment));
+        futures.add(oAsyncs?.callDeactivating(o));
+        futures.add(nAsyncs?.callCreating(n));
       }
     }
     // deactivating the rest of old routes
-    if (olds.length > minLen) for (var i = minLen; i < olds.length; i++) futures.add(olds[i].route.deactivating(olds[i].segment));
+    if (oldPath.length > minLen)
+      for (var i = minLen; i < oldPath.length; i++) futures.add(config4Dart.segment2AsyncScreenActions!(oldPath[i])?.callDeactivating(oldPath[i]));
     // creating the rest of new routes
-    if (news.length > minLen) for (var i = minLen; i < news.length; i++) futures.add(news[i].route.creating(news[i].segment));
+    if (newPath.length > minLen)
+      for (var i = minLen; i < newPath.length; i++) futures.add(config4Dart.segment2AsyncScreenActions!(newPath[i])?.callCreating(newPath[i]));
     // remove empty futures
     final notEmptyFutures = <Future>[
       for (final f in futures)

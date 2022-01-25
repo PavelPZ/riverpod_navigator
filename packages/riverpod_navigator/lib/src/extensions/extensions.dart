@@ -8,8 +8,8 @@ export 'screenWrappers.dart';
 
 typedef Screen2Page = Page Function(TypedSegment segment, ScreenBuilder screenBuilder);
 
-class Extensions extends Extensions4Dart {
-  Extensions({
+class Config extends Config4Dart {
+  Config({
     required this.screenBuilder,
     Screen2Page? screen2Page,
     required this.initPath,
@@ -17,10 +17,12 @@ class Extensions extends Extensions4Dart {
     // extensions for Dart:
     required Json2Segment json2Segment,
     PathParser? pathParser,
+    Segment2AsyncScreenActions? segment2AsyncScreenActions,
   })  : screen2Page = screen2Page ?? screen2PageDefault,
         super(
           json2Segment: json2Segment,
           pathParser: pathParser,
+          segment2AsyncScreenActions: segment2AsyncScreenActions,
         );
   final Screen2Page screen2Page;
   final ScreenBuilder screenBuilder;
@@ -28,4 +30,4 @@ class Extensions extends Extensions4Dart {
   final NavigatorWidgetBuilder? navigatorWidgetBuilder;
 }
 
-Extensions get config => config4Dart as Extensions;
+Config get config => config4Dart as Config;

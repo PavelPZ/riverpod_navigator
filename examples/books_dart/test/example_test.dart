@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 import 'testLib.dart';
 
 void main() {
-  Extensions4Dart(json2Segment: json2Segment, pathParser: SimplePathParser());
+  Config4Dart(json2Segment: json2Segment, pathParser: SimplePathParser(), segment2AsyncScreenActions: segment2AsyncScreenActions);
   test('timer', () async {
     await Future.delayed(Duration(seconds: 2));
     return;

@@ -55,21 +55,3 @@ class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
   RouteInformation restoreRouteInformation(TypedPath configuration) =>
       RouteInformation(location: config4Dart.pathParser.typedPath2Path(configuration));
 }
-
-// class _TypedSegmentScreen extends Page {
-//   _TypedSegmentScreen(this._typedSegment, this._pageBuilder) : super(key: ValueKey(_typedSegment.key));
-
-//   final TypedSegment _typedSegment;
-//   final ScreenBuilder _pageBuilder;
-
-//   @override
-//   Route createRoute(BuildContext context) {
-//     // this line solved https://github.com/PavelPZ/riverpod_navigator/issues/2
-//     // https://github.com/flutter/flutter/issues/11655#issuecomment-469221502
-//     final child = _pageBuilder(_typedSegment);
-//     return MaterialPageRoute(
-//       settings: this,
-//       builder: (BuildContext context) => child,
-//     );
-//   }
-// }

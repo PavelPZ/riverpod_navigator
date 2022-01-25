@@ -1,5 +1,3 @@
-import 'package:riverpod_navigator_dart/src/extensions/extensions.dart';
-
 import '../model.dart';
 
 mixin SimplePathParserExtension {

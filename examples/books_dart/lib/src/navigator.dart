@@ -7,7 +7,7 @@ import 'model/model.dart';
 import 'provider.dart';
 
 class AppNavigator extends AsyncRiverpodNavigator {
-  AppNavigator(Ref ref, GetRoute4Segment getRouteForSegment) : super(ref, getRouteForSegment);
+  AppNavigator(Ref ref) : super(ref);
 
   @override
   TypedPath appNavigationLogic(TypedPath oldPath, TypedPath newPath) {

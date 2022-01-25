@@ -11,3 +11,19 @@ bool needsLogin(TypedSegment segment) {
   else
     return false;
 }
+
+AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
+  if (segment is AppSegments)
+    return segment.maybeMap(
+      book: (_) => AsyncScreenActions<BookSegment>(
+        creating: (newSegment) => newSegment.id.isOdd ? Future.delayed(Duration(milliseconds: 500)) : null,
+        merging: (oldSegment, _) => oldSegment.id.isOdd ? Future.delayed(Duration(milliseconds: 200)) : null,
+      ),
+      home: (_) => AsyncScreenActions<HomeSegment>(
+        creating: (_) => Future.delayed(Duration(seconds: 1)),
+      ),
+      orElse: () => null,
+    );
+  else
+    return null;
+}

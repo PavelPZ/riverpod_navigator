@@ -1,4 +1,4 @@
-import 'model.dart';
+import '../model.dart';
 
 abstract class Route4Model<T extends TypedSegment> {
   Future<void>? creating(T newPath) => null;

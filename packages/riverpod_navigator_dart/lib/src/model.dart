@@ -3,9 +3,6 @@ import 'dart:convert';
 
 import 'package:riverpod/riverpod.dart';
 
-import 'extensions/extensions.dart';
-import 'route.dart';
-
 typedef JsonMap = Map<String, dynamic>;
 
 /// Typed variant of Uri path segment
@@ -34,8 +31,8 @@ class TypedPathNotifier extends StateNotifier<TypedPath> {
 final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());
 
 abstract class RiverpodNavigator {
-  RiverpodNavigator(this.ref, this.getRouteWithSegment);
-  final GetRoute4Segment getRouteWithSegment;
+  RiverpodNavigator(this.ref);
+  // final GetRoute4Segment getRouteWithSegment;
   Ref ref;
 
   Future<void> navigate(TypedPath newTypedPath) async => setActualTypedPath(newTypedPath);
@@ -75,9 +72,9 @@ abstract class RiverpodNavigator {
   }
 }
 
-mixin PathParserExtension {
-  PathParser pathParser = PathParser();
-}
+/* ******************************************** */
+/*   parser                              */
+/* ******************************************** */
 
 class PathParser {
   static const String defaultJsonUnionKey = 'runtimeType';
@@ -92,3 +89,47 @@ class PathParser {
     ];
   }
 }
+
+/* ******************************************** */
+/*   configuration                              */
+/* ******************************************** */
+
+typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
+typedef Creating<T extends TypedSegment> = Future? Function(T newPath);
+typedef Merging<T extends TypedSegment> = Future? Function(T oldPath, T newPath);
+typedef Deactivating<T extends TypedSegment> = Future? Function(T oldPath);
+
+class AsyncScreenActions<T extends TypedSegment> {
+  AsyncScreenActions({this.creating, this.merging, this.deactivating});
+  final Creating<T>? creating;
+  final Merging<T>? merging;
+  final Deactivating<T>? deactivating;
+
+  Future? callCreating(TypedSegment newPath) => creating != null ? creating?.call(newPath as T) : null;
+  Future? callMerging(TypedSegment oldPath, TypedSegment newPath) => merging != null ? merging?.call(oldPath as T, newPath as T) : null;
+  Future? callDeactivating(TypedSegment oldPath) => creating != null ? deactivating?.call(oldPath as T) : null;
+}
+
+typedef Segment2AsyncScreenActions = AsyncScreenActions? Function(TypedSegment segment);
+
+class Config4Dart {
+  Config4Dart({
+    required this.json2Segment,
+    PathParser? pathParser,
+    this.segment2AsyncScreenActions,
+  })  : assert(_value == null, 'Extension.init called multipple times'),
+        pathParser = pathParser ?? PathParser() {
+    _value = this;
+  }
+
+  final PathParser pathParser;
+  final Json2Segment json2Segment;
+  final Segment2AsyncScreenActions? segment2AsyncScreenActions;
+}
+
+Config4Dart get config4Dart {
+  assert(_value != null, 'Call Extension.init first!');
+  return _value as Config4Dart;
+}
+
+Config4Dart? _value;
