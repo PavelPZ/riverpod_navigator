@@ -164,7 +164,7 @@ void main() {
     return;
   });
   test('key', () {
-    final key = BookSegment(id: 123).key;
+    final key = BookSegment(id: 123).asJson;
     // ignore: unused_local_variable
     final key2 = json.encode(BookSegment(id: 123));
     expect(key, '{"id":123,"runtimeType":"book"}');

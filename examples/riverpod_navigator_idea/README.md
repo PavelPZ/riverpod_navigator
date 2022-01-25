@@ -9,15 +9,16 @@ This is an example of the classic ```Home => Books => Book*``` navigation app.
 
 ### It solves the following navigation problems:
 
-- **Strictly typed navigation:** <br>use ```navigate([Home(), Books(), Book(id: bookId)])``` instead of ```navigate('home/books/$bookId')```.
+- **Strictly typed navigation:** <br>in your code use ```navigate([Home(), Books(), Book(id: bookId)]);``` instead of ```navigate('home/books/$bookId';)```.
 - **Easier coding:** <br>Problem of the navigation is reduced to immutable collection manipulation.
 - **Better separation of concerns: UI x Model** (riverpod offers this feature too): <br>
-  Whole app state management (including navigation) can be developed and tested in Dart environment. Without typing a single flutter widget.
+  Whole app state management (including navigation) can be developed and tested in Dart environment. Without typing a single flutter widget. 
+  For example test see [example_test.dart](test/example_test.dart).
 - **Small codebase:** <br>This example consists of only 150 lines of the generic code (which can be used in other app) and 150 lines of the app-specific code.
 
 ## Source code
 
-The best documentation is a simple source code. 
+The best documentation is a simple source code.
 
 The source code is contained in five files.
 To better understand it, see the following matrix:

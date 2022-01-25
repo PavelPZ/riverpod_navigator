@@ -9,9 +9,8 @@ typedef JsonMap = Map<String, dynamic>;
 abstract class TypedSegment {
   JsonMap toJson();
 
-  /// key for MaterialApp(key: ValueKey([TypedSegment.key]))
-  String get key => _key ?? (_key = jsonEncode(toJson()));
-  String? _key;
+  String get asJson => _asJson ?? (_asJson = jsonEncode(toJson()));
+  String? _asJson;
 }
 
 /// Typed variant of Uri path
@@ -29,6 +28,9 @@ class TypedPathNotifier extends StateNotifier<TypedPath> {
 /// Will provided [TypedPathNotifier] to whole app
 final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());
 
+// ********************************************
+//   RiverpodNavigator
+// ********************************************
 abstract class RiverpodNavigator {
   RiverpodNavigator(this.ref);
 
@@ -51,9 +53,7 @@ abstract class RiverpodNavigator {
     return true;
   }
 
-  /* ******************************************** */
-  /*   common navigation-agnostic app actions     */
-  /* ******************************************** */
+  // *** common navigation-agnostic app actions ***
 
   Future<bool> pop() async {
     final actPath = getActualTypedPath();
@@ -70,16 +70,16 @@ abstract class RiverpodNavigator {
   }
 }
 
-/* ******************************************** */
-/*   parser                              */
-/* ******************************************** */
+// ********************************************
+//   parser
+// ********************************************
 
 class PathParser {
   static const String defaultJsonUnionKey = 'runtimeType';
 
-  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.key/*=jsonEncode(s.toJson())*/)).join('/');
+  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.asJson/*=jsonEncode(s.toJson())*/)).join('/');
 
-  String debugTypedPath2String(TypedPath typedPath) => typedPath.map((s) => s.key/*=jsonEncode(s.toJson())*/).join(' / ');
+  String debugTypedPath2String(TypedPath typedPath) => typedPath.map((s) => s.asJson/*=jsonEncode(s.toJson())*/).join(' / ');
 
   TypedPath path2TypedPath(String? path) {
     if (path == null || path.isEmpty) return [];
@@ -90,9 +90,9 @@ class PathParser {
   }
 }
 
-/* ******************************************** */
-/*   configuration                              */
-/* ******************************************** */
+// ********************************************
+//   configuration
+// ********************************************
 
 typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
 
