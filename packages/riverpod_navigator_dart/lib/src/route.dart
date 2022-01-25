@@ -1,9 +1,9 @@
 import 'model.dart';
 
 abstract class Route4Model<T extends TypedSegment> {
-  Future<void>? creating(T newSegment) => null;
-  Future<void>? merging(T oldSegment, T newSegment) => null;
-  Future<void>? deactivating(T oldSegment) => null;
+  Future<void>? creating(T newPath) => null;
+  Future<void>? merging(T oldPath, T newPath) => null;
+  Future<void>? deactivating(T oldPath) => null;
 }
 
 typedef GetRoute4Segment = Route4Segment Function(TypedSegment segment);

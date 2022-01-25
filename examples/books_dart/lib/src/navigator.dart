@@ -6,7 +6,7 @@ import 'extensions.dart';
 import 'model/model.dart';
 import 'provider.dart';
 
-class AppNavigator extends SimpleNavigator {
+class AppNavigator extends AsyncRiverpodNavigator {
   AppNavigator(Ref ref, GetRoute4Segment getRouteForSegment) : super(ref, getRouteForSegment);
 
   @override
