@@ -1,4 +1,4 @@
-import '../model.dart';
+import '../riverpod_navigator_dart.dart';
 
 abstract class Route4Dart<T extends TypedSegment> {
   Future<void>? creating(T newPath) => null;

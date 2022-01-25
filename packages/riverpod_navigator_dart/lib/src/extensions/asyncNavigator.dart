@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../model.dart';
+import '../riverpod_navigator_dart.dart';
 import 'route.dart';
 
 /// one of the strategies for responding to an asynchronous TypeedPath change

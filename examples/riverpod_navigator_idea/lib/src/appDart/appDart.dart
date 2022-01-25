@@ -1,10 +1,17 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../packageDart.dart';
+import '../riverpod_navigator_dart.dart';
 
 part 'appDart.freezed.dart';
 part 'appDart.g.dart';
+
+// configure dart
+void configure4Dart() {
+  Config4Dart(
+    json2Segment: (json, _) => ExampleSegments.fromJson(json),
+  );
+}
 
 /// [TypedSegment]'s for this example
 @freezed
@@ -34,8 +41,8 @@ class ExampleRiverpodNavigator extends RiverpodNavigator {
   void toBooks() => navigate([HomeSegment(), BooksSegment()]);
   void toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
   void bookNextPrevButton({bool? isPrev}) {
-    assert(actualTypedPath.last is BookSegment);
-    var id = (actualTypedPath.last as BookSegment).id;
+    assert(getActualTypedPath().last is BookSegment);
+    var id = (getActualTypedPath().last as BookSegment).id;
     if (isPrev == true)
       id = id == 0 ? booksLen - 1 : id - 1;
     else

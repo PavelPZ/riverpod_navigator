@@ -1,4 +1,4 @@
-import '../model.dart';
+import '../riverpod_navigator_dart.dart';
 
 mixin SimplePathParserExtension {
   PathParser pathParser = SimplePathParser();
@@ -54,6 +54,9 @@ class SimplePathParser extends PathParser {
     }
     return segmentUrls.join('/');
   }
+
+  @override
+  String debugTypedPath2String(TypedPath typedPath) => typedPath2Path(typedPath);
 
   // a=1;b=0.;c=.0;d=1.5;e=true;f=false;aa:=1;bb:=0.;cc:=.0;dd:=1.5;ee:=true;ff:=false;g=others;h=.;i=12345678901234567890
   static void _addNameValue(Map<String, dynamic> res, List<String> nameValue /*name=nameValue[0], value=nameValue[1]*/) {

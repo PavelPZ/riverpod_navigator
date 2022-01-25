@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:riverpod_navigator/riverpod_navigator.dart';
+import 'riverpod_navigator_dart.dart'; // @IFDEF riverpod_navigator_idea
 
 typedef NavigatorWidgetBuilder = Widget Function(BuildContext, Navigator);
 typedef ScreenBuilder = Widget Function(TypedSegment segment);
@@ -55,3 +55,47 @@ class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
   RouteInformation restoreRouteInformation(TypedPath configuration) =>
       RouteInformation(location: config4Dart.pathParser.typedPath2Path(configuration));
 }
+
+typedef Screen2Page = Page Function(TypedSegment segment, ScreenBuilder screenBuilder);
+
+class Config extends Config4Dart {
+  Config({
+    required this.screenBuilder,
+    Screen2Page? screen2Page,
+    required this.initPath,
+    this.navigatorWidgetBuilder,
+    // extensions for Dart:
+    required Json2Segment json2Segment,
+    PathParser? pathParser,
+  })  : screen2Page = screen2Page ?? screen2PageDefault,
+        super(
+          json2Segment: json2Segment,
+          pathParser: pathParser,
+        );
+  final Screen2Page screen2Page;
+  final ScreenBuilder screenBuilder;
+  final TypedPath initPath;
+  final NavigatorWidgetBuilder? navigatorWidgetBuilder;
+}
+
+final Screen2Page screen2PageDefault = (segment, screenBuilder) => _Screen2PageDefault(segment, screenBuilder);
+
+class _Screen2PageDefault extends Page {
+  _Screen2PageDefault(this._typedSegment, this._screenBuilder) : super(key: ValueKey(_typedSegment.key));
+
+  final TypedSegment _typedSegment;
+  final ScreenBuilder _screenBuilder;
+
+  @override
+  Route createRoute(BuildContext context) {
+    // this line solved https://github.com/PavelPZ/riverpod_navigator/issues/2
+    // https://github.com/flutter/flutter/issues/11655#issuecomment-469221502
+    final child = _screenBuilder(_typedSegment);
+    return MaterialPageRoute(
+      settings: this,
+      builder: (BuildContext context) => child,
+    );
+  }
+}
+
+Config get config => config4Dart as Config;

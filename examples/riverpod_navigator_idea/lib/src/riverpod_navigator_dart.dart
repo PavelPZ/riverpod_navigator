@@ -42,8 +42,7 @@ abstract class RiverpodNavigator {
   TypedPath getActualTypedPath() => getPathNotifier().typedPath;
   void setActualTypedPath(TypedPath value) => getPathNotifier().typedPath = value;
 
-  String getActualTypedPathAsString() =>
-      config4Dart.pathParser.typedPath2Path(getActualTypedPath()); // getActualTypedPath().map((s) => s.key).join(' / ');
+  String debugTypedPath2String() => config4Dart.pathParser.debugTypedPath2String(getActualTypedPath());
 
   /// for [Navigator.onPopPage] in [RiverpodRouterDelegate.build]
   bool onPopRoute() {
@@ -81,6 +80,8 @@ class PathParser {
 
   String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.key/*=jsonEncode(s.toJson())*/)).join('/');
 
+  String debugTypedPath2String(TypedPath typedPath) => typedPath.map((s) => s.key/*=jsonEncode(s.toJson())*/).join(' / ');
+
   TypedPath path2TypedPath(String? path) {
     if (path == null || path.isEmpty) return [];
     return [
@@ -95,28 +96,12 @@ class PathParser {
 /* ******************************************** */
 
 typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
-typedef Creating<T extends TypedSegment> = Future? Function(T newPath);
-typedef Merging<T extends TypedSegment> = Future? Function(T oldPath, T newPath);
-typedef Deactivating<T extends TypedSegment> = Future? Function(T oldPath);
-
-class AsyncScreenActions<T extends TypedSegment> {
-  AsyncScreenActions({this.creating, this.merging, this.deactivating});
-  final Creating<T>? creating;
-  final Merging<T>? merging;
-  final Deactivating<T>? deactivating;
-
-  Future? callCreating(TypedSegment newPath) => creating != null ? creating?.call(newPath as T) : null;
-  Future? callMerging(TypedSegment oldPath, TypedSegment newPath) => merging != null ? merging?.call(oldPath as T, newPath as T) : null;
-  Future? callDeactivating(TypedSegment oldPath) => creating != null ? deactivating?.call(oldPath as T) : null;
-}
-
-typedef Segment2AsyncScreenActions = AsyncScreenActions? Function(TypedSegment segment);
+// @IFNDEF riverpod_navigator_idea
 
 class Config4Dart {
   Config4Dart({
     required this.json2Segment,
     PathParser? pathParser,
-    this.segment2AsyncScreenActions,
   })  : assert(_value == null, 'Extension.init called multipple times'),
         pathParser = pathParser ?? PathParser() {
     _value = this;
@@ -124,7 +109,6 @@ class Config4Dart {
 
   final PathParser pathParser;
   final Json2Segment json2Segment;
-  final Segment2AsyncScreenActions? segment2AsyncScreenActions;
 }
 
 Config4Dart get config4Dart {

@@ -30,23 +30,23 @@ void main() {
 
     await navigator.toBook(id: 2);
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'home/books/book;id=2');
+    expect(navigator.debugTypedPath2String(), 'home/books/book;id=2');
 
     await navigator.toBook(id: 1); // needs login => goto login page
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=home%2Fbooks%2Fbook%3Bid%3D2');
+    expect(navigator.debugTypedPath2String(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=home%2Fbooks%2Fbook%3Bid%3D2');
 
     await navigator.loginPageCancel(); // cancel in login page => not logged, goto last page before login needed: toBook(id: 2)
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'home/books/book;id=2');
+    expect(navigator.debugTypedPath2String(), 'home/books/book;id=2');
 
     await navigator.toBook(id: 1); // needs login => goto login page
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=home%2Fbooks%2Fbook%3Bid%3D2');
+    expect(navigator.debugTypedPath2String(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=home%2Fbooks%2Fbook%3Bid%3D2');
 
     await navigator.loginPageOK(); // ok in login page => logged, goto page which needs login: toBook(id: 1)
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'home/books/book;id=1');
+    expect(navigator.debugTypedPath2String(), 'home/books/book;id=1');
 
     return;
   });
@@ -57,16 +57,16 @@ void main() {
 
     await navigator.globalLoginButton();
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'login-home;loggedUrl=;canceledUrl=');
+    expect(navigator.debugTypedPath2String(), 'login-home;loggedUrl=;canceledUrl=');
 
     await navigator.loginPageOK();
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'home');
+    expect(navigator.debugTypedPath2String(), 'home');
 
     // already logged => redirect to home
     await navigator.navigate([LoginHomeSegment()]);
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'home');
+    expect(navigator.debugTypedPath2String(), 'home');
 
     return;
   });
@@ -77,19 +77,19 @@ void main() {
 
     await navigator.toBook(id: 1);
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=');
+    expect(navigator.debugTypedPath2String(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=');
 
     await navigator.loginPageOK(); // logged, in Book(id: 1)
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'home/books/book;id=1');
+    expect(navigator.debugTypedPath2String(), 'home/books/book;id=1');
 
     await navigator.globalLogoutButton(); // refresh => needs login => goto login page
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=');
+    expect(navigator.debugTypedPath2String(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=');
 
     await navigator.loginPageCancel(); // cancel when canceledUrl:null => Home
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'home');
+    expect(navigator.debugTypedPath2String(), 'home');
 
     return;
   });
@@ -100,19 +100,19 @@ void main() {
 
     await navigator.toBooks();
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'home/books');
+    expect(navigator.debugTypedPath2String(), 'home/books');
 
     await navigator.globalLoginButton();
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'login-home;loggedUrl=home%2Fbooks;canceledUrl=home%2Fbooks');
+    expect(navigator.debugTypedPath2String(), 'login-home;loggedUrl=home%2Fbooks;canceledUrl=home%2Fbooks');
 
     await navigator.loginPageOK();
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'home/books');
+    expect(navigator.debugTypedPath2String(), 'home/books');
 
     await navigator.toBook(id: 1);
     await container.pump();
-    expect(navigator.getActualTypedPathAsString(), 'home/books/book;id=1');
+    expect(navigator.debugTypedPath2String(), 'home/books/book;id=1');
 
     return;
   });
@@ -123,43 +123,43 @@ void main() {
 
     await navigator.globalLoginButton();
     await container.pump();
-    print(navigator.getActualTypedPathAsString());
+    print(navigator.debugTypedPath2String());
 
     await navigator.loginPageOK();
     await container.pump();
-    print(navigator.getActualTypedPathAsString());
+    print(navigator.debugTypedPath2String());
 
     await navigator.toBook(id: 1);
     await container.pump();
-    print(navigator.getActualTypedPathAsString());
+    print(navigator.debugTypedPath2String());
 
     await navigator.bookNextPrevButton();
     await container.pump();
-    print(navigator.getActualTypedPathAsString());
+    print(navigator.debugTypedPath2String());
 
     await navigator.bookNextPrevButton();
     await container.pump();
-    print(navigator.getActualTypedPathAsString());
+    print(navigator.debugTypedPath2String());
 
     await navigator.bookNextPrevButton();
     await container.pump();
-    print(navigator.getActualTypedPathAsString());
+    print(navigator.debugTypedPath2String());
 
     await navigator.bookNextPrevButton();
     await container.pump();
-    print(navigator.getActualTypedPathAsString());
+    print(navigator.debugTypedPath2String());
 
     await navigator.bookNextPrevButton();
     await container.pump();
-    print(navigator.getActualTypedPathAsString());
+    print(navigator.debugTypedPath2String());
 
     await navigator.bookNextPrevButton(isPrev: true);
     await container.pump();
-    print(navigator.getActualTypedPathAsString());
+    print(navigator.debugTypedPath2String());
 
     await navigator.bookNextPrevButton(isPrev: true);
     await container.pump();
-    print(navigator.getActualTypedPathAsString());
+    print(navigator.debugTypedPath2String());
 
     return;
   });

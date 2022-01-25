@@ -1,2 +1,2 @@
 export 'src/extensions/extensions.dart';
-export 'src/model.dart';
+export 'src/riverpod_navigator_dart.dart';
