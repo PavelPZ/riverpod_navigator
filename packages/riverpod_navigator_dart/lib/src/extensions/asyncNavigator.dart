@@ -57,7 +57,7 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
   /*   @protected                                 */
   /* ******************************************** */
 
-  /// all async route operations ([Route4Model.creating], [Route4Model.deactivating], [Route4Model.merging]) run in parallel
+  /// all async route operations ([Route4Dart.creating], [Route4Dart.deactivating], [Route4Dart.merging]) run in parallel
   /// other scenario is possible
   @protected
   Future<void> waitForRouteChanging(TypedPath oldPath, TypedPath newPath) async {

@@ -20,22 +20,22 @@ NavigRoute segment2Route(TypedSegment segment) {
     throw UnimplementedError();
 }
 
-class HomeRoute extends HomeRoute4Model implements NavigRoute<HomeSegment> {
+class HomeRoute extends HomeRoute4Dart implements NavigRoute<HomeSegment> {
   @override
   Widget buildPage(HomeSegment segment) => HomeScreen(segment);
 }
 
-class BooksRoute extends BooksRoute4Model implements NavigRoute<BooksSegment> {
+class BooksRoute extends BooksRoute4Dart implements NavigRoute<BooksSegment> {
   @override
   Widget buildPage(BooksSegment segment) => BooksScreen(segment);
 }
 
-class BookRoute extends BookRoute4Model implements NavigRoute<BookSegment> {
+class BookRoute extends BookRoute4Dart implements NavigRoute<BookSegment> {
   @override
   Widget buildPage(BookSegment segment) => BookScreen(segment);
 }
 
-class LoginRoute extends Login4Model implements NavigRoute<LoginHomeSegment> {
+class LoginRoute extends Login4Dart implements NavigRoute<LoginHomeSegment> {
   @override
   Widget buildPage(LoginHomeSegment segment) => LoginScreen(segment);
 }
