@@ -6,7 +6,7 @@
 - **Easier coding:** <br>The problem of navigation is reduced to manipulation of the immutable collection.
 - **Better separation of concerns: UI x Model** (riverpod offers this feature too): <br>
   All app state management (including navigation) can be developed and tested in the Dart environment, without typing a single flutter widget. 
-  Example of the navigation test see: [example_test.dart](test/example_test.dart).
+  Example of the navigation test see: [example_test.dart](examples/books_dart/test/example_test.dart).
 - **Small codebase:** <br>
 
 
