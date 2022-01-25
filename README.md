@@ -3,3 +3,6 @@ Simple Flutter navigation with [riverpod](https://riverpod.dev/), [freezed](http
 and  [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade)
 
 See the [idea](/examples/riverpod_navigator_idea/) first.
+
+
+

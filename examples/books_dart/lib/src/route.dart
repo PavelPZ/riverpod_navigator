@@ -2,6 +2,21 @@ import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
 import 'model/model.dart';
 
+AsyncScreenActions? segment2AsyncScreenActions4Routes(TypedSegment segment) => segment2Route4Dart(segment).toAsyncScreenActions();
+
+bool getNeedsLogin4Routes4Dart(TypedSegment segment) {
+  if (segment is AppSegments) {
+    final route = segment2Route4Dart(segment);
+    if (route is! RouteNeedsLogin) return false;
+    final needsLoginRoute = route as RouteNeedsLogin;
+    return segment.maybeMap(
+      book: (seg) => needsLoginRoute.needsLogin(seg),
+      orElse: () => false,
+    );
+  }
+  return false;
+}
+
 Route4Dart segment2Route4Dart(TypedSegment segment) {
   if (segment is AppSegments)
     return segment.map(

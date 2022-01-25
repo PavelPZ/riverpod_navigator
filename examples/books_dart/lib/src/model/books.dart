@@ -12,10 +12,4 @@ class AppSegments with _$AppSegments, TypedSegment {
   factory AppSegments.book({required int id}) = BookSegment;
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
-  @override
-  AppSegments copy() => map(
-        home: (_) => HomeSegment(),
-        books: (_) => BooksSegment(),
-        book: (route) => route.copyWith(),
-      );
 }

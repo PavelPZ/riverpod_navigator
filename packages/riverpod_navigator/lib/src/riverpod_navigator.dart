@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-// import 'riverpod_navigator_dart.dart'; // @IFDEF riverpod_navigator_idea
-import 'package:riverpod_navigator/riverpod_navigator.dart'; // @IFNDEF riverpod_navigator_idea
+// import 'riverpod_navigator_dart.dart';
+import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 typedef NavigatorWidgetBuilder = Widget Function(BuildContext, Navigator);
 typedef ScreenBuilder = Widget Function(TypedSegment segment);

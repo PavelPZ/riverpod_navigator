@@ -6,6 +6,7 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'pages.dart';
 import 'provider.dart';
+//import 'route.dart';
 
 // flutter pub run build_runner watch
 part 'app.g.dart';
@@ -14,6 +15,8 @@ void configureEngineAndApp() {
   // configure engine
   Config(
     screenBuilder: screenBuilder,
+    // when using route
+    //screenBuilder: screenBuilder4Routes,
     navigatorWidgetBuilder: null,
     screen2Page: null,
     initPath: [HomeSegment()],

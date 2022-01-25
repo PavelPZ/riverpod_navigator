@@ -11,10 +11,6 @@ class LoginSegments with _$LoginSegments, TypedSegment {
   factory LoginSegments.home({String? loggedUrl, String? canceledUrl}) = LoginHomeSegment;
 
   factory LoginSegments.fromJson(Map<String, dynamic> json) => _$LoginSegmentsFromJson(json);
-  @override
-  LoginSegments copy() => map(
-        (_) => throw UnimplementedError(),
-        home: (_) => LoginHomeSegment(),
-      );
+
   static const String jsonNameSpace = '_login';
 }

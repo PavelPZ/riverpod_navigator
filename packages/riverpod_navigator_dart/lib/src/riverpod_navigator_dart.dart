@@ -7,7 +7,6 @@ typedef JsonMap = Map<String, dynamic>;
 
 /// Typed variant of Uri path segment
 abstract class TypedSegment {
-  TypedSegment copy();
   JsonMap toJson();
 
   /// key for MaterialApp(key: ValueKey([TypedSegment.key]))
@@ -32,7 +31,7 @@ final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, Typed
 
 abstract class RiverpodNavigator {
   RiverpodNavigator(this.ref);
-  // final GetRoute4Segment getRouteWithSegment;
+
   Ref ref;
 
   Future<void> navigate(TypedPath newTypedPath) async => setActualTypedPath(newTypedPath);

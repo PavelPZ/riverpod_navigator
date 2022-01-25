@@ -1,9 +1,7 @@
 import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
 import 'model/model.dart';
-import 'route.dart';
 
-// ignore: unused_element
 bool getNeedsLogin4Dart(TypedSegment segment) {
   if (segment is AppSegments)
     return segment.maybeMap(
@@ -14,22 +12,8 @@ bool getNeedsLogin4Dart(TypedSegment segment) {
     return false;
 }
 
-// ignore: unused_element
-bool getNeedsLogin4Routes4Dart(TypedSegment segment) {
-  if (segment is AppSegments) {
-    final route = segment2Route4Dart(segment);
-    if (route is! RouteNeedsLogin) return false;
-    final needsLoginRoute = route as RouteNeedsLogin;
-    return segment.maybeMap(
-      book: (seg) => needsLoginRoute.needsLogin(seg),
-      orElse: () => false,
-    );
-  }
-  return false;
-}
-
-// could be overriden by getNeedsLogin4Routes4Dart in app configuration
-bool Function(TypedSegment segment) needsLoginProc4Dart = getNeedsLogin4Dart;
+// could be overriden app configuration
+bool Function(TypedSegment segment) needsLogi4Dart = getNeedsLogin4Dart;
 
 /// mock some of async screen actions
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
@@ -48,5 +32,3 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   else
     return null;
 }
-
-AsyncScreenActions? segment2AsyncScreenActions4Routes(TypedSegment segment) => segment2Route4Dart(segment).toAsyncScreenActions();

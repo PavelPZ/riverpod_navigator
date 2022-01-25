@@ -4,6 +4,8 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'pages.dart';
 
+Widget screenBuilder4Routes(TypedSegment segment) => segment2Route(segment).buildPage(segment);
+
 NavigRoute segment2Route(TypedSegment segment) {
   if (segment is AppSegments)
     return segment.map(
