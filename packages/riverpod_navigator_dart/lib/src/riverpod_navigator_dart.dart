@@ -12,7 +12,7 @@ typedef JsonMap = Map<String, dynamic>;
 /// Abstract interface for typed variant of path's segment.
 ///
 /// Instead of three-segment url path 'home/books/$bookId' we can use
-/// e.g. ```navigate([Home(), Books(), Book(id: bookId)]);```
+/// e.g. navigate([Home(), Books(), Book(id: bookId)]);
 abstract class TypedSegment {
   JsonMap toJson();
 
