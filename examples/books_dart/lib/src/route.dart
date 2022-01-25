@@ -2,7 +2,7 @@ import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
 import 'model/model.dart';
 
-Route4Model segment2Route4Dart(TypedSegment segment) {
+Route4Dart segment2Route4Dart(TypedSegment segment) {
   if (segment is AppSegments)
     return segment.map(
       home: (_) => _debugModelHomeRoute,
@@ -18,24 +18,22 @@ Route4Model segment2Route4Dart(TypedSegment segment) {
     throw UnimplementedError();
 }
 
-//Route4Model segment2Route4Dart(TypedSegment segment) {
-
 /// mixin for routes which need login (calling needsLogin() returns true => unauthorized acces for the page is not allowed)
 mixin RouteNeedsLogin<T extends TypedSegment> {
   bool needsLogin(T segment) => false;
 }
 
-class HomeRoute4Model extends Route4Model<HomeSegment> {
-  HomeRoute4Model() : super();
+class HomeRoute4Dart extends Route4Dart<HomeSegment> {
+  HomeRoute4Dart() : super();
 
   /// simulates ssigle seconds delay for creating home page
   @override
   Future<void>? creating(HomeSegment newSegment) => Future.delayed(Duration(seconds: 1));
 }
 
-class BooksRoute4Model extends Route4Model<BooksSegment> {}
+class BooksRoute4Dart extends Route4Dart<BooksSegment> {}
 
-class BookRoute4Model extends Route4Model<BookSegment> with RouteNeedsLogin<BookSegment> {
+class BookRoute4Dart extends Route4Dart<BookSegment> with RouteNeedsLogin<BookSegment> {
   /// simulates half seconds delay for creating book page with odd id
   @override
   Future<void>? creating(BookSegment newSegment) => newSegment.id.isOdd ? Future.delayed(Duration(milliseconds: 500)) : null;
@@ -49,9 +47,9 @@ class BookRoute4Model extends Route4Model<BookSegment> with RouteNeedsLogin<Book
   bool needsLogin(BookSegment segment) => segment.id.isOdd;
 }
 
-class Login4Model extends Route4Model<LoginHomeSegment> {}
+class Login4Dart extends Route4Dart<LoginHomeSegment> {}
 
-final HomeRoute4Model _debugModelHomeRoute = HomeRoute4Model();
-final BooksRoute4Model _debugModelBooksRoute = BooksRoute4Model();
-final BookRoute4Model _debugModelBookRoute = BookRoute4Model();
-final Login4Model _debugModelLoginRoute = Login4Model();
+final HomeRoute4Dart _debugModelHomeRoute = HomeRoute4Dart();
+final BooksRoute4Dart _debugModelBooksRoute = BooksRoute4Dart();
+final BookRoute4Dart _debugModelBookRoute = BookRoute4Dart();
+final Login4Dart _debugModelLoginRoute = Login4Dart();

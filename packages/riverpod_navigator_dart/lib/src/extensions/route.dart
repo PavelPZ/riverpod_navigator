@@ -11,11 +11,3 @@ abstract class Route4Model<T extends TypedSegment> {
         deactivating: (o) => deactivating(o as T),
       );
 }
-
-// typedef GetRoute4Segment = Route4Segment Function(TypedSegment segment);
-
-// class Route4Segment {
-//   const Route4Segment(this.route, this.segment);
-//   final Route4Model route;
-//   final TypedSegment segment;
-// }
