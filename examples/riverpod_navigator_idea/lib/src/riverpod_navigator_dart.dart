@@ -20,10 +20,11 @@ abstract class TypedSegment {
   String? _asJson;
 }
 
-/// Typed variant of whole url path (which could consists of three typed segments)
+/// Typed variant of whole url path (which consists of [TypedSegment]s)
 typedef TypedPath = List<TypedSegment>;
 
-/// Riverpod StateNotifier notifying that actual typed path has changed
+/// Riverpod StateNotifier. Notifying that actual typed path has changed
+/// (and the Navigator 2.0 navigation stack needs to be changed too).
 class TypedPathNotifier extends StateNotifier<TypedPath> {
   TypedPathNotifier() : super([]);
 
@@ -121,6 +122,8 @@ class Config4Dart {
 
   /// How to convert [TypedSegment] to json
   final Json2Segment json2Segment;
+
+  /// screen async navigation action
 }
 
 Config4Dart get config4Dart {
