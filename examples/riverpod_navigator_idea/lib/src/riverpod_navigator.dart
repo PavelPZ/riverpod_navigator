@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'riverpod_navigator_dart.dart'; // @IFDEF riverpod_navigator_idea
+import 'riverpod_navigator_dart.dart';
 
 typedef NavigatorWidgetBuilder = Widget Function(BuildContext, Navigator);
 typedef ScreenBuilder = Widget Function(TypedSegment segment);
@@ -81,7 +81,7 @@ class Config extends Config4Dart {
 final Screen2Page screen2PageDefault = (segment, screenBuilder) => _Screen2PageDefault(segment, screenBuilder);
 
 class _Screen2PageDefault extends Page {
-  _Screen2PageDefault(this._typedSegment, this._screenBuilder) : super(key: ValueKey(_typedSegment.key));
+  _Screen2PageDefault(this._typedSegment, this._screenBuilder) : super(key: ValueKey(_typedSegment.asJson));
 
   final TypedSegment _typedSegment;
   final ScreenBuilder _screenBuilder;

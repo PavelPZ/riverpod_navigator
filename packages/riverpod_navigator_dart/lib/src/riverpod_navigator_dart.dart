@@ -5,7 +5,14 @@ import 'package:riverpod/riverpod.dart';
 
 typedef JsonMap = Map<String, dynamic>;
 
-/// Typed variant of Uri path segment
+// ********************************************
+//   riverpod StateNotifier and StateNotifierProvider
+// ********************************************
+
+/// Abstract interface for typed variant of path's segment.
+///
+/// Instead of three-segment url path 'home/books/$bookId' we can use
+/// e.g. ```navigate([Home(), Books(), Book(id: bookId)]);```
 abstract class TypedSegment {
   JsonMap toJson();
 
@@ -13,10 +20,10 @@ abstract class TypedSegment {
   String? _asJson;
 }
 
-/// Typed variant of Uri path
+/// Typed variant of whole url path (which could consists of three typed segments)
 typedef TypedPath = List<TypedSegment>;
 
-/// Notifies Navigator 2.0 [RiverpodRouterDelegate] when to change navigation stack
+/// Riverpod StateNotifier notifying that actual typed path has changed
 class TypedPathNotifier extends StateNotifier<TypedPath> {
   TypedPathNotifier() : super([]);
 
@@ -25,17 +32,20 @@ class TypedPathNotifier extends StateNotifier<TypedPath> {
   TypedPath get typedPath => state;
 }
 
-/// Will provided [TypedPathNotifier] to whole app
+/// Riverpod provider which provides [TypedPathNotifier] to whole app
 final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());
 
 // ********************************************
 //   RiverpodNavigator
 // ********************************************
+
+/// Helper singleton class for navigating to [TypedPath]
 abstract class RiverpodNavigator {
   RiverpodNavigator(this.ref);
 
   Ref ref;
 
+  /// Main navigator method provided navigating to new [TypedPath]
   Future<void> navigate(TypedPath newTypedPath) async => setActualTypedPath(newTypedPath);
 
   TypedPathNotifier getPathNotifier() => ref.read(typedPathNotifierProvider.notifier);
@@ -97,6 +107,9 @@ class PathParser {
 typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
 
 // @IFNDEF riverpod_navigator_idea
+
+//********** types for asynchronous navigation */
+
 typedef Creating<T extends TypedSegment> = Future? Function(T newPath);
 typedef Merging<T extends TypedSegment> = Future? Function(T oldPath, T newPath);
 typedef Deactivating<T extends TypedSegment> = Future? Function(T oldPath);
@@ -115,6 +128,7 @@ class AsyncScreenActions<T extends TypedSegment> {
 typedef Segment2AsyncScreenActions = AsyncScreenActions? Function(TypedSegment segment);
 // @ENDIF riverpod_navigator_idea
 
+/// navigation config (for dart-only part of code)
 class Config4Dart {
   Config4Dart({
     required this.json2Segment,
@@ -125,8 +139,13 @@ class Config4Dart {
     _value = this;
   }
 
+  /// String url path <==> [TypedPath] parser
   final PathParser pathParser;
+
+  /// How to convert [TypedSegment] to json
   final Json2Segment json2Segment;
+
+  /// screen async navigation action
   final Segment2AsyncScreenActions? segment2AsyncScreenActions;
 }
 
@@ -135,4 +154,5 @@ Config4Dart get config4Dart {
   return _value as Config4Dart;
 }
 
+/// config is static singleton
 Config4Dart? _value;

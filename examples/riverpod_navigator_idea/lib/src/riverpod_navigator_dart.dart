@@ -5,20 +5,25 @@ import 'package:riverpod/riverpod.dart';
 
 typedef JsonMap = Map<String, dynamic>;
 
-/// Typed variant of Uri path segment
+// ********************************************
+//   riverpod StateNotifier and StateNotifierProvider
+// ********************************************
+
+/// Abstract interface for typed variant of path's segment.
+///
+/// Instead of three-segment url path 'home/books/$bookId' we can use
+/// e.g. ```navigate([Home(), Books(), Book(id: bookId)]);```
 abstract class TypedSegment {
-  TypedSegment copy();
   JsonMap toJson();
 
-  /// key for MaterialApp(key: ValueKey([TypedSegment.key]))
-  String get key => _key ?? (_key = jsonEncode(toJson()));
-  String? _key;
+  String get asJson => _asJson ?? (_asJson = jsonEncode(toJson()));
+  String? _asJson;
 }
 
-/// Typed variant of Uri path
+/// Typed variant of whole url path (which could consists of three typed segments)
 typedef TypedPath = List<TypedSegment>;
 
-/// Notifies Navigator 2.0 [RiverpodRouterDelegate] when to change navigation stack
+/// Riverpod StateNotifier notifying that actual typed path has changed
 class TypedPathNotifier extends StateNotifier<TypedPath> {
   TypedPathNotifier() : super([]);
 
@@ -27,14 +32,20 @@ class TypedPathNotifier extends StateNotifier<TypedPath> {
   TypedPath get typedPath => state;
 }
 
-/// Will provided [TypedPathNotifier] to whole app
+/// Riverpod provider which provides [TypedPathNotifier] to whole app
 final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());
 
+// ********************************************
+//   RiverpodNavigator
+// ********************************************
+
+/// Helper singleton class for navigating to [TypedPath]
 abstract class RiverpodNavigator {
   RiverpodNavigator(this.ref);
-  // final GetRoute4Segment getRouteWithSegment;
+
   Ref ref;
 
+  /// Main navigator method provided navigating to new [TypedPath]
   Future<void> navigate(TypedPath newTypedPath) async => setActualTypedPath(newTypedPath);
 
   TypedPathNotifier getPathNotifier() => ref.read(typedPathNotifierProvider.notifier);
@@ -52,9 +63,7 @@ abstract class RiverpodNavigator {
     return true;
   }
 
-  /* ******************************************** */
-  /*   common navigation-agnostic app actions     */
-  /* ******************************************** */
+  // *** common navigation-agnostic app actions ***
 
   Future<bool> pop() async {
     final actPath = getActualTypedPath();
@@ -71,16 +80,16 @@ abstract class RiverpodNavigator {
   }
 }
 
-/* ******************************************** */
-/*   parser                              */
-/* ******************************************** */
+// ********************************************
+//   parser
+// ********************************************
 
 class PathParser {
   static const String defaultJsonUnionKey = 'runtimeType';
 
-  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.key/*=jsonEncode(s.toJson())*/)).join('/');
+  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.asJson/*=jsonEncode(s.toJson())*/)).join('/');
 
-  String debugTypedPath2String(TypedPath typedPath) => typedPath.map((s) => s.key/*=jsonEncode(s.toJson())*/).join(' / ');
+  String debugTypedPath2String(TypedPath typedPath) => typedPath.map((s) => s.asJson/*=jsonEncode(s.toJson())*/).join(' / ');
 
   TypedPath path2TypedPath(String? path) {
     if (path == null || path.isEmpty) return [];
@@ -91,13 +100,13 @@ class PathParser {
   }
 }
 
-/* ******************************************** */
-/*   configuration                              */
-/* ******************************************** */
+// ********************************************
+//   configuration
+// ********************************************
 
 typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
-// @IFNDEF riverpod_navigator_idea
 
+/// navigation config (for dart-only part of code)
 class Config4Dart {
   Config4Dart({
     required this.json2Segment,
@@ -107,7 +116,10 @@ class Config4Dart {
     _value = this;
   }
 
+  /// String url path <==> [TypedPath] parser
   final PathParser pathParser;
+
+  /// How to convert [TypedSegment] to json
   final Json2Segment json2Segment;
 }
 
@@ -116,4 +128,5 @@ Config4Dart get config4Dart {
   return _value as Config4Dart;
 }
 
+/// config is static singleton
 Config4Dart? _value;

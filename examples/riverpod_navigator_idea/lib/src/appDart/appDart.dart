@@ -22,12 +22,6 @@ class ExampleSegments with _$ExampleSegments, TypedSegment {
   factory ExampleSegments.book({required int id}) = BookSegment;
 
   factory ExampleSegments.fromJson(Map<String, dynamic> json) => _$ExampleSegmentsFromJson(json);
-  @override
-  ExampleSegments copy() => map(
-        home: (_) => HomeSegment(),
-        books: (_) => BooksSegment(),
-        book: (route) => route.copyWith(),
-      );
 }
 
 /// Number of virtual books in example. There are not any Book data.
