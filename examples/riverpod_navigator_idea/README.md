@@ -25,7 +25,7 @@ To better understand it, see the following matrix:
 
 | | dart | flutter |
 |---|---|--- |
-| **generic** | [packageDart.dart](lib/src/packageDart.dart) | [packageFlutter.dart](lib/src/packageFlutter.dart) |
+| **generic** | [riverpod_navigator_dart.dart](lib/src/riverpod_navigator_dart.dart) | [riverpod_navigator.dart](lib/src/riverpod_navigator.dart) |
 | **app-specific** | [appDart.dart](lib/src/appDart/appDart.dart) | [appFlutter.dart](lib/src/appFlutter/appFlutter.dart)  |
 
 Testing without flutter (dart only) is available in [example_test.dart](test/example_test.dart).
