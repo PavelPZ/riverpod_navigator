@@ -9,32 +9,31 @@ void main() {
 
     navigator.toBook(id: 3);
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    expect(navigator.actualTypedPathAsString, '{"runtimeType":"home"} / {"runtimeType":"books"} / {"id":3,"runtimeType":"book"}');
 
     navigator.toBooks();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    expect(navigator.actualTypedPathAsString, '{"runtimeType":"home"} / {"runtimeType":"books"}');
 
     navigator.toHome();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    expect(navigator.actualTypedPathAsString, '{"runtimeType":"home"}');
 
     navigator.pop();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    expect(navigator.actualTypedPathAsString, '{"runtimeType":"home"}');
 
     navigator.toBook(id: 2);
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    expect(navigator.actualTypedPathAsString, '{"runtimeType":"home"} / {"runtimeType":"books"} / {"id":2,"runtimeType":"book"}');
 
     navigator.pop();
     await container.pump();
-    print(navigator.actualTypedPathAsString);
+    expect(navigator.actualTypedPathAsString, '{"runtimeType":"home"} / {"runtimeType":"books"}');
 
     navigator.push(BookSegment(id: 1));
     await container.pump();
-    print(navigator.actualTypedPathAsString);
-
+    expect(navigator.actualTypedPathAsString, '{"runtimeType":"home"} / {"runtimeType":"books"} / {"id":1,"runtimeType":"book"}');
     return;
   });
 }

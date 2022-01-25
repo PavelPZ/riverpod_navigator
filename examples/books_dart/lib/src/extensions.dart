@@ -12,10 +12,12 @@ bool needsLogin(TypedSegment segment) {
     return false;
 }
 
+/// mock some of async screen actions
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   if (segment is AppSegments)
     return segment.maybeMap(
       book: (_) => AsyncScreenActions<BookSegment>(
+        // every Book screen with odd id needs 500 msecs delay before displaying (e.g. for loading Book data)
         creating: (newSegment) => newSegment.id.isOdd ? Future.delayed(Duration(milliseconds: 500)) : null,
         merging: (oldSegment, _) => oldSegment.id.isOdd ? Future.delayed(Duration(milliseconds: 200)) : null,
       ),
