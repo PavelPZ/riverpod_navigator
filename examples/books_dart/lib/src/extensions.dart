@@ -28,8 +28,7 @@ bool getNeedsLogin4Routes4Dart(TypedSegment segment) {
   return false;
 }
 
-//const needsLogin = _needsLogin;
-// for routes
+// could be overriden by getNeedsLogin4Routes4Dart in app configuration
 bool Function(TypedSegment segment) needsLoginProc4Dart = getNeedsLogin4Dart;
 
 /// mock some of async screen actions

@@ -1,4 +1,3 @@
-export 'src/dataLayer.dart';
 export 'src/extensions.dart';
 export 'src/model/model.dart';
 export 'src/navigator.dart';

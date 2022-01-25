@@ -4,6 +4,8 @@ import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 export 'books.dart';
 export 'login.dart';
 
+const booksLen = 5;
+
 TypedSegment json2Segment(JsonMap jsonMap, String unionKey) {
   switch (unionKey) {
     case PathParser.defaultJsonUnionKey:

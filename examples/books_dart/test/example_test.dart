@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 import 'testLib.dart';
 
 void main() {
-  // init engine
+  // configure engine
   Config4Dart(
     json2Segment: json2Segment,
     pathParser: SimplePathParser(),
@@ -17,7 +17,7 @@ void main() {
     // when using route
     // segment2AsyncScreenActions: segment2AsyncScreenActions4Routes,
   );
-  // init app
+  // configure app
   // when using route
   // needsLoginProc4Dart = getNeedsLogin4Routes4Dart;
   test('timer', () async {
