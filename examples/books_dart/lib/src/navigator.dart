@@ -14,7 +14,7 @@ class AppNavigator extends AsyncRiverpodNavigator {
     if (!ref.read(userIsLoggedProvider)) {
       // user not logged => check in navigation stack is ppage which needs login
       // if there is any route which needs login
-      if (newPath.any((segment) => needsLogin(segment))) {
+      if (newPath.any((segment) => needsLoginProc4Dart(segment))) {
         // navigate to login page
         final loggedUrl = config4Dart.pathParser.typedPath2Path(newPath);
         var canceledUrl = oldPath.isEmpty || oldPath.last is LoginHomeSegment ? '' : config4Dart.pathParser.typedPath2Path(oldPath);

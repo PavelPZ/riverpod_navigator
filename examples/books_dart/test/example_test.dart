@@ -9,7 +9,17 @@ import 'package:test/test.dart';
 import 'testLib.dart';
 
 void main() {
-  Config4Dart(json2Segment: json2Segment, pathParser: SimplePathParser(), segment2AsyncScreenActions: segment2AsyncScreenActions);
+  // init engine
+  Config4Dart(
+    json2Segment: json2Segment,
+    pathParser: SimplePathParser(),
+    segment2AsyncScreenActions: segment2AsyncScreenActions,
+    // when using route
+    // segment2AsyncScreenActions: segment2AsyncScreenActions4Routes,
+  );
+  // init app
+  // when using route
+  // needsLoginProc4Dart = getNeedsLogin4Routes4Dart;
   test('timer', () async {
     await Future.delayed(Duration(seconds: 2));
     return;

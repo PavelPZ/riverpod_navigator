@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'provider.dart';
+import 'route.dart';
 
 // flutter pub run build_runner watch
 part 'pages.g.dart';
@@ -25,6 +26,9 @@ Widget screenBuilder(TypedSegment segment) {
   else
     throw UnimplementedError();
 }
+
+/// used when routes are used
+Widget screenBuilder$Routes(TypedSegment segment) => segment2Route(segment).buildPage(segment);
 
 @hcwidget
 Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(

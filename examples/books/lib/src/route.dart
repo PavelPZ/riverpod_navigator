@@ -4,17 +4,17 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'pages.dart';
 
-Route4Segment appRouteWithSegment(TypedSegment segment) {
+NavigRoute segment2Route(TypedSegment segment) {
   if (segment is AppSegments)
     return segment.map(
-      home: (seg) => Route4Segment(_homeRoute, seg),
-      books: (seg) => Route4Segment(_booksRoute, seg),
-      book: (seg) => Route4Segment(_bookRoute, seg),
+      home: (_) => _homeRoute,
+      books: (_) => _booksRoute,
+      book: (_) => _bookRoute,
     );
   else if (segment is LoginSegments)
     return segment.map(
       (_) => throw UnimplementedError(),
-      home: (seg) => Route4Segment(_loginRoute, seg),
+      home: (_) => _loginRoute,
     );
   else
     throw UnimplementedError();

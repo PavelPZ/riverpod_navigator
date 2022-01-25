@@ -2,21 +2,23 @@ import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
 import 'model/model.dart';
 
-Route4Segment appRouteWithSegment4Model(TypedSegment segment) {
+Route4Model segment2Route4Dart(TypedSegment segment) {
   if (segment is AppSegments)
     return segment.map(
-      home: (seg) => Route4Segment(_debugModelHomeRoute, seg),
-      books: (seg) => Route4Segment(_debugModelBooksRoute, seg),
-      book: (seg) => Route4Segment(_debugModelBookRoute, seg),
+      home: (_) => _debugModelHomeRoute,
+      books: (_) => _debugModelBooksRoute,
+      book: (_) => _debugModelBookRoute,
     );
   else if (segment is LoginSegments)
     return segment.map(
       (_) => throw UnimplementedError(),
-      home: (seg) => Route4Segment(_debugModelLoginRoute, seg),
+      home: (_) => _debugModelLoginRoute,
     );
   else
     throw UnimplementedError();
 }
+
+//Route4Model segment2Route4Dart(TypedSegment segment) {
 
 /// mixin for routes which need login (calling needsLogin() returns true => unauthorized acces for the page is not allowed)
 mixin RouteNeedsLogin<T extends TypedSegment> {
