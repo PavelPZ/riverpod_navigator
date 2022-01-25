@@ -18,7 +18,7 @@ This is an example of the classic ```Home => Books => Book*``` navigation app.
 
 ## Source code
 
-The best documentation is a simple source code.
+The best documentation is a simple source code.s
 
 The source code is contained in five files.
 To better understand it, see the following matrix:
