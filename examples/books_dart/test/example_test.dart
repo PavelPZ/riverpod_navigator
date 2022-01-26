@@ -12,7 +12,6 @@ void main() {
   // configure engine
   Config4Dart(
     json2Segment: json2Segment,
-    pathParser: SimplePathParser(),
     segment2AsyncScreenActions: segment2AsyncScreenActions,
     // when using route
     // segment2AsyncScreenActions: segment2AsyncScreenActions4Routes,
