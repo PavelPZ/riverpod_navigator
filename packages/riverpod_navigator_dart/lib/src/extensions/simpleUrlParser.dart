@@ -27,7 +27,7 @@ class SimplePathParser extends PathParser {
         assert(nameValue.length == 2);
         _addNameValue(segmentMap, nameValue);
       }
-      final typedSegment = config4Dart.json2Segment(segmentMap, unionKey);
+      final typedSegment = config.json2Segment(segmentMap, unionKey);
       res.add(typedSegment);
     }
     return res;

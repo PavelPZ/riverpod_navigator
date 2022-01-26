@@ -9,7 +9,7 @@ import 'route.dart';
 
 /// one of the strategies for responding to an asynchronous TypeedPath change
 abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
-  AsyncRiverpodNavigator(Ref ref) : super(ref);
+  AsyncRiverpodNavigator(Ref ref, Config4Dart config) : super(ref, config);
 
   /// put all change-route application logic here
   /// (redirect to other page during login x logoff, other guards, redirect, ...)
@@ -69,8 +69,8 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
       final n = newPath[i];
       // nothing to merge
       if (identical(o, n)) continue;
-      final oAsyncs = config4Dart.segment2AsyncScreenActions!(o);
-      final nAsyncs = config4Dart.segment2AsyncScreenActions!(n);
+      final oAsyncs = config.segment2AsyncScreenActions!(o);
+      final nAsyncs = config.segment2AsyncScreenActions!(n);
       if (o.runtimeType == n.runtimeType)
         // old and new has the same route => merging
         futures.add(oAsyncs?.callMerging(o, n));
@@ -82,10 +82,10 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
     }
     // deactivating the rest of old routes
     if (oldPath.length > minLen)
-      for (var i = minLen; i < oldPath.length; i++) futures.add(config4Dart.segment2AsyncScreenActions!(oldPath[i])?.callDeactivating(oldPath[i]));
+      for (var i = minLen; i < oldPath.length; i++) futures.add(config.segment2AsyncScreenActions!(oldPath[i])?.callDeactivating(oldPath[i]));
     // creating the rest of new routes
     if (newPath.length > minLen)
-      for (var i = minLen; i < newPath.length; i++) futures.add(config4Dart.segment2AsyncScreenActions!(newPath[i])?.callCreating(newPath[i]));
+      for (var i = minLen; i < newPath.length; i++) futures.add(config.segment2AsyncScreenActions!(newPath[i])?.callCreating(newPath[i]));
     // remove empty futures
     final notEmptyFutures = <Future>[
       for (final f in futures)

@@ -44,9 +44,11 @@ final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, Typed
 
 /// Helper singleton class for navigating to [TypedPath]
 abstract class RiverpodNavigator {
-  RiverpodNavigator(this.ref);
+  RiverpodNavigator(this.ref, this.config);
 
   Ref ref;
+
+  final Config4Dart config;
 
   /// Main navigator method provided navigating to new [TypedPath]
   Future<void> navigate(TypedPath newTypedPath) async => setActualTypedPath(newTypedPath);
@@ -56,7 +58,7 @@ abstract class RiverpodNavigator {
   TypedPath getActualTypedPath() => getPathNotifier().typedPath;
   void setActualTypedPath(TypedPath value) => getPathNotifier().typedPath = value;
 
-  String debugTypedPath2String() => config4Dart.pathParser.debugTypedPath2String(getActualTypedPath());
+  String debugTypedPath2String() => config.pathParser.debugTypedPath2String(getActualTypedPath());
 
   /// for [Navigator.onPopPage] in [RiverpodRouterDelegate.build]
   bool onPopRoute() {
@@ -91,6 +93,12 @@ abstract class RiverpodNavigator {
 class PathParser {
   static const String defaultJsonUnionKey = 'runtimeType';
 
+  /// every parser needs config, specified after creation (e.g. in )
+  void init(Config4Dart config) => _config = config;
+
+  Config4Dart get config => _config as Config4Dart;
+  Config4Dart? _config;
+
   /// String path => TypedPath
   String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.asJson)).join('/');
 
@@ -99,7 +107,7 @@ class PathParser {
     if (path == null || path.isEmpty) return [];
     return [
       for (final s in path.split('/'))
-        if (s.isNotEmpty) config4Dart.json2Segment(jsonDecode(Uri.decodeFull(s)), defaultJsonUnionKey)
+        if (s.isNotEmpty) config.json2Segment(jsonDecode(Uri.decodeFull(s)), defaultJsonUnionKey)
     ];
   }
 
@@ -141,9 +149,8 @@ class Config4Dart {
     required this.json2Segment,
     PathParser? pathParser,
     this.segment2AsyncScreenActions,
-  })  : assert(_value == null, 'Extension.init called multipple times'),
-        pathParser = pathParser ?? SimplePathParser() /* PathParser */ {
-    _value = this;
+  }) : pathParser = pathParser ?? SimplePathParser() /* PathParser */ {
+    this.pathParser.init(this);
   }
 
   /// String url path <==> [TypedPath] parser
@@ -156,10 +163,4 @@ class Config4Dart {
   final Segment2AsyncScreenActions? segment2AsyncScreenActions;
 }
 
-Config4Dart get config4Dart {
-  assert(_value != null, 'Call Extension.init first!');
-  return _value as Config4Dart;
-}
-
-/// config is static singleton
-Config4Dart? _value;
+final config4DartProvider = Provider<Config4Dart>((_) => throw UnimplementedError());

@@ -3,55 +3,64 @@
 import 'dart:convert';
 
 import 'package:books_dart/books_dart.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 import 'package:test/test.dart';
 
 import 'testLib.dart';
 
 void main() {
-  // configure engine
-  Config4Dart(
-    json2Segment: json2Segment,
-    segment2AsyncScreenActions: segment2AsyncScreenActions,
-    // when using route
-    // segment2AsyncScreenActions: segment2AsyncScreenActions4Routes,
-  );
-  // configure app
-  // when using route
-  // needsLoginProc4Dart = getNeedsLogin4Routes4Dart;
+  ProviderContainer createContainerEx({required bool withRoutes}) => createContainer(
+        overrides: [
+          config4DartProvider.overrideWithValue(
+            Config4Dart(
+              json2Segment: json2Segment,
+              segment2AsyncScreenActions: withRoutes == true ? segment2AsyncScreenActions4Routes : segment2AsyncScreenActions,
+            ),
+          ),
+          appConfig4DartProvider.overrideWithValue(
+            AppConfig4Dart(needsLogin4Dart: withRoutes == true ? getNeedsLogin4Routes4Dart : getNeedsLogin4Dart),
+          ),
+        ],
+      );
+
   test('timer', () async {
     await Future.delayed(Duration(seconds: 2));
     return;
   });
   test('navig to login page', () async {
-    final container = createContainer();
-    final navigator = container.read(appNavigatorProvider4Dart);
+    Future runTest({required bool withRoutes}) async {
+      final container = createContainerEx(withRoutes: withRoutes);
+      final navigator = container.read(appNavigatorProvider4Dart);
 
-    await navigator.toBook(id: 2);
-    await container.pump();
-    expect(navigator.debugTypedPath2String(), 'home/books/book;id=2');
+      await navigator.toBook(id: 2);
+      await container.pump();
+      expect(navigator.debugTypedPath2String(), 'home/books/book;id=2');
 
-    await navigator.toBook(id: 1); // needs login => goto login page
-    await container.pump();
-    expect(navigator.debugTypedPath2String(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=home%2Fbooks%2Fbook%3Bid%3D2');
+      await navigator.toBook(id: 1); // needs login => goto login page
+      await container.pump();
+      expect(navigator.debugTypedPath2String(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=home%2Fbooks%2Fbook%3Bid%3D2');
 
-    await navigator.loginPageCancel(); // cancel in login page => not logged, goto last page before login needed: toBook(id: 2)
-    await container.pump();
-    expect(navigator.debugTypedPath2String(), 'home/books/book;id=2');
+      await navigator.loginPageCancel(); // cancel in login page => not logged, goto last page before login needed: toBook(id: 2)
+      await container.pump();
+      expect(navigator.debugTypedPath2String(), 'home/books/book;id=2');
 
-    await navigator.toBook(id: 1); // needs login => goto login page
-    await container.pump();
-    expect(navigator.debugTypedPath2String(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=home%2Fbooks%2Fbook%3Bid%3D2');
+      await navigator.toBook(id: 1); // needs login => goto login page
+      await container.pump();
+      expect(navigator.debugTypedPath2String(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=home%2Fbooks%2Fbook%3Bid%3D2');
 
-    await navigator.loginPageOK(); // ok in login page => logged, goto page which needs login: toBook(id: 1)
-    await container.pump();
-    expect(navigator.debugTypedPath2String(), 'home/books/book;id=1');
+      await navigator.loginPageOK(); // ok in login page => logged, goto page which needs login: toBook(id: 1)
+      await container.pump();
+      expect(navigator.debugTypedPath2String(), 'home/books/book;id=1');
+      return;
+    }
 
-    return;
+    await runTest(withRoutes: false);
+    await runTest(withRoutes: true);
   });
 
   test('navigate to login page when logged', () async {
-    final container = createContainer();
+    final container = createContainerEx();
     final navigator = container.read(appNavigatorProvider4Dart);
 
     await navigator.globalLoginButton();
@@ -71,7 +80,7 @@ void main() {
   });
 
   test('logout when on page which needs login', () async {
-    final container = createContainer();
+    final container = createContainerEx();
     final navigator = container.read(appNavigatorProvider4Dart);
 
     await navigator.toBook(id: 1);
@@ -94,7 +103,7 @@ void main() {
   });
 
   test('login', () async {
-    final container = createContainer();
+    final container = createContainerEx();
     final navigator = container.read(appNavigatorProvider4Dart);
 
     await navigator.toBooks();
@@ -117,7 +126,7 @@ void main() {
   });
 
   test('next x prev button in book page', () async {
-    final container = createContainer();
+    final container = createContainerEx();
     final navigator = container.read(appNavigatorProvider4Dart);
 
     await navigator.globalLoginButton();

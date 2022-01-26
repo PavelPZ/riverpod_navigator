@@ -1,3 +1,4 @@
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
 import 'model/model.dart';
@@ -12,8 +13,14 @@ bool getNeedsLogin4Dart(TypedSegment segment) {
     return false;
 }
 
+class AppConfig4Dart {
+  AppConfig4Dart({required this.needsLogin4Dart});
+  final bool Function(TypedSegment segment) needsLogin4Dart;
+}
+
+final appConfig4DartProvider = Provider<AppConfig4Dart>((_) => throw UnimplementedError());
+
 // could be overriden app configuration
-bool Function(TypedSegment segment) needsLogi4Dart = getNeedsLogin4Dart;
 
 /// mock some of async screen actions
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {

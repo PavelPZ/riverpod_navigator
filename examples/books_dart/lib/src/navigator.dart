@@ -6,17 +6,18 @@ import 'model/model.dart';
 import 'provider.dart';
 
 class AppNavigator extends AsyncRiverpodNavigator {
-  AppNavigator(Ref ref) : super(ref);
+  AppNavigator(Ref ref, Config4Dart config) : super(ref, config);
 
   @override
   TypedPath appNavigationLogic(TypedPath oldPath, TypedPath newPath) {
     if (!ref.read(userIsLoggedProvider)) {
       // user not logged => check in navigation stack is ppage which needs login
       // if there is any route which needs login
-      if (newPath.any((segment) => needsLogi4Dart(segment))) {
+      final needsLogin4Dart = ref.read(appConfig4DartProvider).needsLogin4Dart;
+      if (newPath.any((segment) => needsLogin4Dart(segment))) {
         // navigate to login page
-        final loggedUrl = config4Dart.pathParser.typedPath2Path(newPath);
-        var canceledUrl = oldPath.isEmpty || oldPath.last is LoginHomeSegment ? '' : config4Dart.pathParser.typedPath2Path(oldPath);
+        final loggedUrl = config.pathParser.typedPath2Path(newPath);
+        var canceledUrl = oldPath.isEmpty || oldPath.last is LoginHomeSegment ? '' : config.pathParser.typedPath2Path(oldPath);
         if (loggedUrl == canceledUrl) canceledUrl = ''; // logout on page which needs login - called refresh() {navigate([...actualTypedPath]);}
         return [LoginHomeSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
       }
@@ -61,7 +62,7 @@ class AppNavigator extends AsyncRiverpodNavigator {
     final isLogged = ref.read(userIsLoggedProvider.notifier);
     assert(!isLogged.state); // is logoff?
     // navigate to login page
-    final path2String = config4Dart.pathParser.typedPath2Path(actPath);
+    final path2String = config.pathParser.typedPath2Path(actPath);
     return navigate([LoginHomeSegment(loggedUrl: path2String, canceledUrl: path2String)]);
   }
 
@@ -78,7 +79,7 @@ class AppNavigator extends AsyncRiverpodNavigator {
     } else
       ref.read(userIsLoggedProvider.notifier).state = true; // login successfull => change userIsLogged state
 
-    final newSegment = config4Dart.pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
+    final newSegment = config.pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
 
     await navigate(newSegment.isEmpty ? [HomeSegment()] : newSegment);
   }
