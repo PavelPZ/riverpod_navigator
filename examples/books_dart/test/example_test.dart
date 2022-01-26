@@ -60,7 +60,7 @@ void main() {
   });
 
   test('navigate to login page when logged', () async {
-    final container = createContainerEx();
+    final container = createContainerEx(withRoutes: false);
     final navigator = container.read(appNavigatorProvider4Dart);
 
     await navigator.globalLoginButton();
@@ -80,7 +80,7 @@ void main() {
   });
 
   test('logout when on page which needs login', () async {
-    final container = createContainerEx();
+    final container = createContainerEx(withRoutes: false);
     final navigator = container.read(appNavigatorProvider4Dart);
 
     await navigator.toBook(id: 1);
@@ -103,7 +103,7 @@ void main() {
   });
 
   test('login', () async {
-    final container = createContainerEx();
+    final container = createContainerEx(withRoutes: false);
     final navigator = container.read(appNavigatorProvider4Dart);
 
     await navigator.toBooks();
@@ -126,7 +126,7 @@ void main() {
   });
 
   test('next x prev button in book page', () async {
-    final container = createContainerEx();
+    final container = createContainerEx(withRoutes: false);
     final navigator = container.read(appNavigatorProvider4Dart);
 
     await navigator.globalLoginButton();

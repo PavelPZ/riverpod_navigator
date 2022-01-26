@@ -68,3 +68,33 @@ Feel free to create issue with your ideas.
 This project is intended as a platform for better understanding and using of Flutter Navigation 2.0.
 
 And sorry for my english :-)
+
+
+
+
+### Terminology 
+
+
+
+
+### Url 
+
+Simple Flutter navigation with [riverpod](https://riverpod.dev/), [freezed](https://github.com/rrousselGit/freezed) 
+and  [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade).
+
+This example contains only 150 lines of generic code (which can be used in another application) and 150 lines of application-specific code.
+
+
+
+
+# Riverpod, freezed and Navigator 2.0
+
+Simple Flutter navigation with [riverpod](https://riverpod.dev/), [freezed](https://github.com/rrousselGit/freezed) 
+and  [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade)
+
+
+... how to use [riverpod](https://riverpod.dev/) and [freezed](https://github.com/rrousselGit/freezed) 
+to simplify Flutter [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade) usage.
+
+*For a better understanding, everything is explained on the classic 3-screens example: [Home] => [Book] => [Books*]*
+
