@@ -16,5 +16,9 @@
 
 *For a better understanding, everything is explained on the classic 3-screens example: [Home] => [Book] => [Books*]*
 
+Documentation is being prepared, the following resources are available until completion:
+
+- simple example [here](https://github.com/PavelPZ/riverpod_navigator/tree/main/examples/riverpod_navigator_idea)
+
 
 
