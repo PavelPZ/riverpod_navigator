@@ -21,8 +21,8 @@ Whole example is available [here](examples/doc/lib/src/lesson01/lesson01.dart)
 
 ### 1. Classes for typed url-path-segments (TypedSegment)
 
-The Freezed package generates three immutable classes used for writing typed navigation path,
-e.g ```TypedPath path = [HomeSegment (), BooksSegment () and BookSegment (id: 3)];```
+The Freezed package generates three immutable classes used for writing typed navigation path, e.g<br>
+```TypedPath path = [HomeSegment (), BooksSegment (), BookSegment (id: 3)];```
 
 ```dart
 @freezed
@@ -38,11 +38,15 @@ class AppSegments with _$AppSegments, TypedSegment {
 
 ### 2. Dart-part of app configuration
 
+Tell the application how to convert TypedSegments from JSON.
+
 ```dart
 final config4DartCreator = () => Config4Dart(json2Segment: (json, _) => AppSegments.fromJson(json));
 ```
 
-### 3. app-specific navigator with navigation aware actions (used in screens)
+### 3. app-specific navigator with navigation aware actions
+
+Actions are used in app widgets.
 
 ```dart
 const booksLen = 5;
@@ -98,6 +102,8 @@ final configCreator = () => Config(
 
 Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
 
+"functional_widget" is not a mandatory app dependency.
+
 ```dart
 @cwidget
 Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
@@ -106,7 +112,9 @@ Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
       routeInformationParser: RouteInformationParserImpl(ref.watch(config4DartProvider)),
     );
 ```
-### 7. app entry point with ProviderScope
+### 7. app entry point...
+
+... with ProviderScope and ProviderScope.overrides
 
 ```dart
 void main() {
