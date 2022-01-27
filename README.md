@@ -11,9 +11,9 @@
   and [riverpod_navigator_dart.dart](packages/riverpod_navigator_dart/lib/src/riverpod_navigator_dart.dart))
   Additional features (such as better URL parser, asynchronous navigation, possibility to use routes etc.) are included as configurable extensions.
 
-*For a better understanding, everything is explained on the classic 3-screens example: [Home] => [Books] => [Book\*]*
+# Explanation on examples
 
-# explanation on examples
+*For a better understanding, everything is explained on the classic 3-screens example: [Home] => [Books] => [Book\*]*
 
 ## Lesson01 - simple example
 
