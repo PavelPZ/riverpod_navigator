@@ -163,9 +163,11 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
       // for every Book screen: creating takes some time
       creating: (newSegment) async => simulateAsyncResult('Book creating async result after 1 sec', 1000),
       // for every Book screen with odd id: changing to another Book screen takes some time
-      merging: (_, newSegment) async => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
+      merging: (_, newSegment) async => 
+        newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
       // for every Book screen with even id: creating takes some time
-      deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
+      deactivating: (oldSegment) => 
+        oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
     ),
     home: (_) => AsyncScreenActions<HomeSegment>(
         // Home screen takes some timefor creating
