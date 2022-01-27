@@ -15,13 +15,13 @@
 
 - [Explanation on examples](explanation-on-examples)
   - [Lesson01: simple example](lesson01:-simple-example)
-  - [Lesson02 - example with Dart testing](lesson02---example-with-dart-testing)
-  - [Lesson03 - asynchronous navigation](lesson03---asynchronous-navigation)
-  - [Lesson04 - using the Route concept](lesson04---using-the-route-concept)
-  - [Lesson05 - splash screen](lesson05---splash-screen)
-  - [Lesson06 - waiting indicator, navigatorWidgetBuilder](lesson06---waiting-indicator,-navigatorwidgetbuilder)
+  - [Lesson02 - example with Dart testing](lesson02:-example-with-dart-testing)
+  - [Lesson03 - asynchronous navigation](lesson03:-asynchronous-navigation)
+  - [Lesson04 - using the Route concept](lesson04:-using-the-route-concept)
+  - [Lesson05 - splash screen](lesson05:-splash-screen)
+  - [Lesson06 - waiting indicator, navigatorWidgetBuilder](lesson06:-waiting-indicator,-navigatorwidgetbuilder)
   - [Lesson07: screenBuilder](lesson07:-screenbuilder)
-- [Install and run examples](install-and run examples)
+- [Install and run examples](install-and-run-examples)
 - [Roadmap](roadmap)
 
 ## Explanation on examples
@@ -149,7 +149,7 @@ File with screen widgets is available here: [screens.dart](examples/doc/lib/src/
 
 -------------------------
 
-### Lesson02 - example with Dart testing
+### Lesson02: example with Dart testing
 
 An example that allows flutter-independent testing.
 
@@ -157,7 +157,7 @@ An example that allows flutter-independent testing.
 
 -------------------------
 
-### Lesson03 - asynchronous navigation
+### Lesson03: asynchronous navigation
 
 See changes against Example01 (added part 1.1, parts 2. and 3. are modified).
 
@@ -213,19 +213,19 @@ class AppNavigator extends AsyncRiverpodNavigator {
 
 -------------------------
 
-### Lesson04 - using the Route concept
+### Lesson04: using the Route concept
 
 *to be done*
 
 -------------------------
 
-### Lesson05 - splash screen
+### Lesson05: splash screen
 
 *to be done*
 
 -------------------------
 
-### Lesson06 - waiting indicator, navigatorWidgetBuilder
+### Lesson06: waiting indicator, navigatorWidgetBuilder
 
 *to be done*
 
