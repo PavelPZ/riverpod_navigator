@@ -149,7 +149,7 @@ An example that allows flutter-independent testing.
 
 Example file is available here: [lesson03.dart](examples/doc/lib/src/lesson03/lesson03.dart) 
 
-#### 1.1 **NEW:** add new code for simulating async screen actions
+#### 1.1 **NEW:** add new code for async screen actions
 
 ```dart
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
@@ -158,24 +158,21 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
     return title;
   }
 
-  if (segment is AppSegments)
-    return segment.maybeMap(
-      book: (_) => AsyncScreenActions<BookSegment>(
-        // for every Book screen: creating takes some time
-        creating: (newSegment) async => simulateAsyncResult('Book creating async result after 1 sec', 1000),
-        // for every Book screen with odd id: changing to another Book screen takes some time
-        merging: (_, newSegment) async => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
-        // for every Book screen with even id: creating takes some time
-        deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
-      ),
-      home: (_) => AsyncScreenActions<HomeSegment>(
-          // Home screen takes some timefor creating
-          creating: (_) async => simulateAsyncResult('Home creating async result after 1 sec', 1000)),
-      orElse: () => null,
-    );
-  else
-    return null;
-}
+  return (segment as AppSegments).maybeMap(
+    book: (_) => AsyncScreenActions<BookSegment>(
+      // for every Book screen: creating takes some time
+      creating: (newSegment) async => simulateAsyncResult('Book creating async result after 1 sec', 1000),
+      // for every Book screen with odd id: changing to another Book screen takes some time
+      merging: (_, newSegment) async => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
+      // for every Book screen with even id: creating takes some time
+      deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
+    ),
+    home: (_) => AsyncScreenActions<HomeSegment>(
+        // Home screen takes some timefor creating
+        creating: (_) async => simulateAsyncResult('Home creating async result after 1 sec', 1000)),
+    orElse: () => null,
+  );
+}}
 ```
 
 #### 2. Configure dart-part of app
@@ -185,7 +182,6 @@ Add ```segment2AsyncScreenActions``` to config
 ```dart
 final config4DartCreator = () => Config4Dart(
       json2Segment: (json, _) => AppSegments.fromJson(json),
-      // MODIFIED
       segment2AsyncScreenActions: segment2AsyncScreenActions,
     );
 ```
