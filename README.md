@@ -14,7 +14,7 @@
 ## Index
 - [Explanation on examples](#explanation-on-examples)
 - [Lesson07 - screenBuilder](#lesson07-screenbuilder)
-- [Lesson06 - waiting indicator, navigatorWidgetBuilder](#lesson06-waiting-indicator-navigatorWidgetBuilder)
+- [Lesson06 - waiting indicator, navigatorWidgetBuilder](#lesson06-waiting-indicator,-navigatorWidgetBuilder)
 - [Roadmap](#roadmap)
 
 ## Explanation on examples
