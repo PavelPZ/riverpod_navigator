@@ -7,6 +7,10 @@ import 'lesson01.dart';
 // flutter pub run build_runner watch
 part 'pages.g.dart';
 
+// ************************************
+// Using "functional_widget" package to be less verbose.
+// "@cwidget" means, that package generates e.g "class HomeScreen extends ConsumerWidget...", see *.g.dart
+// ************************************
 @cwidget
 Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
       title: 'Home Page',
@@ -30,6 +34,8 @@ Widget bookScreen(WidgetRef ref, BookSegment segment) => PageHelper(
         LinkHelper(title: '<< Prev', onPressed: () => ref.read(appNavigatorProvider).bookNextPrevButton(isPrev: true)),
       ],
     );
+
+// "@swidget" means, that package generates e.g. "class LinkHelper extends StatelessWidget...", see *.g.dart
 
 @swidget
 Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedButton(onPressed: onPressed, child: Text(title));

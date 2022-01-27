@@ -13,9 +13,11 @@
 
 *For a better understanding, everything is explained on the classic 3-screens example: [Home] => [Books] => [Book\*]*
 
+# explanation on examples
+
 ## Lesson01 - simple example
 
-Whole example is available [here]() 
+Whole example is available [here](examples/doc/lib/src/lesson01/lesson01.dart) 
 
 ### 1. Classes for typed url-path-segments (TypedSegment)
 
@@ -48,9 +50,13 @@ const booksLen = 5;
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref, Config4Dart config) : super(ref, config);
 
+  /// navigate to home page
   void toHome() => navigate([HomeSegment()]);
+  /// navigate to books page
   void toBooks() => navigate([HomeSegment(), BooksSegment()]);
+  /// navigate to book;id=3 page
   void toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
+  /// cyclic book's navigation (Prev and Next buttons)
   void bookNextPrevButton({bool? isPrev}) {
     assert(getActualTypedPath().last is BookSegment);
     var id = (getActualTypedPath().last as BookSegment).id;
@@ -68,7 +74,7 @@ class AppNavigator extends RiverpodNavigator {
 ```dart
 final appNavigatorProvider = Provider<AppNavigator>((ref) => AppNavigator(ref, ref.watch(config4DartProvider)));
 
-/// Provider with Flutter 2.0 RouterDelegate
+/// Provided Flutter 2.0 RouterDelegate
 final appRouterDelegateProvider =
     Provider<RiverpodRouterDelegate>((ref) => RiverpodRouterDelegate(ref, ref.watch(configProvider), ref.watch(appNavigatorProvider)));
 ```
@@ -84,7 +90,7 @@ final configCreator = () => Config(
         book: (book) => BookScreen(book),
       ),
 
-      /// specify home path of app
+      /// specify home TypedPath of app
       initPath: [HomeSegment()],
     );
 ```
@@ -102,10 +108,10 @@ Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
 ```
 ### 7. app entry point with ProviderScope
 
-/// Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
+```dart
 void main() {
   runApp(ProviderScope(
-    // initialize configs providers
+    // initialize providers with the configurations defined above
     overrides: [
       config4DartProvider.overrideWithValue(config4DartCreator()),
       configProvider.overrideWithValue(configCreator()),
@@ -114,3 +120,25 @@ void main() {
   ));
 }
 ```
+
+### 8. app screens
+
+See [pages](examples/doc/lib/src/lesson01/pages.dart).
+
+-------------------------
+
+## Lesson02 - example with Dart testing
+
+An example that allows flutter-independent testing.
+
+## Lesson03 - asynchronous navigation
+
+## Lesson04 - using the Route concept
+
+## Lesson05 - splash screen
+
+## Lesson06 - waiting indicator, navigatorWidgetBuilder
+
+## Lesson07 - screenBuilder
+
+
