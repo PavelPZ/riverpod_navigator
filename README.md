@@ -11,13 +11,13 @@
   and [riverpod_navigator_dart.dart](packages/riverpod_navigator_dart/lib/src/riverpod_navigator_dart.dart))
   Additional features (such as better URL parser, asynchronous navigation, possibility to use routes etc.) are included as configurable extensions.
 
-# Explanation on examples
+## Explanation on examples
 
 *For a better understanding, everything is explained on the classic 3-screens example: [Home] => [Books] => [Book\*]*
 
-## Lesson01 - simple example
+### Lesson01 - simple example
 
-Whole example is available [here](examples/doc/lib/src/lesson01/lesson01.dart) 
+Example file is available here: [lesson01.dart](examples/doc/lib/src/lesson01/lesson01.dart) 
 
 #### 1. Classes for typed url-path-segments (TypedSegment)
 
@@ -44,7 +44,7 @@ Tell the application how to convert TypedSegments from JSON.
 final config4DartCreator = () => Config4Dart(json2Segment: (json, _) => AppSegments.fromJson(json));
 ```
 
-### 3. app-specific navigator with navigation aware actions
+#### 3. app-specific navigator with navigation aware actions
 
 Actions are used in app widgets.
 
@@ -73,7 +73,7 @@ class AppNavigator extends RiverpodNavigator {
 }
 ```
 
-### 4. providers
+#### 4. providers
 
 ```dart
 final appNavigatorProvider = 
@@ -84,7 +84,7 @@ final appRouterDelegateProvider =
     Provider<RiverpodRouterDelegate>((ref) => 
       RiverpodRouterDelegate(ref, ref.watch(configProvider), ref.watch(appNavigatorProvider)));
 ```
-### 5. Flutter-part of app configuration
+#### 5. Flutter-part of app configuration
 
 ```dart
 final configCreator = () => Config(
@@ -100,7 +100,7 @@ final configCreator = () => Config(
       initPath: [HomeSegment()],
     );
 ```
-### 6. root widget for app
+#### 6. root widget for app
 
 Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
 
@@ -114,7 +114,7 @@ Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
       routeInformationParser: RouteInformationParserImpl(ref.watch(config4DartProvider)),
     );
 ```
-### 7. app entry point...
+#### 7. app entry point...
 
 ... with ProviderScope and ProviderScope.overrides
 
@@ -131,24 +131,36 @@ void main() {
 }
 ```
 
-### 8. app screens
+#### 8. app screens
 
-See [pages](examples/doc/lib/src/lesson01/pages.dart).
+File with screen widgets is available here: [screens.dart](examples/doc/lib/src/lesson01/screens.dart) 
 
 -------------------------
 
-## Lesson02 - example with Dart testing
+### Lesson02 - example with Dart testing
 
 An example that allows flutter-independent testing.
 
-## Lesson03 - asynchronous navigation
+*to be done*
 
-## Lesson04 - using the Route concept
+### Lesson03 - asynchronous navigation
 
-## Lesson05 - splash screen
+*to be done*
 
-## Lesson06 - waiting indicator, navigatorWidgetBuilder
+### Lesson04 - using the Route concept
 
-## Lesson07 - screenBuilder
+*to be done*
+
+### Lesson05 - splash screen
+
+*to be done*
+
+### Lesson06 - waiting indicator, navigatorWidgetBuilder
+
+*to be done*
+
+### Lesson07 - screenBuilder
+
+*to be done*
 
 

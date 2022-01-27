@@ -4,7 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-import 'pages.dart';
+import 'screens.dart';
 
 part 'lesson01.freezed.dart';
 part 'lesson01.g.dart';

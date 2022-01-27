@@ -5,7 +5,7 @@ import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'lesson01.dart';
 
 // flutter pub run build_runner watch
-part 'pages.g.dart';
+part 'screens.g.dart';
 
 // ************************************
 // Using "functional_widget" package to be less verbose.
