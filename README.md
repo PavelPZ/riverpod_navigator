@@ -143,11 +143,13 @@ An example that allows flutter-independent testing.
 
 *to be done*
 
+-------------------------
+
 ### Lesson03 - asynchronous navigation
 
 Example file is available here: [lesson03.dart](examples/doc/lib/src/lesson03/lesson03.dart) 
 
-1.1 **NEW:** add new code for simulating async screen actions
+#### 1.1 **NEW:** add new code for simulating async screen actions
 
 ```dart
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
@@ -176,7 +178,7 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
 }
 ```
 
-2. Configure dart-part of app
+#### 2. Configure dart-part of app
 
 Add ```segment2AsyncScreenActions``` to config
 
@@ -217,18 +219,25 @@ class AppNavigator extends AsyncRiverpodNavigator {
 }
 ```
 
+-------------------------
 
 ### Lesson04 - using the Route concept
 
 *to be done*
 
+-------------------------
+
 ### Lesson05 - splash screen
 
 *to be done*
 
+-------------------------
+
 ### Lesson06 - waiting indicator, navigatorWidgetBuilder
 
 *to be done*
+
+-------------------------
 
 ### Lesson07 - screenBuilder
 
