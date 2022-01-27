@@ -17,12 +17,30 @@ The "Riverpod navigator" consists of two packages, similar to a "riverpod". The 
 
 | Dart only development and testing | Flutter development and testing |
 | --- | --- |
-| riverpod | flutter_riverpod, hooks_riverpod |
+| riverpod | flutter_riverpod or hooks_riverpod |
 | riverpod_navigation_dart | riverpod_navigation |
 
-## Index
-
+- [Install and run examples](#install-and-run-examples)
 - [Explanation on examples](#explanation-on-examples)
+- [Roadmap](#roadmap)
+
+## Install and run examples
+
+After clonning repository, go to ```examples/doc/``` subdirectory and execute:
+
+- ```flutter create .```
+- ```flutter pub get```
+- ```flutter pub run build_runner --delete-conflicting-outputs```
+- in [main.dart](examples/doc/lib/main.dart) uncomment the line you want to execute.
+- execute ```flutter run```
+
+## Explanation on examples
+
+*For a better understanding, everything is explained on the classic 3-screens example: 
+[Home] => [Books] => [Book\*]*
+
+### Examples index
+
   - [Lesson01: simple example](#lesson01-simple-example)
   - [Lesson02: example with Dart testing](#lesson02-example-with-dart-testing)
   - [Lesson03: asynchronous navigation](#lesson03-asynchronous-navigation)
@@ -32,13 +50,6 @@ The "Riverpod navigator" consists of two packages, similar to a "riverpod". The 
   - [Lesson06: splash screen](#lesson06-splash-screen)
   - [Lesson07: waiting indicator, navigatorWidgetBuilder](#lesson07-waiting-indicator-navigatorwidgetbuilder)
   - [Lesson08: screenBuilder](#lesson08-screenbuilder)
-- [Install and run examples](#install-and-run-examples)
-- [Roadmap](#roadmap)
-
-## Explanation on examples
-
-*For a better understanding, everything is explained on the classic 3-screens example: 
-[Home] => [Books] => [Book\*]*
 
 ### Lesson01: simple example
 
@@ -64,7 +75,7 @@ class AppSegments with _$AppSegments, TypedSegment {
 
 #### 2. Dart part of app configuration
 
-Tell the application how to convert TypedSegments from JSON.
+Tell the application how to convert segments from JSON.
 
 ```dart
 final config4DartCreator = () => Config4Dart(initPath: [HomeSegment()], json2Segment: (json, _) => AppSegments.fromJson(json));
@@ -311,10 +322,6 @@ Simple Login navigation flow
 -------------------------
 
 ### Lesson08: screenBuilder
-
-*to be done*
-
-## Install and run examples
 
 *to be done*
 
