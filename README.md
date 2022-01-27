@@ -1,4 +1,4 @@
-# Riverpod_Navigator
+# Navigator for Riverpod
 
 ### Navigation library (based on Flutter Navigator 2.0, [Riverpod](https://riverpod.dev/), and [Freezed](https://github.com/rrousselGit/freezed)) that solves the following problems:
 

@@ -1,6 +1,6 @@
 {
-    "name": "riverpod_navigator",
-    "short_name": "riverpod_navigator",
+    "name": "books",
+    "short_name": "books",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
