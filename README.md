@@ -12,10 +12,17 @@
   Additional features (such as better URL parser, asynchronous navigation, possibility to use routes etc.) are included (and can be created) as configurable extensions.
 
 ## Index
-- [Explanation on examples](#explanation-on-examples)
-- [Lesson07 - screenBuilder](#lesson07-screenbuilder)
-- [Lesson06 - waiting indicator, navigatorWidgetBuilder](#lesson06---waiting-indicator,-navigatorwidgetbuilder)
-- [Roadmap](#roadmap)
+
+- [Explanation on examples](explanation-on-examples)
+  - [Lesson01: simple example](lesson01:-simple-example)
+  - [Lesson02 - example with Dart testing](lesson02---example-with-dart-testing)
+  - [Lesson03 - asynchronous navigation](lesson03---asynchronous-navigation)
+  - [Lesson04 - using the Route concept](lesson04---using-the-route-concept)
+  - [Lesson05 - splash screen](lesson05---splash-screen)
+  - [Lesson06 - waiting indicator, navigatorWidgetBuilder](lesson06---waiting-indicator,-navigatorwidgetbuilder)
+  - [Lesson07: screenBuilder](lesson07:-screenbuilder)
+- [Install and run examples](install-and run examples)
+- [Roadmap](roadmap)
 
 ## Explanation on examples
 
