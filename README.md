@@ -5,11 +5,20 @@
 - **Strictly typed navigation:** <br>You can use ```navigate([Home(), Books(), Book(id: bookId)]);``` instead of ```navigate('home/books/$bookId');``` in your code.
 - **Easier coding:** <br>The problem of navigation is reduced to manipulation of the immutable collection.
 - **Better separation of concerns: UI x Model** (thanks to [riverpod](https://riverpod.dev/) :+1:):<br>
-  Navigation logic can be developed and tested in the Dart environment, without typing a single flutter widget. 
+  Navigation logic can be developed and tested in the Dart environment, without typing a single flutter widget.
 - **Small codebase with a lot of extensions:**<br>
   The core engine consists of two small .dart files ([riverpod_navigator.dart](packages/riverpod_navigator/lib/src/riverpod_navigator.dart) 
   and [riverpod_navigator_dart.dart](packages/riverpod_navigator_dart/lib/src/riverpod_navigator_dart.dart)).
   Additional features (such as better URL parser, asynchronous navigation, possibility to use routes etc.) are included (and can be created) as configurable extensions.
+
+## Two packages
+
+The "Riverpod navigator" consists of two packages, similar to a "riverpod". The following table explains its similarity:
+
+| Dart only development and testing | Flutter development and testing |
+| --- | --- |
+| riverpod | flutter_riverpod, hooks_riverpod |
+| riverpod_navigation_dart | riverpod_navigation |
 
 ## Index
 
