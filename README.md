@@ -147,7 +147,9 @@ An example that allows flutter-independent testing.
 
 ### Lesson03 - asynchronous navigation
 
-See changes against Example01. Example file is available here: [lesson03.dart](examples/doc/lib/src/lesson03/lesson03.dart). 
+See changes against Example01 (added part 1.1, parts 2. and 3. are modified).
+
+Example file is available here: [lesson03.dart](examples/doc/lib/src/lesson03/lesson03.dart). 
 
 #### 1.1 add new code for async screen actions
 
