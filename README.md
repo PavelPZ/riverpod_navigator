@@ -13,7 +13,7 @@
 
 ## Index
 - [Explanation on examples](#explanation-on-examples)
-- [Lesson07 - screenBuilder](#lesson07:-screenbuilder)
+- [Lesson07 - screenBuilder](#lesson07-screenbuilder)
 - [Roadmap](#roadmap)
 
 ## Explanation on examples
