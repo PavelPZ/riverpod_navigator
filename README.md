@@ -14,7 +14,7 @@
 ## Index
 
 - [Explanation on examples](explanation-on-examples)
-  - [Lesson01: simple example](lesson01:-simple-example)
+  - [Lesson01 - simple example](lesson01-simple-example)
   - [Lesson02 - example with Dart testing](lesson02---example-with-dart-testing)
   - [Lesson03 - asynchronous navigation](lesson03---asynchronous-navigation)
   - [Lesson04 - using the Route concept](lesson04---using-the-route-concept)
