@@ -18,7 +18,7 @@ The "Riverpod navigator" consists of two packages, similar to a "riverpod". The 
 | Dart only development and testing | Flutter development and testing |
 | --- | --- |
 | riverpod | flutter_riverpod or hooks_riverpod |
-| riverpod_navigation_dart | riverpod_navigation |
+| riverpod_navigator_dart | riverpod_navigator |
 
 ## Install and run examples
 
