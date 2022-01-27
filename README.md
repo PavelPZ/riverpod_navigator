@@ -27,7 +27,7 @@ After clonning repository, go to ```examples/doc/``` subdirectory and execute:
 - ```flutter create .```
 - ```flutter pub get```
 - ```flutter pub run build_runner --delete-conflicting-outputs```
-- in [main.dart](examples/doc/lib/main.dart) uncomment the line you want to execute.
+- in [lib/main.dart)](examples/doc/lib/main.dart), uncomment the line you want to execute.
 - execute ```flutter run```
 
 ## Explanation on examples
