@@ -1,6 +1,6 @@
 # Navigator for Riverpod
 
-### Navigation library (based on Flutter Navigator 2.0, [Riverpod](https://riverpod.dev/), and [Freezed](https://github.com/rrousselGit/freezed)) that solves the following problems:
+### Simple but powerfull navigation library (based on Flutter Navigator 2.0, [Riverpod](https://riverpod.dev/), and [Freezed](https://github.com/rrousselGit/freezed)) that solves the following problems:
 
 - **Strictly typed navigation:** <br>You can use ```navigate([Home(), Books(), Book(id: bookId)]);``` instead of ```navigate('home/books/$bookId');``` in your code.
 - **Easier coding:** <br>The problem of navigation is reduced to manipulation of the immutable collection.
@@ -17,7 +17,7 @@ The "Riverpod navigator" consists of two packages, similar to a "riverpod". The 
 
 | Dart only development and testing | Flutter development and testing |
 | --- | --- |
-| riverpod | flutter_riverpod or hooks_riverpod |
+| riverpod | flutter_riverpod *or* hooks_riverpod |
 | riverpod_navigator_dart | riverpod_navigator |
 
 ## Install and run examples
@@ -27,12 +27,12 @@ After clonning repository, go to ```examples/doc/``` subdirectory and execute:
 - ```flutter create .```
 - ```flutter pub get```
 - ```flutter pub run build_runner --delete-conflicting-outputs```
-- in [lib/main.dart)](examples/doc/lib/main.dart), uncomment the line you want to execute.
+- in [lib/main.dart)](examples/doc/lib/main.dart), uncomment the line with example you want to execute.
 - execute ```flutter run```
 
 ## Explanation on examples
 
-*For a better understanding, everything is explained on the classic 3-screens example: 
+*For a better understanding, everything is explained on the classic example:<br>
 [Home] => [Books] => [Book\*]*
 
 ### Examples index
@@ -178,13 +178,19 @@ An example that allows flutter-independent testing.
 
 ### Lesson03: asynchronous navigation
 
-See changes against Example01 (added part 1.1, parts 2. and 3. are modified).
+Some screens needs asynchronous action during creating, deactivating or merging, e.g.
+
+- load async data (on screen creating) 
+- save data on screen deactivating
+- "merging" means, that the same screen in navigation-stack is changed. E.g. ```BookSegment(id:3)``` is changed to ```BookSegment(id:4)```
+
+Asynchronous action could return result. It is than passed to screen widget constructor (in TypedSegment.asyncActionResult field).
+
+See changes against Example01. Added part 1.1, parts 2., 3. are modified.
 
 Example file is available here: [lesson03.dart](examples/doc/lib/src/lesson03/lesson03.dart). 
 
 #### 1.1 async screen actions
-
-Add new code for async screen actions.
 
 ```dart
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
@@ -200,12 +206,12 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
       // for every Book screen with odd id: changing to another Book screen takes some time
       merging: (_, newSegment) async => 
         newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
-      // for every Book screen with even id: creating takes some time
+      // for every Book screen with even id: deactivating takes some time
       deactivating: (oldSegment) => 
         oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
     ),
     home: (_) => AsyncScreenActions<HomeSegment>(
-        // Home screen takes some timefor creating
+        // Home screen: creating takes some time
         creating: (_) async => simulateAsyncResult('Home creating async result after 1 sec', 1000)),
     orElse: () => null,
   );
@@ -236,6 +242,8 @@ class AppNavigator extends AsyncRiverpodNavigator {
 -------------------------
 
 ### Lesson03.1: splash screen
+
+... adds splash screen to previous example.
 
 #### 1. Classes for typed "url path segments" (TypedSegment)
 

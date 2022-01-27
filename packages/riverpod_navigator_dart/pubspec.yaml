@@ -1,6 +1,6 @@
 name: riverpod_navigator_dart
 description: Dart only part of riverpod_navigator.
-  Allows you to test application state and navigation logic without typing a single widget.
+  Navigation logic can be developed and tested in the Dart environment, without typing a single flutter widget.
 version: 0.2.2
 homepage: https://github.com/PavelPZ/riverpod_navigator
 repository: https://github.com/PavelPZ/riverpod_navigator
