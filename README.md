@@ -17,10 +17,11 @@
   - [Lesson01: simple example](#lesson01-simple-example)
   - [Lesson02: example with Dart testing](#lesson02-example-with-dart-testing)
   - [Lesson03: asynchronous navigation](#lesson03-asynchronous-navigation)
-  - [Lesson04: using the Route concept](#lesson04-using-the-route-concept)
-  - [Lesson05: splash screen](#lesson05-splash-screen)
-  - [Lesson06: waiting indicator, navigatorWidgetBuilder](#lesson06-waiting-indicator-navigatorwidgetbuilder)
-  - [Lesson07: screenBuilder](#lesson07-screenbuilder)
+  - [Lesson04: app logic, more TypedSegment classes per app](#lesson04-app-logic-more-typedsegment-classes-per-app)
+  - [Lesson05: using the Route concept](#lesson05-using-the-route-concept)
+  - [Lesson06: splash screen](#lesson06-splash-screen)
+  - [Lesson07: waiting indicator, navigatorWidgetBuilder](#lesson07-waiting-indicator-navigatorwidgetbuilder)
+  - [Lesson08: screenBuilder](#lesson08-screenbuilder)
 - [Install and run examples](#install-and-run-examples)
 - [Roadmap](#roadmap)
 
@@ -213,25 +214,33 @@ class AppNavigator extends AsyncRiverpodNavigator {
 
 -------------------------
 
-### Lesson04: using the Route concept
+### Lesson04: app logic, more TypedSegment classes per app
+
+Simple Login navigation flow
 
 *to be done*
 
 -------------------------
 
-### Lesson05: splash screen
+### Lesson05: using the Route concept
 
 *to be done*
 
 -------------------------
 
-### Lesson06: waiting indicator, navigatorWidgetBuilder
+### Lesson06: splash screen
 
 *to be done*
 
 -------------------------
 
-### Lesson07: screenBuilder
+### Lesson07: waiting indicator, navigatorWidgetBuilder
+
+*to be done*
+
+-------------------------
+
+### Lesson08: screenBuilder
 
 *to be done*
 
@@ -241,4 +250,6 @@ class AppNavigator extends AsyncRiverpodNavigator {
 
 ## Roadmap
 
+- block GUI screen
+- Splash screen
 - Nested routing
