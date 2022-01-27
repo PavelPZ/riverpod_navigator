@@ -4,7 +4,7 @@
 
 - **Strictly typed navigation:** <br>You can use ```navigate([Home(), Books(), Book(id: bookId)]);``` instead of ```navigate('home/books/$bookId');``` in your code.
 - **Easier coding:** <br>The problem of navigation is reduced to manipulation of the immutable collection.
-- **Better separation of concerns: UI x Model** (riverpod offers this feature too): <br>
+- **Better separation of concerns: UI x Model** (thanks to riverpod):<br>
   Navigation logic can be developed and tested in the Dart environment, without typing a single flutter widget. 
 - **Small codebase with a lot of extensions:**<br>
   The core engine consists of two small .dart files ([riverpod_navigator.dart](packages/riverpod_navigator/lib/src/riverpod_navigator.dart) 
@@ -145,7 +145,78 @@ An example that allows flutter-independent testing.
 
 ### Lesson03 - asynchronous navigation
 
-*to be done*
+Example file is available here: [lesson03.dart](examples/doc/lib/src/lesson03/lesson03.dart) 
+
+1.1 **NEW:** add new code for simulating async screen actions
+
+```dart
+AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
+  Future<String> simulateAsyncResult(String title, int msec) async {
+    await Future.delayed(Duration(milliseconds: msec));
+    return title;
+  }
+
+  if (segment is AppSegments)
+    return segment.maybeMap(
+      book: (_) => AsyncScreenActions<BookSegment>(
+        // for every Book screen: creating takes some time
+        creating: (newSegment) async => simulateAsyncResult('Book creating async result after 1 sec', 1000),
+        // for every Book screen with odd id: changing to another Book screen takes some time
+        merging: (_, newSegment) async => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
+        // for every Book screen with even id: creating takes some time
+        deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
+      ),
+      home: (_) => AsyncScreenActions<HomeSegment>(
+          // Home screen takes some timefor creating
+          creating: (_) async => simulateAsyncResult('Home creating async result after 1 sec', 1000)),
+      orElse: () => null,
+    );
+  else
+    return null;
+}
+```
+
+2. Configure dart-part of app
+
+Add ```segment2AsyncScreenActions``` to config
+
+```dart
+final config4DartCreator = () => Config4Dart(
+      json2Segment: (json, _) => AppSegments.fromJson(json),
+      // MODIFIED
+      segment2AsyncScreenActions: segment2AsyncScreenActions,
+    );
+```
+
+#### 3. app-specific navigator with navigation aware actions
+
+AppNavigator extends AsyncRiverpodNavigator instead of RiverpodNavigator
+
+```dart
+const booksLen = 5;
+
+class AppNavigator extends AsyncRiverpodNavigator {
+  AppNavigator(Ref ref, Config4Dart config) : super(ref, config);
+
+  /// navigate to home page
+  void toHome() => navigate([HomeSegment()]);
+  /// navigate to books page
+  void toBooks() => navigate([HomeSegment(), BooksSegment()]);
+  /// navigate to book;id=3 page
+  void toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
+  /// cyclic book's navigation (Prev and Next buttons)
+  void bookNextPrevButton({bool? isPrev}) {
+    assert(getActualTypedPath().last is BookSegment);
+    var id = (getActualTypedPath().last as BookSegment).id;
+    if (isPrev == true)
+      id = id == 0 ? booksLen - 1 : id - 1;
+    else
+      id = booksLen - 1 > id ? id + 1 : 0;
+    toBook(id: id);
+  }
+}
+```
+
 
 ### Lesson04 - using the Route concept
 
@@ -163,4 +234,10 @@ An example that allows flutter-independent testing.
 
 *to be done*
 
+## Install and run examples
 
+*to be done*
+
+## Roadmap
+
+- Nested routing

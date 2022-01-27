@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:json_annotation/json_annotation.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../riverpod_navigator_dart.dart';
@@ -16,11 +17,16 @@ typedef JsonMap = Map<String, dynamic>;
 /// Instead of three-segment url path 'home/books/$bookId' we can use
 /// e.g. navigate([Home(), Books(), Book(id: bookId)]);
 abstract class TypedSegment {
+  /// temporary field. Transmits result of async action to screen
+  @JsonKey(ignore: true)
+  AsyncActionResult asyncActionResult;
   JsonMap toJson();
 
   String get asJson => _asJson ?? (_asJson = jsonEncode(toJson()));
   String? _asJson;
 }
+
+typedef AsyncActionResult = dynamic;
 
 /// Typed variant of whole url path (which consists of [TypedSegment]s)
 typedef TypedPath = List<TypedSegment>;
@@ -135,9 +141,10 @@ class AsyncScreenActions<T extends TypedSegment> {
   final Merging<T>? merging;
   final Deactivating<T>? deactivating;
 
-  Future? callCreating(TypedSegment newPath) => creating != null ? creating?.call(newPath as T) : null;
-  Future? callMerging(TypedSegment oldPath, TypedSegment newPath) => merging != null ? merging?.call(oldPath as T, newPath as T) : null;
-  Future? callDeactivating(TypedSegment oldPath) => creating != null ? deactivating?.call(oldPath as T) : null;
+  Future<AsyncActionResult>? callCreating(TypedSegment newPath) => creating != null ? creating?.call(newPath as T) : null;
+  Future<AsyncActionResult>? callMerging(TypedSegment oldPath, TypedSegment newPath) =>
+      merging != null ? merging?.call(oldPath as T, newPath as T) : null;
+  Future<AsyncActionResult>? callDeactivating(TypedSegment oldPath) => creating != null ? deactivating?.call(oldPath as T) : null;
 }
 
 typedef Segment2AsyncScreenActions = AsyncScreenActions? Function(TypedSegment segment);

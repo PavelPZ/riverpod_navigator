@@ -6,10 +6,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-import 'pages.dart';
+import 'screens.dart';
 
-part 'lesson02.freezed.dart';
-part 'lesson02.g.dart';
+part 'lesson03.freezed.dart';
+part 'lesson03.g.dart';
 
 // *** 1. define typed segments
 
@@ -26,20 +26,24 @@ class AppSegments with _$AppSegments, TypedSegment {
 // *** NEW 1.1 HomeScreen: async when creating, BookScreen with odd id: async when creating and merging
 
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
+  Future<String> simulateAsyncResult(String title, int msec) async {
+    await Future.delayed(Duration(milliseconds: msec));
+    return title;
+  }
+
   if (segment is AppSegments)
     return segment.maybeMap(
       book: (_) => AsyncScreenActions<BookSegment>(
-        // for every Book screen with odd id: creating takes some time
-        creating: (newSegment) => newSegment.id.isOdd ? Future.delayed(Duration(seconds: 1)) : null,
+        // for every Book screen: creating takes some time
+        creating: (newSegment) async => simulateAsyncResult('Book creating async result after 1 sec', 1000),
         // for every Book screen with odd id: changing to another Book screen takes some time
-        merging: (oldSegment, _) => oldSegment.id.isOdd ? Future.delayed(Duration(milliseconds: 500)) : null,
+        merging: (_, newSegment) async => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
         // for every Book screen with even id: creating takes some time
-        deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(seconds: 1)) : null,
+        deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
       ),
       home: (_) => AsyncScreenActions<HomeSegment>(
-        // Home screen takes some timefor creating
-        creating: (_) => Future.delayed(Duration(seconds: 1)),
-      ),
+          // Home screen takes some timefor creating
+          creating: (_) async => simulateAsyncResult('Home creating async result after 1 sec', 1000)),
       orElse: () => null,
     );
   else

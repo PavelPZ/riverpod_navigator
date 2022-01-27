@@ -47,7 +47,7 @@ Widget pageHelper({required String title, required List<Widget> buildChildren()}
       ),
       body: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: (() {
             final res = <Widget>[SizedBox(height: 20)];
             for (final w in buildChildren()) res.addAll([w, SizedBox(height: 20)]);

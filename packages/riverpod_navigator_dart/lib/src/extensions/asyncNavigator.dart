@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:tuple/tuple.dart';
 
 import '../riverpod_navigator_dart.dart';
 import 'route.dart';
@@ -62,7 +63,7 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
   @protected
   Future<void> waitForRouteChanging(TypedPath oldPath, TypedPath newPath) async {
     final minLen = min(oldPath.length, newPath.length);
-    final futures = <Future?>[];
+    final futures = <Tuple2<Future?, TypedSegment>>[];
     // merge old and new
     for (var i = 0; i < minLen; i++) {
       final o = oldPath[i];
@@ -73,26 +74,33 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
       final nAsyncs = config.segment2AsyncScreenActions!(n);
       if (o.runtimeType == n.runtimeType)
         // old and new has the same route => merging
-        futures.add(oAsyncs?.callMerging(o, n));
+        futures.add(Tuple2(nAsyncs?.callMerging(o, n), n));
       else {
         // old and new has different route => deactivanting old, creating new
-        futures.add(oAsyncs?.callDeactivating(o));
-        futures.add(nAsyncs?.callCreating(n));
+        futures.add(Tuple2(oAsyncs?.callDeactivating(o), o));
+        futures.add(Tuple2(nAsyncs?.callCreating(n), n));
       }
     }
     // deactivating the rest of old routes
     if (oldPath.length > minLen)
-      for (var i = minLen; i < oldPath.length; i++) futures.add(config.segment2AsyncScreenActions!(oldPath[i])?.callDeactivating(oldPath[i]));
+      for (var i = minLen; i < oldPath.length; i++)
+        futures.add(Tuple2(config.segment2AsyncScreenActions!(oldPath[i])?.callDeactivating(oldPath[i]), oldPath[i]));
     // creating the rest of new routes
     if (newPath.length > minLen)
-      for (var i = minLen; i < newPath.length; i++) futures.add(config.segment2AsyncScreenActions!(newPath[i])?.callCreating(newPath[i]));
+      for (var i = minLen; i < newPath.length; i++)
+        futures.add(Tuple2(config.segment2AsyncScreenActions!(newPath[i])?.callCreating(newPath[i]), newPath[i]));
     // remove empty futures
-    final notEmptyFutures = <Future>[
+    final notEmptyFutures = <Tuple2<Future?, TypedSegment>>[
       for (final f in futures)
-        if (f != null) f
+        if (f.item1 != null) f
     ];
     // wait
-    if (notEmptyFutures.isNotEmpty) await Future.wait(notEmptyFutures);
+    if (notEmptyFutures.isEmpty) return;
+
+    final asyncResults = await Future.wait(notEmptyFutures.map((fs) => fs.item1 as Future));
+    assert(asyncResults.length == notEmptyFutures.length);
+
+    for (var i = 0; i < asyncResults.length; i++) notEmptyFutures[i].item2.asyncActionResult = asyncResults[i];
     return;
   }
 
