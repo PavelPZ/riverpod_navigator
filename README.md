@@ -270,7 +270,7 @@ final configCreator = (Config4Dart config4Dart) => Config(
 
 #### 8. app screens
 
-Add SplashScreen widget // <========
+Add SplashScreen widget to [screens.dart](examples/doc/lib/src/lesson031/screens.dart)
 
 -------------------------
 

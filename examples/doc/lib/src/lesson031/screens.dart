@@ -37,7 +37,7 @@ Widget bookScreen(WidgetRef ref, BookSegment segment) => PageHelper(
 
 @cwidget
 Widget splashScreen(WidgetRef ref, SplashSegment segment) =>
-    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.red))));
+    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
 
 @swidget
 Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedButton(onPressed: onPressed, child: Text(title));
