@@ -17,6 +17,7 @@
   - [Lesson01: simple example](#lesson01-simple-example)
   - [Lesson02: example with Dart testing](#lesson02-example-with-dart-testing)
   - [Lesson03: asynchronous navigation](#lesson03-asynchronous-navigation)
+  - [Lesson03.1: splash screen](#lesson031-splash-screen)
   - [Lesson04: app logic, more TypedSegment classes per app](#lesson04-app-logic-more-typedsegment-classes-per-app)
   - [Lesson05: using the Route concept](#lesson05-using-the-route-concept)
   - [Lesson06: splash screen](#lesson06-splash-screen)
@@ -251,7 +252,7 @@ final config4DartCreator = () => Config4Dart(
 
 #### 5. Flutter-part of app configuration
 
-Add splash screen builder.
+Specify splash screen builder.
 
 ```dart
 final configCreator = (Config4Dart config4Dart) => Config(
@@ -270,7 +271,6 @@ final configCreator = (Config4Dart config4Dart) => Config(
 #### 8. app screens
 
 Add SplashScreen widget. 
-
 
 -------------------------
 
