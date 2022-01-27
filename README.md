@@ -8,8 +8,13 @@
   Navigation logic can be developed and tested in the Dart environment, without typing a single flutter widget. 
 - **Small codebase with a lot of extensions:**<br>
   The core engine consists of two small .dart files ([riverpod_navigator.dart](packages/riverpod_navigator/lib/src/riverpod_navigator.dart) 
-  and [riverpod_navigator_dart.dart](packages/riverpod_navigator_dart/lib/src/riverpod_navigator_dart.dart))
-  Additional features (such as better URL parser, asynchronous navigation, possibility to use routes etc.) are included as configurable extensions.
+  and [riverpod_navigator_dart.dart](packages/riverpod_navigator_dart/lib/src/riverpod_navigator_dart.dart)).
+  Additional features (such as better URL parser, asynchronous navigation, possibility to use routes etc.) are included (and can be created) as configurable extensions.
+
+## Index
+- [Explanation on examples](#Explanation on examples)
+- [Lesson07 - screenBuilder](#Lesson07 - screenBuilder)
+- [Roadmap](#Roadmap)
 
 ## Explanation on examples
 
@@ -22,7 +27,7 @@ Example file is available here: [lesson01.dart](examples/doc/lib/src/lesson01/le
 #### 1. Classes for typed url-path-segments (TypedSegment)
 
 The Freezed package generates three immutable classes used for writing typed navigation path, e.g<br>
-```TypedPath path = [HomeSegment (), BooksSegment (), BookSegment (id: 3)];```
+```TypedPath newPath = <TypedSegment>[HomeSegment (), BooksSegment (), BookSegment (id: 3)];```
 
 ```dart
 @freezed
@@ -79,7 +84,7 @@ class AppNavigator extends RiverpodNavigator {
 final appNavigatorProvider = 
   Provider<AppNavigator>((ref) => AppNavigator(ref, ref.watch(config4DartProvider)));
 
-/// Provided Flutter 2.0 RouterDelegate
+/// Provider for Flutter 2.0 RouterDelegate
 final appRouterDelegateProvider =
     Provider<RiverpodRouterDelegate>((ref) => 
       RiverpodRouterDelegate(ref, ref.watch(configProvider), ref.watch(appNavigatorProvider)));
@@ -88,7 +93,7 @@ final appRouterDelegateProvider =
 
 ```dart
 final configCreator = () => Config(
-      /// Which widget will be builded for which [TypedSegment].
+      /// Which screen will be builded for which [TypedSegment].
       /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
       screenBuilder: (segment) => (segment as AppSegments).map(
         home: (home) => HomeScreen(home),
@@ -102,8 +107,7 @@ final configCreator = () => Config(
 ```
 #### 6. root widget for app
 
-Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
-
+Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart.
 "functional_widget" is not a mandatory app dependency.
 
 ```dart
