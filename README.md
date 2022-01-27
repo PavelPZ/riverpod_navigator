@@ -46,7 +46,7 @@ final config4DartCreator = () => Config4Dart(json2Segment: (json, _) => AppSegme
 
 #### 3. app-specific navigator with navigation aware actions
 
-Actions are used in app widgets.
+... actions are then used in app widgets.
 
 ```dart
 const booksLen = 5;

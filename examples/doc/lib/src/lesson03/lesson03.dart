@@ -23,7 +23,8 @@ class AppSegments with _$AppSegments, TypedSegment {
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
 
-// *** NEW 1.1 HomeScreen: async when creating, BookScreen with odd id: async when creating and merging
+// *** NEW 1.1 app-specific navigator with navigation aware actions.
+// actions are then used in app widgets.
 
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   Future<String> simulateAsyncResult(String title, int msec) async {
