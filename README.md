@@ -231,7 +231,7 @@ class AppSegments with _$AppSegments, TypedSegment {
   factory AppSegments.home() = HomeSegment;
   factory AppSegments.books() = BooksSegment;
   factory AppSegments.book({required int id}) = BookSegment;
-  factory AppSegments.splash() = SplashSegment;
+  factory AppSegments.splash() = SplashSegment; // <========
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
@@ -246,7 +246,7 @@ final config4DartCreator = () => Config4Dart(
       json2Segment: (json, _) => AppSegments.fromJson(json),
       segment2AsyncScreenActions: segment2AsyncScreenActions,
       initPath: [HomeSegment()],
-      splashPath: [SplashSegment()],
+      splashPath: [SplashSegment()], // <========
     );
 ```  
 
@@ -262,7 +262,7 @@ final configCreator = (Config4Dart config4Dart) => Config(
         home: (s) => HomeScreen(s),
         books: (s) => BooksScreen(s),
         book: (s) => BookScreen(s),
-        splash: (s) => SplashScreen(s),
+        splash: (s) => SplashScreen(s), // <========
       ),
       config4Dart: config4Dart,
     );
@@ -270,7 +270,7 @@ final configCreator = (Config4Dart config4Dart) => Config(
 
 #### 8. app screens
 
-Add SplashScreen widget. 
+Add SplashScreen widget // <========
 
 -------------------------
 
