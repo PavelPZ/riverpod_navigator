@@ -149,7 +149,7 @@ An example that allows flutter-independent testing.
 
 See changes against Example01. Example file is available here: [lesson03.dart](examples/doc/lib/src/lesson03/lesson03.dart). 
 
-#### 1.1 **NEW:** add new code for async screen actions
+#### 1.1 add new code for async screen actions
 
 ```dart
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
@@ -193,28 +193,8 @@ final config4DartCreator = () => Config4Dart(
 AppNavigator extends AsyncRiverpodNavigator instead of RiverpodNavigator
 
 ```dart
-const booksLen = 5;
-
 class AppNavigator extends AsyncRiverpodNavigator {
-  AppNavigator(Ref ref, Config4Dart config) : super(ref, config);
-
-  /// navigate to home page
-  void toHome() => navigate([HomeSegment()]);
-  /// navigate to books page
-  void toBooks() => navigate([HomeSegment(), BooksSegment()]);
-  /// navigate to book;id=3 page
-  void toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
-  /// cyclic book's navigation (Prev and Next buttons)
-  void bookNextPrevButton({bool? isPrev}) {
-    assert(getActualTypedPath().last is BookSegment);
-    var id = (getActualTypedPath().last as BookSegment).id;
-    if (isPrev == true)
-      id = id == 0 ? booksLen - 1 : id - 1;
-    else
-      id = booksLen - 1 > id ? id + 1 : 0;
-    toBook(id: id);
-  }
-}
+  ...
 ```
 
 -------------------------
