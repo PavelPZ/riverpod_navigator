@@ -11,11 +11,6 @@
   and [riverpod_navigator_dart.dart](packages/riverpod_navigator_dart/lib/src/riverpod_navigator_dart.dart)).
   Additional features (such as better URL parser, asynchronous navigation, possibility to use routes etc.) are included (and can be created) as configurable extensions.
 
-| riverpod_navigator | [![pub package](https://img.shields.io/pub/v/riverpod.svg?label=riverpod_navigator&color=blue)](https://pub.dartlang.org/packages/riverpod_navigator) |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| riverpod_navigator_dart         | [![pub package](https://img.shields.io/pub/v/riverpod.svg?label=riverpod_navigator_dart&color=blue)](https://pub.dartlang.org/packages/riverpod_navigator_dart)                 |
-
-
 ## Index
 
 - [Explanation on examples](#explanation-on-examples)
