@@ -20,10 +20,6 @@ The "Riverpod navigator" consists of two packages, similar to a "riverpod". The 
 | riverpod | flutter_riverpod or hooks_riverpod |
 | riverpod_navigation_dart | riverpod_navigation |
 
-- [Install and run examples](#install-and-run-examples)
-- [Explanation on examples](#explanation-on-examples)
-- [Roadmap](#roadmap)
-
 ## Install and run examples
 
 After clonning repository, go to ```examples/doc/``` subdirectory and execute:
@@ -41,15 +37,15 @@ After clonning repository, go to ```examples/doc/``` subdirectory and execute:
 
 ### Examples index
 
-  - [Lesson01: simple example](#lesson01-simple-example)
-  - [Lesson02: example with Dart testing](#lesson02-example-with-dart-testing)
-  - [Lesson03: asynchronous navigation](#lesson03-asynchronous-navigation)
-  - [Lesson03.1: splash screen](#lesson031-splash-screen)
-  - [Lesson04: app logic, more TypedSegment classes per app](#lesson04-app-logic-more-typedsegment-classes-per-app)
-  - [Lesson05: using the Route concept](#lesson05-using-the-route-concept)
-  - [Lesson06: splash screen](#lesson06-splash-screen)
-  - [Lesson07: waiting indicator, navigatorWidgetBuilder](#lesson07-waiting-indicator-navigatorwidgetbuilder)
-  - [Lesson08: screenBuilder](#lesson08-screenbuilder)
+- [Lesson01: simple example](#lesson01-simple-example)
+- [Lesson02: example with Dart testing](#lesson02-example-with-dart-testing)
+- [Lesson03: asynchronous navigation](#lesson03-asynchronous-navigation)
+- [Lesson03.1: splash screen](#lesson031-splash-screen)
+- [Lesson04: app logic, more TypedSegment classes per app](#lesson04-app-logic-more-typedsegment-classes-per-app)
+- [Lesson05: using the Route concept](#lesson05-using-the-route-concept)
+- [Lesson06: splash screen](#lesson06-splash-screen)
+- [Lesson07: waiting indicator, navigatorWidgetBuilder](#lesson07-waiting-indicator-navigatorwidgetbuilder)
+- [Lesson08: screenBuilder](#lesson08-screenbuilder)
 
 ### Lesson01: simple example
 
@@ -325,7 +321,3 @@ Simple Login navigation flow
 
 *to be done*
 
-## Roadmap
-
-- block GUI screen
-- Nested routing
