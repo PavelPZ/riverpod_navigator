@@ -12,19 +12,19 @@
   Additional features (such as better URL parser, asynchronous navigation, possibility to use routes etc.) are included (and can be created) as configurable extensions.
 
 ## Index
-- [Explanation on examples](#Explanation on examples)
-- [Lesson07 - screenBuilder](#Lesson07 - screenBuilder)
-- [Roadmap](#Roadmap)
+- [Explanation on examples](#explanation-on-examples)
+- [Lesson07 - screenBuilder](#lesson07:-screenbuilder)
+- [Roadmap](#roadmap)
 
 ## Explanation on examples
 
 *For a better understanding, everything is explained on the classic 3-screens example: [Home] => [Books] => [Book\*]*
 
-### Lesson01 - simple example
+### Lesson01: simple example
 
 Example file is available here: [lesson01.dart](examples/doc/lib/src/lesson01/lesson01.dart) 
 
-#### 1. Classes for typed url-path-segments (TypedSegment)
+#### 1. Classes for typed "url path segments" (TypedSegment)
 
 The Freezed package generates three immutable classes used for writing typed navigation path, e.g<br>
 ```TypedPath newPath = <TypedSegment>[HomeSegment (), BooksSegment (), BookSegment (id: 3)];```
@@ -41,7 +41,7 @@ class AppSegments with _$AppSegments, TypedSegment {
 }
 ```
 
-#### 2. Dart-part of app configuration
+#### 2. Dart part of app configuration
 
 Tell the application how to convert TypedSegments from JSON.
 
@@ -49,7 +49,7 @@ Tell the application how to convert TypedSegments from JSON.
 final config4DartCreator = () => Config4Dart(json2Segment: (json, _) => AppSegments.fromJson(json));
 ```
 
-#### 3. app-specific navigator with navigation aware actions
+#### 3. app specific navigator with navigation aware actions
 
 ... actions are then used in app widgets.
 
@@ -223,7 +223,7 @@ class AppNavigator extends AsyncRiverpodNavigator {
 
 -------------------------
 
-### Lesson07 - screenBuilder
+### Lesson07: screenBuilder
 
 *to be done*
 
