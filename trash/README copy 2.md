@@ -96,5 +96,5 @@ and  [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation
 ... how to use [riverpod](https://riverpod.dev/) and [freezed](https://github.com/rrousselGit/freezed) 
 to simplify Flutter [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade) usage.
 
-*For a better understanding, everything is explained on the classic 3-screens example: [Home] => [Book] => [Books*]*
+*For a better understanding, everything is explained on the classic 3-screens example: [Home] => [Books] => [Book\*]*
 

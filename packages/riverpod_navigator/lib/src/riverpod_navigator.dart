@@ -34,9 +34,10 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
         // segment => screen
         pages: actPath.map((segment) => _config.screen2Page(segment, _config.screenBuilder)).toList(),
         onPopPage: (route, result) {
-          if (!route.didPop(result)) return false;
+          //if (!route.didPop(result)) return false;
           // remove last segment from path
-          return _navigator.onPopRoute();
+          _navigator.onPopRoute();
+          return false;
         });
     return _config.navigatorWidgetBuilder == null ? navigatorWidget : _config.navigatorWidgetBuilder!(context, navigatorWidget);
   }

@@ -23,6 +23,9 @@
 		{
 			"name": "riverpod_navigator_idea",
 			"path": "examples\\riverpod_navigator_idea"
+		},
+		{
+			"path": "examples\\doc"
 		}
 	],
 	"settings": {

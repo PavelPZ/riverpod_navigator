@@ -14,7 +14,7 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
   /// put all change-route application logic here
   /// (redirect to other page during login x logoff, other guards, redirect, ...)
   @protected
-  TypedPath appNavigationLogic(TypedPath oldPath, TypedPath newPath);
+  TypedPath appNavigationLogic(TypedPath oldPath, TypedPath newPath) => newPath;
 
   /// start- and end-navigation callback (with possible error at the end)
   void Function(bool inStart, [Object? error])? onAsyncChange;
@@ -93,6 +93,7 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
     ];
     // wait
     if (notEmptyFutures.isNotEmpty) await Future.wait(notEmptyFutures);
+    return;
   }
 
   /// replaces "eq" routes with "identical" ones

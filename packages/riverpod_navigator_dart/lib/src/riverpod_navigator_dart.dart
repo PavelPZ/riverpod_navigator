@@ -43,7 +43,7 @@ final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, Typed
 // ********************************************
 
 /// Helper singleton class for navigating to [TypedPath]
-abstract class RiverpodNavigator {
+class RiverpodNavigator {
   RiverpodNavigator(this.ref, this.config);
 
   Ref ref;
@@ -64,8 +64,8 @@ abstract class RiverpodNavigator {
   bool onPopRoute() {
     final actPath = getActualTypedPath();
     if (actPath.length <= 1) return false;
-    unawaited(navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i]]));
-    return true;
+    navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i]]);
+    return false;
   }
 
   // *** common navigation-agnostic app actions ***

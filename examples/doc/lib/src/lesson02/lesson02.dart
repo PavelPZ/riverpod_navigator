@@ -1,0 +1,123 @@
+// *** 0. imports a part's
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:functional_widget_annotation/functional_widget_annotation.dart';
+import 'package:riverpod_navigator/riverpod_navigator.dart';
+
+import 'pages.dart';
+
+part 'lesson02.freezed.dart';
+part 'lesson02.g.dart';
+
+// *** 1. define typed segments
+
+@freezed
+class AppSegments with _$AppSegments, TypedSegment {
+  AppSegments._();
+  factory AppSegments.home() = HomeSegment;
+  factory AppSegments.books() = BooksSegment;
+  factory AppSegments.book({required int id}) = BookSegment;
+
+  factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
+}
+
+// *** NEW 1.1 HomeScreen: async when creating, BookScreen with odd id: async when creating and merging
+
+AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
+  if (segment is AppSegments)
+    return segment.maybeMap(
+      book: (_) => AsyncScreenActions<BookSegment>(
+        // for every Book screen with odd id: creating takes some time
+        creating: (newSegment) => newSegment.id.isOdd ? Future.delayed(Duration(seconds: 1)) : null,
+        // for every Book screen with odd id: changing to another Book screen takes some time
+        merging: (oldSegment, _) => oldSegment.id.isOdd ? Future.delayed(Duration(milliseconds: 500)) : null,
+        // for every Book screen with even id: creating takes some time
+        deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(seconds: 1)) : null,
+      ),
+      home: (_) => AsyncScreenActions<HomeSegment>(
+        // Home screen takes some timefor creating
+        creating: (_) => Future.delayed(Duration(seconds: 1)),
+      ),
+      orElse: () => null,
+    );
+  else
+    return null;
+}
+
+// *** MODIFIED 2. Configure dart-part of app
+
+final config4DartCreator = () => Config4Dart(
+      json2Segment: (json, _) => AppSegments.fromJson(json),
+      // MODIFIED
+      segment2AsyncScreenActions: segment2AsyncScreenActions,
+    );
+
+// *** 3. app specific navigator with navigation aware actions for app screens
+
+const booksLen = 5;
+
+// OLD code class AppNavigator extends RiverpodNavigator {
+// NEW code:
+class AppNavigator extends AsyncRiverpodNavigator {
+  AppNavigator(Ref ref, Config4Dart config) : super(ref, config);
+
+  void toHome() => navigate([HomeSegment()]);
+  void toBooks() => navigate([HomeSegment(), BooksSegment()]);
+  void toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
+  void bookNextPrevButton({bool? isPrev}) {
+    assert(getActualTypedPath().last is BookSegment);
+    var id = (getActualTypedPath().last as BookSegment).id;
+    if (isPrev == true)
+      id = id == 0 ? booksLen - 1 : id - 1;
+    else
+      id = booksLen - 1 > id ? id + 1 : 0;
+    toBook(id: id);
+  }
+}
+
+// *** 4. providers for app-specific-navigator and for RiverpodRouterDelegate
+
+final appNavigatorProvider = Provider<AppNavigator>((ref) => AppNavigator(ref, ref.watch(config4DartProvider)));
+
+final appRouterDelegateProvider =
+    Provider<RiverpodRouterDelegate>((ref) => RiverpodRouterDelegate(ref, ref.watch(configProvider), ref.watch(appNavigatorProvider)));
+
+// *** 5. Configure flutter-part of app
+
+final configCreator = () => Config(
+      /// Which widget will be builded for which [TypedSegment].
+      /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
+      screenBuilder: (segment) => (segment as AppSegments).map(
+        home: (home) => HomeScreen(home),
+        books: (books) => BooksScreen(books),
+        book: (book) => BookScreen(book),
+      ),
+
+      /// specify home path of app
+      initPath: [HomeSegment()],
+    );
+
+// *** 6. root widget for app
+// Using functional_widget package to be less verbose. Package generates ConsumerWidget's code, see *.g.dart
+
+@cwidget
+Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
+      title: 'Books App',
+      routerDelegate: ref.watch(appRouterDelegateProvider),
+      routeInformationParser: RouteInformationParserImpl(ref.watch(config4DartProvider)),
+    );
+
+// *** 7. app entry point with ProviderScope
+
+void main() {
+  runApp(ProviderScope(
+    // initialize configs
+    overrides: [
+      config4DartProvider.overrideWithValue(config4DartCreator()),
+      configProvider.overrideWithValue(configCreator()),
+    ],
+    child: const BooksExampleApp(),
+  ));
+}
