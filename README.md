@@ -19,7 +19,7 @@
 
 Whole example is available [here](examples/doc/lib/src/lesson01/lesson01.dart) 
 
-### 1. Classes for typed url-path-segments (TypedSegment)
+#### 1. Classes for typed url-path-segments (TypedSegment)
 
 The Freezed package generates three immutable classes used for writing typed navigation path, e.g<br>
 ```TypedPath path = [HomeSegment (), BooksSegment (), BookSegment (id: 3)];```
@@ -36,7 +36,7 @@ class AppSegments with _$AppSegments, TypedSegment {
 }
 ```
 
-### 2. Dart-part of app configuration
+#### 2. Dart-part of app configuration
 
 Tell the application how to convert TypedSegments from JSON.
 
@@ -76,11 +76,13 @@ class AppNavigator extends RiverpodNavigator {
 ### 4. providers
 
 ```dart
-final appNavigatorProvider = Provider<AppNavigator>((ref) => AppNavigator(ref, ref.watch(config4DartProvider)));
+final appNavigatorProvider = 
+  Provider<AppNavigator>((ref) => AppNavigator(ref, ref.watch(config4DartProvider)));
 
 /// Provided Flutter 2.0 RouterDelegate
 final appRouterDelegateProvider =
-    Provider<RiverpodRouterDelegate>((ref) => RiverpodRouterDelegate(ref, ref.watch(configProvider), ref.watch(appNavigatorProvider)));
+    Provider<RiverpodRouterDelegate>((ref) => 
+      RiverpodRouterDelegate(ref, ref.watch(configProvider), ref.watch(appNavigatorProvider)));
 ```
 ### 5. Flutter-part of app configuration
 
