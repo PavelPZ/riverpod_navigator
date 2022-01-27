@@ -45,6 +45,7 @@ class AppSegments with _$AppSegments, TypedSegment {
   factory AppSegments.home() = HomeSegment;
   factory AppSegments.books() = BooksSegment;
   factory AppSegments.book({required int id}) = BookSegment;
+  factory AppSegments.splash() = SplashSegment;
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
@@ -55,7 +56,7 @@ class AppSegments with _$AppSegments, TypedSegment {
 Tell the application how to convert TypedSegments from JSON.
 
 ```dart
-final config4DartCreator = () => Config4Dart(json2Segment: (json, _) => AppSegments.fromJson(json));
+final config4DartCreator = () => Config4Dart(initPath: [HomeSegment()], json2Segment: (json, _) => AppSegments.fromJson(json));
 ```
 
 #### 3. app specific navigator with navigation aware actions
@@ -101,18 +102,17 @@ final appRouterDelegateProvider =
 #### 5. Flutter-part of app configuration
 
 ```dart
-final configCreator = () => Config(
-      /// Which screen will be builded for which [TypedSegment].
+final configCreator = (Config4Dart config4Dart) => Config(
+      /// Which widget will be builded for which [TypedSegment].
       /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
       screenBuilder: (segment) => (segment as AppSegments).map(
         home: (home) => HomeScreen(home),
         books: (books) => BooksScreen(books),
         book: (book) => BookScreen(book),
       ),
-
-      /// specify home TypedPath of app
-      initPath: [HomeSegment()],
+      config4Dart: config4Dart,
     );
+
 ```
 #### 6. root widget for app
 
@@ -137,7 +137,7 @@ void main() {
     // initialize providers with the configurations defined above
     overrides: [
       config4DartProvider.overrideWithValue(config4DartCreator()),
-      configProvider.overrideWithValue(configCreator()),
+      configProvider.overrideWithValue(configCreator(config4DartCreator())),
     ],
     child: const BooksExampleApp(),
   ));
@@ -164,7 +164,9 @@ See changes against Example01 (added part 1.1, parts 2. and 3. are modified).
 
 Example file is available here: [lesson03.dart](examples/doc/lib/src/lesson03/lesson03.dart). 
 
-#### 1.1 add new code for async screen actions
+#### 1.1 async screen actions
+
+Add new code for async screen actions.
 
 ```dart
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
@@ -199,6 +201,7 @@ Add ```segment2AsyncScreenActions``` to config
 ```dart
 final config4DartCreator = () => Config4Dart(
       json2Segment: (json, _) => AppSegments.fromJson(json),
+      initPath: [HomeSegment()],
       segment2AsyncScreenActions: segment2AsyncScreenActions,
     );
 ```
@@ -211,6 +214,63 @@ AppNavigator extends AsyncRiverpodNavigator instead of RiverpodNavigator
 class AppNavigator extends AsyncRiverpodNavigator {
   ...
 ```
+
+-------------------------
+
+### Lesson03.1: splash screen
+
+#### 1. Classes for typed "url path segments" (TypedSegment)
+
+Add SplashSegment definition
+
+```dart
+@freezed
+class AppSegments with _$AppSegments, TypedSegment {
+  AppSegments._();
+  factory AppSegments.home() = HomeSegment;
+  factory AppSegments.books() = BooksSegment;
+  factory AppSegments.book({required int id}) = BookSegment;
+  factory AppSegments.splash() = SplashSegment;
+
+  factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
+}
+```
+
+#### 2. Dart part of app configuration
+
+Specify splashPath.
+
+```dart
+final config4DartCreator = () => Config4Dart(
+      json2Segment: (json, _) => AppSegments.fromJson(json),
+      segment2AsyncScreenActions: segment2AsyncScreenActions,
+      initPath: [HomeSegment()],
+      splashPath: [SplashSegment()],
+    );
+```  
+
+#### 5. Flutter-part of app configuration
+
+Add splash screen builder.
+
+```dart
+final configCreator = (Config4Dart config4Dart) => Config(
+      /// Which widget will be builded for which [TypedSegment].
+      /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
+      screenBuilder: (segment) => (segment as AppSegments).map(
+        home: (s) => HomeScreen(s),
+        books: (s) => BooksScreen(s),
+        book: (s) => BookScreen(s),
+        splash: (s) => SplashScreen(s),
+      ),
+      config4Dart: config4Dart,
+    );
+```
+
+#### 8. app screens
+
+Add SplashScreen widget. 
+
 
 -------------------------
 
@@ -251,5 +311,4 @@ Simple Login navigation flow
 ## Roadmap
 
 - block GUI screen
-- Splash screen
 - Nested routing

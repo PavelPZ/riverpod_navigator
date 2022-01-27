@@ -6,16 +6,17 @@ import 'pages.dart';
 import 'route.dart';
 
 List<Override> configureApp({required bool withRoutes}) {
+  final config4Dart = Config4Dart(
+    pathParser: SimplePathParser(),
+    initPath: [HomeSegment()],
+    json2Segment: json2Segment,
+    segment2AsyncScreenActions: withRoutes == true ? segment2AsyncScreenActions4Routes : segment2AsyncScreenActions,
+  );
   final config = Config(
     screenBuilder: withRoutes == true ? screenBuilder4Routes : screenBuilder,
     navigatorWidgetBuilder: null,
     screen2Page: null,
-    initPath: [HomeSegment()],
-  );
-  final config4Dart = Config4Dart(
-    pathParser: SimplePathParser(),
-    json2Segment: json2Segment,
-    segment2AsyncScreenActions: withRoutes == true ? segment2AsyncScreenActions4Routes : segment2AsyncScreenActions,
+    config4Dart: config4Dart,
   );
   return [
     config4DartProvider.overrideWithValue(config4Dart),

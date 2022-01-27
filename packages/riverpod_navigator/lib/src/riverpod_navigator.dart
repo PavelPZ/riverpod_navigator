@@ -46,7 +46,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
   Future<void> setNewRoutePath(TypedPath configuration) => _navigator.navigate(configuration);
 
   @override
-  Future<void> setInitialRoutePath(TypedPath configuration) => _navigator.navigate(_config.initPath);
+  Future<void> setInitialRoutePath(TypedPath configuration) => _navigator.navigate(_config.config4Dart.initPath);
 }
 
 class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
@@ -68,13 +68,15 @@ class Config {
   Config({
     required this.screenBuilder,
     Screen2Page? screen2Page,
-    required this.initPath,
     this.navigatorWidgetBuilder,
+    required this.config4Dart,
   }) : screen2Page = screen2Page ?? screen2PageDefault;
   final Screen2Page screen2Page;
   final ScreenBuilder screenBuilder;
-  final TypedPath initPath;
   final NavigatorWidgetBuilder? navigatorWidgetBuilder;
+
+  /// dart-only part of config
+  final Config4Dart config4Dart;
 }
 
 final configProvider = Provider<Config>((_) => throw UnimplementedError());

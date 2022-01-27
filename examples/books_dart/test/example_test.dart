@@ -16,6 +16,7 @@ void main() {
             Config4Dart(
               json2Segment: json2Segment,
               segment2AsyncScreenActions: withRoutes == true ? segment2AsyncScreenActions4Routes : segment2AsyncScreenActions,
+              initPath: [HomeSegment()],
             ),
           ),
           appConfig4DartProvider.overrideWithValue(

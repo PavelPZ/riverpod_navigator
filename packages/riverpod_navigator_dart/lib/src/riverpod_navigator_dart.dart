@@ -156,6 +156,8 @@ class Config4Dart {
     required this.json2Segment,
     PathParser? pathParser,
     this.segment2AsyncScreenActions,
+    required this.initPath,
+    this.splashPath,
   }) : pathParser = pathParser ?? SimplePathParser() /* PathParser */ {
     this.pathParser.init(this);
   }
@@ -168,6 +170,9 @@ class Config4Dart {
 
   /// screen async-navigation action
   final Segment2AsyncScreenActions? segment2AsyncScreenActions;
+
+  final TypedPath initPath;
+  final TypedPath? splashPath;
 }
 
 final config4DartProvider = Provider<Config4Dart>((_) => throw UnimplementedError());

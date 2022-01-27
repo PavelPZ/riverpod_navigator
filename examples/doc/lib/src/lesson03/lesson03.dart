@@ -23,8 +23,7 @@ class AppSegments with _$AppSegments, TypedSegment {
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
 
-// *** NEW 1.1 app-specific navigator with navigation aware actions.
-// actions are then used in app widgets.
+// *** NEW 1.1 async screen actions
 
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   Future<String> simulateAsyncResult(String title, int msec) async {
@@ -52,6 +51,7 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
 
 final config4DartCreator = () => Config4Dart(
       json2Segment: (json, _) => AppSegments.fromJson(json),
+      initPath: [HomeSegment()],
       segment2AsyncScreenActions: segment2AsyncScreenActions,
     );
 
@@ -85,7 +85,7 @@ final appRouterDelegateProvider =
 
 // *** 5. Configure flutter-part of app
 
-final configCreator = () => Config(
+final configCreator = (Config4Dart config4Dart) => Config(
       /// Which widget will be builded for which [TypedSegment].
       /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
       screenBuilder: (segment) => (segment as AppSegments).map(
@@ -93,9 +93,7 @@ final configCreator = () => Config(
         books: (books) => BooksScreen(books),
         book: (book) => BookScreen(book),
       ),
-
-      /// specify home path of app
-      initPath: [HomeSegment()],
+      config4Dart: config4Dart,
     );
 
 // *** 6. root widget for app
@@ -115,7 +113,7 @@ void main() {
     // initialize configs
     overrides: [
       config4DartProvider.overrideWithValue(config4DartCreator()),
-      configProvider.overrideWithValue(configCreator()),
+      configProvider.overrideWithValue(configCreator(config4DartCreator())),
     ],
     child: const BooksExampleApp(),
   ));

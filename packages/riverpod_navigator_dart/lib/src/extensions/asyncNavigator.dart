@@ -97,10 +97,14 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
     // wait
     if (notEmptyFutures.isEmpty) return;
 
+    if (config.splashPath != null && oldPath.isEmpty) setActualTypedPath(config.splashPath as TypedPath);
+
     final asyncResults = await Future.wait(notEmptyFutures.map((fs) => fs.item1 as Future));
     assert(asyncResults.length == notEmptyFutures.length);
 
     for (var i = 0; i < asyncResults.length; i++) notEmptyFutures[i].item2.asyncActionResult = asyncResults[i];
+
+    // show splash screen
     return;
   }
 
