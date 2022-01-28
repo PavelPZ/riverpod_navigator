@@ -25,7 +25,7 @@ The "Riverpod navigator" consists of two packages, similar to a "riverpod". The 
 *For a better understanding, everything is explained on the classic example:<br>
 [Home] => [Books] => [Book\*]*
 
-Annotated examples [can be found here](examples.md)
+Annotated examples [can be found here](explanation_on_examples.md)
 
 ### Install and run examples
 
