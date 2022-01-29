@@ -1,3 +1,4 @@
+###part 0
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -6,10 +7,10 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'screens.dart';
 
-part 'lesson03.freezed.dart';
-part 'lesson03.g.dart';
+part 'lesson{01}.freezed.dart';
+part 'lesson{01}.g.dart';
 
-
+###part 1
 // *** 1. classes for typed path segments (TypedSegment)
 
 /// The Freezed package generates three immutable classes used for writing typed navigation path,
@@ -24,7 +25,23 @@ class AppSegments with _$AppSegments, TypedSegment {
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
 
+###part 1-31
+// *** 1. classes for typed path segments (TypedSegment)
 
+/// The Freezed package generates three immutable classes used for writing typed navigation path,
+/// e.g TypedPath path = [HomeSegment (), BooksSegment () and BookSegment (id: 3)]
+@freezed
+class AppSegments with _$AppSegments, TypedSegment {
+  AppSegments._();
+  factory AppSegments.home() = HomeSegment;
+  factory AppSegments.books() = BooksSegment;
+  factory AppSegments.book({required int id}) = BookSegment;
+  factory AppSegments.splash() = SplashSegment;
+
+  factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
+}
+
+###part 1-3
 // *** async screen actions
 
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
@@ -50,7 +67,17 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   );
 }
 
+###part 2
+// *** 2. Dart-part of app configuration
 
+final config4DartCreator = () => Config4Dart(
+      initPath: [HomeSegment()],
+      json2Segment: (json, _) => AppSegments.fromJson(json),
+      riverpodNavigatorCreator: (ref) => AppNavigator(ref),
+      routerDelegateCreator: (ref) => RiverpodRouterDelegate(ref),
+    );
+
+###part 2-3
 // *** MODIFIED 2. Configure dart-part of app
 
 final config4DartCreator = () => Config4Dart(
@@ -61,7 +88,20 @@ final config4DartCreator = () => Config4Dart(
       routerDelegateCreator: (ref) => RiverpodRouterDelegate(ref),
     );
 
+###part 2-31
+// *** MODIFIED 2. Configure dart-part of app
 
+final config4DartCreator = () => Config4Dart(
+      json2Segment: (json, _) => AppSegments.fromJson(json),
+      segment2AsyncScreenActions: segment2AsyncScreenActions,
+      initPath: [HomeSegment()],
+      splashPath: [SplashSegment()],
+      riverpodNavigatorCreator: (ref) => AppNavigator(ref),
+      routerDelegateCreator: (ref) => RiverpodRouterDelegate(ref),
+    );
+
+
+###part 3
 // *** 3. app-specific navigator with navigation aware actions (used in screens)
 
 const booksLen = 5;
@@ -83,14 +123,14 @@ class AppNavigator extends RiverpodNavigator {
   }
 }
 
-
+###part 4
 // *** 4. WidgetRef extension
 
 extension ReadNavigator on WidgetRef {
   AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
 }
 
-
+###part 5
 // *** 5. Flutter-part of app configuration
 
 final configCreator = (Config4Dart config4Dart) => Config(
@@ -104,7 +144,22 @@ final configCreator = (Config4Dart config4Dart) => Config(
       config4Dart: config4Dart,
     );
 
+###part 5-3
+// *** 5. Flutter-part of app configuration
 
+final configCreator = (Config4Dart config4Dart) => Config(
+      /// Which widget will be builded for which [TypedSegment].
+      /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
+      screenBuilder: (segment) => (segment as AppSegments).map(
+        home: (home) => HomeScreen(home),
+        books: (books) => BooksScreen(books),
+        book: (book) => BookScreen(book),
+        splash: (s) => SplashScreen(s),
+      ),
+      config4Dart: config4Dart,
+    );
+
+###part 6
 // *** 6. root widget for app
 
 /// Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
@@ -115,7 +170,7 @@ Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
       routeInformationParser: RouteInformationParserImpl(ref),
     );
 
-
+###part 7
 // *** 7. app entry point with ProviderScope
 
 void main() {

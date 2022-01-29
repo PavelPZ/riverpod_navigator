@@ -51,7 +51,6 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
   //   onAsyncChange?.call(true);
   //   try {
   //     // app logic (e.g. redirect to other page when user is not logged)
-  //     // TODO(PZ): x
   //     newPath = []; //simpleAppNavigationLogic(actPath, newPath);
 
   //     // normalize newPath

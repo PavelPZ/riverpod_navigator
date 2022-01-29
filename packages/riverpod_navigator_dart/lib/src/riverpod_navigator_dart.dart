@@ -32,14 +32,24 @@ typedef AsyncActionResult = dynamic;
 typedef TypedPath = List<TypedSegment>;
 
 // ********************************************
-// Dart config and providers with creators from config
+// Dart config and providers (with creators from config)
 // ********************************************
 typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
 
+/// config4DartProvider value is initialized by:
+///
+/// ```
+/// ProviderScope(
+///   overrides: [
+///     config4DartProvider.overrideWithValue(Config4Dart(...))),
+///   ],...
+/// ```
 final config4DartProvider = Provider<Config4Dart>((_) => throw UnimplementedError());
 
+/// provider for app specific RiverpodNavigator
 final riverpodNavigatorProvider = Provider<RiverpodNavigator>((ref) => ref.read(config4DartProvider).riverpodNavigatorCreator(ref));
 
+/// provider for: 1. RouterDelegate4Dart for Dart project, 2. RiverpodRouterDelegate for Flutter project
 final routerDelegateProvider = Provider<IRouterDelegate>((ref) => ref.read(config4DartProvider).routerDelegateCreator(ref));
 
 class Config4Dart {
@@ -108,19 +118,6 @@ class RouterDelegate4Dart extends IRouterDelegate {
 
 final asyncTypedPathProvider = FutureProvider<TypedPath>((ref) => ref.watch(riverpodNavigatorProvider).appNavigationLogic(ref));
 
-// Must be called just after some of [asyncTypedPathProvider].dependencies changed its state
-Future<TypedPath> waitForAsyncNavigation(Ref ref) async {
-  await ref.container.pump();
-  final asyncTypedPath = ref.read(asyncTypedPathProvider);
-  final completer = Completer<TypedPath>();
-  asyncTypedPath.when(
-    data: (data) => completer.complete(data),
-    error: (error, stack) => completer.completeError(error, stack),
-    loading: () {},
-  );
-  return completer.future;
-}
-
 // ********************************************
 //   RiverpodNavigator
 // ********************************************
@@ -133,15 +130,22 @@ class RiverpodNavigator {
   final Config4Dart config;
 
   /// put all change-route application logic here
-  Future<TypedPath> appNavigationLogic(Ref ref) => Future.value(ref.watch(futureTypedPathProvider));
+  Future<TypedPath> appNavigationLogic(Ref ref) async {
+    final routerDelegate = ref.read(routerDelegateProvider);
+    final newPath = ref.watch(futureTypedPathProvider);
+    final oldPath = routerDelegate.currentConfiguration;
+    routerDelegate.currentConfiguration = newPath;
+    routerDelegate.notifyListeners();
+    return newPath;
+  }
 
   /// Main [RiverpodNavigator] method. Provides navigation to the new [TypedPath].
   ///
   /// 1 line: change [futureTypedPathProvider]'s state => [asyncTypedPathProvider] starts its work
   /// 2 line: waiting for [asyncTypedPathProvider] completition
-  Future<TypedPath> navigate(TypedPath newTypedPath) async {
+  Future<TypedPath> navigate(TypedPath newTypedPath) {
     ref.read(futureTypedPathProvider.notifier).state = newTypedPath;
-    return await waitForAsyncNavigation(ref);
+    return ref.read(asyncTypedPathProvider.future);
   }
 
   FutureTypedPath getPathNotifier() => ref.read(futureTypedPathProvider.notifier);

@@ -14,15 +14,9 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
   RiverpodRouterDelegate(Ref ref)
       : _config = ref.read(configProvider),
         _navigator = ref.watch(riverpodNavigatorProvider);
-  // {
-  //   _ref.listen(futureTypedPathProvider, (_, __) => notifyListeners());
-  // }
 
   final RiverpodNavigator _navigator;
   final Config _config;
-
-  // @override
-  // TypedPath get currentConfiguration => _navigator.getActualTypedPath();
 
   @override
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

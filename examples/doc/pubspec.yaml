@@ -14,6 +14,7 @@ dependencies:
   functional_widget_annotation:
   hooks_riverpod:
   json_annotation:
+  path:
   riverpod_navigator:
     path: ../../packages/riverpod_navigator
 
