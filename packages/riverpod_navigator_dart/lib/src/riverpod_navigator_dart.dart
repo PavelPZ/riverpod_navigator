@@ -9,7 +9,7 @@ import '../riverpod_navigator_dart.dart';
 typedef JsonMap = Map<String, dynamic>;
 
 // ********************************************
-//   riverpod StateNotifier and StateNotifierProvider
+//  basic classes:  TypedSegment and TypedPath
 // ********************************************
 
 /// Abstract interface for typed variant of path's segment.
@@ -31,18 +31,95 @@ typedef AsyncActionResult = dynamic;
 /// Typed variant of whole url path (which consists of [TypedSegment]s)
 typedef TypedPath = List<TypedSegment>;
 
-/// Riverpod StateNotifier. Notifying that actual typed path has changed
+// ********************************************
+// Dart config and providers with creators from config
+// ********************************************
+typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
+
+final config4DartProvider = Provider<Config4Dart>((_) => throw UnimplementedError());
+
+final riverpodNavigatorProvider = Provider<RiverpodNavigator>((ref) => ref.read(config4DartProvider).riverpodNavigatorCreator(ref));
+
+final routerDelegateProvider = Provider<IRouterDelegate>((ref) => ref.read(config4DartProvider).routerDelegateCreator(ref));
+
+class Config4Dart {
+  Config4Dart({
+    required this.routerDelegateCreator,
+    required this.riverpodNavigatorCreator,
+    required this.json2Segment,
+    required this.initPath,
+    PathParser? pathParser,
+    this.segment2AsyncScreenActions,
+    this.splashPath,
+  }) : pathParser = pathParser ?? SimplePathParser();
+  // String <=> TypedPath parser
+  final PathParser pathParser;
+
+  /// How to convert [TypedSegment] to json
+  final Json2Segment json2Segment;
+
+  /// screen async-navigation action
+  final Segment2AsyncScreenActions? segment2AsyncScreenActions;
+
+  /// initial screen
+  final TypedPath initPath;
+
+  /// splash screen
+  final TypedPath? splashPath;
+
+  /// app specific RiverpodNavigator
+  final RiverpodNavigator Function(Ref ref) riverpodNavigatorCreator;
+
+  /// RouterDelegate4Dart for Dart project, RiverpodRouterDelegate for Flutter project
+  final IRouterDelegate Function(Ref ref) routerDelegateCreator;
+}
+
+// ********************************************
+// FutureTypedPath => async actual TypedPath
+// ********************************************
+
+/// "updateShouldNotify => true" forces update of RouterDelegateProvider
 /// (and the Navigator 2.0 navigation stack needs to be changed too).
-class TypedPathNotifier extends StateNotifier<TypedPath> {
-  TypedPathNotifier() : super([]);
+class FutureTypedPath extends StateController<TypedPath> {
+  FutureTypedPath() : super([]);
 
   /// change state, which is called typedPath
   set typedPath(TypedPath newTypedPath) => state = newTypedPath;
   TypedPath get typedPath => state;
+
+  @override
+  bool updateShouldNotify(TypedPath old, TypedPath current) => true;
 }
 
-/// Riverpod provider which provides [TypedPathNotifier] to whole app
-final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());
+/// Riverpod provider which provides [FutureTypedPath] to whole app
+final futureTypedPathProvider = StateNotifierProvider<FutureTypedPath, TypedPath>((_) => FutureTypedPath());
+
+// RouterDelegate interface for dart and flutter
+abstract class IRouterDelegate {
+  TypedPath currentConfiguration = [];
+  void notifyListeners();
+}
+
+// RouterDelegate for dart
+class RouterDelegate4Dart extends IRouterDelegate {
+  @override
+  void notifyListeners() {}
+}
+
+final asyncTypedPathProvider = FutureProvider<TypedPath>((ref) => ref.watch(riverpodNavigatorProvider).appNavigationLogic(ref));
+
+// Must be called just after some of [asyncTypedPathProvider].dependencies changed its state
+Future<TypedPath> waitForAsyncNavigation(Ref ref) async {
+  await ref.container.pump();
+  final asyncTypedPath = ref.read(asyncTypedPathProvider);
+  final completer = Completer<TypedPath>();
+  asyncTypedPath.when(
+    data: (data) => completer.complete(data),
+    error: (error, stack) => completer.completeError(error, stack),
+    loading: () {},
+  );
+  return completer.future;
+}
 
 // ********************************************
 //   RiverpodNavigator
@@ -50,16 +127,24 @@ final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, Typed
 
 /// Helper singleton class for navigating to [TypedPath]
 class RiverpodNavigator {
-  RiverpodNavigator(this.ref, this.config);
+  RiverpodNavigator(this.ref) : config = ref.read(config4DartProvider);
 
   Ref ref;
-
   final Config4Dart config;
 
-  /// Main navigator method provided navigating to new [TypedPath]
-  Future<void> navigate(TypedPath newTypedPath) async => setActualTypedPath(newTypedPath);
+  /// put all change-route application logic here
+  Future<TypedPath> appNavigationLogic(Ref ref) => Future.value(ref.watch(futureTypedPathProvider));
 
-  TypedPathNotifier getPathNotifier() => ref.read(typedPathNotifierProvider.notifier);
+  /// Main [RiverpodNavigator] method. Provides navigation to the new [TypedPath].
+  ///
+  /// 1 line: change [futureTypedPathProvider]'s state => [asyncTypedPathProvider] starts its work
+  /// 2 line: waiting for [asyncTypedPathProvider] completition
+  Future<TypedPath> navigate(TypedPath newTypedPath) async {
+    ref.read(futureTypedPathProvider.notifier).state = newTypedPath;
+    return await waitForAsyncNavigation(ref);
+  }
+
+  FutureTypedPath getPathNotifier() => ref.read(futureTypedPathProvider.notifier);
 
   TypedPath getActualTypedPath() => getPathNotifier().typedPath;
   void setActualTypedPath(TypedPath value) => getPathNotifier().typedPath = value;
@@ -92,7 +177,7 @@ class RiverpodNavigator {
 }
 
 // ********************************************
-//   parser
+//   PathParser
 // ********************************************
 
 /// String path <==> TypedPath
@@ -122,10 +207,8 @@ class PathParser {
 }
 
 // ********************************************
-//   configuration
+//   AsyncScreenActions
 // ********************************************
-
-typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
 
 // @IFNDEF riverpod_navigator_idea
 
@@ -149,31 +232,3 @@ class AsyncScreenActions<T extends TypedSegment> {
 
 typedef Segment2AsyncScreenActions = AsyncScreenActions? Function(TypedSegment segment);
 // @ENDIF riverpod_navigator_idea
-
-/// navigation config (for dart-only part of code)
-class Config4Dart {
-  Config4Dart({
-    required this.json2Segment,
-    PathParser? pathParser,
-    this.segment2AsyncScreenActions,
-    required this.initPath,
-    this.splashPath,
-  }) : pathParser = pathParser ?? SimplePathParser() {
-    // PathParser() {
-    this.pathParser.init(this);
-  }
-
-  /// String url path <==> [TypedPath] parser
-  final PathParser pathParser;
-
-  /// How to convert [TypedSegment] to json
-  final Json2Segment json2Segment;
-
-  /// screen async-navigation action
-  final Segment2AsyncScreenActions? segment2AsyncScreenActions;
-
-  final TypedPath initPath;
-  final TypedPath? splashPath;
-}
-
-final config4DartProvider = Provider<Config4Dart>((_) => throw UnimplementedError());

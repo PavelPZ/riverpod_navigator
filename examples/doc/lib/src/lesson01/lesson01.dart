@@ -28,6 +28,8 @@ class AppSegments with _$AppSegments, TypedSegment {
 final config4DartCreator = () => Config4Dart(
       initPath: [HomeSegment()],
       json2Segment: (json, _) => AppSegments.fromJson(json),
+      riverpodNavigatorCreator: (ref) => AppNavigator(ref),
+      routerDelegateCreator: (ref) => RiverpodRouterDelegate(ref),
     );
 
 // *** 3. app-specific navigator with navigation aware actions (used in screens)
@@ -35,7 +37,7 @@ final config4DartCreator = () => Config4Dart(
 const booksLen = 5;
 
 class AppNavigator extends RiverpodNavigator {
-  AppNavigator(Ref ref, Config4Dart config) : super(ref, config);
+  AppNavigator(Ref ref) : super(ref);
 
   void toHome() => navigate([HomeSegment()]);
   void toBooks() => navigate([HomeSegment(), BooksSegment()]);
@@ -51,13 +53,11 @@ class AppNavigator extends RiverpodNavigator {
   }
 }
 
-// *** 4. providers
+// *** 4. WidgetRef extension
 
-final appNavigatorProvider = Provider<AppNavigator>((ref) => AppNavigator(ref, ref.watch(config4DartProvider)));
-
-/// Provider with Flutter 2.0 RouterDelegate
-final appRouterDelegateProvider =
-    Provider<RiverpodRouterDelegate>((ref) => RiverpodRouterDelegate(ref, ref.watch(configProvider), ref.watch(appNavigatorProvider)));
+extension ReadNavigator on WidgetRef {
+  AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
+}
 
 // *** 5. Flutter-part of app configuration
 
@@ -78,8 +78,8 @@ final configCreator = (Config4Dart config4Dart) => Config(
 @cwidget
 Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
       title: 'Books App',
-      routerDelegate: ref.watch(appRouterDelegateProvider),
-      routeInformationParser: RouteInformationParserImpl(ref.watch(config4DartProvider)),
+      routerDelegate: ref.watch(routerDelegateProvider) as RiverpodRouterDelegate,
+      routeInformationParser: RouteInformationParserImpl(ref),
     );
 
 // *** 7. app entry point with ProviderScope

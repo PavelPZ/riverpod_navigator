@@ -15,7 +15,7 @@ part 'screens.g.dart';
 Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
       title: 'Home Page',
       buildChildren: () => [
-        LinkHelper(title: 'Books Page', onPressed: ref.read(appNavigatorProvider).toBooks),
+        LinkHelper(title: 'Books Page', onPressed: ref.readNavigator().toBooks),
       ],
     );
 
@@ -23,15 +23,15 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
 Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
       title: 'Books Page',
       buildChildren: () =>
-          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book, id=$id', onPressed: () => ref.read(appNavigatorProvider).toBook(id: id))],
+          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book, id=$id', onPressed: () => ref.readNavigator().toBook(id: id))],
     );
 
 @cwidget
 Widget bookScreen(WidgetRef ref, BookSegment segment) => PageHelper(
       title: 'Book Page, id=${segment.id}',
       buildChildren: () => [
-        LinkHelper(title: 'Next >>', onPressed: ref.read(appNavigatorProvider).bookNextPrevButton),
-        LinkHelper(title: '<< Prev', onPressed: () => ref.read(appNavigatorProvider).bookNextPrevButton(isPrev: true)),
+        LinkHelper(title: 'Next >>', onPressed: ref.readNavigator().bookNextPrevButton),
+        LinkHelper(title: '<< Prev', onPressed: () => ref.readNavigator().bookNextPrevButton(isPrev: true)),
       ],
     );
 

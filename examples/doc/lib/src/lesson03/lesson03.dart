@@ -26,6 +26,7 @@ class AppSegments with _$AppSegments, TypedSegment {
 // *** NEW 1.1 async screen actions
 
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
+  // simulate helper
   Future<String> simulateAsyncResult(String title, int msec) async {
     await Future.delayed(Duration(milliseconds: msec));
     return title;
@@ -53,6 +54,8 @@ final config4DartCreator = () => Config4Dart(
       json2Segment: (json, _) => AppSegments.fromJson(json),
       initPath: [HomeSegment()],
       segment2AsyncScreenActions: segment2AsyncScreenActions,
+      riverpodNavigatorCreator: (ref) => AppNavigator(ref),
+      routerDelegateCreator: (ref) => RiverpodRouterDelegate(ref),
     );
 
 // *** 3. app specific navigator with navigation aware actions for app screens
@@ -60,7 +63,7 @@ final config4DartCreator = () => Config4Dart(
 const booksLen = 5;
 
 class AppNavigator extends AsyncRiverpodNavigator {
-  AppNavigator(Ref ref, Config4Dart config) : super(ref, config);
+  AppNavigator(Ref ref) : super(ref);
 
   void toHome() => navigate([HomeSegment()]);
   void toBooks() => navigate([HomeSegment(), BooksSegment()]);
@@ -76,12 +79,11 @@ class AppNavigator extends AsyncRiverpodNavigator {
   }
 }
 
-// *** 4. providers for app-specific-navigator and for RiverpodRouterDelegate
+// *** 4. WidgetRef extension
 
-final appNavigatorProvider = Provider<AppNavigator>((ref) => AppNavigator(ref, ref.watch(config4DartProvider)));
-
-final appRouterDelegateProvider =
-    Provider<RiverpodRouterDelegate>((ref) => RiverpodRouterDelegate(ref, ref.watch(configProvider), ref.watch(appNavigatorProvider)));
+extension ReadNavigator on WidgetRef {
+  AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
+}
 
 // *** 5. Configure flutter-part of app
 
@@ -102,15 +104,15 @@ final configCreator = (Config4Dart config4Dart) => Config(
 @cwidget
 Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
       title: 'Books App',
-      routerDelegate: ref.watch(appRouterDelegateProvider),
-      routeInformationParser: RouteInformationParserImpl(ref.watch(config4DartProvider)),
+      routerDelegate: ref.watch(routerDelegateProvider) as RiverpodRouterDelegate,
+      routeInformationParser: RouteInformationParserImpl(ref),
     );
 
 // *** 7. app entry point with ProviderScope
 
 void main() {
   runApp(ProviderScope(
-    // initialize configs
+    // initialize configs providers
     overrides: [
       config4DartProvider.overrideWithValue(config4DartCreator()),
       configProvider.overrideWithValue(configCreator(config4DartCreator())),

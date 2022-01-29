@@ -10,42 +10,68 @@ import 'route.dart';
 
 /// one of the strategies for responding to an asynchronous TypeedPath change
 abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
-  AsyncRiverpodNavigator(Ref ref, Config4Dart config) : super(ref, config);
-
-  /// put all change-route application logic here
-  /// (redirect to other page during login x logoff, other guards, redirect, ...)
-  @protected
-  TypedPath appNavigationLogic(TypedPath oldPath, TypedPath newPath) => newPath;
+  AsyncRiverpodNavigator(Ref ref) : super(ref);
 
   /// start- and end-navigation callback (with possible error at the end)
   void Function(bool inStart, [Object? error])? onAsyncChange;
 
-  /// navigate to newPath
+  /// put all change-route application logic here
   @override
-  Future<void> navigate(TypedPath newPath) async {
-    final actPath = getActualTypedPath();
+  Future<TypedPath> appNavigationLogic(Ref ref) async {
     onAsyncChange?.call(true);
     try {
-      // app logic (e.g. redirect to other page when user is not logged)
-      newPath = appNavigationLogic(actPath, newPath);
+      final oldPath = ref.read(routerDelegateProvider).currentConfiguration;
+      var newPath = ref.watch(futureTypedPathProvider);
 
       // normalize newPath
-      newPath = _eq2Identical(actPath, newPath);
-      if (identical(getActualTypedPath, newPath)) return;
+      newPath = _eq2Identical(oldPath, newPath);
+      if (identical(getActualTypedPath, newPath)) return newPath;
 
       // wait for async actions: creating, deactivating, merging
-      await waitForRouteChanging(actPath, newPath);
+      await waitForRouteChanging(oldPath, newPath);
 
       // state change => flutter navigation
-      setActualTypedPath(newPath);
+      final routerDelegate = ref.read(routerDelegateProvider);
+      routerDelegate.currentConfiguration = newPath;
+      routerDelegate.notifyListeners();
 
       onAsyncChange?.call(false);
+      return newPath;
     } catch (e) {
       // show error (no state changed)
       onAsyncChange?.call(false, e);
       rethrow;
     }
   }
+
+  /// navigate to newPath
+  // @override
+  // Future<TypedPath> navigate(TypedPath newPath) async {
+  //   final actPath = getActualTypedPath();
+  //   onAsyncChange?.call(true);
+  //   try {
+  //     // app logic (e.g. redirect to other page when user is not logged)
+  //     // TODO(PZ): x
+  //     newPath = []; //simpleAppNavigationLogic(actPath, newPath);
+
+  //     // normalize newPath
+  //     newPath = _eq2Identical(actPath, newPath);
+  //     if (identical(getActualTypedPath, newPath)) return newPath;
+
+  //     // wait for async actions: creating, deactivating, merging
+  //     await waitForRouteChanging(actPath, newPath);
+
+  //     // state change => flutter navigation
+  //     setActualTypedPath(newPath);
+
+  //     onAsyncChange?.call(false);
+  //     return newPath;
+  //   } catch (e) {
+  //     // show error (no state changed)
+  //     onAsyncChange?.call(false, e);
+  //     rethrow;
+  //   }
+  // }
 
   /// navigate to the same [TypedPath]
   ///
