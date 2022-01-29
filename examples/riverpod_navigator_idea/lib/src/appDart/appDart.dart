@@ -7,11 +7,10 @@ part 'appDart.freezed.dart';
 part 'appDart.g.dart';
 
 // configure dart
-void configure4Dart() {
-  Config4Dart(
-    json2Segment: (json, _) => ExampleSegments.fromJson(json),
-  );
-}
+Config4Dart config4DartCreator() => Config4Dart(
+      json2Segment: (json, _) => ExampleSegments.fromJson(json),
+      initPath: [HomeSegment()],
+    );
 
 /// [TypedSegment]'s for this example
 @freezed
@@ -29,7 +28,7 @@ const booksLen = 5;
 
 /// Singleton class with app navigation agnostic actions
 class ExampleRiverpodNavigator extends RiverpodNavigator {
-  ExampleRiverpodNavigator(Ref ref) : super(ref);
+  ExampleRiverpodNavigator(Ref ref, Config4Dart config) : super(ref, config);
 
   void toHome() => navigate([HomeSegment()]);
   void toBooks() => navigate([HomeSegment(), BooksSegment()]);
@@ -45,4 +44,4 @@ class ExampleRiverpodNavigator extends RiverpodNavigator {
   }
 }
 
-final exampleRiverpodNavigatorProvider = Provider<ExampleRiverpodNavigator>((ref) => ExampleRiverpodNavigator(ref));
+final exampleRiverpodNavigatorProvider = Provider<ExampleRiverpodNavigator>((ref) => ExampleRiverpodNavigator(ref, ref.watch(config4DartProvider)));

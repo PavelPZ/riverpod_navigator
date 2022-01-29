@@ -1,11 +1,19 @@
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_navigator_idea/riverpod_navigator_idea_dart.dart';
+import 'package:riverpod_navigator_idea/src/riverpod_navigator_dart.dart';
 import 'package:test/test.dart';
 
+ProviderContainer createContainer() {
+  final res = ProviderContainer(overrides: [
+    config4DartProvider.overrideWithValue(config4DartCreator()),
+  ]);
+  addTearDown(res.dispose);
+  return res;
+}
+
 void main() {
-  configure4Dart();
   test('navigation test', () async {
-    final container = ProviderContainer();
+    final container = createContainer();
     final navigator = container.read(exampleRiverpodNavigatorProvider);
 
     navigator.toBook(id: 3);

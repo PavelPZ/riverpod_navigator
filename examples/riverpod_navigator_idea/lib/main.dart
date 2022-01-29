@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod_navigator_idea/src/riverpod_navigator.dart';
 
-import 'src/appFlutter/appFlutter.dart' show ExampleApp, configure;
+import 'src/appDart/appDart.dart' show config4DartCreator;
+import 'src/appFlutter/appFlutter.dart' show ExampleApp, configCreator;
 
 void main() {
-  configure();
-  runApp(ProviderScope(child: const ExampleApp()));
+  runApp(ProviderScope(
+      // initialize configs providers
+      overrides: [
+        config4DartProvider.overrideWithValue(config4DartCreator()),
+        configProvider.overrideWithValue(configCreator(config4DartCreator())),
+      ], child: const ExampleApp()));
 }

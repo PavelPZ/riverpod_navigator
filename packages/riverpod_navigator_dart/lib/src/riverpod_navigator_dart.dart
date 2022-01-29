@@ -158,7 +158,8 @@ class Config4Dart {
     this.segment2AsyncScreenActions,
     required this.initPath,
     this.splashPath,
-  }) : pathParser = pathParser ?? SimplePathParser() /* PathParser */ {
+  }) : pathParser = pathParser ?? SimplePathParser() {
+    // PathParser() {
     this.pathParser.init(this);
   }
 

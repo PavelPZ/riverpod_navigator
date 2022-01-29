@@ -2,44 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod_navigator_idea/src/riverpod_navigator.dart';
 
 import '../appDart/appDart.dart';
-import '../riverpod_navigator.dart';
-import '../riverpod_navigator_dart.dart';
 
 // flutter pub run build_runner watch
 part 'appFlutter.g.dart';
 
-void configure() {
-  // configure engine
-  Config(
-    /// Which widget will be builded for which typed segment
-    ///
-    /// used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
-    screenBuilder: (segment) => (segment as ExampleSegments).map(
-      home: (homeSegment) => HomeScreen(homeSegment),
-      books: (booksSegment) => BooksScreen(booksSegment),
-      book: (bookSegment) => BookScreen(bookSegment),
-    ),
-    initPath: [HomeSegment()],
-    // 4Dart:
-    json2Segment: (json, _) => ExampleSegments.fromJson(json),
-  );
-}
+/// Provider with Flutter 2.0 RouterDelegate
+final appRouterDelegateProvider =
+    Provider<RiverpodRouterDelegate>((ref) => RiverpodRouterDelegate(ref, ref.watch(configProvider), ref.watch(exampleRiverpodNavigatorProvider)));
+
+Config configCreator(Config4Dart config4Dart) =>
+    // configure engine
+    Config(
+      /// Which widget will be builded for which typed segment
+      ///
+      /// used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
+      screenBuilder: (segment) => (segment as ExampleSegments).map(
+        home: (homeSegment) => HomeScreen(homeSegment),
+        books: (booksSegment) => BooksScreen(booksSegment),
+        book: (bookSegment) => BookScreen(bookSegment),
+      ),
+      config4Dart: config4Dart,
+    );
 
 /// Flutter app root
 @hcwidget
-Widget exampleApp(WidgetRef ref) {
-  final delegate = RiverpodRouterDelegate(ref.read(exampleRiverpodNavigatorProvider));
-  // changing TypedPath => calling RiverpodRouterDelegate.notifyListeners => Flutter Navigation 2.0 rebuilds navigation stack
-  ref.listen(typedPathNotifierProvider, (_, __) => delegate.notifyListeners());
-  return MaterialApp.router(
-    title: 'Books App',
-    routerDelegate: delegate,
-    routeInformationParser: RouteInformationParserImpl(),
-    debugShowCheckedModeBanner: false,
-  );
-}
+Widget exampleApp(WidgetRef ref) => MaterialApp.router(
+      title: 'Books App',
+      routerDelegate: ref.watch(appRouterDelegateProvider),
+      routeInformationParser: RouteInformationParserImpl(ref.watch(config4DartProvider)),
+      debugShowCheckedModeBanner: false,
+    );
 
 @hcwidget
 Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
