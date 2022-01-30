@@ -39,7 +39,6 @@ Widget bookScreen(WidgetRef ref, BookSegment segment) => PageHelper(
     );
 
 
-
 @swidget
 Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedButton(onPressed: onPressed, child: Text(title));
 

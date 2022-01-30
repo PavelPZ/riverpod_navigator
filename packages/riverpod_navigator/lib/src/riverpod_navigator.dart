@@ -7,6 +7,7 @@ import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
 typedef NavigatorWidgetBuilder = Widget Function(BuildContext, Navigator);
 typedef ScreenBuilder = Widget Function(TypedSegment segment);
+typedef SplashBuilder = Widget Function();
 
 final riverpodRouterDelegate = Provider<RiverpodRouterDelegate>((_) => throw UnimplementedError());
 
@@ -25,7 +26,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
   Widget build(BuildContext context) {
     // final actPath = _navigator.getActualTypedPath();
     final actPath = currentConfiguration;
-    if (actPath.isEmpty) return SizedBox();
+    if (actPath.isEmpty) return _config.splashBuilder?.call() ?? SizedBox();
     final navigatorWidget = Navigator(
         key: navigatorKey,
         // segment => screen
@@ -67,10 +68,12 @@ class Config {
     Screen2Page? screen2Page,
     this.navigatorWidgetBuilder,
     required this.config4Dart,
+    this.splashBuilder,
   }) : screen2Page = screen2Page ?? screen2PageDefault;
   final Screen2Page screen2Page;
   final ScreenBuilder screenBuilder;
   final NavigatorWidgetBuilder? navigatorWidgetBuilder;
+  final SplashBuilder? splashBuilder;
 
   /// dart-only part of config
   final Config4Dart config4Dart;

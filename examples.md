@@ -289,19 +289,13 @@ Simple Login navigation flow
 
 -------------------------
 
-## Lesson06: splash screen
+## Lesson06: waiting indicator, navigatorWidgetBuilder
 
 *to be done*
 
 -------------------------
 
-## Lesson07: waiting indicator, navigatorWidgetBuilder
-
-*to be done*
-
--------------------------
-
-## Lesson08: screenBuilder
+## Lesson07: screenBuilder
 
 *to be done*
 

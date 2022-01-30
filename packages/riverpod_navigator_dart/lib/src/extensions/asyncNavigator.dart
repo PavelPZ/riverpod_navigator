@@ -17,18 +17,15 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
 
   /// put all change-route application logic here
   @override
-  Future<TypedPath> appNavigationLogic(Ref ref) async {
+  TypedPath appNavigationLogic(TypedPath oldPath, TypedPath newPath) {
     onAsyncChange?.call(true);
     try {
-      final oldPath = ref.read(routerDelegateProvider).currentConfiguration;
-      var newPath = ref.watch(futureTypedPathProvider);
-
       // normalize newPath
-      newPath = _eq2Identical(oldPath, newPath);
+      newPath = eq2Identical(oldPath, newPath);
       if (identical(getActualTypedPath, newPath)) return newPath;
 
       // wait for async actions: creating, deactivating, merging
-      await waitForRouteChanging(oldPath, newPath);
+      // await waitForRouteChanging(oldPath, newPath);
 
       // state change => flutter navigation
       final routerDelegate = ref.read(routerDelegateProvider);
@@ -51,7 +48,7 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
   //   onAsyncChange?.call(true);
   //   try {
   //     // app logic (e.g. redirect to other page when user is not logged)
-  //     newPath = []; //simpleAppNavigationLogic(actPath, newPath);
+  //     newPath = appNavigationLogic(actPath, newPath);
 
   //     // normalize newPath
   //     newPath = _eq2Identical(actPath, newPath);
@@ -122,27 +119,13 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
     // wait
     if (notEmptyFutures.isEmpty) return;
 
-    if (config.splashPath != null && oldPath.isEmpty) setActualTypedPath(config.splashPath as TypedPath);
+    // if (config.splashPath != null && oldPath.isEmpty) setActualTypedPath(config.splashPath as TypedPath);
 
     final asyncResults = await Future.wait(notEmptyFutures.map((fs) => fs.item1 as Future));
     assert(asyncResults.length == notEmptyFutures.length);
 
     for (var i = 0; i < asyncResults.length; i++) notEmptyFutures[i].item2.asyncActionResult = asyncResults[i];
 
-    // show splash screen
     return;
-  }
-
-  /// replaces "eq" routes with "identical" ones
-  TypedPath _eq2Identical(TypedPath oldPath, TypedPath newPath) {
-    final newPathCopy = [...newPath];
-    var pathsEqual = oldPath.length == newPathCopy.length;
-    for (var i = 0; i < min(oldPath.length, newPathCopy.length); i++) {
-      if (oldPath[i] == newPathCopy[i])
-        newPathCopy[i] = oldPath[i]; // "eq"  => "identical"
-      else
-        pathsEqual = false; // same of the state[i] is not equal
-    }
-    return pathsEqual ? oldPath : newPathCopy;
   }
 }

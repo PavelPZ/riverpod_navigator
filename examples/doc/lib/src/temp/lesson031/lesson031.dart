@@ -20,7 +20,6 @@ class AppSegments with _$AppSegments, TypedSegment {
   factory AppSegments.home() = HomeSegment;
   factory AppSegments.books() = BooksSegment;
   factory AppSegments.book({required int id}) = BookSegment;
-  factory AppSegments.splash() = SplashSegment;
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
@@ -56,13 +55,11 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
 
 final config4DartCreator = () => Config4Dart(
       json2Segment: (json, _) => AppSegments.fromJson(json),
-      segment2AsyncScreenActions: segment2AsyncScreenActions,
       initPath: [HomeSegment()],
-      splashPath: [SplashSegment()],
+      segment2AsyncScreenActions: segment2AsyncScreenActions,
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
       routerDelegateCreator: (ref) => RiverpodRouterDelegate(ref),
     );
-
 
 
 // *** 3. app-specific navigator with navigation aware actions (used in screens)
@@ -103,8 +100,8 @@ final configCreator = (Config4Dart config4Dart) => Config(
         home: (home) => HomeScreen(home),
         books: (books) => BooksScreen(books),
         book: (book) => BookScreen(book),
-        splash: (s) => SplashScreen(s),
       ),
+      splashBuilder: () => SplashScreen(),
       config4Dart: config4Dart,
     );
 

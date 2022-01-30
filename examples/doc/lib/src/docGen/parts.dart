@@ -1,4 +1,11 @@
-###part 0
+class Part {
+  const Part(this.title, this.subTitle, this.body);
+  final String title;
+  final String subTitle;
+  final String body;
+}
+
+String lessonHeader(String lessonId) => '''
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -7,27 +14,46 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'screens.dart';
 
-part 'lesson{01}.freezed.dart';
-part 'lesson{01}.g.dart';
+part 'lesson$lessonId.freezed.dart';
+part 'lesson$lessonId.g.dart';
+''';
 
-###part 1
-// *** 1. classes for typed path segments (TypedSegment)
+String screensHeader(String lessonId) => '''
+###part 0
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 
-/// The Freezed package generates three immutable classes used for writing typed navigation path,
-/// e.g TypedPath path = [HomeSegment (), BooksSegment () and BookSegment (id: 3)]
+import 'lesson$lessonId.dart';
+
+part 'screens.g.dart';
+
+// ************************************
+// Using "functional_widget" package to be less verbose.
+// ************************************
+''';
+
+const parts = <String, Part>{
+  'l1': Part('''
+classes for typed path segments (TypedSegment)
+''', '''
+The Freezed package generates three immutable classes used for writing typed navigation path,
+e.g TypedPath path = [HomeSegment (), BooksSegment () and BookSegment (id: 3)]
+''', ''' 
 @freezed
-class AppSegments with _$AppSegments, TypedSegment {
+class AppSegments with _\$AppSegments, TypedSegment {
   AppSegments._();
   factory AppSegments.home() = HomeSegment;
   factory AppSegments.books() = BooksSegment;
   factory AppSegments.book({required int id}) = BookSegment;
 
-  factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
+  factory AppSegments.fromJson(Map<String, dynamic> json) => _\$AppSegmentsFromJson(json);
 }
-
-###part 1-3
-// *** async screen actions
-
+'''),
+  'l1-3': Part('''
+async screen actions  
+''', '''
+''', ''' 
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   // simulate helper
   Future<String> simulateAsyncResult(String title, int msec) async {
@@ -50,20 +76,22 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
     orElse: () => null,
   );
 }
-
-###part 2
-// *** 2. Dart-part of app configuration
-
+'''),
+  'l2': Part('''
+Dart-part of app configuration  
+''', '''
+''', ''' 
 final config4DartCreator = () => Config4Dart(
       initPath: [HomeSegment()],
       json2Segment: (json, _) => AppSegments.fromJson(json),
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
       routerDelegateCreator: (ref) => RiverpodRouterDelegate(ref),
     );
-
-###part 2-3
-// *** MODIFIED 2. Configure dart-part of app
-
+'''),
+  'l2-3': Part('''
+Configure dart-part of app  
+''', '''
+''', ''' 
 final config4DartCreator = () => Config4Dart(
       json2Segment: (json, _) => AppSegments.fromJson(json),
       initPath: [HomeSegment()],
@@ -71,10 +99,11 @@ final config4DartCreator = () => Config4Dart(
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
       routerDelegateCreator: (ref) => RiverpodRouterDelegate(ref),
     );
-
-###part 3
-// *** 3. app-specific navigator with navigation aware actions (used in screens)
-
+'''),
+  'l3': Part('''
+app-specific navigator with navigation aware actions (used in screens)  
+''', '''
+''', ''' 
 const booksLen = 5;
 
 class AppNavigator extends RiverpodNavigator {
@@ -93,17 +122,11 @@ class AppNavigator extends RiverpodNavigator {
     toBook(id: id);
   }
 }
-
-###part 4
-// *** 4. WidgetRef extension
-
-extension ReadNavigator on WidgetRef {
-  AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
-}
-
-###part 5
-// *** 5. Flutter-part of app configuration
-
+'''),
+  'l4': Part('''
+Flutter-part of app configuration  
+''', '''
+''', ''' 
 final configCreator = (Config4Dart config4Dart) => Config(
       /// Which widget will be builded for which [TypedSegment].
       /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
@@ -114,10 +137,11 @@ final configCreator = (Config4Dart config4Dart) => Config(
       ),
       config4Dart: config4Dart,
     );
-
-###part 5-31
-// *** 5. Flutter-part of app configuration
-
+'''),
+  'l4-31': Part('''
+Flutter-part of app configuration  
+''', '''
+''', ''' 
 final configCreator = (Config4Dart config4Dart) => Config(
       /// Which widget will be builded for which [TypedSegment].
       /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
@@ -128,22 +152,23 @@ final configCreator = (Config4Dart config4Dart) => Config(
       ),
       splashBuilder: () => SplashScreen(),
       config4Dart: config4Dart,
-    );
-
-###part 6
-// *** 6. root widget for app
-
-/// Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
+    );'''),
+  'l5': Part('''
+root widget for app  
+''', '''
+Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
+''', ''' 
 @cwidget
 Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
       title: 'Books App',
-      routerDelegate: ref.watch(routerDelegateProvider) as RiverpodRouterDelegate,
+      routerDelegate: ref.read(routerDelegateProvider) as RiverpodRouterDelegate,
       routeInformationParser: RouteInformationParserImpl(ref),
     );
-
-###part 7
-// *** 7. app entry point with ProviderScope
-
+'''),
+  'l6': Part('''
+app entry point with ProviderScope  
+''', '''
+''', ''' 
 void main() {
   runApp(ProviderScope(
     // initialize configs providers
@@ -153,4 +178,5 @@ void main() {
     ],
     child: const BooksExampleApp(),
   ));
-}
+'''),
+};
