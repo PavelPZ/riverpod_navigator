@@ -8,7 +8,7 @@ import 'screens.dart';
 
 part 'flutter-lesson02.g.dart';
 
-// *** 5. Flutter-part of app configuration
+// *** 4. Flutter-part of app configuration
 
 final configCreator = (Config4Dart config4Dart) => Config(
       /// Which widget will be builded for which [TypedSegment].
@@ -21,7 +21,7 @@ final configCreator = (Config4Dart config4Dart) => Config(
       config4Dart: config4Dart,
     );
 
-// *** 6. root widget for app
+// *** 5. root widget for app
 
 /// Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
 @cwidget
@@ -31,7 +31,7 @@ Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
       routeInformationParser: RouteInformationParserImpl(ref),
     );
 
-// *** 7. app entry point with ProviderScope
+// *** 6. app entry point with ProviderScope
 
 void main() {
   runApp(ProviderScope(
@@ -43,3 +43,4 @@ void main() {
     child: const BooksExampleApp(),
   ));
 }
+

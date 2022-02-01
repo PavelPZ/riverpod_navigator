@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:riverpod_navigator/riverpod_navigator.dart';
+import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
 part 'dart-lesson02.freezed.dart';
 part 'dart-lesson02.g.dart';
@@ -27,7 +27,7 @@ final config4DartCreator = () => Config4Dart(
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
     );
 
-// *** 3. app-specific navigator with navigation aware actions (used in screens)
+// *** 3. App-specific navigator with navigation aware actions (used in screens)
 
 const booksLen = 5;
 
@@ -47,3 +47,4 @@ class AppNavigator extends RiverpodNavigator {
     toBook(id: id);
   }
 }
+

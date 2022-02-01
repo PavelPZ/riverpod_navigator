@@ -6,8 +6,8 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'screens.dart';
 
-part 'lesson03.freezed.dart';
-part 'lesson03.g.dart';
+part 'lesson07.freezed.dart';
+part 'lesson07.g.dart';
 
 // *** 1. classes for typed path segments (TypedSegment)
 
@@ -21,31 +21,6 @@ class AppSegments with _$AppSegments, TypedSegment {
   factory AppSegments.book({required int id}) = BookSegment;
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
-}
-
-// *** 1.1. async screen actions
-
-AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
-  // simulate helper
-  Future<String> simulateAsyncResult(String title, int msec) async {
-    await Future.delayed(Duration(milliseconds: msec));
-    return title;
-  }
-
-  return (segment as AppSegments).maybeMap(
-    book: (_) => AsyncScreenActions<BookSegment>(
-      // for every Book screen: creating takes some time
-      creating: (newSegment) async => simulateAsyncResult('Book creating async result after 1 sec', 1000),
-      // for every Book screen with odd id: changing to another Book screen takes some time
-      merging: (_, newSegment) async => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
-      // for every Book screen with even id: creating takes some time
-      deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
-    ),
-    home: (_) => AsyncScreenActions<HomeSegment>(
-        // Home screen takes some timefor creating
-        creating: (_) async => simulateAsyncResult('Home creating async result after 1 sec', 1000)),
-    orElse: () => null,
-  );
 }
 
 // *** 2. Dart-part of app configuration

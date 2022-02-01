@@ -5,10 +5,7 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'dart-lesson02.dart';
 
-// flutter pub run build_runner watch
 part 'screens.g.dart';
-
-// *** 4. WidgetRef extension
 
 extension ReadNavigator on WidgetRef {
   AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
@@ -17,8 +14,6 @@ extension ReadNavigator on WidgetRef {
 // ************************************
 // Using "functional_widget" package to be less verbose.
 // ************************************
-
-// "@cwidget" means, that package generates "class XXX extends ConsumerWidget...", see *.g.dart
 
 @cwidget
 Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
@@ -63,3 +58,4 @@ Widget pageHelper({required String title, required List<Widget> buildChildren()}
         ),
       ),
     );
+

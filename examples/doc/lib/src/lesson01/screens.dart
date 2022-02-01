@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
+import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'lesson01.dart';
 
-// flutter pub run build_runner watch
 part 'screens.g.dart';
+
+extension ReadNavigator on WidgetRef {
+  AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
+}
 
 // ************************************
 // Using "functional_widget" package to be less verbose.
 // ************************************
-
-
-// "@cwidget" means, that package generates "class XXX extends ConsumerWidget...", see *.g.dart
 
 @cwidget
 Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
@@ -38,7 +39,6 @@ Widget bookScreen(WidgetRef ref, BookSegment segment) => PageHelper(
       ],
     );
 
-
 @swidget
 Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedButton(onPressed: onPressed, child: Text(title));
 
@@ -58,3 +58,4 @@ Widget pageHelper({required String title, required List<Widget> buildChildren()}
         ),
       ),
     );
+

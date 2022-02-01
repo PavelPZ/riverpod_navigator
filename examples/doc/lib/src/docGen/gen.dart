@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import 'lessonGen.dart';
+import 'fileGen.dart';
 
 const lessonsPath = r'D:\riverpod_navigator\examples\doc\lib\src\temp\';
 
