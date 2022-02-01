@@ -13,9 +13,9 @@ dependencies:
   freezed_annotation:
   functional_widget_annotation:
   hooks_riverpod:
-  json_annotation:
+  json_annotation: ^4.4.0
   path:
-  riverpod_navigator:
+  riverpod_navigator: 
     path: ../../packages/riverpod_navigator
 
 dev_dependencies: 

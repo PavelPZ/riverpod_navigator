@@ -16,7 +16,7 @@ ProviderContainer createContainer() {
 void main() {
   test('navigation test', () async {
     final container = createContainer();
-    final navigator = container.read(riverpodNavigatorProvider) as AppNavigator;
+    final navigator = container.readNavigator();
 
     navigator.toBook(id: 3);
     await container.pump();
