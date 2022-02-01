@@ -83,15 +83,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
-part 'dart-lesson$lessonId.freezed.dart';
-part 'dart-lesson$lessonId.g.dart';
+part 'dart_lesson$lessonId.freezed.dart';
+part 'dart_lesson$lessonId.g.dart';
 ''')) + filter(all, null, false, b('''
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-import 'dart-lesson$lessonId.dart';
+import 'dart_lesson$lessonId.dart';
 import 'screens.dart';
 
 part 'flutter-lesson$lessonId.g.dart';
@@ -264,7 +264,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-import 'dart-lesson$lessonId.dart';
+import 'dart_lesson$lessonId.dart';
 
 part 'screens.g.dart';
 

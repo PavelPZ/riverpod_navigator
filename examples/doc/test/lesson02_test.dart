@@ -3,7 +3,7 @@ import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 import 'package:test/test.dart';
 
 // ignore: avoid_relative_lib_imports
-import '../lib/src/lesson02/dart-lesson02.dart';
+import '../lib/src/lesson02/dart_lesson02.dart';
 
 ProviderContainer createContainer() {
   final res = ProviderContainer(overrides: [
@@ -14,6 +14,13 @@ ProviderContainer createContainer() {
 }
 
 void main() {
+  test('no flutter dependency', () async {
+    final start = DateTime.now();
+    await Future.delayed(Duration(seconds: 1));
+    final end = DateTime.now();
+    expect(end.difference(start).inMilliseconds >= 1000, true);
+  });
+
   test('navigation test', () async {
     final container = createContainer();
     final navigator = container.readNavigator();

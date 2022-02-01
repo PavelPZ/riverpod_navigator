@@ -2,8 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
-part 'dart-lesson02.freezed.dart';
-part 'dart-lesson02.g.dart';
+part 'dart_lesson02.freezed.dart';
+part 'dart_lesson02.g.dart';
 
 // *** 1. classes for typed path segments (TypedSegment)
 

@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-import 'dart-lesson02.dart';
+import 'dart_lesson02.dart';
 import 'screens.dart';
 
-part 'flutter-lesson02.g.dart';
+part 'flutter_lesson02.g.dart';
 
 // *** 4. Flutter-part of app configuration
 
@@ -43,4 +43,3 @@ void main() {
     child: const BooksExampleApp(),
   ));
 }
-
