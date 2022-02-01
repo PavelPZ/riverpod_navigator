@@ -48,16 +48,7 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   );
 }
 
-// *** 2. Dart-part of app configuration
-
-final config4DartCreator = () => Config4Dart(
-      json2Segment: (json, _) => AppSegments.fromJson(json),
-      initPath: [HomeSegment()],
-      segment2AsyncScreenActions: segment2AsyncScreenActions,
-      riverpodNavigatorCreator: (ref) => AppNavigator(ref),
-    );
-
-// *** 3. App-specific navigator with navigation aware actions (used in screens)
+// *** 2. App-specific navigator with navigation aware actions (used in screens)
 
 const booksLen = 5;
 
@@ -77,6 +68,20 @@ class AppNavigator extends RiverpodNavigator {
     toBook(id: id);
   }
 }
+
+/// provide a correctly typed navigator for tests
+extension ReadNavigator on ProviderContainer {
+  AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
+}
+
+// *** 3. Dart-part of app configuration
+
+final config4DartCreator = () => Config4Dart(
+      json2Segment: (json, _) => AppSegments.fromJson(json),
+      initPath: [HomeSegment()],
+      segment2AsyncScreenActions: segment2AsyncScreenActions,
+      riverpodNavigatorCreator: (ref) => AppNavigator(ref),
+    );
 
 // *** 4. Flutter-part of app configuration
 
