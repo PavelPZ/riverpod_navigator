@@ -9,7 +9,6 @@ import 'screens.dart';
 part 'lesson031.freezed.dart';
 part 'lesson031.g.dart';
 
-
 // *** 1. classes for typed path segments (TypedSegment)
 
 /// The Freezed package generates three immutable classes used for writing typed navigation path,
@@ -23,7 +22,6 @@ class AppSegments with _$AppSegments, TypedSegment {
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
-
 
 // *** async screen actions
 
@@ -50,7 +48,6 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   );
 }
 
-
 // *** MODIFIED 2. Configure dart-part of app
 
 final config4DartCreator = () => Config4Dart(
@@ -58,9 +55,7 @@ final config4DartCreator = () => Config4Dart(
       initPath: [HomeSegment()],
       segment2AsyncScreenActions: segment2AsyncScreenActions,
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
-      routerDelegateCreator: (ref) => RiverpodRouterDelegate(ref),
     );
-
 
 // *** 3. app-specific navigator with navigation aware actions (used in screens)
 
@@ -83,13 +78,11 @@ class AppNavigator extends RiverpodNavigator {
   }
 }
 
-
 // *** 4. WidgetRef extension
 
 extension ReadNavigator on WidgetRef {
   AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
 }
-
 
 // *** 5. Flutter-part of app configuration
 
@@ -105,7 +98,6 @@ final configCreator = (Config4Dart config4Dart) => Config(
       config4Dart: config4Dart,
     );
 
-
 // *** 6. root widget for app
 
 /// Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
@@ -115,7 +107,6 @@ Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
       routerDelegate: ref.watch(routerDelegateProvider) as RiverpodRouterDelegate,
       routeInformationParser: RouteInformationParserImpl(ref),
     );
-
 
 // *** 7. app entry point with ProviderScope
 

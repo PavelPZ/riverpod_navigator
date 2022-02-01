@@ -29,7 +29,6 @@ final config4DartCreator = () => Config4Dart(
       initPath: [HomeSegment()],
       json2Segment: (json, _) => AppSegments.fromJson(json),
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
-      routerDelegateCreator: (ref) => RiverpodRouterDelegate(ref),
     );
 
 // *** 3. app-specific navigator with navigation aware actions (used in screens)

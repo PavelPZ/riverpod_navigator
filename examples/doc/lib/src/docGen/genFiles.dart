@@ -3,19 +3,21 @@ import 'parts.dart';
 class GenFile {
   GenFile(
     this.id,
-    this.path,
+    this.name,
+    //this.path,
     this.ids, {
     this.descendants,
     this.descDiff,
   });
   String id;
-  String path;
+  String name;
+  //String Function() path;
   List<List<String>> ids;
   Map<int, String>? descDiff;
   List<GenFile>? descendants;
 
   void run() {
-    genFiles['$path$id'] = this;
+    genFiles['$name$id'] = this;
     if (descendants == null) return;
     for (var d in descendants as List<GenFile>) {
       assert(d.descDiff != null && (d.descDiff as Map<int, String>).isNotEmpty);
@@ -25,6 +27,13 @@ class GenFile {
     }
   }
 }
+
+List<Part> fromGetFile(GenFile file) {
+  final res = <Part>[];
+  return res;
+}
+
+const tempDir = r'd:\riverpod_navigator\examples\doc\lib\src\temp\';
 
 final genFiles = <String, GenFile>{};
 
@@ -66,7 +75,7 @@ void initGenFiles() {
     '02',
     'dart-lesson',
     [
-      [''],
+      [dartLessonHeader('01')],
       ['@l1'],
       ['@l2'],
       ['@l3'],
@@ -76,10 +85,39 @@ void initGenFiles() {
     '02',
     'flutter-lesson',
     [
-      [''],
+      [flutterLessonHeader('01')],
       ['@l4'],
       ['@l5'],
       ['@l6']
+    ],
+  );
+  GenFile(
+    '01',
+    'screen',
+    [
+      [screensHeader('01')],
+      ['@s1'],
+      ['@s2'],
+    ],
+    descendants: [
+      GenFile(
+        '03',
+        'screen',
+        [
+          [lessonHeader('03')]
+        ],
+        descDiff: {},
+      ),
+      GenFile(
+        '031',
+        'screen',
+        [
+          [lessonHeader('031')]
+        ],
+        descDiff: {
+          1: '@s1~s1-31',
+        },
+      ),
     ],
   );
   return;

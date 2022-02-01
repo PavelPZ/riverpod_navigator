@@ -6,8 +6,8 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'screens.dart';
 
-part 'lesson03.freezed.dart';
-part 'lesson03.g.dart';
+part 'lesson05.freezed.dart';
+part 'lesson05.g.dart';
 
 // *** 1. classes for typed path segments (TypedSegment)
 
@@ -23,41 +23,15 @@ class AppSegments with _$AppSegments, TypedSegment {
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
 
-// *** async screen actions
-
-AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
-  // simulate helper
-  Future<String> simulateAsyncResult(String title, int msec) async {
-    await Future.delayed(Duration(milliseconds: msec));
-    return title;
-  }
-
-  return (segment as AppSegments).maybeMap(
-    book: (_) => AsyncScreenActions<BookSegment>(
-      // for every Book screen: creating takes some time
-      creating: (newSegment) async => simulateAsyncResult('Book creating async result after 1 sec', 1000),
-      // for every Book screen with odd id: changing to another Book screen takes some time
-      merging: (_, newSegment) async => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
-      // for every Book screen with even id: creating takes some time
-      deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
-    ),
-    home: (_) => AsyncScreenActions<HomeSegment>(
-        // Home screen takes some timefor creating
-        creating: (_) async => simulateAsyncResult('Home creating async result after 1 sec', 1000)),
-    orElse: () => null,
-  );
-}
-
-// *** MODIFIED 2. Configure dart-part of app
+// *** 2. Dart-part of app configuration
 
 final config4DartCreator = () => Config4Dart(
-      json2Segment: (json, _) => AppSegments.fromJson(json),
       initPath: [HomeSegment()],
-      segment2AsyncScreenActions: segment2AsyncScreenActions,
+      json2Segment: (json, _) => AppSegments.fromJson(json),
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
     );
 
-// *** 3. app-specific navigator with navigation aware actions (used in screens)
+// *** 3. App-specific navigator with navigation aware actions (used in screens)
 
 const booksLen = 5;
 
@@ -78,13 +52,7 @@ class AppNavigator extends RiverpodNavigator {
   }
 }
 
-// *** 4. WidgetRef extension
-
-extension ReadNavigator on WidgetRef {
-  AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
-}
-
-// *** 5. Flutter-part of app configuration
+// *** 4. Flutter-part of app configuration
 
 final configCreator = (Config4Dart config4Dart) => Config(
       /// Which widget will be builded for which [TypedSegment].
@@ -97,17 +65,17 @@ final configCreator = (Config4Dart config4Dart) => Config(
       config4Dart: config4Dart,
     );
 
-// *** 6. root widget for app
+// *** 5. root widget for app
 
 /// Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
 @cwidget
 Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
       title: 'Books App',
-      routerDelegate: ref.watch(routerDelegateProvider) as RiverpodRouterDelegate,
+      routerDelegate: ref.read(routerDelegateProvider) as RiverpodRouterDelegate,
       routeInformationParser: RouteInformationParserImpl(ref),
     );
 
-// *** 7. app entry point with ProviderScope
+// *** 6. app entry point with ProviderScope
 
 void main() {
   runApp(ProviderScope(
@@ -119,3 +87,4 @@ void main() {
     child: const BooksExampleApp(),
   ));
 }
+

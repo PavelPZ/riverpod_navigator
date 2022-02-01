@@ -69,7 +69,9 @@ class Config {
     this.navigatorWidgetBuilder,
     required this.config4Dart,
     this.splashBuilder,
-  }) : screen2Page = screen2Page ?? screen2PageDefault;
+  }) : screen2Page = screen2Page ?? screen2PageDefault {
+    config4Dart.routerDelegateCreator = (ref) => RiverpodRouterDelegate(ref);
+  }
   final Screen2Page screen2Page;
   final ScreenBuilder screenBuilder;
   final NavigatorWidgetBuilder? navigatorWidgetBuilder;

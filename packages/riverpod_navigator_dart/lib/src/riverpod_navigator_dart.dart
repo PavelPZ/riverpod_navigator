@@ -56,7 +56,7 @@ final routerDelegateProvider = Provider<IRouterDelegate>((ref) => ref.read(confi
 
 class Config4Dart {
   Config4Dart({
-    required this.routerDelegateCreator,
+    //required this.routerDelegateCreator,
     required this.riverpodNavigatorCreator,
     required this.json2Segment,
     required this.initPath,
@@ -84,7 +84,7 @@ class Config4Dart {
 
   /// RouterDelegate4Dart for Dart project, RiverpodRouterDelegate for Flutter project.
   /// "create" proc for routerDelegateProvider.
-  final IRouterDelegate Function(Ref ref) routerDelegateCreator;
+  IRouterDelegate Function(Ref ref) routerDelegateCreator = (_) => RouterDelegate4Dart();
 }
 
 // ********************************************

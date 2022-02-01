@@ -1,13 +1,65 @@
-class Part {
-  Part(this.title, this.subTitle, this.body);
-  final String title;
-  final String subTitle;
-  final String body;
-  String tempId = ''; // e.g. '2' or '3.1'
-  String tempBody = ''; // e.g. body, created v GenFile without '@'
-}
+import 'dart:convert';
 
-String lessonHeader(String lessonId) => '''
+const all = 0xffffff;
+const l1 = 1;
+const l2 = 2;
+const l3 = 8; // async screen actions
+const l4 = 16; // async screen actions with splash screen
+const l5 = 32;
+const l6 = 64;
+const l7 = 128;
+const l8 = 256;
+const l9 = 512;
+const l_async = l3 + l4;
+
+const lessonMasks = <int>[0, l1, l2, l3, l4, l5, l6, l7, l8, l9];
+
+String int2LessonId(int id) => id.toString().padLeft(2, '0');
+
+String fileGen(bool isLesson, int id, bool? lessonDartOnly, bool forDoc, {bool? screenSplitDartFlutter}) {
+  final lessonMask = lessonMasks[id];
+  final lessonId = int2LessonId(id);
+
+  String filter(int maskPlus, int? maskMinus, bool? filterDartOnly, String body) {
+    final mask = maskPlus & ~(maskMinus ?? 0);
+    if ((lessonMask & mask) == 0) return '';
+
+    if (lessonDartOnly != null) {
+      if (filterDartOnly == null) return ''; // just common dart+flutter imports
+      if (filterDartOnly != lessonDartOnly) return '';
+    } else {
+      if (filterDartOnly != null) return '';
+    }
+    return body;
+  }
+
+  String filterScreen(bool? filterSplitDartFlutter, String body) {
+    if (screenSplitDartFlutter != null) {
+      if (filterSplitDartFlutter == null) return ''; // just common dart+flutter imports
+      if (filterSplitDartFlutter != screenSplitDartFlutter) return '';
+    } else {
+      if (filterSplitDartFlutter != null) return '';
+    }
+    return body;
+  }
+
+  String filter2(int maskPlus, int? maskMinus, bool filterDartOnly, String title, String subTitle, String body) {
+    final mask = maskPlus & ~(maskMinus ?? 0);
+    if ((lessonMask & mask) == 0) return '';
+
+    if (lessonDartOnly != null) {
+      if (filterDartOnly != lessonDartOnly) return '';
+    }
+    return title + subTitle + body;
+  }
+
+  String comment(String body) => LineSplitter().convert(body).map((l) => '/// $l').join('\n');
+
+  String t(String title) => (title = title.trim()).isEmpty ? '' : '// *** $title\n\n';
+  String st(String subTitle) => (subTitle = subTitle.trim()).isEmpty ? '' : '${comment(subTitle)}\n';
+  String b(String body) => (body = body.trim()).isEmpty ? '' : '$body\n\n';
+
+  String lessonGen() => filter(all, null, null, b('''
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -18,18 +70,14 @@ import 'screens.dart';
 
 part 'lesson$lessonId.freezed.dart';
 part 'lesson$lessonId.g.dart';
-''';
-
-String dartLessonHeader(String lessonId) => '''
+''')) + filter(all, null, true, b('''
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:riverpod_navigator/riverpod_navigator.dart';
+import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
 part 'dart-lesson$lessonId.freezed.dart';
 part 'dart-lesson$lessonId.g.dart';
-''';
-
-String flutterLessonHeader(String lessonId) => '''
+''')) + filter(all, null, false, b('''
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
@@ -39,41 +87,12 @@ import 'dart-lesson$lessonId.dart';
 import 'screens.dart';
 
 part 'flutter-lesson$lessonId.g.dart';
-''';
-
-String screensHeader(String lessonId) => '''
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:functional_widget_annotation/functional_widget_annotation.dart';
-
-import 'lesson$lessonId.dart';
-
-part 'screens.g.dart';
-
-// ************************************
-// Using "functional_widget" package to be less verbose.
-// ************************************
-''';
-
-String dartFlutterScreensHeader(String lessonId) => '''
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:functional_widget_annotation/functional_widget_annotation.dart';
-import 'package:riverpod_navigator/riverpod_navigator.dart';
-
-import 'dart-lesson$lessonId.dart';
-
-// flutter pub run build_runner watch
-part 'screens.g.dart';
-''';
-
-var parts = <String, Part>{
-  'l1': Part('''
-classes for typed path segments (TypedSegment)
-''', '''
+''')) + filter2(all, null, true, t('''
+1. classes for typed path segments (TypedSegment)
+'''), st('''
 The Freezed package generates three immutable classes used for writing typed navigation path,
 e.g TypedPath path = [HomeSegment (), BooksSegment () and BookSegment (id: 3)]
-''', ''' 
+'''), b(''' 
 @freezed
 class AppSegments with _\$AppSegments, TypedSegment {
   AppSegments._();
@@ -83,11 +102,10 @@ class AppSegments with _\$AppSegments, TypedSegment {
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _\$AppSegmentsFromJson(json);
 }
-'''),
-  'l1-3': Part('''
-async screen actions  
-''', '''
-''', ''' 
+''')) + filter2(l_async, null, true, t('''
+1.1. async screen actions  
+'''), st('''
+'''), b(''' 
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   // simulate helper
   Future<String> simulateAsyncResult(String title, int msec) async {
@@ -110,34 +128,29 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
     orElse: () => null,
   );
 }
-'''),
-  'l2': Part('''
-Dart-part of app configuration  
-''', '''
-''', ''' 
+''')) + filter2(all, l4, true, t('''
+2. Dart-part of app configuration
+'''), st('''
+'''), b('''
 final config4DartCreator = () => Config4Dart(
       initPath: [HomeSegment()],
       json2Segment: (json, _) => AppSegments.fromJson(json),
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
-      routerDelegateCreator: (ref) => RiverpodRouterDelegate(ref),
     );
-'''),
-  'l2-3': Part('''
-Configure dart-part of app  
-''', '''
-''', ''' 
+''')) + filter2(l4, null, true, t('''
+2. Dart-part of app configuration
+'''), st('''
+'''), b('''
 final config4DartCreator = () => Config4Dart(
       json2Segment: (json, _) => AppSegments.fromJson(json),
       initPath: [HomeSegment()],
       segment2AsyncScreenActions: segment2AsyncScreenActions,
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
-      routerDelegateCreator: (ref) => RiverpodRouterDelegate(ref),
     );
-'''),
-  'l3': Part('''
-app-specific navigator with navigation aware actions (used in screens)  
-''', '''
-''', ''' 
+''')) + filter2(all, null, true, t('''
+3. App-specific navigator with navigation aware actions (used in screens)  
+'''), st('''
+'''), b('''
 const booksLen = 5;
 
 class AppNavigator extends RiverpodNavigator {
@@ -156,11 +169,10 @@ class AppNavigator extends RiverpodNavigator {
     toBook(id: id);
   }
 }
-'''),
-  'l4': Part('''
-Flutter-part of app configuration  
-''', '''
-''', ''' 
+''')) + filter2(all, l4, false, t('''
+4. Flutter-part of app configuration
+'''), st('''
+'''), b('''
 final configCreator = (Config4Dart config4Dart) => Config(
       /// Which widget will be builded for which [TypedSegment].
       /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
@@ -171,11 +183,10 @@ final configCreator = (Config4Dart config4Dart) => Config(
       ),
       config4Dart: config4Dart,
     );
-'''),
-  'l4-31': Part('''
-Flutter-part of app configuration  
-''', '''
-''', ''' 
+''')) + filter2(l4, null, false, t('''
+4. Flutter-part of app configuration  
+'''), st('''
+'''), b('''
 final configCreator = (Config4Dart config4Dart) => Config(
       /// Which widget will be builded for which [TypedSegment].
       /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
@@ -186,23 +197,22 @@ final configCreator = (Config4Dart config4Dart) => Config(
       ),
       splashBuilder: () => SplashScreen(),
       config4Dart: config4Dart,
-    );'''),
-  'l5': Part('''
-root widget for app  
-''', '''
+    );
+''')) + filter2(all, null, false, t('''
+5. root widget for app  
+'''), st('''
 Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
-''', ''' 
+'''), b('''
 @cwidget
 Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
       title: 'Books App',
       routerDelegate: ref.read(routerDelegateProvider) as RiverpodRouterDelegate,
       routeInformationParser: RouteInformationParserImpl(ref),
     );
-'''),
-  'l6': Part('''
-app entry point with ProviderScope  
-''', '''
-''', ''' 
+''')) + filter2(all, null, false, t('''
+6. app entry point with ProviderScope  
+'''), st('''
+'''), b('''
 void main() {
   runApp(ProviderScope(
     // initialize configs providers
@@ -212,11 +222,47 @@ void main() {
     ],
     child: const BooksExampleApp(),
   ));
-'''),
-  's1': Part('''
-"@cwidget" means, that package generates "class XXX extends ConsumerWidget...", see *.g.dart  
-''', '''
-''', ''' 
+}
+''')) + filter2(all, null, false, t('''
+'''), st('''
+'''), b('''
+'''));
+
+  String screenGen() => filterScreen(null, b('''
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:functional_widget_annotation/functional_widget_annotation.dart';
+import 'package:riverpod_navigator/riverpod_navigator.dart';
+
+import 'lesson$lessonId.dart';
+
+part 'screens.g.dart';
+
+extension ReadNavigator on WidgetRef {
+  AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
+}
+
+// ************************************
+// Using "functional_widget" package to be less verbose.
+// ************************************
+''')) + filterScreen(true, b('''
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:functional_widget_annotation/functional_widget_annotation.dart';
+import 'package:riverpod_navigator/riverpod_navigator.dart';
+
+import 'dart-lesson$lessonId.dart';
+
+part 'screens.g.dart';
+
+extension ReadNavigator on WidgetRef {
+  AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
+}
+
+// ************************************
+// Using "functional_widget" package to be less verbose.
+// ************************************
+''')) + filter(all, 0, null, b('''
 @cwidget
 Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
       title: 'Home Page',
@@ -240,17 +286,11 @@ Widget bookScreen(WidgetRef ref, BookSegment segment) => PageHelper(
         LinkHelper(title: '<< Prev', onPressed: () => ref.readNavigator().bookNextPrevButton(isPrev: true)),
       ],
     );
-'''),
-  's1-31': Part('''
-''', '''
-''', ''' 
+''')) + filter(l4, 0, null, b('''
 @swidget
 Widget splashScreen() =>
     SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
-'''),
-  's2': Part('''
-''', '''
-''', ''' 
+''')) + filter(all, 0, null, b('''
 @swidget
 Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedButton(onPressed: onPressed, child: Text(title));
 
@@ -270,9 +310,7 @@ Widget pageHelper({required String title, required List<Widget> buildChildren()}
         ),
       ),
     );
-'''),
-  '': Part('''
-''', '''
-''', ''' 
-'''),
-};
+'''));
+
+  return isLesson ? lessonGen() : screenGen();
+}
