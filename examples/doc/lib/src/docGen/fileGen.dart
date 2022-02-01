@@ -16,29 +16,37 @@ const lessonMasks = <int>[0, l1, l2, l3, l4, l5, l6, l7, l8, l9];
 
 String int2LessonId(int id) => id.toString().padLeft(2, '0');
 
-String fileGen(bool isLesson, int id, bool? lessonDartOnly, bool forDoc, {bool? screenSplitDartFlutter}) {
+String fileGen(
+  bool isLesson,
+  int id,
+  // =true => dart only, =false => flutter only, null => single file for flutter and dart
+  bool? lessonDartOnly,
+  bool forDoc, {
+  bool? screenSplitDartFlutterOnly, // =true => for splited example, null => single file for flutter and dart
+}) {
+  assert(screenSplitDartFlutterOnly != false);
+
   final lessonMask = lessonMasks[id];
   final lessonId = int2LessonId(id);
 
-  String filter(int maskPlus, int? maskMinus, bool? filterDartOnly, String body) {
+  String filter(int maskPlus, int? maskMinus, bool? forDart, String body) {
     final mask = maskPlus & ~(maskMinus ?? 0);
     if ((lessonMask & mask) == 0) return '';
 
     if (lessonDartOnly != null) {
-      if (filterDartOnly == null) return ''; // just common dart+flutter imports
-      if (filterDartOnly != lessonDartOnly) return '';
+      if (forDart != lessonDartOnly) return '';
     } else {
-      if (filterDartOnly != null) return '';
+      if (forDart != null) return '';
     }
     return body;
   }
 
-  String filterScreen(bool? filterSplitDartFlutter, String body) {
-    if (screenSplitDartFlutter != null) {
-      if (filterSplitDartFlutter == null) return ''; // just common dart+flutter imports
-      if (filterSplitDartFlutter != screenSplitDartFlutter) return '';
+  String filterScreen(bool? forSplitDartFlutter, String body) {
+    assert(forSplitDartFlutter != false);
+    if (screenSplitDartFlutterOnly != null) {
+      if (forSplitDartFlutter != screenSplitDartFlutterOnly) return '';
     } else {
-      if (filterSplitDartFlutter != null) return '';
+      if (forSplitDartFlutter != null) return '';
     }
     return body;
   }

@@ -31,7 +31,7 @@ void gen() {
       final ff = lessonFn(lessonId, false);
       final filef = fileGen(true, i, false, false);
       writeFile(ff, filef);
-      sfile = fileGen(false, i, null, false, screenSplitDartFlutter: true);
+      sfile = fileGen(false, i, null, false, screenSplitDartFlutterOnly: true);
     } else {
       final fn = lessonFn(lessonId, null);
       final file = fileGen(true, i, null, false);
