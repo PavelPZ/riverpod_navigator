@@ -1,3 +1,6 @@
+// ignore: unused_import
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
@@ -18,6 +21,8 @@ class AppSegments with _$AppSegments, TypedSegment {
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
+
+final Json2Segment json2AppSegments = (json, _) => AppSegments.fromJson(json);
 
 // *** 2. App-specific navigator with navigation aware actions (used in screens)
 
@@ -49,7 +54,7 @@ extension ReadNavigator on ProviderContainer {
 
 final config4DartCreator = () => Config4Dart(
       initPath: [HomeSegment()],
-      json2Segment: (json, _) => AppSegments.fromJson(json),
+      json2Segment: json2AppSegments,
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
     );
 

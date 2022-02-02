@@ -2,64 +2,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:riverpod_navigator_idea/src/riverpod_navigator.dart';
 
-import '../appDart/appDart.dart';
-import '../riverpod_navigator_dart.dart';
+import '../app/app.dart';
+import '../pathParser.dart';
+import '../providers.dart';
 
 // flutter pub run build_runner watch
-part 'appFlutter.g.dart';
-
-/// Provider with Flutter 2.0 RouterDelegate
-final appRouterDelegateProvider = Provider<RiverpodRouterDelegate>((ref) => RiverpodRouterDelegate(ref));
-
-Config configCreator(Config4Dart config4Dart) =>
-    // configure engine
-    Config(
-      /// Which widget will be builded for which typed segment
-      ///
-      /// used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
-      screenBuilder: (segment) => (segment as ExampleSegments).map(
-        home: (homeSegment) => HomeScreen(homeSegment),
-        books: (booksSegment) => BooksScreen(booksSegment),
-        book: (bookSegment) => BookScreen(bookSegment),
-      ),
-      config4Dart: config4Dart,
-    );
+part 'widgets.g.dart';
 
 /// Flutter app root
 @hcwidget
-Widget exampleApp(WidgetRef ref) => MaterialApp.router(
+Widget appRoot(WidgetRef ref) => MaterialApp.router(
       title: 'Books App',
-      routerDelegate: ref.watch(appRouterDelegateProvider),
-      routeInformationParser: RouteInformationParserImpl(ref),
+      routerDelegate: ref.watch(riverpodRouterDelegateProvider),
+      routeInformationParser: RouteInformationParserImpl(),
       debugShowCheckedModeBanner: false,
     );
 
 @hcwidget
 Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
       title: 'Home Page',
-      buildChildren: (_) => [
-        LinkHelper(title: 'Books Page', onPressed: ref.read(exampleRiverpodNavigatorProvider).toBooks),
+      buildChildren: (navigator) => [
+        LinkHelper(title: 'Books Page', onPressed: navigator.toBooks),
       ],
     );
 
 @hcwidget
 Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
       title: 'Books Page',
-      buildChildren: (_) => [
-        for (var id = 0; id < booksLen; id++)
-          LinkHelper(title: 'Book, id=$id', onPressed: () => ref.read(exampleRiverpodNavigatorProvider).toBook(id: id))
-      ],
+      buildChildren: (navigator) =>
+          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book, id=$id', onPressed: () => navigator.toBook(id: id))],
     );
 
 @hcwidget
 Widget bookScreen(WidgetRef ref, BookSegment segment) => PageHelper(
       title: 'Book Page, id=${segment.id}',
-      buildChildren: (_) => [
-        LinkHelper(title: 'Next >>', onPressed: ref.read(exampleRiverpodNavigatorProvider).bookNextPrevButton),
-        LinkHelper(title: '<< Prev', onPressed: () => ref.read(exampleRiverpodNavigatorProvider).bookNextPrevButton(isPrev: true)),
-      ],
+      buildChildren: (navigator) {
+        return segment.id.isOdd && ref.read(isLoggedProvider)
+            ? [
+                LinkHelper(title: 'Next >>', onPressed: navigator.bookNextPrevButton),
+                LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
+              ]
+            : [LinkHelper(title: 'Next >>', onPressed: navigator.login)];
+      },
     );
 
 @swidget

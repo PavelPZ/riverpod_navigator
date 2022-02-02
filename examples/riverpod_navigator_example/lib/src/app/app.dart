@@ -1,17 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../riverpod_navigator_dart.dart';
+import '../navigator.dart';
 
-part 'appDart.freezed.dart';
-part 'appDart.g.dart';
-
-// configure dart
-Config4Dart config4DartCreator() => Config4Dart(
-      json2Segment: (json, _) => ExampleSegments.fromJson(json),
-      initPath: [HomeSegment()],
-      riverpodNavigatorCreator: (ref) => ExampleRiverpodNavigator(ref),
-    );
+part 'app.freezed.dart';
+part 'app.g.dart';
 
 /// [TypedSegment]'s for this example
 @freezed
@@ -22,7 +15,13 @@ class ExampleSegments with _$ExampleSegments, TypedSegment {
   factory ExampleSegments.book({required int id}) = BookSegment;
 
   factory ExampleSegments.fromJson(Map<String, dynamic> json) => _$ExampleSegmentsFromJson(json);
+
+  static ExampleSegments json2Segment(Map<String, dynamic> json) => ExampleSegments.fromJson(json);
 }
+
+// ********************************************
+//  ExampleRiverpodNavigator
+// ********************************************
 
 /// Number of virtual books in example. There are not any Book data.
 const booksLen = 5;
@@ -43,6 +42,6 @@ class ExampleRiverpodNavigator extends RiverpodNavigator {
       id = booksLen - 1 > id ? id + 1 : 0;
     toBook(id: id);
   }
-}
 
-final exampleRiverpodNavigatorProvider = Provider<ExampleRiverpodNavigator>((ref) => ExampleRiverpodNavigator(ref));
+  void login() => navigate([HomeSegment()]);
+}

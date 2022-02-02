@@ -18,6 +18,9 @@
 		},
 		{
 			"path": "examples\\doc"
+		},
+		{
+			"path": "examples\\riverpod_navigator_example"
 		}
 	],
 	"settings": {

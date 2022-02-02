@@ -1,35 +1,31 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:riverpod/riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'riverpod_navigator_dart.dart';
-
-export 'riverpod_navigator_dart.dart';
 
 typedef NavigatorWidgetBuilder = Widget Function(BuildContext, Navigator);
 typedef ScreenBuilder = Widget Function(TypedSegment segment);
+typedef SplashBuilder = Widget Function();
 
 final riverpodRouterDelegate = Provider<RiverpodRouterDelegate>((_) => throw UnimplementedError());
 
-class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
-  RiverpodRouterDelegate(this._ref, this._config, this._navigator) {
-    _ref.listen(typedPathNotifierProvider, (_, __) => notifyListeners());
-  }
+class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath>, IRouterDelegate {
+  RiverpodRouterDelegate(Ref ref)
+      : _config = ref.read(configProvider),
+        _navigator = ref.watch(riverpodNavigatorProvider);
 
   final RiverpodNavigator _navigator;
-  final Ref _ref;
   final Config _config;
-
-  @override
-  TypedPath get currentConfiguration => _navigator.getActualTypedPath();
 
   @override
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    final actPath = _navigator.getActualTypedPath();
-    if (actPath.isEmpty) return SizedBox();
+    // final actPath = _navigator.getActualTypedPath();
+    final actPath = currentConfiguration;
+    if (actPath.isEmpty) return _config.splashBuilder?.call() ?? SizedBox();
     final navigatorWidget = Navigator(
         key: navigatorKey,
         // segment => screen
@@ -51,7 +47,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
 }
 
 class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
-  RouteInformationParserImpl(this._config);
+  RouteInformationParserImpl(WidgetRef ref) : _config = ref.read(config4DartProvider);
 
   final Config4Dart _config;
 
@@ -71,10 +67,14 @@ class Config {
     Screen2Page? screen2Page,
     this.navigatorWidgetBuilder,
     required this.config4Dart,
-  }) : screen2Page = screen2Page ?? screen2PageDefault;
+    this.splashBuilder,
+  }) : screen2Page = screen2Page ?? screen2PageDefault {
+    config4Dart.routerDelegateCreator = (ref) => RiverpodRouterDelegate(ref);
+  }
   final Screen2Page screen2Page;
   final ScreenBuilder screenBuilder;
   final NavigatorWidgetBuilder? navigatorWidgetBuilder;
+  final SplashBuilder? splashBuilder;
 
   /// dart-only part of config
   final Config4Dart config4Dart;

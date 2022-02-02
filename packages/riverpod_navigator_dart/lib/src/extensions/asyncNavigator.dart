@@ -74,7 +74,7 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
   /// call this helper method after some global app states change
   /// (e.g. login x logoff)
   /// [appNavigationLogic] can than respond to them
-  Future<void> refresh() => navigate([...getActualTypedPath()]);
+//  Future<void> refresh() => navigate([...getActualTypedPath()]);
 
   /* ******************************************** */
   /*   @protected                                 */

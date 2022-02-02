@@ -1,3 +1,6 @@
+// ignore: unused_import
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -22,6 +25,8 @@ class AppSegments with _$AppSegments, TypedSegment {
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
+
+final Json2Segment json2AppSegments = (json, _) => AppSegments.fromJson(json);
 
 // *** 1.1. async screen actions
 
@@ -77,7 +82,7 @@ extension ReadNavigator on ProviderContainer {
 // *** 3. Dart-part of app configuration
 
 final config4DartCreator = () => Config4Dart(
-      json2Segment: (json, _) => AppSegments.fromJson(json),
+      json2Segment: json2AppSegments,
       initPath: [HomeSegment()],
       segment2AsyncScreenActions: segment2AsyncScreenActions,
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
@@ -88,11 +93,7 @@ final config4DartCreator = () => Config4Dart(
 final configCreator = (Config4Dart config4Dart) => Config(
       /// Which widget will be builded for which [TypedSegment].
       /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
-      screenBuilder: (segment) => (segment as AppSegments).map(
-        home: (home) => HomeScreen(home),
-        books: (books) => BooksScreen(books),
-        book: (book) => BookScreen(book),
-      ),
+      screenBuilder: screenBuilderAppSegments,
       splashBuilder: () => SplashScreen(),
       config4Dart: config4Dart,
     );
@@ -109,7 +110,7 @@ Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
 
 // *** 6. app entry point with ProviderScope
 
-void main() {
+void runMain() {
   runApp(ProviderScope(
     // initialize configs providers
     overrides: [

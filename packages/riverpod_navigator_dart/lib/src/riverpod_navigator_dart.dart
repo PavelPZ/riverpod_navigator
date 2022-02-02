@@ -37,6 +37,7 @@ typedef TypedPath = List<TypedSegment>;
 // Dart config and providers (with creators from config)
 // ********************************************
 typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
+typedef Json2SegmentDef = TypedSegment Function(JsonMap jsonMap);
 
 /// config4DartProvider value is initialized by:
 ///
@@ -155,17 +156,17 @@ class RiverpodNavigator {
   /// If the navigation logic depends on another state (e.g. whether the user is logged in or not),
   /// use watch for this state in overrided [RiverpodNavigator.appNavigationLogic]
   @nonVirtual
-  Future<void> navigate(TypedPath newTypedPath) async {
+  Future<void> navigate(TypedPath newTypedPath) {
     // navigation to the same path?
     final oldPath = getActualTypedPath();
     final newPath = eq2Identical(getActualTypedPath(), newTypedPath);
-    if (oldPath == newPath) return;
+    if (oldPath == newPath) return Future.value();
     // future path
     ref.read(actualTypedPathProvider.notifier).state = newPath;
     // flag to start the calculation
     ref.read(flag4actualTypedPathChangeProvider.notifier).state++;
     // wait for the navigation to complete
-    await ref.read(appNavigationLogicProvider.future);
+    return ref.read(appNavigationLogicProvider.future);
   }
 
   @nonVirtual
@@ -198,6 +199,8 @@ class RiverpodNavigator {
   }
 
   // *** common navigation-agnostic app actions ***
+
+  Future<void> refresh() async => ref.read(flag4actualTypedPathChangeProvider.notifier).state++;
 
   @nonVirtual
   Future<bool> pop() async {

@@ -13,11 +13,7 @@ part 'flutter_lesson02.g.dart';
 final configCreator = (Config4Dart config4Dart) => Config(
       /// Which widget will be builded for which [TypedSegment].
       /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
-      screenBuilder: (segment) => (segment as AppSegments).map(
-        home: (home) => HomeScreen(home),
-        books: (books) => BooksScreen(books),
-        book: (book) => BookScreen(book),
-      ),
+      screenBuilder: screenBuilderAppSegments,
       config4Dart: config4Dart,
     );
 
@@ -33,7 +29,7 @@ Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
 
 // *** 6. app entry point with ProviderScope
 
-void main() {
+void runMain() {
   runApp(ProviderScope(
     // initialize configs providers
     overrides: [
@@ -43,3 +39,4 @@ void main() {
     child: const BooksExampleApp(),
   ));
 }
+

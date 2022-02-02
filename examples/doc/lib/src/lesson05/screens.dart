@@ -7,55 +7,85 @@ import 'lesson05.dart';
 
 part 'screens.g.dart';
 
-extension ReadNavigator on WidgetRef {
-  AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
-}
+final ScreenBuilder screenBuilderAppSegments = (segment) => (segment as AppSegments).map(
+      home: (home) => HomeScreen(home),
+      books: (books) => BooksScreen(books),
+      book: (book) => BookScreen(book),
+    );
 
 // ************************************
 // Using "functional_widget" package to be less verbose.
 // ************************************
 
-@cwidget
-Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
-      title: 'Home Page',
-      buildChildren: () => [
-        LinkHelper(title: 'Books Page', onPressed: ref.readNavigator().toBooks),
-      ],
-    );
-
-@cwidget
-Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
-      title: 'Books Page',
-      buildChildren: () =>
-          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book, id=$id', onPressed: () => ref.readNavigator().toBook(id: id))],
-    );
-
-@cwidget
-Widget bookScreen(WidgetRef ref, BookSegment segment) => PageHelper(
-      title: 'Book Page, id=${segment.id}',
-      buildChildren: () => [
-        LinkHelper(title: 'Next >>', onPressed: ref.readNavigator().bookNextPrevButton),
-        LinkHelper(title: '<< Prev', onPressed: () => ref.readNavigator().bookNextPrevButton(isPrev: true)),
-      ],
-    );
-
 @swidget
 Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedButton(onPressed: onPressed, child: Text(title));
 
 @swidget
-Widget pageHelper({required String title, required List<Widget> buildChildren()}) => Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: (() {
-            final res = <Widget>[SizedBox(height: 20)];
-            for (final w in buildChildren()) res.addAll([w, SizedBox(height: 20)]);
-            return res;
-          })(),
-        ),
-      ),
+Widget homeScreen(HomeSegment segment) => PageHelper(
+      title: 'Home Page',
+      buildChildren: (navigator) => [
+        LinkHelper(title: 'Books Page', onPressed: navigator.toBooks),
+      ],
     );
+
+@swidget
+Widget booksScreen(BooksSegment segment) => PageHelper(
+      title: 'Books Page',
+      buildChildren: (navigator) =>
+          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book, id=5', onPressed: () => navigator.toBook(id: id))],
+    );
+
+@swidget
+Widget bookScreen(BookSegment segment) => PageHelper(
+      title: 'Book Page, id=${segment.id}',
+      buildChildren: (navigator) => [
+        LinkHelper(title: 'Next >>', onPressed: navigator.bookNextPrevButton),
+        LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
+      ],
+    );
+
+final ScreenBuilder screenBuilderLoginSegments = (segment) => (segment as LoginHomeSegment).map(
+      home: (loginHome) => LoginScreen(loginHome),
+    );
+
+@swidget
+Widget loginScreen(LoginHomeSegment segment) => PageHelper(
+      title: 'Login Page',
+      isLoginPage: true,
+      buildChildren: (navigator) => [
+        ElevatedButton(onPressed: navigator.loginPageOK, child: Text('Login')),
+      ],
+    );
+
+@cwidget
+Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator), bool? isLoginPage}) {
+  final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(title),
+      leading: isLoginPage == true
+          ? IconButton(
+              onPressed: navigator.loginPageCancel,
+              icon: Icon(Icons.cancel),
+            )
+          : null,
+      actions: [
+        if (isLoginPage != true)
+          Consumer(builder: (_, ref, __) {
+            final isLogged = ref.watch(userIsLoggedProvider);
+            return ElevatedButton(
+              onPressed: () => isLogged ? navigator.globalLogoutButton() : navigator.globalLoginButton(),
+              child: Text(isLogged ? 'Logout' : 'Login'),
+            );
+          }),
+      ],
+    ),
+    body: Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: buildChildren(navigator).map((e) => [e, SizedBox(height: 20)]).expand((e) => e).toList(),
+      ),
+    ),
+  );
+}
 
