@@ -37,7 +37,6 @@ typedef TypedPath = List<TypedSegment>;
 // Dart config and providers (with creators from config)
 // ********************************************
 typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
-typedef Json2SegmentDef = TypedSegment Function(JsonMap jsonMap);
 
 /// config4DartProvider value is initialized by:
 ///
@@ -117,7 +116,8 @@ class RouterDelegate4Dart extends IRouterDelegate {
   void notifyListeners() {}
 }
 
-final appNavigationLogicProvider = FutureProvider<void>((ref) => ref.read(riverpodNavigatorProvider).appNavigationLogicCreator(ref));
+//final appNavigationLogicProvider = Provider<Future<void>>((ref) => ref.read(riverpodNavigatorProvider).appNavigationLogicCreator(ref));
+final appNavigationLogicProvider = Provider<FutureOr<TypedPath?>>((ref) => ref.read(riverpodNavigatorProvider).appNavigationLogicCreator(ref));
 
 // ********************************************
 //   RiverpodNavigator
@@ -134,6 +134,7 @@ class RiverpodNavigator {
       : config = ref.read(config4DartProvider),
         routerDelegate = ref.read(config4DartProvider).routerDelegateCreator(ref) {
     routerDelegate.navigator = this;
+    ref.onDispose(() => unlisten?.call());
   }
 
   @protected
@@ -141,29 +142,35 @@ class RiverpodNavigator {
   @protected
   final Config4Dart config;
 
+  Function? unlisten;
+
   final IRouterDelegate routerDelegate;
 
   /// put all change-route application logic here (redirects, needs login etc.)
   ///
-  /// Can be async, see [AsyncRiverpodNavigator]
-  FutureOr<TypedPath> appNavigationLogic(TypedPath oldPath, TypedPath newPath) => newPath;
+  /// Returns redirect path or null (if newPath is correct)
+  FutureOr<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, TypedPath newPath) => Future.value(null);
 
   // "create" proc for appNavigationLogicProvider
   @nonVirtual
-  Future<void> appNavigationLogicCreator(Ref ref) async {
-    // ref.watch(flag4actualTypedPathChangeProvider);
-    //final routerDelegate = ref.read(routerDelegateProvider);
+  FutureOr<TypedPath?> appNavigationLogicCreator(Ref ref) async {
+    // 'watch' as the first command
+    final newPath = ref.watch(actualTypedPathProvider);
+
+    // see 'initialization run' in [navigate]
+    if (unlisten == null) return [];
+
     final oldPath = actualTypedPath;
-    var newPath = ref.watch(actualTypedPathProvider);
-    final newPathFutureOr = appNavigationLogic(oldPath, newPath); // could raise RiverpodNavigatorRedirectException:
-    newPath = newPathFutureOr is Future ? await newPathFutureOr : newPathFutureOr;
-    // normalize newPath
-    newPath = eq2Identical(oldPath, newPath);
-    // newPath eq oldPath => return
-    if (oldPath == newPath) return Future.value();
-    // refresh flutter navigation stack
+    final redirectPathFuture = appNavigationLogic(ref, oldPath, newPath);
+    final redirectPath = redirectPathFuture is Future<TypedPath?> ? await redirectPathFuture : redirectPathFuture;
+
+    // redirect
+    if (redirectPath != null) return redirectPath;
+
+    // no redirect => actualize navigation stack
     routerDelegate.currentConfiguration = newPath;
     routerDelegate.notifyListeners();
+    return null;
   }
 
   /// Main [RiverpodNavigator] method. Provides navigation to the new [TypedPath].
@@ -171,21 +178,19 @@ class RiverpodNavigator {
   /// If the navigation logic depends on another state (e.g. whether the user is logged in or not),
   /// use watch for this state in overrided [RiverpodNavigator.appNavigationLogic]
   @nonVirtual
-  Future<void> navigate(TypedPath newPath) {
+  Future<void> navigate(TypedPath newPath) async {
+    // 'initialization run'
+    unlisten ??= ref.listen<FutureOr<TypedPath?>>(appNavigationLogicProvider, (previous, redirectPathFuture) async {
+      final newPath = redirectPathFuture is Future ? await redirectPathFuture : redirectPathFuture;
+      if (newPath == null) return;
+      await navigate(newPath);
+    });
     // change actualTypedPath => refresh navigation state
     ref.read(actualTypedPathProvider.notifier).state = newPath;
-    // flag to start the calculation
-    // ref.read(flag4actualTypedPathChangeProvider.notifier).state++;
-    // wait for the navigation to complete
-    try {
-      return ref.read(appNavigationLogicProvider.future);
-    } on RiverpodNavigatorRedirectException catch (e) {
-      // https://oleksandrkirichenko.com/blog/delayed-code-execution-in-flutter/
-      scheduleMicrotask(() => navigate(e.redirectPath));
-      return Future.value();
-    } catch (e) {
-      rethrow;
-    }
+    // waiting for end of navigation (when testing etc.)
+    final res = ref.read(appNavigationLogicProvider);
+    if (res is Future) await res;
+    return;
   }
 
   @nonVirtual

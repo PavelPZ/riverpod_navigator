@@ -17,6 +17,7 @@ dependencies:
   functional_widget_annotation:
   hooks_riverpod:
   json_annotation:
+  tuple:
 
 dev_dependencies: 
   build_runner:

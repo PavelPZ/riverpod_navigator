@@ -17,12 +17,12 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
 
   /// put all change-route application logic here
   @override
-  TypedPath appNavigationLogic(TypedPath oldPath, TypedPath newPath) {
+  Future<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, TypedPath newPath) async {
     onAsyncChange?.call(true);
     try {
       // normalize newPath
       newPath = eq2Identical(oldPath, newPath);
-      if (identical(actualTypedPath, newPath)) return newPath;
+      if (identical(actualTypedPath, newPath)) return null;
 
       // wait for async actions: creating, deactivating, merging
       // await waitForRouteChanging(oldPath, newPath);

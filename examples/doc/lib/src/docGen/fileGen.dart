@@ -138,6 +138,8 @@ final Json2Segment json2AppSegments = (json, _) => AppSegments.fromJson(json);
 
 @Freezed(unionKey: LoginSegments.jsonNameSpace)
 class LoginSegments with _\$LoginSegments, TypedSegment {
+  /// json serialization hack: must be at least two constructors
+  factory LoginSegments() = _LoginSegments;
   LoginSegments._();
   factory LoginSegments.home({String? loggedUrl, String? canceledUrl}) = LoginHomeSegment;
 
@@ -148,7 +150,7 @@ class LoginSegments with _\$LoginSegments, TypedSegment {
 final Json2Segment json2LoginSegments = (json, _) => LoginSegments.fromJson(json);
 
 /// mark screens which needs login
-bool needsLogin(TypedSegment segment) => segment is! BookSegment || segment.id.isOdd;
+bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 ''')) + filter2(l_async, null, true, t('''
 1.1. async screen actions  
 '''), st('''
@@ -225,7 +227,7 @@ class AppNavigator extends RiverpodNavigator {
         final pathParser = ref.read(config4DartProvider).pathParser;
         // parametters for login screen
         final loggedUrl = pathParser.typedPath2Path(newPath);
-        var canceledUrl = oldPath.last is LoginHomeSegment ? '' : pathParser.typedPath2Path(oldPath);
+        var canceledUrl = oldPath.isEmpty || oldPath.last is LoginHomeSegment ? '' : pathParser.typedPath2Path(oldPath);
         // chance to exit login loop
         if (loggedUrl == canceledUrl) canceledUrl = '';
         // redirect to login screen
@@ -459,6 +461,7 @@ Widget splashScreen() =>
     SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
 ''')) + filter(l5, 0, null, b('''
 final ScreenBuilder screenBuilderLoginSegments = (segment) => (segment as LoginHomeSegment).map(
+      (value) => throw UnimplementedError(),
       home: (loginHome) => LoginScreen(loginHome),
     );
 

@@ -32,7 +32,7 @@ Widget homeScreen(HomeSegment segment) => PageHelper(
 Widget booksScreen(BooksSegment segment) => PageHelper(
       title: 'Books Page',
       buildChildren: (navigator) =>
-          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book, id=5', onPressed: () => navigator.toBook(id: id))],
+          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book, id=$id', onPressed: () => navigator.toBook(id: id))],
     );
 
 @swidget
@@ -45,6 +45,7 @@ Widget bookScreen(BookSegment segment) => PageHelper(
     );
 
 final ScreenBuilder screenBuilderLoginSegments = (segment) => (segment as LoginHomeSegment).map(
+      (value) => throw UnimplementedError(),
       home: (loginHome) => LoginScreen(loginHome),
     );
 
@@ -88,4 +89,3 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
     ),
   );
 }
-

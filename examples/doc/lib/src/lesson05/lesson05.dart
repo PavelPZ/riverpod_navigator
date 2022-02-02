@@ -30,6 +30,8 @@ final Json2Segment json2AppSegments = (json, _) => AppSegments.fromJson(json);
 
 @Freezed(unionKey: LoginSegments.jsonNameSpace)
 class LoginSegments with _$LoginSegments, TypedSegment {
+  /// json serialization hack: must be at least two constructors
+  factory LoginSegments() = _LoginSegments;
   LoginSegments._();
   factory LoginSegments.home({String? loggedUrl, String? canceledUrl}) = LoginHomeSegment;
 
@@ -50,7 +52,7 @@ class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref) : super(ref);
 
   @override
-  FutureOr<TypedPath> appNavigationLogic(TypedPath oldPath, TypedPath newPath) {
+  FutureOr<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, TypedPath newPath) {
     // !!!! actual navigation stack depends not only on TypedPath but also on login state
     final isLogged = ref.watch(userIsLoggedProvider);
 
@@ -66,14 +68,14 @@ class AppNavigator extends RiverpodNavigator {
         // chance to exit login loop
         if (loggedUrl == canceledUrl) canceledUrl = '';
         // redirect to login screen
-        throw RiverpodNavigatorRedirectException([LoginHomeSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)]);
+        return [LoginHomeSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
       }
     } else {
       // user logged and navigation to Login page => redirect to home
-      if (newPath.last is LoginHomeSegment) throw RiverpodNavigatorRedirectException([HomeSegment()]);
+      if (newPath.isEmpty || newPath.last is LoginHomeSegment) return [HomeSegment()];
     }
-    // login OK => return newSegment
-    return newPath;
+    // login OK => no redirect
+    return null;
   }
 
   void toHome() => navigate([HomeSegment()]);
@@ -116,13 +118,16 @@ class AppNavigator extends RiverpodNavigator {
     assert(path.last is LoginHomeSegment);
     final loginHomeSegment = path.last as LoginHomeSegment;
 
-    if (cancel) {
-      assert(!ref.read(userIsLoggedProvider)); // not loged
-    } else
-      ref.read(userIsLoggedProvider.notifier).state = true; // lofin successfull => set to provider
-
-    final newSegment = cancel ? pathParser.path2TypedPath(loginHomeSegment.canceledUrl) : pathParser.path2TypedPath(loginHomeSegment.loggedUrl);
-    await navigate(newSegment.isEmpty ? [HomeSegment()] : newSegment);
+    var newSegment = cancel ? pathParser.path2TypedPath(loginHomeSegment.canceledUrl) : pathParser.path2TypedPath(loginHomeSegment.loggedUrl);
+    if (newSegment.isEmpty) newSegment = [HomeSegment()];
+    final notifier = ref.read(actualTypedPathProvider.notifier); // !!!
+    notifier.state = [...newSegment];
+    ref.refresh(actualTypedPathProvider);
+    if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true; // login successfull => set to provider
+    //   assert(!ref.read(userIsLoggedProvider)); // not logged
+    // else
+    //   ref.read(userIsLoggedProvider.notifier).state = true; // login successfull => set to provider
+    //await navigate(newSegment.isEmpty ? [HomeSegment()] : newSegment);
   }
 }
 
