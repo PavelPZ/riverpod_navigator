@@ -23,18 +23,19 @@ final configCreator = (Config4Dart config4Dart) => Config(
 @cwidget
 Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
       title: 'Books App',
-      routerDelegate: ref.read(routerDelegateProvider) as RiverpodRouterDelegate,
+      routerDelegate: ref.read(riverpodNavigatorProvider).routerDelegate as RiverpodRouterDelegate,
       routeInformationParser: RouteInformationParserImpl(ref),
     );
 
 // *** 6. app entry point with ProviderScope
 
 void runMain() {
+  final config = configCreator(config4DartCreator());
   runApp(ProviderScope(
     // initialize configs providers
     overrides: [
-      config4DartProvider.overrideWithValue(config4DartCreator()),
-      configProvider.overrideWithValue(configCreator(config4DartCreator())),
+      config4DartProvider.overrideWithValue(config.config4Dart),
+      configProvider.overrideWithValue(config),
     ],
     child: const BooksExampleApp(),
   ));

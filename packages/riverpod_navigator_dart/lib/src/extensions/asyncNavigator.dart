@@ -22,13 +22,14 @@ abstract class AsyncRiverpodNavigator extends RiverpodNavigator {
     try {
       // normalize newPath
       newPath = eq2Identical(oldPath, newPath);
-      if (identical(getActualTypedPath, newPath)) return newPath;
+      if (identical(actualTypedPath, newPath)) return newPath;
 
       // wait for async actions: creating, deactivating, merging
       // await waitForRouteChanging(oldPath, newPath);
 
       // state change => flutter navigation
-      final routerDelegate = ref.read(routerDelegateProvider);
+      final routerDelegate = ref.read(riverpodNavigatorProvider).routerDelegate;
+
       routerDelegate.currentConfiguration = newPath;
       routerDelegate.notifyListeners();
 

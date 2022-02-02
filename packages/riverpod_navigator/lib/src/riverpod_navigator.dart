@@ -9,14 +9,12 @@ typedef NavigatorWidgetBuilder = Widget Function(BuildContext, Navigator);
 typedef ScreenBuilder = Widget Function(TypedSegment segment);
 typedef SplashBuilder = Widget Function();
 
-final riverpodRouterDelegate = Provider<RiverpodRouterDelegate>((_) => throw UnimplementedError());
+//final riverpodRouterDelegate = Provider<RiverpodRouterDelegate>((_) => throw UnimplementedError());
 
 class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath>, IRouterDelegate {
-  RiverpodRouterDelegate(Ref ref)
-      : _config = ref.read(configProvider),
-        _navigator = ref.watch(riverpodNavigatorProvider);
+  RiverpodRouterDelegate(Ref ref) : _config = ref.read(configProvider);
+  //_navigator = ref.watch(riverpodNavigatorProvider);
 
-  final RiverpodNavigator _navigator;
   final Config _config;
 
   @override
@@ -34,17 +32,17 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
         onPopPage: (route, result) {
           //if (!route.didPop(result)) return false;
           // remove last segment from path
-          _navigator.onPopRoute();
+          navigator.onPopRoute();
           return false;
         });
     return _config.navigatorWidgetBuilder == null ? navigatorWidget : _config.navigatorWidgetBuilder!(context, navigatorWidget);
   }
 
   @override
-  Future<void> setNewRoutePath(TypedPath configuration) => _navigator.navigate(configuration);
+  Future<void> setNewRoutePath(TypedPath configuration) => navigator.navigate(configuration);
 
   @override
-  Future<void> setInitialRoutePath(TypedPath configuration) => _navigator.navigate(_config.config4Dart.initPath);
+  Future<void> setInitialRoutePath(TypedPath configuration) => navigator.navigate(_config.config4Dart.initPath);
 }
 
 class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {

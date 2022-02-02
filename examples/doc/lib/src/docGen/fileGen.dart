@@ -188,8 +188,8 @@ class AppNavigator extends RiverpodNavigator {
   void toBooks() => navigate([HomeSegment(), BooksSegment()]);
   void toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
   void bookNextPrevButton({bool? isPrev}) {
-    assert(getActualTypedPath().last is BookSegment);
-    var id = (getActualTypedPath().last as BookSegment).id;
+    assert(actualTypedPath.last is BookSegment);
+    var id = (actualTypedPath.last as BookSegment).id;
     if (isPrev == true)
       id = id == 0 ? booksLen - 1 : id - 1;
     else
@@ -229,11 +229,11 @@ class AppNavigator extends RiverpodNavigator {
         // chance to exit login loop
         if (loggedUrl == canceledUrl) canceledUrl = '';
         // redirect to login screen
-        return [LoginHomeSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
+        throw RiverpodNavigatorRedirectException([LoginHomeSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)]);
       }
     } else {
       // user logged and navigation to Login page => redirect to home
-      if (newPath.last is LoginHomeSegment) return [HomeSegment()];
+      if (newPath.last is LoginHomeSegment) throw RiverpodNavigatorRedirectException([HomeSegment()]);
     }
     // login OK => return newSegment
     return newPath;
@@ -243,8 +243,8 @@ class AppNavigator extends RiverpodNavigator {
   void toBooks() => navigate([HomeSegment(), BooksSegment()]);
   void toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
   void bookNextPrevButton({bool? isPrev}) {
-    assert(getActualTypedPath().last is BookSegment);
-    var id = (getActualTypedPath().last as BookSegment).id;
+    assert(actualTypedPath.last is BookSegment);
+    var id = (actualTypedPath.last as BookSegment).id;
     if (isPrev == true)
       id = id == 0 ? booksLen - 1 : id - 1;
     else
@@ -258,8 +258,7 @@ class AppNavigator extends RiverpodNavigator {
     assert(isLogged.state); // is logged?
     // change login state
     isLogged.state = false;
-    // e.g. logout needs refresh (when some of the pages in navigation stack could need login)
-    return refresh();
+    return Future.value();
   }
 
   Future<void> globalLoginButton() {
@@ -267,7 +266,7 @@ class AppNavigator extends RiverpodNavigator {
     final isLogged = ref.read(userIsLoggedProvider.notifier);
     assert(!isLogged.state); // is logoff?
     // navigate to login page
-    final segment = ref.read(config4DartProvider).pathParser.typedPath2Path(getActualTypedPath());
+    final segment = ref.read(config4DartProvider).pathParser.typedPath2Path(actualTypedPath);
     return navigate([LoginHomeSegment(loggedUrl: segment, canceledUrl: segment)]);
   }
 
@@ -275,7 +274,7 @@ class AppNavigator extends RiverpodNavigator {
   Future<void> loginPageOK() => _loginPageButtons(false);
 
   Future<void> _loginPageButtons(bool cancel) async {
-    final path = getActualTypedPath();
+    final path = actualTypedPath;
     final pathParser = ref.read(config4DartProvider).pathParser;
     assert(path.last is LoginHomeSegment);
     final loginHomeSegment = path.last as LoginHomeSegment;
@@ -363,7 +362,7 @@ Using functional_widget package to be less verbose. Package generates "class Boo
 @cwidget
 Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
       title: 'Books App',
-      routerDelegate: ref.read(routerDelegateProvider) as RiverpodRouterDelegate,
+      routerDelegate: ref.read(riverpodNavigatorProvider).routerDelegate as RiverpodRouterDelegate,
       routeInformationParser: RouteInformationParserImpl(ref),
     );
 ''')) + filter2(all, null, false, t('''
@@ -371,11 +370,12 @@ Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
 '''), st('''
 '''), b('''
 void runMain() {
+  final config = configCreator(config4DartCreator());
   runApp(ProviderScope(
     // initialize configs providers
     overrides: [
-      config4DartProvider.overrideWithValue(config4DartCreator()),
-      configProvider.overrideWithValue(configCreator(config4DartCreator())),
+      config4DartProvider.overrideWithValue(config.config4Dart),
+      configProvider.overrideWithValue(config),
     ],
     child: const BooksExampleApp(),
   ));
