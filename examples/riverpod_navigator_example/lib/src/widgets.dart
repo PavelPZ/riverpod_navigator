@@ -55,7 +55,7 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
       title: Text(title),
       actions: [
         Consumer(builder: (_, ref, __) {
-          final isLogged = ref.watch(isLoggedProvider);
+          final isLogged = ref.watch(navigationStateProvider.notifier.select((value) => value.state.userIsLogged));
           return ElevatedButton(
             onPressed: navigator.toogleLogin,
             child: Text(isLogged ? 'Logout' : 'Login'),

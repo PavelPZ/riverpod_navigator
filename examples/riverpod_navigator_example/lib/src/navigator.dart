@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod/riverpod.dart';
-import 'package:tuple/tuple.dart';
 
 import 'routerDelegate.dart';
 
@@ -39,20 +38,23 @@ typedef TypedPath = List<ExampleSegments>;
 bool needsLogin(ExampleSegments segment) => segment is BookSegment && segment.id.isOdd;
 
 // ********************************************
+// navigation state
+// ********************************************
+
+@freezed
+class NavigationState with _$NavigationState {
+  factory NavigationState({required TypedPath path, required bool userIsLogged}) = _NavigationState;
+}
+
+// ********************************************
 // providers
 // ********************************************
 
 /// RiverpodNavigator
 final riverpodNavigatorProvider = Provider<RiverpodNavigator>((ref) => RiverpodNavigator(ref));
 
-/// Provides actual [TypedPath] state
-final typedPathProvider = StateProvider<TypedPath>((_) => []);
-
-/// Provides actual [isLogged] state
-final isLoggedProvider = StateProvider<bool>((_) => false);
-
 /// monitoring of all states that affect navigation
-final navigationStateProvider = Provider<Tuple2<TypedPath, bool>>((ref) => Tuple2(ref.watch(typedPathProvider), ref.watch(isLoggedProvider)));
+final navigationStateProvider = StateProvider<NavigationState>((ref) => NavigationState(path: [], userIsLogged: false));
 
 // ********************************************
 //   RiverpodNavigatorLow
@@ -78,18 +80,16 @@ class RiverpodNavigatorLow {
   /// Returns:
   /// - redirect path, when application logic requires redirect to other typed path
   /// - null if newPath is already processed
-  TypedPath? appNavigationLogic(TypedPath oldPath, TypedPath newPath, bool isLogged) => null;
+  TypedPath? appNavigationLogic(TypedPath oldPath, NavigationState navigationState) => null;
 
   /// Main [RiverpodNavigatorLow] method. Provides navigation to the new [TypedPath].
   @nonVirtual
   void navigate(TypedPath newPath) {
     // listen for changing navigation state
-    _unlistenNavigationState ??= ref.listen<void>(navigationStateProvider, (_, __) {
+    _unlistenNavigationState ??= ref.listen<NavigationState>(navigationStateProvider, (_, newNavigationState) {
       final oldPath = routerDelegatePath;
-      final newPath = ref.read(typedPathProvider);
-      final newIsLogged = ref.read(isLoggedProvider);
 
-      final redirectPath = appNavigationLogic(oldPath, newPath, newIsLogged);
+      final redirectPath = appNavigationLogic(oldPath, newNavigationState);
 
       // redirect
       if (redirectPath != null) {
@@ -98,12 +98,12 @@ class RiverpodNavigatorLow {
       }
 
       // no redirect => actualize navigation stack
-      routerDelegate.currentConfiguration = newPath;
+      routerDelegate.currentConfiguration = newNavigationState.path;
       routerDelegate.doNotifyListener();
     });
 
     // change actualTypedPath => refresh navigation state
-    ref.read(typedPathProvider.notifier).state = newPath;
+    ref.read(navigationStateProvider.notifier).update((state) => state.copyWith(path: newPath));
 
     // This line is necessary to activate the [navigationStateProvider].
     // Without this line [navigationStateProvider] is not listened.
@@ -149,8 +149,8 @@ class RiverpodNavigator extends RiverpodNavigatorLow {
   /// - not logged in
   /// - newPath contains a book with an odd id  @override
   @override
-  TypedPath? appNavigationLogic(TypedPath oldPath, TypedPath newPath, bool isLogged) {
-    return !isLogged && newPath.any(needsLogin) ? [HomeSegment(), BooksSegment()] : null;
+  TypedPath? appNavigationLogic(TypedPath oldPath, NavigationState navigationState) {
+    return !navigationState.userIsLogged && navigationState.path.any(needsLogin) ? [HomeSegment(), BooksSegment()] : null;
   }
 
   void toHome() => navigate([HomeSegment()]);
@@ -166,7 +166,7 @@ class RiverpodNavigator extends RiverpodNavigatorLow {
     toBook(id: id);
   }
 
-  void toogleLogin() => ref.read(isLoggedProvider.notifier).update((s) => !s);
+  void toogleLogin() => ref.read(navigationStateProvider.notifier).update((s) => s.copyWith(userIsLogged: !s.userIsLogged));
 }
 
 /// number of books
