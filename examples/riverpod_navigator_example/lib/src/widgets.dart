@@ -28,8 +28,14 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
 @hcwidget
 Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
       title: 'Books Screen',
-      buildChildren: (navigator) =>
-          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book screen, id=$id', onPressed: () => navigator.toBook(id: id))],
+      buildChildren: (navigator) {
+        final isLogged = ref.read(navigationStateProvider).userIsLogged;
+        return [
+          for (var id = 0; id < booksLen; id++) ...[
+            LinkHelper(title: 'Book screen, id=$id${!isLogged && id.isOdd ? ' (log in first)' : ''}', onPressed: () => navigator.toBook(id: id))
+          ],
+        ];
+      },
     );
 
 @hcwidget
