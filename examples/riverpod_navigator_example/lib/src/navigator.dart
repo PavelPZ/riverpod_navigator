@@ -150,7 +150,7 @@ class RiverpodNavigator extends RiverpodNavigatorLow {
   /// - newPath contains a book with an odd id  @override
   @override
   TypedPath? appNavigationLogic(TypedPath oldPath, TypedPath newPath, bool isLogged) {
-    return !isLogged && newPath.any(needsLogin) ? [BooksSegment()] : null;
+    return !isLogged && newPath.any(needsLogin) ? [HomeSegment(), BooksSegment()] : null;
   }
 
   void toHome() => navigate([HomeSegment()]);
