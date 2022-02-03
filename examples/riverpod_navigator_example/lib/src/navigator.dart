@@ -114,7 +114,7 @@ class RiverpodNavigatorLow {
   @nonVirtual
   TypedPath get routerDelegatePath => routerDelegate.currentConfiguration;
 
-  /// for [Navigator.onPopPage] in [RiverpodRouterDelegate.build]
+  /// for [Navigator.onPopRoute] in [RiverpodRouterDelegate.build]
   @nonVirtual
   void onPopRoute() => pop();
 
