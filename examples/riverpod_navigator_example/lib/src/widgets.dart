@@ -11,7 +11,7 @@ part 'widgets.g.dart';
 /// Flutter app root
 @hcwidget
 Widget appRoot(WidgetRef ref) => MaterialApp.router(
-      title: 'Books App',
+      title: 'Riverpod, freezed and Navigator 2.0 example',
       routerDelegate: ref.watch(riverpodNavigatorProvider).routerDelegate,
       routeInformationParser: RouteInformationParserImpl(),
       debugShowCheckedModeBanner: false,
@@ -19,7 +19,7 @@ Widget appRoot(WidgetRef ref) => MaterialApp.router(
 
 @hcwidget
 Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
-      title: 'Home Page',
+      title: 'Home Screen',
       buildChildren: (navigator) => [
         LinkHelper(title: 'Books Page', onPressed: navigator.toBooks),
       ],
@@ -27,14 +27,14 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
 
 @hcwidget
 Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
-      title: 'Books Page',
+      title: 'Books Screen',
       buildChildren: (navigator) =>
-          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book, id=$id', onPressed: () => navigator.toBook(id: id))],
+          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book screen, id=$id', onPressed: () => navigator.toBook(id: id))],
     );
 
 @hcwidget
 Widget bookScreen(WidgetRef ref, BookSegment segment) => PageHelper(
-      title: 'Book Page, id=${segment.id}',
+      title: 'Book screen, id=${segment.id}',
       buildChildren: (navigator) => [
         LinkHelper(title: 'Next >>', onPressed: navigator.bookNextPrevButton),
         LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),

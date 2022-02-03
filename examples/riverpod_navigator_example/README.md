@@ -1,6 +1,22 @@
 # Riverpod, freezed and Navigator 2.0 example
 
 ... how to use [riverpod](https://riverpod.dev/) and [freezed](https://github.com/rrousselGit/freezed) 
-to simplify Flutter [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade) usage.
+to simplify the use of Flutter [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade).
 
-Classic three screen example [Home] => [Books] => [Book\*] with simple login logic (where books with odd book.id are not available without login).
+Classic three-screen example [Home] => [Books] => [Book\*].
+
+There are simple login logic, where ```Book screen, id=1``` ```Book screen, id=3``` are not available without login.
+
+## Running example on the web
+
+... is available [here](https://pavelpz.github.io/).
+
+
+## Running example on your computer
+
+- clone the repository
+- in ```examples\riverpod_navigator_example\``` subdirectory, execute following commands:
+- ```flutter create .```
+- ```flutter pub get```
+- ```flutter pub run build_runner build --delete-conflicting-outputs```
+- ```flutter run``` 
