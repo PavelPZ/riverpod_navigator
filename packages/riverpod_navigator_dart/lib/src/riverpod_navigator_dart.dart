@@ -116,7 +116,7 @@ class RouterDelegate4Dart extends IRouterDelegate {
   void notifyListeners() {}
 }
 
-//final appNavigationLogicProvider = Provider<Future<void>>((ref) => ref.read(riverpodNavigatorProvider).appNavigationLogicCreator(ref));
+///returns or null or redirect path
 final appNavigationLogicProvider = Provider<FutureOr<TypedPath?>>((ref) => ref.read(riverpodNavigatorProvider).appNavigationLogicCreator(ref));
 
 // ********************************************
@@ -134,7 +134,7 @@ class RiverpodNavigator {
       : config = ref.read(config4DartProvider),
         routerDelegate = ref.read(config4DartProvider).routerDelegateCreator(ref) {
     routerDelegate.navigator = this;
-    ref.onDispose(() => unlisten?.call());
+    ref.onDispose(() => _unlistenAppNavigationLogic?.call());
   }
 
   @protected
@@ -142,23 +142,23 @@ class RiverpodNavigator {
   @protected
   final Config4Dart config;
 
-  Function? unlisten;
+  Function? _unlistenAppNavigationLogic; //
 
   final IRouterDelegate routerDelegate;
 
   /// put all change-route application logic here (redirects, needs login etc.)
   ///
-  /// Returns redirect path or null (if newPath is correct)
-  FutureOr<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, TypedPath newPath) => Future.value(null);
+  /// Returns redirect path or null (if newPath is already processed)
+  FutureOr<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, TypedPath newPath) => null;
 
   // "create" proc for appNavigationLogicProvider
   @nonVirtual
-  FutureOr<TypedPath?> appNavigationLogicCreator(Ref ref) async {
+  Future<TypedPath?> appNavigationLogicCreator(Ref ref) async {
     // 'watch' as the first command
     final newPath = ref.watch(actualTypedPathProvider);
 
-    // see 'initialization run' in [navigate]
-    if (unlisten == null) return [];
+    // first call of navigate => initialize appNavigationLogicProvider
+    if (_unlistenAppNavigationLogic == null) return [];
 
     final oldPath = actualTypedPath;
     final redirectPathFuture = appNavigationLogic(ref, oldPath, newPath);
@@ -179,18 +179,17 @@ class RiverpodNavigator {
   /// use watch for this state in overrided [RiverpodNavigator.appNavigationLogic]
   @nonVirtual
   Future<void> navigate(TypedPath newPath) async {
-    // 'initialization run'
-    unlisten ??= ref.listen<FutureOr<TypedPath?>>(appNavigationLogicProvider, (previous, redirectPathFuture) async {
-      final newPath = redirectPathFuture is Future ? await redirectPathFuture : redirectPathFuture;
-      if (newPath == null) return;
-      await navigate(newPath);
+    // _unlistenAppNavigationLogic==null => initialize appNavigationLogicProvider
+    // listen for redirect (appNavigationLogicProvider returns or null or redirect path)
+    _unlistenAppNavigationLogic ??= ref.listen<FutureOr<TypedPath?>>(appNavigationLogicProvider, (_, redirectPathFuture) async {
+      final redirectPath = await redirectPathFuture;
+      if (redirectPath == null) return;
+      await navigate(redirectPath);
     });
     // change actualTypedPath => refresh navigation state
     ref.read(actualTypedPathProvider.notifier).state = newPath;
-    // waiting for end of navigation (when testing etc.)
-    final res = ref.read(appNavigationLogicProvider);
-    if (res is Future) await res;
-    return;
+    // waiting for end of navigation
+    await ref.read(appNavigationLogicProvider);
   }
 
   @nonVirtual
@@ -223,10 +222,6 @@ class RiverpodNavigator {
   }
 
   // *** common navigation-agnostic app actions ***
-
-  void redirect(TypedPath redirectPath) => throw RiverpodNavigatorRedirectException(redirectPath);
-
-  // Future<void> refresh() async => ref.read(flag4actualTypedPathChangeProvider.notifier).state++;
 
   @nonVirtual
   Future<bool> pop() async {

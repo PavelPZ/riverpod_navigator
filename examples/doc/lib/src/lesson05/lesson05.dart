@@ -113,21 +113,14 @@ class AppNavigator extends RiverpodNavigator {
   Future<void> loginPageOK() => _loginPageButtons(false);
 
   Future<void> _loginPageButtons(bool cancel) async {
-    final path = actualTypedPath;
-    final pathParser = ref.read(config4DartProvider).pathParser;
-    assert(path.last is LoginHomeSegment);
-    final loginHomeSegment = path.last as LoginHomeSegment;
+    assert(actualTypedPath.last is LoginHomeSegment);
+    final loginHomeSegment = actualTypedPath.last as LoginHomeSegment;
 
-    var newSegment = cancel ? pathParser.path2TypedPath(loginHomeSegment.canceledUrl) : pathParser.path2TypedPath(loginHomeSegment.loggedUrl);
+    var newSegment = ref.read(config4DartProvider).pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
     if (newSegment.isEmpty) newSegment = [HomeSegment()];
-    final notifier = ref.read(actualTypedPathProvider.notifier); // !!!
-    notifier.state = [...newSegment];
-    ref.refresh(actualTypedPathProvider);
+
     if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true; // login successfull => set to provider
-    //   assert(!ref.read(userIsLoggedProvider)); // not logged
-    // else
-    //   ref.read(userIsLoggedProvider.notifier).state = true; // login successfull => set to provider
-    //await navigate(newSegment.isEmpty ? [HomeSegment()] : newSegment);
+    ref.read(actualTypedPathProvider.notifier).state = newSegment;
   }
 }
 
