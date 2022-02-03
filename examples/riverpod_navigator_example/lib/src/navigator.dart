@@ -10,12 +10,15 @@ import 'routerDelegate.dart';
 part 'navigator.freezed.dart';
 part 'navigator.g.dart';
 
-typedef JsonMap = Map<String, dynamic>;
-
 // ********************************************
-//  basic classes:  TypedSegment and TypedPath
+//  basic classes:  ExampleSegments and TypedPath
 // ********************************************
 
+/// Terminology:
+/// - string path => 'home/books/book;id=2'
+/// - the string path consists of segments => 'home', 'books', 'book;id=2'
+/// - typed path => [HomeSegment(), BooksSegment(), BookSegment(id:2)]
+/// - the typed path consists of typed segments => HomeSegment(), BooksSegment(), BookSegment(id:2)
 @freezed
 class ExampleSegments with _$ExampleSegments {
   ExampleSegments._();
@@ -52,7 +55,7 @@ final navigationStateProvider = Provider<Tuple2<TypedPath, bool>>((ref) => Tuple
 //   RiverpodNavigatorLow
 // ********************************************
 
-/// Helper singleton class for navigating to [TypedPath]
+/// Helper singleton class for manaing navigation state
 class RiverpodNavigatorLow {
   RiverpodNavigatorLow(this.ref) : routerDelegate = RiverpodRouterDelegate() {
     routerDelegate.navigator = this;
@@ -66,15 +69,12 @@ class RiverpodNavigatorLow {
 
   RiverpodRouterDelegate routerDelegate;
 
-  /// put all change-route application logic here (redirects, needs login etc.)
+  /// implements all navigation change application logic (redirection, login required, etc.)
   ///
   /// Returns redirect path or null (if newPath is already processed)
   TypedPath? appNavigationLogic(TypedPath oldPath, TypedPath newPath, bool isLogged) => null;
 
   /// Main [RiverpodNavigatorLow] method. Provides navigation to the new [TypedPath].
-  ///
-  /// If the navigation logic depends on another state (e.g. whether the user is logged in or not),
-  /// use watch for this state in overrided [RiverpodNavigatorLow.appNavigationLogic]
   @nonVirtual
   void navigate(TypedPath newPath) {
     // listen for changing navigation state
@@ -99,7 +99,8 @@ class RiverpodNavigatorLow {
     // change actualTypedPath => refresh navigation state
     ref.read(typedPathProvider.notifier).state = newPath;
 
-    // this line is necessary to activate the [navigationStateProvider] provider
+    // This line is necessary to activate the [navigationStateProvider].
+    // Without this line [navigationStateProvider] is not listened.
     // ignore: unused_local_variable
     final res = ref.read(navigationStateProvider);
   }
@@ -134,14 +135,16 @@ class RiverpodNavigatorLow {
 //   RiverpodNavigator
 // ********************************************
 
-const booksLen = 5;
-
+/// mark the segments that require login: book with odd id
 bool needsLogin(ExampleSegments segment) => segment is BookSegment && segment.id.isOdd;
 
+/// navigator is available throw riverpodNavigatorProvider
 class RiverpodNavigator extends RiverpodNavigatorLow {
   RiverpodNavigator(Ref ref) : super(ref);
 
-  /// Returns redirect to BooksScreeb for Book's with odd Book.id
+  /// returns redirected TypeedPath when:
+  /// - not logged in
+  /// - newPath contains a book with an odd id  @override
   @override
   TypedPath? appNavigationLogic(TypedPath oldPath, TypedPath newPath, bool isLogged) {
     return !isLogged && newPath.any(needsLogin) ? [BooksSegment()] : null;
@@ -162,3 +165,6 @@ class RiverpodNavigator extends RiverpodNavigatorLow {
 
   void toogleLogin() => ref.read(isLoggedProvider.notifier).update((s) => !s);
 }
+
+/// number of books
+const booksLen = 5;

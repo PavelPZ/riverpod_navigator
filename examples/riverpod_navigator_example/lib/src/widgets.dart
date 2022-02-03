@@ -66,7 +66,7 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
     body: Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: buildChildren(navigator).map((e) => [e, SizedBox(height: 20)]).expand((e) => e).toList(),
+        children: buildChildren(navigator).map((e) => [SizedBox(height: 20), e]).expand((e) => e).toList(),
       ),
     ),
   );
