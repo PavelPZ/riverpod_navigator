@@ -5,14 +5,14 @@ to simplify the use of Flutter [Navigator 2.0](https://medium.com/flutter/learni
 
 Classic three-screen example [Home] => [Books] => [Book\*].
 
-There are simple login logic, where ```Book screen, id=1``` ```Book screen, id=3``` screens are not available without login.
+The example implements a simple login logic: ```Book screen, id=1``` and ```Book screen, id=3``` screens are not available without login.
 
-## Running example on the web
+## Running example on the web...
 
 ... is available [here](https://pavelpz.github.io/).
 
 
-## Running example on your computer
+## To run the example on your computer
 
 - clone the repository
 - in ```examples\riverpod_navigator_example\``` subdirectory, execute following commands:
