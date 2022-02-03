@@ -20,3 +20,8 @@ There are simple login logic, where ```Book screen, id=1``` ```Book screen, id=3
 - ```flutter pub get```
 - ```flutter pub run build_runner build --delete-conflicting-outputs```
 - ```flutter run``` 
+
+## Publish to the web
+
+- run ```flutter build web --web-renderer html```
+- copy the contents of the ```build/web/``` directory to the root directory of your web server
