@@ -5,7 +5,7 @@ to simplify the use of Flutter [Navigator 2.0](https://medium.com/flutter/learni
 
 Classic three-screen example [Home] => [Books] => [Book\*].
 
-There are simple login logic, where ```Book screen, id=1``` ```Book screen, id=3``` are not available without login.
+There are simple login logic, where ```Book screen, id=1``` ```Book screen, id=3``` screens are not available without login.
 
 ## Running example on the web
 
