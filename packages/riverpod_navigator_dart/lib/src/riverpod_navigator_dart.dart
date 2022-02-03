@@ -6,7 +6,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../riverpod_navigator_dart.dart';
+import 'extensions/simpleUrlParser.dart';
 
 typedef JsonMap = Map<String, dynamic>;
 
@@ -88,10 +88,7 @@ class Config4Dart {
 // TypedPath changing
 // ********************************************
 
-/// Riverpod provider which provides actual [TypedPath] to whole app
-///
-/// Do not watch for it, it sometimes changes two times during single navig calculation
-/// (e.g. when [RiverpodNavigator.appNavigationLogic] performs redirect).
+/// Provides actual [TypedPath] to whole app
 final actualTypedPathProvider = StateProvider<TypedPath>((_) => []);
 
 /// Helper provider. When its value changed, navigation calculation starts.
@@ -123,18 +120,13 @@ final appNavigationLogicProvider = Provider<FutureOr<TypedPath?>>((ref) => ref.r
 //   RiverpodNavigator
 // ********************************************
 
-class RiverpodNavigatorRedirectException implements Exception {
-  RiverpodNavigatorRedirectException(this.redirectPath);
-  final TypedPath redirectPath;
-}
-
 /// Helper singleton class for navigating to [TypedPath]
 class RiverpodNavigator {
   RiverpodNavigator(this.ref)
       : config = ref.read(config4DartProvider),
         routerDelegate = ref.read(config4DartProvider).routerDelegateCreator(ref) {
     routerDelegate.navigator = this;
-    ref.onDispose(() => _unlistenAppNavigationLogic?.call());
+    ref.onDispose(() => _unlistenRedirects?.call());
   }
 
   @protected
@@ -142,7 +134,7 @@ class RiverpodNavigator {
   @protected
   final Config4Dart config;
 
-  Function? _unlistenAppNavigationLogic; //
+  Function? _unlistenRedirects;
 
   final IRouterDelegate routerDelegate;
 
@@ -158,7 +150,7 @@ class RiverpodNavigator {
     final newPath = ref.watch(actualTypedPathProvider);
 
     // first call of navigate => initialize appNavigationLogicProvider
-    if (_unlistenAppNavigationLogic == null) return [];
+    if (_unlistenRedirects == null) return [];
 
     final oldPath = actualTypedPath;
     final redirectPathFuture = appNavigationLogic(ref, oldPath, newPath);
@@ -179,9 +171,8 @@ class RiverpodNavigator {
   /// use watch for this state in overrided [RiverpodNavigator.appNavigationLogic]
   @nonVirtual
   Future<void> navigate(TypedPath newPath) async {
-    // _unlistenAppNavigationLogic==null => initialize appNavigationLogicProvider
-    // listen for redirect (appNavigationLogicProvider returns or null or redirect path)
-    _unlistenAppNavigationLogic ??= ref.listen<FutureOr<TypedPath?>>(appNavigationLogicProvider, (_, redirectPathFuture) async {
+    // listen for redirects (appNavigationLogicProvider returns or null or redirect path)
+    _unlistenRedirects ??= ref.listen<FutureOr<TypedPath?>>(appNavigationLogicProvider, (_, redirectPathFuture) async {
       final redirectPath = await redirectPathFuture;
       if (redirectPath == null) return;
       await navigate(redirectPath);

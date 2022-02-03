@@ -1,17 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'app/app.dart';
 import 'navigator.dart';
-import 'widgets/widgets.dart';
+import 'widgets.dart';
 
 class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
-  RiverpodRouterDelegate(this.ref, this._navigator);
+  RiverpodRouterDelegate();
 
-  final RiverpodNavigator _navigator;
-  final Ref ref;
+  RiverpodNavigatorLow? navigator;
 
   // make [notifyListeners] public
   void doNotifyListener() => notifyListeners();
@@ -34,16 +31,16 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
         );
     return Navigator(
         key: navigatorKey,
-        pages: actPath.map((segment) => MaterialPage(key: ValueKey(segment.asJson), child: screenBuilder(segment as ExampleSegments))).toList(),
+        pages: actPath.map((segment) => MaterialPage(key: ValueKey(segment.toString), child: screenBuilder(segment))).toList(),
         onPopPage: (route, result) {
-          _navigator.onPopRoute();
+          navigator?.onPopRoute();
           return false;
         });
   }
 
   @override
-  Future<void> setNewRoutePath(TypedPath configuration) async => _navigator.navigate(configuration);
+  Future<void> setNewRoutePath(TypedPath configuration) async => navigator?.navigate(configuration);
 
   @override
-  Future<void> setInitialRoutePath(TypedPath configuration) async => _navigator.navigate([HomeSegment()]);
+  Future<void> setInitialRoutePath(TypedPath configuration) async => navigator?.navigate([HomeSegment()]);
 }

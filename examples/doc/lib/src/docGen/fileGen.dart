@@ -149,7 +149,7 @@ class LoginSegments with _\$LoginSegments, TypedSegment {
 
 final Json2Segment json2LoginSegments = (json, _) => LoginSegments.fromJson(json);
 
-/// mark screens which needs login
+/// mark screens which needs login: every 'id.isOdd' book needs it
 bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 ''')) + filter2(l_async, null, true, t('''
 1.1. async screen actions  
@@ -213,6 +213,7 @@ const booksLen = 5;
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref) : super(ref);
 
+  /// Returns redirect path or null
   @override
   FutureOr<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, TypedPath newPath) {
     // !!!! actual navigation stack depends not only on TypedPath but also on login state
@@ -278,10 +279,12 @@ class AppNavigator extends RiverpodNavigator {
     assert(actualTypedPath.last is LoginHomeSegment);
     final loginHomeSegment = actualTypedPath.last as LoginHomeSegment;
 
-    var newSegment = ref.read(config4DartProvider).pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
+    var newSegment = ref.read(config4DartProvider).pathParser
+      .path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
     if (newSegment.isEmpty) newSegment = [HomeSegment()];
 
-    if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true; // login successfull => set to provider
+    // login successfull => change login state
+    if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true; 
     ref.read(actualTypedPathProvider.notifier).state = newSegment;
   }
 }

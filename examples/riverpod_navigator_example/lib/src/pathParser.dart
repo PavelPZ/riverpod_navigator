@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
 
-import 'app/app.dart';
 import 'navigator.dart';
 
 class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
@@ -24,14 +23,14 @@ class PathParser {
   static const String defaultJsonUnionKey = 'runtimeType';
 
   /// String path => TypedPath
-  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.asJson)).join('/');
+  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.toString())).join('/');
 
   /// TypedPath => String path, suitable for browser
   TypedPath path2TypedPath(String? path) {
     if (path == null || path.isEmpty) return [];
     return [
       for (final s in path.split('/'))
-        if (s.isNotEmpty) ExampleSegments.json2Segment(jsonDecode(Uri.decodeFull(s)))
+        if (s.isNotEmpty) ExampleSegments.fromJson(jsonDecode(Uri.decodeFull(s)))
     ];
   }
 }

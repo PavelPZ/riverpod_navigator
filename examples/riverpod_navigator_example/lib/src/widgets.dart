@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../app/app.dart';
-import '../pathParser.dart';
-import '../providers.dart';
+import 'navigator.dart';
+import 'pathParser.dart';
 
 // flutter pub run build_runner watch
 part 'widgets.g.dart';
@@ -14,7 +12,7 @@ part 'widgets.g.dart';
 @hcwidget
 Widget appRoot(WidgetRef ref) => MaterialApp.router(
       title: 'Books App',
-      routerDelegate: ref.watch(riverpodRouterDelegateProvider),
+      routerDelegate: ref.watch(riverpodNavigatorProvider).routerDelegate,
       routeInformationParser: RouteInformationParserImpl(),
       debugShowCheckedModeBanner: false,
     );
@@ -37,14 +35,10 @@ Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
 @hcwidget
 Widget bookScreen(WidgetRef ref, BookSegment segment) => PageHelper(
       title: 'Book Page, id=${segment.id}',
-      buildChildren: (navigator) {
-        return segment.id.isOdd && ref.read(isLoggedProvider)
-            ? [
-                LinkHelper(title: 'Next >>', onPressed: navigator.bookNextPrevButton),
-                LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
-              ]
-            : [LinkHelper(title: 'Next >>', onPressed: navigator.login)];
-      },
+      buildChildren: (navigator) => [
+        LinkHelper(title: 'Next >>', onPressed: navigator.bookNextPrevButton),
+        LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
+      ],
     );
 
 @swidget
@@ -53,30 +47,27 @@ Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedB
       child: Text(title),
     );
 
-@hcwidget
-Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(ExampleRiverpodNavigator navigator)}) {
-  final navigator = ref.read(exampleRiverpodNavigatorProvider);
+@cwidget
+Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(RiverpodNavigator navigator)}) {
+  final navigator = ref.read(riverpodNavigatorProvider);
   return Scaffold(
     appBar: AppBar(
       title: Text(title),
+      actions: [
+        Consumer(builder: (_, ref, __) {
+          final isLogged = ref.watch(isLoggedProvider);
+          return ElevatedButton(
+            onPressed: navigator.toogleLogin,
+            child: Text(isLogged ? 'Logout' : 'Login'),
+          );
+        }),
+      ],
     ),
     body: Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: (() {
-          final res = <Widget>[SizedBox(height: 20)];
-          for (final w in buildChildren(navigator)) res.addAll([w, SizedBox(height: 20)]);
-          res.add(CountBuilds());
-          return res;
-        })(),
+        children: buildChildren(navigator).map((e) => [e, SizedBox(height: 20)]).expand((e) => e).toList(),
       ),
     ),
   );
-}
-
-@hcwidget
-Widget countBuilds() {
-  final count = useState(0);
-  count.value++;
-  return Text('Builded ${count.value} times.');
 }
