@@ -216,10 +216,7 @@ class AppNavigator extends RiverpodNavigator {
   /// Returns redirect path or null
   @override
   FutureOr<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, TypedPath newPath) {
-    // !!!! actual navigation stack depends not only on TypedPath but also on login state
-    final isLogged = ref.watch(userIsLoggedProvider);
-
-    if (!isLogged) {
+    if (!ref.read(userIsLoggedProvider)) {
       final pathNeedsLogin = newPath.any((segment) => needsLogin(segment));
 
       // login needed => redirect to login page
@@ -283,9 +280,10 @@ class AppNavigator extends RiverpodNavigator {
       .path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
     if (newSegment.isEmpty) newSegment = [HomeSegment()];
 
-    // login successfull => change login state
-    if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true; 
+
     ref.read(typedPathProvider.notifier).state = newSegment;
+    // login successfull => change login state
+    if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true;
   }
 }
 

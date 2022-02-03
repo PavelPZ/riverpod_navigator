@@ -114,11 +114,12 @@ class AppNavigator extends RiverpodNavigator {
     assert(actualTypedPath.last is LoginHomeSegment);
     final loginHomeSegment = actualTypedPath.last as LoginHomeSegment;
 
-    var newSegment = ref.read(config4DartProvider).pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
+    var newSegment = ref.read(config4DartProvider).pathParser
+      .path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
     if (newSegment.isEmpty) newSegment = [HomeSegment()];
 
-    final typedPathNotifier = ref.read(typedPathProvider.notifier);
-    typedPathNotifier.state = newSegment;
+
+    ref.read(typedPathProvider.notifier).state = newSegment;
     // login successfull => change login state
     if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true;
   }
@@ -134,7 +135,8 @@ extension ReadNavigator on ProviderContainer {
 // *** 3. Dart-part of app configuration
 
 final config4DartCreator = () => Config4Dart(
-      json2Segment: (json, unionKey) => (unionKey == LoginSegments.jsonNameSpace ? json2LoginSegments : json2AppSegments)(json, unionKey),
+      json2Segment: (json, unionKey) =>
+          (unionKey == LoginSegments.jsonNameSpace ? json2LoginSegments : json2AppSegments)(json, unionKey),
       initPath: [HomeSegment()],
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
       getAllDependedStates: (ref) => [ref.watch(typedPathProvider), ref.watch(userIsLoggedProvider)],
@@ -172,3 +174,4 @@ void runMain() {
     child: const BooksExampleApp(),
   ));
 }
+
