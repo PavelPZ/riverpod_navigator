@@ -285,7 +285,7 @@ class AppNavigator extends RiverpodNavigator {
 
     // login successfull => change login state
     if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true; 
-    ref.read(actualTypedPathProvider.notifier).state = newSegment;
+    ref.read(typedPathProvider.notifier).state = newSegment;
   }
 }
 
@@ -294,7 +294,8 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 /// provide a correctly typed navigator for tests
 extension ReadNavigator on ProviderContainer {
   AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
-}''')) + filter2(all, l4 + l5, true, t('''
+}
+''')) + filter2(all, l4 + l5, true, t('''
 3. Dart-part of app configuration
 '''), st('''
 '''), b('''
@@ -322,6 +323,7 @@ final config4DartCreator = () => Config4Dart(
           (unionKey == LoginSegments.jsonNameSpace ? json2LoginSegments : json2AppSegments)(json, unionKey),
       initPath: [HomeSegment()],
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
+      getAllDependedStates: (ref) => [ref.watch(typedPathProvider), ref.watch(userIsLoggedProvider)],
     );
 ''')) + filter2(all, l4 + l5, false, t('''
 4. Flutter-part of app configuration
@@ -432,7 +434,7 @@ Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedB
 ''')) + filter(all, 0, null, b('''
 @swidget
 Widget homeScreen(HomeSegment segment) => PageHelper(
-      title: 'Home Page',
+      title: 'Home Screen',
       buildChildren: (navigator) => [
         LinkHelper(title: 'Books Page', onPressed: navigator.toBooks),
       ],
@@ -440,14 +442,14 @@ Widget homeScreen(HomeSegment segment) => PageHelper(
 
 @swidget
 Widget booksScreen(BooksSegment segment) => PageHelper(
-      title: 'Books Page',
+      title: 'Books Screen',
       buildChildren: (navigator) =>
-          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book, id=$id', onPressed: () => navigator.toBook(id: id))],
+          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book Screen, id=\$id', onPressed: () => navigator.toBook(id: id))],
     );
 
 @swidget
 Widget bookScreen(BookSegment segment) => PageHelper(
-      title: 'Book Page, id=\${segment.id}',
+      title: 'Book Screen, id=\${segment.id}',
       buildChildren: (navigator) => [
         LinkHelper(title: 'Next >>', onPressed: navigator.bookNextPrevButton),
         LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
@@ -518,7 +520,11 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
     body: Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: buildChildren(navigator).map((e) => [e, SizedBox(height: 20)]).expand((e) => e).toList(),
+        children: (() {
+          final res = <Widget>[SizedBox(height: 20)];
+          for (final w in buildChildren(navigator)) res.addAll([w, SizedBox(height: 20)]);
+          return res;
+        })(),
       ),
     ),
   );

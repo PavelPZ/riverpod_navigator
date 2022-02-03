@@ -22,7 +22,7 @@ Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedB
 
 @swidget
 Widget homeScreen(HomeSegment segment) => PageHelper(
-      title: 'Home Page',
+      title: 'Home Screen',
       buildChildren: (navigator) => [
         LinkHelper(title: 'Books Page', onPressed: navigator.toBooks),
       ],
@@ -30,14 +30,14 @@ Widget homeScreen(HomeSegment segment) => PageHelper(
 
 @swidget
 Widget booksScreen(BooksSegment segment) => PageHelper(
-      title: 'Books Page',
+      title: 'Books Screen',
       buildChildren: (navigator) =>
-          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book, id=5', onPressed: () => navigator.toBook(id: id))],
+          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book Screen, id=$id', onPressed: () => navigator.toBook(id: id))],
     );
 
 @swidget
 Widget bookScreen(BookSegment segment) => PageHelper(
-      title: 'Book Page, id=${segment.id}',
+      title: 'Book Screen, id=${segment.id}',
       buildChildren: (navigator) => [
         LinkHelper(title: 'Next >>', onPressed: navigator.bookNextPrevButton),
         LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
@@ -84,7 +84,11 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
     body: Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: buildChildren(navigator).map((e) => [e, SizedBox(height: 20)]).expand((e) => e).toList(),
+        children: (() {
+          final res = <Widget>[SizedBox(height: 20)];
+          for (final w in buildChildren(navigator)) res.addAll([w, SizedBox(height: 20)]);
+          return res;
+        })(),
       ),
     ),
   );

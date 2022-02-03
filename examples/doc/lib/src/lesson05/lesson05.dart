@@ -54,10 +54,7 @@ class AppNavigator extends RiverpodNavigator {
   /// Returns redirect path or null
   @override
   FutureOr<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, TypedPath newPath) {
-    // !!!! actual navigation stack depends not only on TypedPath but also on login state
-    final isLogged = ref.watch(userIsLoggedProvider);
-
-    if (!isLogged) {
+    if (!ref.read(userIsLoggedProvider)) {
       final pathNeedsLogin = newPath.any((segment) => needsLogin(segment));
 
       // login needed => redirect to login page
@@ -120,9 +117,10 @@ class AppNavigator extends RiverpodNavigator {
     var newSegment = ref.read(config4DartProvider).pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
     if (newSegment.isEmpty) newSegment = [HomeSegment()];
 
+    final typedPathNotifier = ref.read(typedPathProvider.notifier);
+    typedPathNotifier.state = newSegment;
     // login successfull => change login state
     if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true;
-    ref.read(actualTypedPathProvider.notifier).state = newSegment;
   }
 }
 
@@ -139,6 +137,7 @@ final config4DartCreator = () => Config4Dart(
       json2Segment: (json, unionKey) => (unionKey == LoginSegments.jsonNameSpace ? json2LoginSegments : json2AppSegments)(json, unionKey),
       initPath: [HomeSegment()],
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
+      getAllDependedStates: (ref) => [ref.watch(typedPathProvider), ref.watch(userIsLoggedProvider)],
     );
 
 // *** 4. Flutter-part of app configuration

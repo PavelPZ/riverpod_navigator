@@ -24,19 +24,20 @@ abstract class TypedSegment {
   AsyncActionResult asyncActionResult;
   JsonMap toJson();
 
-  String get asJson => _asJson ?? (_asJson = jsonEncode(toJson()));
-  String? _asJson;
+  @override
+  String toString() => _toString ?? (_toString = jsonEncode(toJson()));
+  String? _toString;
 }
 
 typedef AsyncActionResult = dynamic;
 
 /// Typed variant of whole url path (which consists of [TypedSegment]s)
 typedef TypedPath = List<TypedSegment>;
+typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
 
 // ********************************************
-// Dart config and providers (with creators from config)
+// Providers
 // ********************************************
-typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
 
 /// config4DartProvider value is initialized by:
 ///
@@ -51,15 +52,34 @@ final config4DartProvider = Provider<Config4Dart>((_) => throw UnimplementedErro
 /// provider for app specific RiverpodNavigator
 final riverpodNavigatorProvider = Provider<RiverpodNavigator>((ref) => ref.read(config4DartProvider).riverpodNavigatorCreator(ref));
 
+/// Provides actual [TypedPath] state
+final typedPathProvider = StateProvider<TypedPath>((_) => []);
+
+/// monitoring of all states that affect navigation
+//final navigationStateProvider = Provider<Tuple2<TypedPath, bool>>((ref) => Tuple2(ref.watch(typedPathProvider), ref.watch(isLoggedProvider)));
+
+/// monitoring of all states that affect navigation
+final navigationStateProvider = Provider<List<Object>>((ref) => ref.read(config4DartProvider).getAllDependedStates(ref));
+
+List<Object> defaultGetAllDependedStates(Ref ref) => [ref.watch(typedPathProvider)];
+
+typedef GetAllDependedStates = List<Object> Function(Ref ref);
+
+// ********************************************
+// Dart config and providers (with creators from config)
+// ********************************************
+
 class Config4Dart {
   Config4Dart({
     //required this.routerDelegateCreator,
     required this.riverpodNavigatorCreator,
     required this.json2Segment,
     required this.initPath,
+    GetAllDependedStates? getAllDependedStates,
     PathParser? pathParser,
     this.segment2AsyncScreenActions,
-  }) : pathParser = pathParser ?? SimplePathParser() {
+  })  : pathParser = pathParser ?? SimplePathParser(),
+        getAllDependedStates = getAllDependedStates ?? defaultGetAllDependedStates {
     this.pathParser.init(this);
   }
 
@@ -82,21 +102,13 @@ class Config4Dart {
   /// RouterDelegate4Dart for Dart project, RiverpodRouterDelegate for Flutter project.
   /// "create" proc for routerDelegateProvider.
   IRouterDelegate Function(Ref ref) routerDelegateCreator = (_) => RouterDelegate4Dart();
+
+  final GetAllDependedStates getAllDependedStates;
 }
 
 // ********************************************
 // TypedPath changing
 // ********************************************
-
-/// Provides actual [TypedPath] to whole app
-final actualTypedPathProvider = StateProvider<TypedPath>((_) => []);
-
-/// Helper provider. When its value changed, navigation calculation starts.
-///
-/// Basically, for actualTypedPathProvider we need possibility to changing state WITHOUT calling its listeners
-/// (e.g. when [RiverpodNavigator.appNavigationLogic] performs redirect).
-/// It is no possible so we hack it by means of navigationConditionsChangedProvider.
-//final flag4actualTypedPathChangeProvider = StateProvider<int>((_) => 0);
 
 // RouterDelegate interface for dart and flutter
 abstract class IRouterDelegate {
@@ -112,9 +124,6 @@ class RouterDelegate4Dart extends IRouterDelegate {
   @override
   void notifyListeners() {}
 }
-
-///returns or null or redirect path
-final appNavigationLogicProvider = Provider<FutureOr<TypedPath?>>((ref) => ref.read(riverpodNavigatorProvider).appNavigationLogicCreator(ref));
 
 // ********************************************
 //   RiverpodNavigator
@@ -144,26 +153,26 @@ class RiverpodNavigator {
   FutureOr<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, TypedPath newPath) => null;
 
   // "create" proc for appNavigationLogicProvider
-  @nonVirtual
-  Future<TypedPath?> appNavigationLogicCreator(Ref ref) async {
-    // 'watch' as the first command
-    final newPath = ref.watch(actualTypedPathProvider);
+  // @nonVirtual
+  // Future<TypedPath?> appNavigationLogicCreator(Ref ref) async {
+  //   // 'watch' as the first command
+  //   final newPath = ref.watch(typedPathProvider);
 
-    // first call of navigate => initialize appNavigationLogicProvider
-    if (_unlistenRedirects == null) return [];
+  //   // first call of navigate => initialize appNavigationLogicProvider
+  //   if (_unlistenRedirects == null) return [];
 
-    final oldPath = actualTypedPath;
-    final redirectPathFuture = appNavigationLogic(ref, oldPath, newPath);
-    final redirectPath = redirectPathFuture is Future<TypedPath?> ? await redirectPathFuture : redirectPathFuture;
+  //   final oldPath = actualTypedPath;
+  //   final redirectPathFuture = appNavigationLogic(ref, oldPath, newPath);
+  //   final redirectPath = redirectPathFuture is Future<TypedPath?> ? await redirectPathFuture : redirectPathFuture;
 
-    // redirect
-    if (redirectPath != null) return redirectPath;
+  //   // redirect
+  //   if (redirectPath != null) return redirectPath;
 
-    // no redirect => actualize navigation stack
-    routerDelegate.currentConfiguration = newPath;
-    routerDelegate.notifyListeners();
-    return null;
-  }
+  //   // no redirect => actualize navigation stack
+  //   routerDelegate.currentConfiguration = newPath;
+  //   routerDelegate.notifyListeners();
+  //   return null;
+  // }
 
   /// Main [RiverpodNavigator] method. Provides navigation to the new [TypedPath].
   ///
@@ -172,15 +181,30 @@ class RiverpodNavigator {
   @nonVirtual
   Future<void> navigate(TypedPath newPath) async {
     // listen for redirects (appNavigationLogicProvider returns or null or redirect path)
-    _unlistenRedirects ??= ref.listen<FutureOr<TypedPath?>>(appNavigationLogicProvider, (_, redirectPathFuture) async {
-      final redirectPath = await redirectPathFuture;
-      if (redirectPath == null) return;
-      await navigate(redirectPath);
+    _unlistenRedirects ??= ref.listen<List<Object>>(navigationStateProvider, (_, __) async {
+      final oldPath = actualTypedPath;
+      final newPath = ref.read(typedPathProvider);
+
+      final redirectPathFuture = appNavigationLogic(ref, oldPath, newPath);
+      final redirectPath = redirectPathFuture is Future<TypedPath?> ? await redirectPathFuture : redirectPathFuture;
+
+      // redirect
+      if (redirectPath != null) {
+        scheduleMicrotask(() => navigate(redirectPath));
+        return;
+      }
+
+      // no redirect => actualize navigation stack
+      routerDelegate.currentConfiguration = newPath;
+      routerDelegate.notifyListeners();
     });
     // change actualTypedPath => refresh navigation state
-    ref.read(actualTypedPathProvider.notifier).state = newPath;
-    // waiting for end of navigation
-    await ref.read(appNavigationLogicProvider);
+    ref.read(typedPathProvider.notifier).state = newPath;
+
+    // This line is necessary to activate the [navigationStateProvider].
+    // Without this line [navigationStateProvider] is not listened.
+    // ignore: unused_local_variable
+    final res = ref.read(navigationStateProvider);
   }
 
   @nonVirtual
@@ -247,7 +271,7 @@ class PathParser {
   Config4Dart? _config;
 
   /// String path => TypedPath
-  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.asJson)).join('/');
+  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.toString())).join('/');
 
   /// TypedPath => String path, suitable for browser
   TypedPath path2TypedPath(String? path) {
@@ -259,7 +283,7 @@ class PathParser {
   }
 
   /// Friendly display of TypedPath
-  String debugTypedPath2String(TypedPath typedPath) => typedPath.map((s) => s.asJson).join(' / ');
+  String debugTypedPath2String(TypedPath typedPath) => typedPath.map((s) => s.toString()).join(' / ');
 }
 
 // ********************************************

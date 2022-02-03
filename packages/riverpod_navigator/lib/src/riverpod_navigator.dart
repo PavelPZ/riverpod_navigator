@@ -84,7 +84,7 @@ final configProvider = Provider<Config>((_) => throw UnimplementedError());
 final Screen2Page screen2PageDefault = (segment, screenBuilder) => _Screen2PageDefault(segment, screenBuilder);
 
 class _Screen2PageDefault extends Page {
-  _Screen2PageDefault(this._typedSegment, this._screenBuilder) : super(key: ValueKey(_typedSegment.asJson));
+  _Screen2PageDefault(this._typedSegment, this._screenBuilder) : super(key: ValueKey(_typedSegment.toString()));
 
   final TypedSegment _typedSegment;
   final ScreenBuilder _screenBuilder;
