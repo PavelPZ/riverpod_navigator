@@ -6,6 +6,7 @@ import 'fileGen.dart';
 
 // !!! const lessonsPath = r'D:\riverpod_navigator\examples\doc\lib\src\temp\';
 const lessonsPath = r'D:\riverpod_navigator\examples\doc\lib\src\';
+const docLessonPath = r'D:\riverpod_navigator\';
 
 String lessonFn(String lessonId, bool? dartOnly) =>
     '${lessonsPath}lesson$lessonId\\${dartOnly == null ? 'lesson$lessonId' : dartOnly == true ? 'dart_lesson$lessonId' : 'flutter_lesson$lessonId'}.dart';
