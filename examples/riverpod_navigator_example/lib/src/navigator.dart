@@ -35,6 +35,9 @@ class ExampleSegments with _$ExampleSegments {
 /// Typed variant of whole url path (which consists of [TypedSegment]s)
 typedef TypedPath = List<ExampleSegments>;
 
+/// ... mark the segments that require login: book with odd id
+bool needsLogin(ExampleSegments segment) => segment is BookSegment && segment.id.isOdd;
+
 // ********************************************
 // providers
 // ********************************************
@@ -42,10 +45,10 @@ typedef TypedPath = List<ExampleSegments>;
 /// RiverpodNavigator
 final riverpodNavigatorProvider = Provider<RiverpodNavigator>((ref) => RiverpodNavigator(ref));
 
-/// Provides actual [TypedPath] to whole app
+/// Provides actual [TypedPath] state
 final typedPathProvider = StateProvider<TypedPath>((_) => []);
 
-/// Provides actual [isLogged] state to whole app
+/// Provides actual [isLogged] state
 final isLoggedProvider = StateProvider<bool>((_) => false);
 
 /// monitoring of all states that affect navigation
@@ -67,11 +70,14 @@ class RiverpodNavigatorLow {
 
   Function? _unlistenNavigationState;
 
+  /// Flutter Navigation 2.0 RouterDelegate
   RiverpodRouterDelegate routerDelegate;
 
   /// implements all navigation change application logic (redirection, login required, etc.)
   ///
-  /// Returns redirect path or null (if newPath is already processed)
+  /// Returns:
+  /// - redirect path, when application logic requires redirect to other typed path
+  /// - null if newPath is already processed
   TypedPath? appNavigationLogic(TypedPath oldPath, TypedPath newPath, bool isLogged) => null;
 
   /// Main [RiverpodNavigatorLow] method. Provides navigation to the new [TypedPath].
@@ -79,7 +85,7 @@ class RiverpodNavigatorLow {
   void navigate(TypedPath newPath) {
     // listen for changing navigation state
     _unlistenNavigationState ??= ref.listen<void>(navigationStateProvider, (_, __) {
-      final oldPath = actualTypedPath;
+      final oldPath = routerDelegatePath;
       final newPath = ref.read(typedPathProvider);
       final newIsLogged = ref.read(isLoggedProvider);
 
@@ -106,7 +112,7 @@ class RiverpodNavigatorLow {
   }
 
   @nonVirtual
-  TypedPath get actualTypedPath => routerDelegate.currentConfiguration;
+  TypedPath get routerDelegatePath => routerDelegate.currentConfiguration;
 
   /// for [Navigator.onPopPage] in [RiverpodRouterDelegate.build]
   @nonVirtual
@@ -116,17 +122,17 @@ class RiverpodNavigatorLow {
 
   @nonVirtual
   void pop() {
-    final actPath = actualTypedPath;
+    final actPath = routerDelegatePath;
     if (actPath.length <= 1) return;
     navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i]]);
   }
 
   @nonVirtual
-  void push(ExampleSegments segment) => navigate([...actualTypedPath, segment]);
+  void push(ExampleSegments segment) => navigate([...routerDelegatePath, segment]);
 
   @nonVirtual
   void replaceLast(ExampleSegments segment) {
-    final actPath = actualTypedPath;
+    final actPath = routerDelegatePath;
     return navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i], segment]);
   }
 }
@@ -134,9 +140,6 @@ class RiverpodNavigatorLow {
 // ********************************************
 //   RiverpodNavigator
 // ********************************************
-
-/// mark the segments that require login: book with odd id
-bool needsLogin(ExampleSegments segment) => segment is BookSegment && segment.id.isOdd;
 
 /// navigator is available throw riverpodNavigatorProvider
 class RiverpodNavigator extends RiverpodNavigatorLow {
@@ -154,8 +157,8 @@ class RiverpodNavigator extends RiverpodNavigatorLow {
   void toBooks() => navigate([HomeSegment(), BooksSegment()]);
   void toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
   void bookNextPrevButton({bool? isPrev}) {
-    assert(actualTypedPath.last is BookSegment);
-    var id = (actualTypedPath.last as BookSegment).id;
+    assert(routerDelegatePath.last is BookSegment);
+    var id = (routerDelegatePath.last as BookSegment).id;
     if (isPrev == true)
       id = id == 0 ? booksLen - 1 : id - 1;
     else
