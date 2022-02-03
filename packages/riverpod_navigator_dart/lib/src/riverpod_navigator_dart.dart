@@ -2,13 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:json_annotation/json_annotation.dart';
-import 'package:meta/meta.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'extensions/simpleUrlParser.dart';
 
+part 'riverpod_navigator_dart.freezed.dart';
+
 typedef JsonMap = Map<String, dynamic>;
+typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
+typedef AsyncActionResult = dynamic;
 
 // ********************************************
 //  basic classes:  TypedSegment and TypedPath
@@ -29,11 +32,26 @@ abstract class TypedSegment {
   String? _toString;
 }
 
-typedef AsyncActionResult = dynamic;
-
 /// Typed variant of whole url path (which consists of [TypedSegment]s)
 typedef TypedPath = List<TypedSegment>;
-typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
+
+// ********************************************
+//  NavigationState
+// ********************************************
+
+@freezed
+class NavigationState with _$NavigationState, INavigationState {
+  factory NavigationState({required TypedPath path}) = _NavigationState;
+  NavigationState._();
+
+  @override
+  INavigationState copyWithPath(TypedPath path) => copyWith(path: path);
+}
+
+abstract class INavigationState {
+  TypedPath get path;
+  INavigationState copyWithPath(TypedPath path);
+}
 
 // ********************************************
 // Providers
@@ -52,18 +70,12 @@ final config4DartProvider = Provider<Config4Dart>((_) => throw UnimplementedErro
 /// provider for app specific RiverpodNavigator
 final riverpodNavigatorProvider = Provider<RiverpodNavigator>((ref) => ref.read(config4DartProvider).riverpodNavigatorCreator(ref));
 
-/// Provides actual [TypedPath] state
-final typedPathProvider = StateProvider<TypedPath>((_) => []);
-
 /// monitoring of all states that affect navigation
-//final navigationStateProvider = Provider<Tuple2<TypedPath, bool>>((ref) => Tuple2(ref.watch(typedPathProvider), ref.watch(isLoggedProvider)));
+final navigationStateNotifierProvider = StateProvider<INavigationState>((ref) => ref.read(config4DartProvider).getAllDependedStates(ref));
 
-/// monitoring of all states that affect navigation
-final navigationStateProvider = Provider<List<Object>>((ref) => ref.read(config4DartProvider).getAllDependedStates(ref));
+NavigationState defaultGetAllDependedStates(Ref ref) => NavigationState(path: []);
 
-List<Object> defaultGetAllDependedStates(Ref ref) => [ref.watch(typedPathProvider)];
-
-typedef GetAllDependedStates = List<Object> Function(Ref ref);
+typedef GetAllDependedStates = INavigationState Function(Ref ref);
 
 // ********************************************
 // Dart config and providers (with creators from config)
@@ -99,10 +111,13 @@ class Config4Dart {
   /// "create" proc for riverpodNavigatorProvider.
   final RiverpodNavigator Function(Ref ref) riverpodNavigatorCreator;
 
-  /// RouterDelegate4Dart for Dart project, RiverpodRouterDelegate for Flutter project.
-  /// "create" proc for routerDelegateProvider.
+  /// "creator" proc for routerDelegate.
+  /// depends on the use of the flutter x dart platform
   IRouterDelegate Function(Ref ref) routerDelegateCreator = (_) => RouterDelegate4Dart();
 
+  /// e.g (ref) => [ref.watch(typedPathProvider), ref.watch(userIsLoggedProvider)]
+  ///
+  /// default value is (ref) => [ref.watch(typedPathProvider)]
   final GetAllDependedStates getAllDependedStates;
 }
 
@@ -130,7 +145,7 @@ class RouterDelegate4Dart extends IRouterDelegate {
 // ********************************************
 
 /// Helper singleton class for navigating to [TypedPath]
-class RiverpodNavigator {
+class RiverpodNavigator<T extends INavigationState> {
   RiverpodNavigator(this.ref)
       : config = ref.read(config4DartProvider),
         routerDelegate = ref.read(config4DartProvider).routerDelegateCreator(ref) {
@@ -147,32 +162,15 @@ class RiverpodNavigator {
 
   final IRouterDelegate routerDelegate;
 
+  T readNavigationState() => ref.read(navigationStateNotifierProvider) as T;
+  void updateNavigationState(T update(T state)) {
+    ref.read(navigationStateNotifierProvider.notifier).update((s) => update(s as T));
+  }
+
   /// put all change-route application logic here (redirects, needs login etc.)
   ///
   /// Returns redirect path or null (if newPath is already processed)
-  FutureOr<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, TypedPath newPath) => null;
-
-  // "create" proc for appNavigationLogicProvider
-  // @nonVirtual
-  // Future<TypedPath?> appNavigationLogicCreator(Ref ref) async {
-  //   // 'watch' as the first command
-  //   final newPath = ref.watch(typedPathProvider);
-
-  //   // first call of navigate => initialize appNavigationLogicProvider
-  //   if (_unlistenRedirects == null) return [];
-
-  //   final oldPath = actualTypedPath;
-  //   final redirectPathFuture = appNavigationLogic(ref, oldPath, newPath);
-  //   final redirectPath = redirectPathFuture is Future<TypedPath?> ? await redirectPathFuture : redirectPathFuture;
-
-  //   // redirect
-  //   if (redirectPath != null) return redirectPath;
-
-  //   // no redirect => actualize navigation stack
-  //   routerDelegate.currentConfiguration = newPath;
-  //   routerDelegate.notifyListeners();
-  //   return null;
-  // }
+  FutureOr<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, INavigationState newState) => null;
 
   /// Main [RiverpodNavigator] method. Provides navigation to the new [TypedPath].
   ///
@@ -181,11 +179,11 @@ class RiverpodNavigator {
   @nonVirtual
   Future<void> navigate(TypedPath newPath) async {
     // listen for redirects (appNavigationLogicProvider returns or null or redirect path)
-    _unlistenRedirects ??= ref.listen<List<Object>>(navigationStateProvider, (_, __) async {
+    _unlistenRedirects ??= ref.listen<INavigationState>(navigationStateNotifierProvider, (_, __) async {
       final oldPath = actualTypedPath;
-      final newPath = ref.read(typedPathProvider);
+      final newState = ref.read(navigationStateNotifierProvider);
 
-      final redirectPathFuture = appNavigationLogic(ref, oldPath, newPath);
+      final redirectPathFuture = appNavigationLogic(ref, oldPath, newState);
       final redirectPath = redirectPathFuture is Future<TypedPath?> ? await redirectPathFuture : redirectPathFuture;
 
       // redirect
@@ -195,16 +193,16 @@ class RiverpodNavigator {
       }
 
       // no redirect => actualize navigation stack
-      routerDelegate.currentConfiguration = newPath;
+      routerDelegate.currentConfiguration = newState.path;
       routerDelegate.notifyListeners();
     });
-    // change actualTypedPath => refresh navigation state
-    ref.read(typedPathProvider.notifier).state = newPath;
+    // refresh navigation state
+    updateNavigationState((state) => state.copyWithPath(newPath) as T);
 
     // This line is necessary to activate the [navigationStateProvider].
     // Without this line [navigationStateProvider] is not listened.
     // ignore: unused_local_variable
-    final res = ref.read(navigationStateProvider);
+    final res = ref.read(navigationStateNotifierProvider);
   }
 
   @nonVirtual
@@ -290,10 +288,6 @@ class PathParser {
 //   AsyncScreenActions
 // ********************************************
 
-// @IFNDEF riverpod_navigator_idea
-
-//********** types for asynchronous navigation */
-
 typedef Creating<T extends TypedSegment> = Future? Function(T newPath);
 typedef Merging<T extends TypedSegment> = Future? Function(T oldPath, T newPath);
 typedef Deactivating<T extends TypedSegment> = Future? Function(T oldPath);
@@ -311,4 +305,3 @@ class AsyncScreenActions<T extends TypedSegment> {
 }
 
 typedef Segment2AsyncScreenActions = AsyncScreenActions? Function(TypedSegment segment);
-// @ENDIF riverpod_navigator_idea
