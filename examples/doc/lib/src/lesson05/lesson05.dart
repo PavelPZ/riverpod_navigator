@@ -37,6 +37,10 @@ class LoginSegments with _$LoginSegments, TypedSegment {
   static const String jsonNameSpace = '_login';
 }
 
+/// create segment from JSON map
+TypedSegment json2Segment(JsonMap jsonMap, String unionKey) =>
+    unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap);
+
 /// mark screens which needs login: every 'id.isOdd' book needs it
 bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 
@@ -47,19 +51,13 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 const booksLen = 5;
 
 class AppNavigator extends RiverpodNavigator {
-  AppNavigator(
-    Ref ref, {
-    Object? flutterConfig,
-    IRouterDelegate? routerDelegate,
-  }) : super(
-          ref,
-          flutterConfig: flutterConfig,
-          routerDelegate: routerDelegate,
-          dependsOn: [userIsLoggedProvider],
-          initPath: [HomeSegment()],
-          json2Segment: (JsonMap jsonMap, String unionKey) =>
-              unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
-        );
+  AppNavigator(Ref ref, {Object? flutterConfig, IRouterDelegate? routerDelegate})
+      : super(ref,
+            flutterConfig: flutterConfig,
+            routerDelegate: routerDelegate,
+            dependsOn: [userIsLoggedProvider],
+            initPath: [HomeSegment()],
+            json2Segment: json2Segment);
 
   @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
@@ -135,8 +133,17 @@ class AppNavigator extends RiverpodNavigator {
   }
 }
 
-// *** 5. root widget for app
+// *** 3. Navigator configuration for flutter
 
+AppNavigator appNavigatorCreator(Ref ref) => AppNavigator(ref,
+    routerDelegate: RiverpodRouterDelegate(),
+    flutterConfig: FlutterConfig(
+      screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
+    ));
+
+// *** 4. Root app widget and entry point with ProviderScope
+
+/// Root app widget
 /// Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
@@ -149,18 +156,8 @@ Widget booksExampleApp(WidgetRef ref) {
   );
 }
 
-// *** 6. app entry point with ProviderScope
-
-void runMain() {
-  AppNavigator appNavigatorCreator(Ref ref) => AppNavigator(
-        ref,
-        routerDelegate: RiverpodRouterDelegate(),
-        flutterConfig: FlutterConfig(
-          screenBuilder: (segment) => segment is LoginSegments ? screenBuilderLoginSegments(segment) : screenBuilderAppSegments(segment),
-        ),
-      );
-
-  return runApp(
+/// app entry point with ProviderScope  
+void runMain() => runApp(
     ProviderScope(
       overrides: [
         riverpodNavigatorCreatorProvider.overrideWithValue(appNavigatorCreator),
@@ -168,4 +165,4 @@ void runMain() {
       child: const BooksExampleApp(),
     ),
   );
-}
+

@@ -94,16 +94,14 @@ abstract class RiverpodNavigator {
         routerDelegate = routerDelegate ?? RouterDelegate4Dart() {
     this.routerDelegate.navigator = this;
 
-    _defer2NextTick = Defer2NextTick(runNextTick: _runNavigation);
+    _defer2NextTickLow = Defer2NextTick(runNextTick: _runNavigation);
     final allDepends = <AlwaysAliveProviderListenable>[ongoingTypedPath, if (dependsOn != null) ...dependsOn];
-    for (final depend in allDepends) _unlistens.add(ref.listen<dynamic>(depend, (previous, next) => defer2NextTick.start()));
+    for (final depend in allDepends) _unlistens.add(ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick.start()));
     // ignore: avoid_function_literals_in_foreach_calls
     ref.onDispose(() => _unlistens.forEach((f) => f()));
   }
 
-  @protected
   Ref ref;
-  final List<Function> _unlistens = [];
 
   /// depends on the use of the flutter x dart platform
   IRouterDelegate routerDelegate;
@@ -117,15 +115,16 @@ abstract class RiverpodNavigator {
   /// properties which needs Flutter library
   Object flutterConfig;
 
-  Defer2NextTick get defer2NextTick => _defer2NextTick as Defer2NextTick;
-  Defer2NextTick? _defer2NextTick;
-  Future<void> get navigationCompleted => defer2NextTick.future;
-
+  PathParser get pathParser => _pathParser ?? (_pathParser = pathParserCreator());
+  PathParser? _pathParser;
   Json2Segment json2Segment;
   PathParser pathParserCreator() => SimplePathParser(json2Segment);
 
-  PathParser get pathParser => _pathParser ?? (_pathParser = pathParserCreator());
-  PathParser? _pathParser;
+  Defer2NextTick get _defer2NextTick => _defer2NextTickLow as Defer2NextTick;
+  Defer2NextTick? _defer2NextTickLow;
+  final List<Function> _unlistens = [];
+
+  Future<void> get navigationCompleted => _defer2NextTick.future;
 
   /// put all change-route application logic here (redirects, needs login etc.)
   ///

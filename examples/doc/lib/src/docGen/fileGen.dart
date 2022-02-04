@@ -117,7 +117,8 @@ class AppSegments with _\$AppSegments, TypedSegment {
   factory AppSegments.fromJson(Map<String, dynamic> json) => _\$AppSegmentsFromJson(json);
 }
 
-final Json2Segment json2AppSegments = (json, _) => AppSegments.fromJson(json);
+/// create segment from JSON map
+TypedSegment json2Segment(JsonMap jsonMap, String unionKey) => AppSegments.fromJson(jsonMap);
 ''')) + filter2(l5, null, true, t('''
 1. classes for typed path segments (TypedSegment)
 '''), st('''
@@ -134,8 +135,6 @@ class AppSegments with _\$AppSegments, TypedSegment {
   factory AppSegments.fromJson(Map<String, dynamic> json) => _\$AppSegmentsFromJson(json);
 }
 
-final Json2Segment json2AppSegments = (json, _) => AppSegments.fromJson(json);
-
 @Freezed(unionKey: LoginSegments.jsonNameSpace)
 class LoginSegments with _\$LoginSegments, TypedSegment {
   /// json serialization hack: must be at least two constructors
@@ -147,12 +146,15 @@ class LoginSegments with _\$LoginSegments, TypedSegment {
   static const String jsonNameSpace = '_login';
 }
 
-final Json2Segment json2LoginSegments = (json, _) => LoginSegments.fromJson(json);
+/// create segment from JSON map
+TypedSegment json2Segment(JsonMap jsonMap, String unionKey) =>
+    unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap);
 
 /// mark screens which needs login: every 'id.isOdd' book needs it
 bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
+
 ''')) + filter2(l_async, null, true, t('''
 1.1. async screen actions  
 '''), st('''
@@ -186,7 +188,8 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
 const booksLen = 5;
 
 class AppNavigator extends RiverpodNavigator {
-  AppNavigator(Ref ref) : super(ref);
+  AppNavigator(Ref ref, {Object? flutterConfig, IRouterDelegate? routerDelegate})
+      : super(ref, initPath: [HomeSegment()], json2Segment: json2Segment, flutterConfig: flutterConfig, routerDelegate: routerDelegate);
 
   void toHome() => navigate([HomeSegment()]);
   void toBooks() => navigate([HomeSegment(), BooksSegment()]);
@@ -201,11 +204,6 @@ class AppNavigator extends RiverpodNavigator {
     toBook(id: id);
   }
 }
-
-/// provide a correctly typed navigator for tests
-extension ReadNavigator on ProviderContainer {
-  AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
-}
 ''')) + filter2(l5, null, true, t('''
 2. App-specific navigator with navigation aware actions (used in screens)  
 '''), st('''
@@ -213,7 +211,13 @@ extension ReadNavigator on ProviderContainer {
 const booksLen = 5;
 
 class AppNavigator extends RiverpodNavigator {
-  AppNavigator(Ref ref) : super(ref);
+  AppNavigator(Ref ref, {Object? flutterConfig, IRouterDelegate? routerDelegate})
+      : super(ref,
+            flutterConfig: flutterConfig,
+            routerDelegate: routerDelegate,
+            dependsOn: [userIsLoggedProvider],
+            initPath: [HomeSegment()],
+            json2Segment: json2Segment);
 
   @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
@@ -225,7 +229,6 @@ class AppNavigator extends RiverpodNavigator {
 
       // login needed => redirect to login page
       if (pathNeedsLogin) {
-        final pathParser = ref.read(config4DartProvider).pathParser;
         // parametters for login screen
         final loggedUrl = pathParser.typedPath2Path(ongoingNotifier.state);
         var canceledUrl = currentPath.isEmpty || currentPath.last is LoginHomeSegment ? '' : pathParser.typedPath2Path(currentPath);
@@ -268,7 +271,7 @@ class AppNavigator extends RiverpodNavigator {
     // checking
     assert(!ref.read(userIsLoggedProvider)); // is logoff?
     // navigate to login page
-    final segment = ref.read(config4DartProvider).pathParser.typedPath2Path(currentTypedPath);
+    final segment = pathParser.typedPath2Path(currentTypedPath);
     return navigate([LoginHomeSegment(loggedUrl: segment, canceledUrl: segment)]);
   }
 
@@ -281,7 +284,7 @@ class AppNavigator extends RiverpodNavigator {
     final ongoingNotifier = ref.read(ongoingTypedPath.notifier);
 
     final loginHomeSegment = currentTypedPath.last as LoginHomeSegment;
-    var newSegment = ref.read(config4DartProvider).pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
+    var newSegment = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
     if (newSegment.isEmpty) newSegment = [HomeSegment()];
     ongoingNotifier.state = newSegment;
 
@@ -289,97 +292,47 @@ class AppNavigator extends RiverpodNavigator {
     return navigationCompleted;
   }
 }
-
-/// provide a correctly typed navigator for tests
-extension ReadNavigator on ProviderContainer {
-  AppNavigator readNavigator() => read(riverpodNavigatorProvider) as AppNavigator;
-}
-''')) + filter2(all, l4 + l5, true, t('''
-3. Dart-part of app configuration
+''')) + filter2(all, l5, false, t('''
+3. Navigator configuration for flutter
 '''), st('''
 '''), b('''
-final config4DartCreator = () => Config4Dart(
-      initPath: [HomeSegment()],
-      json2Segment: json2AppSegments,
-      riverpodNavigatorCreator: (ref) => AppNavigator(ref),
-    );
-''')) + filter2(l4, null, true, t('''
-3. Dart-part of app configuration
-'''), st('''
-'''), b('''
-final config4DartCreator = () => Config4Dart(
-      json2Segment: json2AppSegments,
-      initPath: [HomeSegment()],
-      segment2AsyncScreenActions: segment2AsyncScreenActions,
-      riverpodNavigatorCreator: (ref) => AppNavigator(ref),
-    );
-''')) + filter2(l5, null, true, t('''
-3. Dart-part of app configuration
-'''), st('''
-'''), b('''
-final config4DartCreator = () => Config4Dart(
-      json2Segment: (json, unionKey) => (unionKey == LoginSegments.jsonNameSpace ? json2LoginSegments : json2AppSegments)(json, unionKey),
-      initPath: [HomeSegment()],
-      riverpodNavigatorCreator: (ref) => AppNavigator(ref),
-    );
-''')) + filter2(all, l4 + l5, false, t('''
-4. Flutter-part of app configuration
-'''), st('''
-'''), b('''
-final configCreator = (Config4Dart config4Dart) => Config(
-      /// Which widget will be builded for which [TypedSegment].
-      /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
-      screenBuilder: screenBuilderAppSegments,
-      config4Dart: config4Dart,
-    );
-''')) + filter2(l4, null, false, t('''
-4. Flutter-part of app configuration  
-'''), st('''
-'''), b('''
-final configCreator = (Config4Dart config4Dart) => Config(
-      /// Which widget will be builded for which [TypedSegment].
-      /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
-      screenBuilder: screenBuilderAppSegments,
-      splashBuilder: () => SplashScreen(),
-      config4Dart: config4Dart,
-    );
+AppNavigator appNavigatorCreator(Ref ref) =>
+    AppNavigator(ref, routerDelegate: RiverpodRouterDelegate(), flutterConfig: FlutterConfig(screenBuilder: appSegmentsScreenBuilder));
 ''')) + filter2(l5, null, false, t('''
-4. Flutter-part of app configuration  
+3. Navigator configuration for flutter
 '''), st('''
 '''), b('''
-final configCreator = (Config4Dart config4Dart) => Config(
-      /// Which widget will be builded for which [TypedSegment].
-      /// Used in [RiverpodRouterDelegate] to build pages from [TypedSegment]'s
-      screenBuilder: (segment) => segment is LoginSegments ? screenBuilderLoginSegments(segment) : screenBuilderAppSegments(segment),
-      config4Dart: config4Dart,
-    );
+AppNavigator appNavigatorCreator(Ref ref) => AppNavigator(ref,
+    routerDelegate: RiverpodRouterDelegate(),
+    flutterConfig: FlutterConfig(
+      screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
+    ));
 ''')) + filter2(all, null, false, t('''
-5. root widget for app  
+4. Root app widget and entry point with ProviderScope  
 '''), st('''
-Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
 '''), b('''
+/// Root app widget
+/// Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
 @cwidget
-Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
-      title: 'Books App',
-      routerDelegate: ref.read(riverpodNavigatorProvider).routerDelegate as RiverpodRouterDelegate,
-      routeInformationParser: RouteInformationParserImpl(ref),
-      debugShowCheckedModeBanner: false,
-    );
-''')) + filter2(all, null, false, t('''
-6. app entry point with ProviderScope  
-'''), st('''
-'''), b('''
-void runMain() {
-  final config = configCreator(config4DartCreator());
-  runApp(ProviderScope(
-    // initialize configs providers
-    overrides: [
-      config4DartProvider.overrideWithValue(config.config4Dart),
-      configProvider.overrideWithValue(config),
-    ],
-    child: const BooksExampleApp(),
-  ));
+Widget booksExampleApp(WidgetRef ref) {
+  final navigator = ref.read(riverpodNavigatorProvider);
+  return MaterialApp.router(
+    title: 'Books App',
+    routerDelegate: navigator.routerDelegate as RiverpodRouterDelegate,
+    routeInformationParser: RouteInformationParserImpl(navigator.pathParser),
+    debugShowCheckedModeBanner: false,
+  );
 }
+
+/// app entry point with ProviderScope  
+void runMain() => runApp(
+    ProviderScope(
+      overrides: [
+        riverpodNavigatorCreatorProvider.overrideWithValue(appNavigatorCreator),
+      ],
+      child: const BooksExampleApp(),
+    ),
+  );
 ''')) + filter2(all, null, false, t('''
 '''), st('''
 '''), b('''
@@ -395,7 +348,7 @@ import 'lesson$lessonId.dart';
 
 part 'screens.g.dart';
 
-final ScreenBuilder screenBuilderAppSegments = (segment) => (segment as AppSegments).map(
+final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
       home: (home) => HomeScreen(home),
       books: (books) => BooksScreen(books),
       book: (book) => BookScreen(book),
@@ -417,7 +370,7 @@ import 'dart_lesson$lessonId.dart';
 
 part 'screens.g.dart';
 
-final ScreenBuilder screenBuilderAppSegments = (segment) => (segment as AppSegments).map(
+final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
       home: (home) => HomeScreen(home),
       books: (books) => BooksScreen(books),
       book: (book) => BookScreen(book),
@@ -458,7 +411,7 @@ Widget bookScreen(BookSegment segment) => PageHelper(
 Widget splashScreen() =>
     SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
 ''')) + filter(l5, 0, null, b('''
-final ScreenBuilder screenBuilderLoginSegments = (segment) => (segment as LoginHomeSegment).map(
+final ScreenBuilder loginSegmentsScreenBuilder = (segment) => (segment as LoginHomeSegment).map(
       (value) => throw UnimplementedError(),
       home: (loginHome) => LoginScreen(loginHome),
     );
