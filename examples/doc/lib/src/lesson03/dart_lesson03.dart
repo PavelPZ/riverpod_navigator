@@ -1,16 +1,12 @@
 // ignore: unused_import
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:functional_widget_annotation/functional_widget_annotation.dart';
-import 'package:riverpod_navigator/riverpod_navigator.dart';
+import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
-import 'screens.dart';
-
-part 'lesson07.freezed.dart';
-part 'lesson07.g.dart';
+part 'dart_lesson03.freezed.dart';
+part 'dart_lesson03.g.dart';
 
 // *** 1. classes for typed path segments (TypedSegment)
 
@@ -43,12 +39,44 @@ class AppSegments with _$AppSegments, TypedSegment {
 /// create segment from JSON map
 TypedSegment json2Segment(JsonMap jsonMap, String unionKey) => AppSegments.fromJson(jsonMap);
 
+// *** 1.1. async screen actions
+
+/// Each screen may require an asynchronous action during its creation, merging, or deactivating.
+AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
+  /// helper for simulating asynchronous action
+  Future<String> simulateAsyncResult(String title, int msec) async {
+    await Future.delayed(Duration(milliseconds: msec));
+    return title;
+  }
+
+  return (segment as AppSegments).maybeMap(
+    book: (_) => AsyncScreenActions<BookSegment>(
+      // for every Book screen: creating takes some time
+      creating: (newSegment) async => simulateAsyncResult('Book creating async result after 1 sec', 1000),
+      // for every Book screen with odd id: changing to another Book screen takes some time
+      merging: (_, newSegment) async => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
+      // for every Book screen with even id: deactivating takes some time
+      deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
+    ),
+    home: (_) => AsyncScreenActions<HomeSegment>(
+      creating: (_) async => simulateAsyncResult('Home creating async result after 1 sec', 1000),
+    ),
+    orElse: () => null,
+  );
+}
+
 // *** 2. Specify navigation-aware actions in the navigator. The actions are then used in the screen widgets.
 
 const booksLen = 5;
 
 class AppNavigator extends RiverpodNavigator {
-  AppNavigator(Ref ref) : super(ref, initPath: [HomeSegment()], json2Segment: json2Segment);
+  AppNavigator(Ref ref)
+      : super(
+          ref,
+          initPath: [HomeSegment()],
+          json2Segment: json2Segment,
+          segment2AsyncScreenActions: segment2AsyncScreenActions,
+        );
 
   Future<void> toHome() => navigate([HomeSegment()]);
   Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
@@ -63,38 +91,4 @@ class AppNavigator extends RiverpodNavigator {
     return toBook(id: id);
   }
 }
-
-// *** 3. Navigator creator for flutter
-
-AppNavigator appNavigatorCreator(Ref ref) => AppNavigator(ref)
-  ..flutterInit(
-    screenBuilder: appSegmentsScreenBuilder,
-  );
-
-// *** 4. Root app widget and entry point
-
-/// Root app widget
-/// 
-/// To make it less verbose, we use the functional_widget package to generate widgets.
-/// See .g.dart file for details.
-@cwidget
-Widget booksExampleApp(WidgetRef ref) {
-  final navigator = ref.read(riverpodNavigatorProvider);
-  return MaterialApp.router(
-    title: 'Books App',
-    routerDelegate: navigator.routerDelegate as RiverpodRouterDelegate,
-    routeInformationParser: RouteInformationParserImpl(navigator.pathParser),
-    debugShowCheckedModeBanner: false,
-  );
-}
-
-/// app entry point with ProviderScope  
-void runMain() => runApp(
-    ProviderScope(
-      overrides: [
-        riverpodNavigatorCreatorProvider.overrideWithValue(appNavigatorCreator),
-      ],
-      child: const BooksExampleApp(),
-    ),
-  );
 

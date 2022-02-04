@@ -14,8 +14,6 @@ part 'lesson05.g.dart';
 
 // *** 1. classes for typed path segments (TypedSegment)
 
-/// The Freezed package generates three immutable classes used for writing typed navigation path,
-/// e.g TypedPath path = [HomeSegment (), BooksSegment () and BookSegment (id: 3)]
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {
   AppSegments._();
@@ -44,6 +42,7 @@ TypedSegment json2Segment(JsonMap jsonMap, String unionKey) =>
 /// mark screens which needs login: every 'id.isOdd' book needs it
 bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 
+/// the navigation state also depends on the following [userIsLoggedProvider]
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
 
 // *** 2. App-specific navigator with navigation aware actions (used in screens)
@@ -51,13 +50,13 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 const booksLen = 5;
 
 class AppNavigator extends RiverpodNavigator {
-  AppNavigator(Ref ref, {Object? flutterConfig, IRouterDelegate? routerDelegate})
-      : super(ref,
-            flutterConfig: flutterConfig,
-            routerDelegate: routerDelegate,
-            dependsOn: [userIsLoggedProvider],
-            initPath: [HomeSegment()],
-            json2Segment: json2Segment);
+  AppNavigator(Ref ref)
+      : super(
+          ref,
+          dependsOn: [userIsLoggedProvider],
+          initPath: [HomeSegment()],
+          json2Segment: json2Segment,
+        );
 
   @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
@@ -133,18 +132,19 @@ class AppNavigator extends RiverpodNavigator {
   }
 }
 
-// *** 3. Navigator configuration for flutter
+// *** 3. Navigator creator for flutter
 
-AppNavigator appNavigatorCreator(Ref ref) => AppNavigator(ref,
-    routerDelegate: RiverpodRouterDelegate(),
-    flutterConfig: FlutterConfig(
-      screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
-    ));
+AppNavigator appNavigatorCreator(Ref ref) => AppNavigator(ref)
+  ..flutterInit(
+    screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
+  );
 
-// *** 4. Root app widget and entry point with ProviderScope
+// *** 4. Root app widget and entry point
 
 /// Root app widget
-/// Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
+/// 
+/// To make it less verbose, we use the functional_widget package to generate widgets.
+/// See .g.dart file for details.
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
   final navigator = ref.read(riverpodNavigatorProvider);

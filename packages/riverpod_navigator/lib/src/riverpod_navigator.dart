@@ -55,10 +55,6 @@ class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
 
 typedef Screen2Page = Page Function(TypedSegment segment, ScreenBuilder screenBuilder);
 
-extension FlutterConfigExt on RiverpodNavigator {
-  FlutterConfig get flutter => flutterConfig as FlutterConfig;
-}
-
 class FlutterConfig {
   FlutterConfig({
     required this.screenBuilder,
@@ -70,6 +66,21 @@ class FlutterConfig {
   final ScreenBuilder screenBuilder;
   final NavigatorWidgetBuilder? navigatorWidgetBuilder;
   final SplashBuilder? splashBuilder;
+}
+
+extension RiverpodNavigatorEx on RiverpodNavigator {
+  void flutterInit({
+    required ScreenBuilder screenBuilder,
+    Screen2Page? screen2Page,
+    NavigatorWidgetBuilder? navigatorWidgetBuilder,
+    SplashBuilder? splashBuilder,
+  }) {
+    routerDelegate = RiverpodRouterDelegate();
+    flutterConfig = FlutterConfig(
+        screenBuilder: screenBuilder, screen2Page: screen2Page, navigatorWidgetBuilder: navigatorWidgetBuilder, splashBuilder: splashBuilder);
+  }
+
+  FlutterConfig get flutter => flutterConfig as FlutterConfig;
 }
 
 final Screen2Page screen2PageDefault = (segment, screenBuilder) => _Screen2PageDefault(segment, screenBuilder);

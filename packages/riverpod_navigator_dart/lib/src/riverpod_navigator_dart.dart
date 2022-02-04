@@ -86,13 +86,11 @@ abstract class RiverpodNavigator {
     this.ref, {
     List<AlwaysAliveProviderListenable>? dependsOn,
     required this.json2Segment,
-    IRouterDelegate? routerDelegate,
     required this.initPath,
     this.segment2AsyncScreenActions,
-    Object? flutterConfig,
-  })  : flutterConfig = flutterConfig ?? Object(),
-        routerDelegate = routerDelegate ?? RouterDelegate4Dart() {
-    this.routerDelegate.navigator = this;
+  })  : flutterConfig = Object(),
+        routerDelegate = RouterDelegate4Dart() {
+    routerDelegate.navigator = this;
 
     _defer2NextTickLow = Defer2NextTick(runNextTick: _runNavigation);
     final allDepends = <AlwaysAliveProviderListenable>[ongoingTypedPath, if (dependsOn != null) ...dependsOn];
@@ -104,7 +102,7 @@ abstract class RiverpodNavigator {
   Ref ref;
 
   /// depends on the use of the flutter x dart platform
-  IRouterDelegate routerDelegate;
+  IRouterDelegate routerDelegate = RouterDelegate4Dart();
 
   /// screen async-navigation actions
   final Segment2AsyncScreenActions? segment2AsyncScreenActions;
@@ -113,7 +111,7 @@ abstract class RiverpodNavigator {
   final TypedPath initPath;
 
   /// properties which needs Flutter library
-  Object flutterConfig;
+  Object flutterConfig = Object();
 
   PathParser get pathParser => _pathParser ?? (_pathParser = pathParserCreator());
   PathParser? _pathParser;
@@ -158,7 +156,7 @@ abstract class RiverpodNavigator {
     final actPath = currentTypedPath;
     if (actPath.length <= 1) return false;
     navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i]]);
-    return false;
+    return true;
   }
 
   /// replaces "eq" routes with "identical" ones

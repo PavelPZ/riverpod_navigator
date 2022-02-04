@@ -2,15 +2,15 @@ import 'dart:convert';
 
 const all = 0xffffff;
 const l1 = 1;
-const l2 = 2;
-const l3 = 8; // async screen actions
+const l2 = 2; // async screen actions
+const l3 = 8; // async screen actions with testing
 const l4 = 16; // async screen actions with splash screen
 const l5 = 32;
 const l6 = 64;
 const l7 = 128;
 const l8 = 256;
 const l9 = 512;
-const l_async = l3 + l4;
+const l_async = l2 + l3 + l4;
 
 const lessonMasks = <int>[0, l1, l2, l3, l4, l5, l6, l7, l8, l9];
 
@@ -104,8 +104,22 @@ part 'flutter_lesson$lessonId.g.dart';
 ''')) + filter2(all, l5, true, t('''
 1. classes for typed path segments (TypedSegment)
 '''), st('''
-The Freezed package generates three immutable classes used for writing typed navigation path,
-e.g TypedPath path = [HomeSegment (), BooksSegment () and BookSegment (id: 3)]
+Terminology:
+- string path:
+```
+final stringPath = 'home/books/book;id=2';
+```
+- the string path consists of three string segments: 'home', 'books', 'book;id=2'
+- typed path:
+```
+final typedPath = <ExampleSegments>[HomeSegment(), BooksSegment(), BookSegment(id:2)];
+```
+- the typed path consists of three typed segments: HomeSegment(), BooksSegment(), BookSegment(id:2)
+---------------------
+From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes,
+HomeSegment, BooksSegment and BookSegment.
+
+See [Freezed](https://github.com/rrousselGit/freezed) for details.
 '''), b(''' 
 @freezed
 class AppSegments with _\$AppSegments, TypedSegment {
@@ -122,8 +136,6 @@ TypedSegment json2Segment(JsonMap jsonMap, String unionKey) => AppSegments.fromJ
 ''')) + filter2(l5, null, true, t('''
 1. classes for typed path segments (TypedSegment)
 '''), st('''
-The Freezed package generates three immutable classes used for writing typed navigation path,
-e.g TypedPath path = [HomeSegment (), BooksSegment () and BookSegment (id: 3)]
 '''), b(''' 
 @freezed
 class AppSegments with _\$AppSegments, TypedSegment {
@@ -153,14 +165,15 @@ TypedSegment json2Segment(JsonMap jsonMap, String unionKey) =>
 /// mark screens which needs login: every 'id.isOdd' book needs it
 bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 
+/// the navigation state also depends on the following [userIsLoggedProvider]
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
-
 ''')) + filter2(l_async, null, true, t('''
 1.1. async screen actions  
 '''), st('''
-'''), b(''' 
+Each screen may require an asynchronous action during its creation, merging, or deactivating.
+'''), b('''
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
-  // simulate helper
+  /// helper for simulating asynchronous action
   Future<String> simulateAsyncResult(String title, int msec) async {
     await Future.delayed(Duration(milliseconds: msec));
     return title;
@@ -172,36 +185,63 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
       creating: (newSegment) async => simulateAsyncResult('Book creating async result after 1 sec', 1000),
       // for every Book screen with odd id: changing to another Book screen takes some time
       merging: (_, newSegment) async => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
-      // for every Book screen with even id: creating takes some time
+      // for every Book screen with even id: deactivating takes some time
       deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
     ),
     home: (_) => AsyncScreenActions<HomeSegment>(
-        // Home screen takes some timefor creating
-        creating: (_) async => simulateAsyncResult('Home creating async result after 1 sec', 1000)),
+      creating: (_) async => simulateAsyncResult('Home creating async result after 1 sec', 1000),
+    ),
     orElse: () => null,
   );
 }
-''')) + filter2(all, l5, true, t('''
-2. App-specific navigator with navigation aware actions (used in screens)  
+''')) + filter2(all, l5 + l_async, true, t('''
+2. Specify navigation-aware actions in the navigator. The actions are then used in the screen widgets.
 '''), st('''
 '''), b('''
 const booksLen = 5;
 
 class AppNavigator extends RiverpodNavigator {
-  AppNavigator(Ref ref, {Object? flutterConfig, IRouterDelegate? routerDelegate})
-      : super(ref, initPath: [HomeSegment()], json2Segment: json2Segment, flutterConfig: flutterConfig, routerDelegate: routerDelegate);
+  AppNavigator(Ref ref) : super(ref, initPath: [HomeSegment()], json2Segment: json2Segment);
 
-  void toHome() => navigate([HomeSegment()]);
-  void toBooks() => navigate([HomeSegment(), BooksSegment()]);
-  void toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
-  void bookNextPrevButton({bool? isPrev}) {
+  Future<void> toHome() => navigate([HomeSegment()]);
+  Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
+  Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
+  Future<void> bookNextPrevButton({bool? isPrev}) {
     assert(currentTypedPath.last is BookSegment);
     var id = (currentTypedPath.last as BookSegment).id;
     if (isPrev == true)
       id = id == 0 ? booksLen - 1 : id - 1;
     else
       id = booksLen - 1 > id ? id + 1 : 0;
-    toBook(id: id);
+    return toBook(id: id);
+  }
+}
+''')) + filter2(l_async, 0, true, t('''
+2. Specify navigation-aware actions in the navigator. The actions are then used in the screen widgets.
+'''), st('''
+'''), b('''
+const booksLen = 5;
+
+class AppNavigator extends RiverpodNavigator {
+  AppNavigator(Ref ref)
+      : super(
+          ref,
+          initPath: [HomeSegment()],
+          json2Segment: json2Segment,
+          segment2AsyncScreenActions: segment2AsyncScreenActions,
+        );
+
+  Future<void> toHome() => navigate([HomeSegment()]);
+  Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
+  Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
+  Future<void> bookNextPrevButton({bool? isPrev}) {
+    assert(currentTypedPath.last is BookSegment);
+    var id = (currentTypedPath.last as BookSegment).id;
+    if (isPrev == true)
+      id = id == 0 ? booksLen - 1 : id - 1;
+    else
+      id = booksLen - 1 > id ? id + 1 : 0;
+    return toBook(id: id);
   }
 }
 ''')) + filter2(l5, null, true, t('''
@@ -211,13 +251,13 @@ class AppNavigator extends RiverpodNavigator {
 const booksLen = 5;
 
 class AppNavigator extends RiverpodNavigator {
-  AppNavigator(Ref ref, {Object? flutterConfig, IRouterDelegate? routerDelegate})
-      : super(ref,
-            flutterConfig: flutterConfig,
-            routerDelegate: routerDelegate,
-            dependsOn: [userIsLoggedProvider],
-            initPath: [HomeSegment()],
-            json2Segment: json2Segment);
+  AppNavigator(Ref ref)
+      : super(
+          ref,
+          dependsOn: [userIsLoggedProvider],
+          initPath: [HomeSegment()],
+          json2Segment: json2Segment,
+        );
 
   @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
@@ -293,26 +333,29 @@ class AppNavigator extends RiverpodNavigator {
   }
 }
 ''')) + filter2(all, l5, false, t('''
-3. Navigator configuration for flutter
+3. Navigator creator for flutter
 '''), st('''
 '''), b('''
-AppNavigator appNavigatorCreator(Ref ref) =>
-    AppNavigator(ref, routerDelegate: RiverpodRouterDelegate(), flutterConfig: FlutterConfig(screenBuilder: appSegmentsScreenBuilder));
+AppNavigator appNavigatorCreator(Ref ref) => AppNavigator(ref)
+  ..flutterInit(
+    screenBuilder: appSegmentsScreenBuilder,
+  );
 ''')) + filter2(l5, null, false, t('''
-3. Navigator configuration for flutter
+3. Navigator creator for flutter
 '''), st('''
 '''), b('''
-AppNavigator appNavigatorCreator(Ref ref) => AppNavigator(ref,
-    routerDelegate: RiverpodRouterDelegate(),
-    flutterConfig: FlutterConfig(
-      screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
-    ));
+AppNavigator appNavigatorCreator(Ref ref) => AppNavigator(ref)
+  ..flutterInit(
+    screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
+  );
 ''')) + filter2(all, null, false, t('''
-4. Root app widget and entry point with ProviderScope  
+4. Root app widget and entry point
 '''), st('''
+Root app widget
+
+To make it less verbose, we use the functional_widget package to generate widgets.
+See .g.dart file for details.
 '''), b('''
-/// Root app widget
-/// Using functional_widget package to be less verbose. Package generates "class BooksExampleApp extends ConsumerWidget...", see *.g.dart
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
   final navigator = ref.read(riverpodNavigatorProvider);

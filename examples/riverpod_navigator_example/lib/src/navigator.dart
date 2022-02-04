@@ -14,10 +14,10 @@ part 'navigator.g.dart';
 // ********************************************
 
 /// Terminology:
-/// - string path: 'home/books/book;id=2'
-/// - the string path consists of segments: 'home', 'books', 'book;id=2'
-/// - typed path: [HomeSegment(), BooksSegment(), BookSegment(id:2)]
-/// - the typed path consists of typed segments: HomeSegment(), BooksSegment(), BookSegment(id:2)
+/// - string path: final stringPath = 'home/books/book;id=2';
+/// - the string path consists of three string segments: 'home', 'books', 'book;id=2'
+/// - typed path: final typedPath = <ExampleSegments>[HomeSegment(), BooksSegment(), BookSegment(id:2)];
+/// - the typed path consists of three typed segments: HomeSegment(), BooksSegment(), BookSegment(id:2)
 @freezed
 class ExampleSegments with _$ExampleSegments {
   ExampleSegments._();

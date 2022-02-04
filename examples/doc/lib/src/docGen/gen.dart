@@ -28,7 +28,7 @@ void gen() {
     final lessonId = int2LessonId(i);
     final sfn = screenFn(lessonId);
     String sfile;
-    if (i == 2) {
+    if (i == 3) {
       final fd = lessonFn(lessonId, true);
       final filed = fileGen(true, i, true, false);
       writeFile(fd, filed);
