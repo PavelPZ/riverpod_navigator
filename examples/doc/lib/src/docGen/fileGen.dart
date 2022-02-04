@@ -152,13 +152,7 @@ final Json2Segment json2LoginSegments = (json, _) => LoginSegments.fromJson(json
 /// mark screens which needs login: every 'id.isOdd' book needs it
 bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 
-@freezed
-class LoginNavigationState with _\$LoginNavigationState, INavigationState {
-  factory LoginNavigationState({required TypedPath path, required bool userIsLogged}) = _LoginNavigationState;
-  LoginNavigationState._();
-  @override
-  INavigationState copyWithPath(TypedPath path) => copyWith(path: path);
-}
+final userIsLoggedProvider = StateProvider<bool>((_) => false);
 ''')) + filter2(l_async, null, true, t('''
 1.1. async screen actions  
 '''), st('''
@@ -198,8 +192,8 @@ class AppNavigator extends RiverpodNavigator {
   void toBooks() => navigate([HomeSegment(), BooksSegment()]);
   void toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
   void bookNextPrevButton({bool? isPrev}) {
-    assert(actualTypedPath.last is BookSegment);
-    var id = (actualTypedPath.last as BookSegment).id;
+    assert(currentTypedPath.last is BookSegment);
+    var id = (currentTypedPath.last as BookSegment).id;
     if (isPrev == true)
       id = id == 0 ? booksLen - 1 : id - 1;
     else
@@ -218,41 +212,42 @@ extension ReadNavigator on ProviderContainer {
 '''), b('''
 const booksLen = 5;
 
-class AppNavigator extends RiverpodNavigator<LoginNavigationState> {
+class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref) : super(ref);
 
-  /// Returns redirect path or null
   @override
-  FutureOr<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, INavigationState newStateLow) {
-    final newState = newStateLow as LoginNavigationState;
-    if (!newState.userIsLogged) {
-      final pathNeedsLogin = newState.path.any((segment) => needsLogin(segment));
+  FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
+    final userIsLogged = ref.read(userIsLoggedProvider);
+    final ongoingNotifier = ref.read(ongoingTypedPath.notifier);
+
+    if (!userIsLogged) {
+      final pathNeedsLogin = ongoingNotifier.state.any((segment) => needsLogin(segment));
 
       // login needed => redirect to login page
       if (pathNeedsLogin) {
         final pathParser = ref.read(config4DartProvider).pathParser;
         // parametters for login screen
-        final loggedUrl = pathParser.typedPath2Path(newState.path);
-        var canceledUrl = oldPath.isEmpty || oldPath.last is LoginHomeSegment ? '' : pathParser.typedPath2Path(oldPath);
+        final loggedUrl = pathParser.typedPath2Path(ongoingNotifier.state);
+        var canceledUrl = currentPath.isEmpty || currentPath.last is LoginHomeSegment ? '' : pathParser.typedPath2Path(currentPath);
         // chance to exit login loop
         if (loggedUrl == canceledUrl) canceledUrl = '';
         // redirect to login screen
-        return [LoginHomeSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
+        ongoingNotifier.state = [LoginHomeSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
       }
     } else {
       // user logged and navigation to Login page => redirect to home
-      if (newState.path.isEmpty || newState.path.last is LoginHomeSegment) return [HomeSegment()];
+      if (ongoingNotifier.state.isEmpty || ongoingNotifier.state.last is LoginHomeSegment) ongoingNotifier.state = [HomeSegment()];
     }
-    // login OK => no redirect
-    return Future.value(null);
+    // here can be async action for <oldPath, ongoingNotifier.state> pair
+    return null;
   }
 
   Future<void> toHome() => navigate([HomeSegment()]);
   Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
   Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
   Future<void> bookNextPrevButton({bool? isPrev}) {
-    assert(actualTypedPath.last is BookSegment);
-    var id = (actualTypedPath.last as BookSegment).id;
+    assert(currentTypedPath.last is BookSegment);
+    var id = (currentTypedPath.last as BookSegment).id;
     if (isPrev == true)
       id = id == 0 ? booksLen - 1 : id - 1;
     else
@@ -261,18 +256,19 @@ class AppNavigator extends RiverpodNavigator<LoginNavigationState> {
   }
 
   Future<void> globalLogoutButton() {
+    final loginNotifier = ref.read(userIsLoggedProvider.notifier);
     // checking
-    assert(readNavigationState().userIsLogged); // is logged?
+    assert(loginNotifier.state); // is logged?
     // change login state
-    updateNavigationState((state) => state.copyWith(userIsLogged: false));
-    return Future.value();
+    loginNotifier.state = false;
+    return navigationCompleted;
   }
 
   Future<void> globalLoginButton() {
     // checking
-    assert(!readNavigationState().userIsLogged); // is logoff?
+    assert(!ref.read(userIsLoggedProvider)); // is logoff?
     // navigate to login page
-    final segment = ref.read(config4DartProvider).pathParser.typedPath2Path(actualTypedPath);
+    final segment = ref.read(config4DartProvider).pathParser.typedPath2Path(currentTypedPath);
     return navigate([LoginHomeSegment(loggedUrl: segment, canceledUrl: segment)]);
   }
 
@@ -280,17 +276,17 @@ class AppNavigator extends RiverpodNavigator<LoginNavigationState> {
   Future<void> loginPageOK() => _loginPageButtons(false);
 
   Future<void> _loginPageButtons(bool cancel) async {
-    assert(actualTypedPath.last is LoginHomeSegment);
-    final loginHomeSegment = actualTypedPath.last as LoginHomeSegment;
+    assert(currentTypedPath.last is LoginHomeSegment);
+    final loginNotifier = ref.read(userIsLoggedProvider.notifier);
+    final ongoingNotifier = ref.read(ongoingTypedPath.notifier);
 
+    final loginHomeSegment = currentTypedPath.last as LoginHomeSegment;
     var newSegment = ref.read(config4DartProvider).pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
     if (newSegment.isEmpty) newSegment = [HomeSegment()];
+    ongoingNotifier.state = newSegment;
 
-    if (cancel)
-      updateNavigationState((state) => state.copyWith(path: newSegment));
-    else
-      updateNavigationState((state) => state.copyWith(path: newSegment, userIsLogged: true));
-    return;
+    if (!cancel) loginNotifier.state = true;
+    return navigationCompleted;
   }
 }
 
@@ -325,7 +321,6 @@ final config4DartCreator = () => Config4Dart(
       json2Segment: (json, unionKey) => (unionKey == LoginSegments.jsonNameSpace ? json2LoginSegments : json2AppSegments)(json, unionKey),
       initPath: [HomeSegment()],
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
-      getAllDependedStates: (ref) => LoginNavigationState(path: [], userIsLogged: false),
     );
 ''')) + filter2(all, l4 + l5, false, t('''
 4. Flutter-part of app configuration
@@ -511,7 +506,7 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
       actions: [
         if (isLoginPage != true)
           Consumer(builder: (_, ref, __) {
-            final isLogged = (ref.watch(navigationStateNotifierProvider) as LoginNavigationState).userIsLogged;
+            final isLogged = ref.watch(userIsLoggedProvider);
             return ElevatedButton(
               onPressed: () => isLogged ? navigator.globalLogoutButton() : navigator.globalLoginButton(),
               child: Text(isLogged ? 'Logout' : 'Login'),

@@ -57,3 +57,4 @@ final config4DartCreator = () => Config4Dart(
       json2Segment: json2AppSegments,
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
     );
+

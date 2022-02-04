@@ -46,14 +46,6 @@ bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.is
 
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
 
-// @freezed
-// class LoginNavigationState with _$LoginNavigationState, INavigationState {
-//   factory LoginNavigationState({required TypedPath path, required bool userIsLogged}) = _LoginNavigationState;
-//   LoginNavigationState._();
-//   @override
-//   INavigationState copyWithPath(TypedPath path) => copyWith(path: path);
-// }
-
 // *** 2. App-specific navigator with navigation aware actions (used in screens)
 
 const booksLen = 5;
@@ -66,7 +58,6 @@ class AppNavigator extends RiverpodNavigator {
     final userIsLogged = ref.read(userIsLoggedProvider);
     final ongoingNotifier = ref.read(ongoingTypedPath.notifier);
 
-    //final newState = newStateLow as LoginNavigationState;
     if (!userIsLogged) {
       final pathNeedsLogin = ongoingNotifier.state.any((segment) => needsLogin(segment));
 
@@ -182,3 +173,4 @@ void runMain() {
     child: const BooksExampleApp(),
   ));
 }
+
