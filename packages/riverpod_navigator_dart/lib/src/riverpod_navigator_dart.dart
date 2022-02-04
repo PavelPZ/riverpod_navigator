@@ -7,8 +7,6 @@ import 'package:riverpod/riverpod.dart';
 
 import 'extensions/simpleUrlParser.dart';
 
-part 'riverpod_navigator_dart.freezed.dart';
-
 typedef JsonMap = Map<String, dynamic>;
 typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
 typedef AsyncActionResult = dynamic;
@@ -36,24 +34,6 @@ abstract class TypedSegment {
 typedef TypedPath = List<TypedSegment>;
 
 // ********************************************
-//  NavigationState
-// ********************************************
-
-// @freezed
-// class NavigationState with _$NavigationState, INavigationState {
-//   factory NavigationState({required TypedPath path}) = _NavigationState;
-//   NavigationState._();
-
-//   @override
-//   INavigationState copyWithPath(TypedPath path) => copyWith(path: path);
-// }
-
-// abstract class INavigationState {
-//   TypedPath get path;
-//   INavigationState copyWithPath(TypedPath path);
-// }
-
-// ********************************************
 // Providers
 // ********************************************
 
@@ -71,13 +51,6 @@ final config4DartProvider = Provider<Config4Dart>((_) => throw UnimplementedErro
 final riverpodNavigatorProvider = Provider<RiverpodNavigator>((ref) => ref.read(config4DartProvider).riverpodNavigatorCreator(ref));
 
 final ongoingTypedPath = StateProvider<TypedPath>((_) => []);
-
-/// monitoring of all states that affect navigation
-// final navigationStateNotifierProvider = StateProvider<INavigationState>((ref) => ref.read(config4DartProvider).getAllDependedStates(ref));
-
-// NavigationState defaultGetAllDependedStates(Ref ref) => NavigationState(path: []);
-
-// typedef GetAllDependedStates = INavigationState Function(Ref ref);
 
 // ********************************************
 // Dart config and providers (with creators from config)

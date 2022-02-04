@@ -51,7 +51,7 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 const booksLen = 5;
 
 class AppNavigator extends RiverpodNavigator {
-  AppNavigator(Ref ref) : super(ref);
+  AppNavigator(Ref ref, {List<AlwaysAliveProviderListenable>? dependsOn}) : super(ref, dependsOn: dependsOn);
 
   @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
@@ -103,8 +103,11 @@ class AppNavigator extends RiverpodNavigator {
   }
 
   Future<void> globalLoginButton() {
+    final loginNotifier = ref.read(userIsLoggedProvider.notifier);
     // checking
-    assert(!ref.read(userIsLoggedProvider)); // is logoff?
+    assert(!loginNotifier.state); // is logoff?
+    // change login state
+    loginNotifier.state = true;
     // navigate to login page
     final segment = ref.read(config4DartProvider).pathParser.typedPath2Path(currentTypedPath);
     return navigate([LoginHomeSegment(loggedUrl: segment, canceledUrl: segment)]);
@@ -138,7 +141,7 @@ extension ReadNavigator on ProviderContainer {
 final config4DartCreator = () => Config4Dart(
       json2Segment: (json, unionKey) => (unionKey == LoginSegments.jsonNameSpace ? json2LoginSegments : json2AppSegments)(json, unionKey),
       initPath: [HomeSegment()],
-      riverpodNavigatorCreator: (ref) => AppNavigator(ref),
+      riverpodNavigatorCreator: (ref) => AppNavigator(ref, dependsOn: [userIsLoggedProvider]),
     );
 
 // *** 4. Flutter-part of app configuration
@@ -173,4 +176,3 @@ void runMain() {
     child: const BooksExampleApp(),
   ));
 }
-

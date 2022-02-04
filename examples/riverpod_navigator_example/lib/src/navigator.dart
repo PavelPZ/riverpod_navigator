@@ -173,9 +173,8 @@ class RiverpodNavigatorLow {
 class RiverpodNavigator extends RiverpodNavigatorLow {
   RiverpodNavigator(Ref ref) : super(ref, dependsOn: [ongoingTypedPath, userIsLoggedProvider]);
 
-  /// redirects to new TypeedPath when:
-  /// - not logged in
-  /// - newPath contains a book with an odd id
+  /// Avoid navigation to [BookSegment] with odd [BookSegment.id] (and instead redirects to [HomeSegment (), BooksSegment ()])
+  /// when not logged in
   @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
