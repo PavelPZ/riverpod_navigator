@@ -10,6 +10,7 @@ import 'extensions/simpleUrlParser.dart';
 typedef JsonMap = Map<String, dynamic>;
 typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
 typedef AsyncActionResult = dynamic;
+typedef RiverpodNavigatorCreator = RiverpodNavigator Function(Ref ref);
 
 // ********************************************
 //  basic classes:  TypedSegment and TypedPath
@@ -42,53 +43,19 @@ typedef TypedPath = List<TypedSegment>;
 /// ```
 /// ProviderScope(
 ///   overrides: [
-///     config4DartProvider.overrideWithValue(Config4Dart(...))),
+///     riverpodNavigatorCreatorProvider.overrideWithValue(...),
 ///   ],...
 /// ```
-final config4DartProvider = Provider<Config4Dart>((_) => throw UnimplementedError());
+final riverpodNavigatorCreatorProvider = Provider<RiverpodNavigatorCreator>((_) => throw UnimplementedError());
 
 /// provider for app specific RiverpodNavigator
-final riverpodNavigatorProvider = Provider<RiverpodNavigator>((ref) => ref.read(config4DartProvider).riverpodNavigatorCreator(ref));
+final riverpodNavigatorProvider = Provider<RiverpodNavigator>((ref) => ref.read(riverpodNavigatorCreatorProvider)(ref));
 
 final ongoingTypedPath = StateProvider<TypedPath>((_) => []);
 
 // ********************************************
 // Dart config and providers (with creators from config)
 // ********************************************
-
-class Config4Dart {
-  Config4Dart({
-    //required this.routerDelegateCreator,
-    required this.riverpodNavigatorCreator,
-    required this.json2Segment,
-    required this.initPath,
-    //GetAllDependedStates? getAllDependedStates,
-    PathParser? pathParser,
-    this.segment2AsyncScreenActions,
-  }) : pathParser = pathParser ?? SimplePathParser() {
-    this.pathParser.init(this);
-  }
-
-  /// String <=> TypedPath parser
-  final PathParser pathParser;
-
-  /// How to convert json string to [TypedSegment]
-  final Json2Segment json2Segment;
-
-  /// screen async-navigation actions
-  final Segment2AsyncScreenActions? segment2AsyncScreenActions;
-
-  /// initial screen
-  final TypedPath initPath;
-
-  /// app specific RiverpodNavigator.
-  /// "create" proc for riverpodNavigatorProvider.
-  final RiverpodNavigator Function(Ref ref) riverpodNavigatorCreator;
-
-  /// "creator" proc for routerDelegate.
-  /// depends on the use of the flutter x dart platform
-  IRouterDelegate Function(Ref ref) routerDelegateCreator = (_) => RouterDelegate4Dart();
-}
 
 // ********************************************
 // TypedPath changing
@@ -114,13 +81,18 @@ class RouterDelegate4Dart with IRouterDelegate {
 // ********************************************
 
 /// Helper singleton class for navigating to [TypedPath]
-class RiverpodNavigator {
-  RiverpodNavigator(Ref ref, {List<AlwaysAliveProviderListenable>? dependsOn}) : this._(ref, dependsOn: dependsOn);
-
-  RiverpodNavigator._(this.ref, {List<AlwaysAliveProviderListenable>? dependsOn})
-      : config = ref.read(config4DartProvider),
-        routerDelegate = ref.read(config4DartProvider).routerDelegateCreator(ref) {
-    routerDelegate.navigator = this;
+abstract class RiverpodNavigator {
+  RiverpodNavigator(
+    this.ref, {
+    List<AlwaysAliveProviderListenable>? dependsOn,
+    required this.json2Segment,
+    IRouterDelegate? routerDelegate,
+    required this.initPath,
+    this.segment2AsyncScreenActions,
+    Object? flutterConfig,
+  })  : flutterConfig = flutterConfig ?? Object(),
+        routerDelegate = routerDelegate ?? RouterDelegate4Dart() {
+    this.routerDelegate.navigator = this;
 
     _defer2NextTick = Defer2NextTick(runNextTick: _runNavigation);
     final allDepends = <AlwaysAliveProviderListenable>[ongoingTypedPath, if (dependsOn != null) ...dependsOn];
@@ -131,17 +103,29 @@ class RiverpodNavigator {
 
   @protected
   Ref ref;
-  @protected
-  final Config4Dart config;
+  final List<Function> _unlistens = [];
+
+  /// depends on the use of the flutter x dart platform
+  IRouterDelegate routerDelegate;
+
+  /// screen async-navigation actions
+  final Segment2AsyncScreenActions? segment2AsyncScreenActions;
+
+  /// initial screen
+  final TypedPath initPath;
+
+  /// properties which needs Flutter library
+  Object flutterConfig;
 
   Defer2NextTick get defer2NextTick => _defer2NextTick as Defer2NextTick;
   Defer2NextTick? _defer2NextTick;
-
-  final List<Function> _unlistens = [];
-
-  final IRouterDelegate routerDelegate;
-
   Future<void> get navigationCompleted => defer2NextTick.future;
+
+  Json2Segment json2Segment;
+  PathParser pathParserCreator() => SimplePathParser(json2Segment);
+
+  PathParser get pathParser => _pathParser ?? (_pathParser = pathParserCreator());
+  PathParser? _pathParser;
 
   /// put all change-route application logic here (redirects, needs login etc.)
   ///
@@ -167,7 +151,7 @@ class RiverpodNavigator {
   TypedPath get currentTypedPath => routerDelegate.currentConfiguration;
 
   @nonVirtual
-  String debugTypedPath2String() => config.pathParser.debugTypedPath2String(currentTypedPath);
+  String debugTypedPath2String() => pathParser.debugTypedPath2String(currentTypedPath);
 
   /// for [Navigator.onPopPage] in [RiverpodRouterDelegate.build]
   @nonVirtual
@@ -211,13 +195,12 @@ class RiverpodNavigator {
 
 /// String path <==> TypedPath
 class PathParser {
+  PathParser(this.json2Segment);
+
+  @protected
+  final Json2Segment json2Segment;
+
   static const String defaultJsonUnionKey = 'runtimeType';
-
-  /// every parser needs config, specified after creation (e.g. in )
-  void init(Config4Dart config) => _config = config;
-
-  Config4Dart get config => _config as Config4Dart;
-  Config4Dart? _config;
 
   /// String path => TypedPath
   String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.toString())).join('/');
@@ -227,7 +210,7 @@ class PathParser {
     if (path == null || path.isEmpty) return [];
     return [
       for (final s in path.split('/'))
-        if (s.isNotEmpty) config.json2Segment(jsonDecode(Uri.decodeFull(s)), defaultJsonUnionKey)
+        if (s.isNotEmpty) json2Segment(jsonDecode(Uri.decodeFull(s)), defaultJsonUnionKey)
     ];
   }
 

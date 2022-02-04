@@ -363,6 +363,7 @@ Widget booksExampleApp(WidgetRef ref) => MaterialApp.router(
       title: 'Books App',
       routerDelegate: ref.read(riverpodNavigatorProvider).routerDelegate as RiverpodRouterDelegate,
       routeInformationParser: RouteInformationParserImpl(ref),
+      debugShowCheckedModeBanner: false,
     );
 ''')) + filter2(all, null, false, t('''
 6. app entry point with ProviderScope  

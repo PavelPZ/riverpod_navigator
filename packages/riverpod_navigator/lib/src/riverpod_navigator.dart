@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 // import 'riverpod_navigator_dart.dart';
 import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
 
@@ -12,10 +11,7 @@ typedef SplashBuilder = Widget Function();
 //final riverpodRouterDelegate = Provider<RiverpodRouterDelegate>((_) => throw UnimplementedError());
 
 class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath>, IRouterDelegate {
-  RiverpodRouterDelegate(Ref ref) : _config = ref.read(configProvider);
-  //_navigator = ref.watch(riverpodNavigatorProvider);
-
-  final Config _config;
+  RiverpodRouterDelegate();
 
   @override
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -24,62 +20,57 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
   Widget build(BuildContext context) {
     // final actPath = _navigator.getActualTypedPath();
     final actPath = currentConfiguration;
-    if (actPath.isEmpty) return _config.splashBuilder?.call() ?? SizedBox();
+    if (actPath.isEmpty) return navigator.flutter.splashBuilder?.call() ?? SizedBox();
     final navigatorWidget = Navigator(
         key: navigatorKey,
         // segment => screen
-        pages: actPath.map((segment) => _config.screen2Page(segment, _config.screenBuilder)).toList(),
+        pages: actPath.map((segment) => navigator.flutter.screen2Page(segment, navigator.flutter.screenBuilder)).toList(),
         onPopPage: (route, result) {
           //if (!route.didPop(result)) return false;
           // remove last segment from path
           navigator.onPopRoute();
           return false;
         });
-    return _config.navigatorWidgetBuilder == null ? navigatorWidget : _config.navigatorWidgetBuilder!(context, navigatorWidget);
+    return navigator.flutter.navigatorWidgetBuilder == null ? navigatorWidget : navigator.flutter.navigatorWidgetBuilder!(context, navigatorWidget);
   }
 
   @override
   Future<void> setNewRoutePath(TypedPath configuration) => navigator.navigate(configuration);
 
   @override
-  Future<void> setInitialRoutePath(TypedPath configuration) => navigator.navigate(_config.config4Dart.initPath);
+  Future<void> setInitialRoutePath(TypedPath configuration) => navigator.navigate(navigator.initPath);
 }
 
 class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
-  RouteInformationParserImpl(WidgetRef ref) : _config = ref.read(config4DartProvider);
+  RouteInformationParserImpl(this._pathParser);
 
-  final Config4Dart _config;
-
-  @override
-  Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
-      Future.value(_config.pathParser.path2TypedPath(routeInformation.location));
+  final PathParser _pathParser;
 
   @override
-  RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: _config.pathParser.typedPath2Path(configuration));
+  Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) => Future.value(_pathParser.path2TypedPath(routeInformation.location));
+
+  @override
+  RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: _pathParser.typedPath2Path(configuration));
 }
 
 typedef Screen2Page = Page Function(TypedSegment segment, ScreenBuilder screenBuilder);
 
-class Config {
-  Config({
+extension FlutterConfigExt on RiverpodNavigator {
+  FlutterConfig get flutter => flutterConfig as FlutterConfig;
+}
+
+class FlutterConfig {
+  FlutterConfig({
     required this.screenBuilder,
     Screen2Page? screen2Page,
     this.navigatorWidgetBuilder,
-    required this.config4Dart,
     this.splashBuilder,
-  }) : screen2Page = screen2Page ?? screen2PageDefault {
-    config4Dart.routerDelegateCreator = (ref) => RiverpodRouterDelegate(ref);
-  }
+  }) : screen2Page = screen2Page ?? screen2PageDefault;
   final Screen2Page screen2Page;
   final ScreenBuilder screenBuilder;
   final NavigatorWidgetBuilder? navigatorWidgetBuilder;
   final SplashBuilder? splashBuilder;
-
-  /// dart-only part of config
-  final Config4Dart config4Dart;
 }
-
-final configProvider = Provider<Config>((_) => throw UnimplementedError());
 
 final Screen2Page screen2PageDefault = (segment, screenBuilder) => _Screen2PageDefault(segment, screenBuilder);
 
