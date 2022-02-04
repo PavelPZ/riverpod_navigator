@@ -29,7 +29,7 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
 Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
       title: 'Books Screen',
       buildChildren: (navigator) {
-        final isLogged = ref.read(navigationStateProvider).userIsLogged;
+        final isLogged = ref.read(userIsLoggedProvider);
         return [
           for (var id = 0; id < booksLen; id++) ...[
             LinkHelper(title: 'Book screen, id=$id${!isLogged && id.isOdd ? ' (log in first)' : ''}', onPressed: () => navigator.toBook(id: id))
@@ -61,7 +61,7 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
       title: Text(title),
       actions: [
         Consumer(builder: (_, ref, __) {
-          final isLogged = ref.watch(navigationStateProvider.notifier.select((value) => value.state.userIsLogged));
+          final isLogged = ref.watch(userIsLoggedProvider);
           return ElevatedButton(
             onPressed: navigator.toogleLogin,
             child: Text(isLogged ? 'Logout' : 'Login'),

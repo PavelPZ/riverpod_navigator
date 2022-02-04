@@ -39,19 +39,19 @@ typedef TypedPath = List<TypedSegment>;
 //  NavigationState
 // ********************************************
 
-@freezed
-class NavigationState with _$NavigationState, INavigationState {
-  factory NavigationState({required TypedPath path}) = _NavigationState;
-  NavigationState._();
+// @freezed
+// class NavigationState with _$NavigationState, INavigationState {
+//   factory NavigationState({required TypedPath path}) = _NavigationState;
+//   NavigationState._();
 
-  @override
-  INavigationState copyWithPath(TypedPath path) => copyWith(path: path);
-}
+//   @override
+//   INavigationState copyWithPath(TypedPath path) => copyWith(path: path);
+// }
 
-abstract class INavigationState {
-  TypedPath get path;
-  INavigationState copyWithPath(TypedPath path);
-}
+// abstract class INavigationState {
+//   TypedPath get path;
+//   INavigationState copyWithPath(TypedPath path);
+// }
 
 // ********************************************
 // Providers
@@ -70,12 +70,14 @@ final config4DartProvider = Provider<Config4Dart>((_) => throw UnimplementedErro
 /// provider for app specific RiverpodNavigator
 final riverpodNavigatorProvider = Provider<RiverpodNavigator>((ref) => ref.read(config4DartProvider).riverpodNavigatorCreator(ref));
 
+final ongoingTypedPath = StateProvider<TypedPath>((_) => []);
+
 /// monitoring of all states that affect navigation
-final navigationStateNotifierProvider = StateProvider<INavigationState>((ref) => ref.read(config4DartProvider).getAllDependedStates(ref));
+// final navigationStateNotifierProvider = StateProvider<INavigationState>((ref) => ref.read(config4DartProvider).getAllDependedStates(ref));
 
-NavigationState defaultGetAllDependedStates(Ref ref) => NavigationState(path: []);
+// NavigationState defaultGetAllDependedStates(Ref ref) => NavigationState(path: []);
 
-typedef GetAllDependedStates = INavigationState Function(Ref ref);
+// typedef GetAllDependedStates = INavigationState Function(Ref ref);
 
 // ********************************************
 // Dart config and providers (with creators from config)
@@ -87,11 +89,10 @@ class Config4Dart {
     required this.riverpodNavigatorCreator,
     required this.json2Segment,
     required this.initPath,
-    GetAllDependedStates? getAllDependedStates,
+    //GetAllDependedStates? getAllDependedStates,
     PathParser? pathParser,
     this.segment2AsyncScreenActions,
-  })  : pathParser = pathParser ?? SimplePathParser(),
-        getAllDependedStates = getAllDependedStates ?? defaultGetAllDependedStates {
+  }) : pathParser = pathParser ?? SimplePathParser() {
     this.pathParser.init(this);
   }
 
@@ -114,11 +115,6 @@ class Config4Dart {
   /// "creator" proc for routerDelegate.
   /// depends on the use of the flutter x dart platform
   IRouterDelegate Function(Ref ref) routerDelegateCreator = (_) => RouterDelegate4Dart();
-
-  /// e.g (ref) => [ref.watch(typedPathProvider), ref.watch(userIsLoggedProvider)]
-  ///
-  /// default value is (ref) => [ref.watch(typedPathProvider)]
-  final GetAllDependedStates getAllDependedStates;
 }
 
 // ********************************************
@@ -135,7 +131,7 @@ abstract class IRouterDelegate {
 }
 
 // RouterDelegate for dart
-class RouterDelegate4Dart extends IRouterDelegate {
+class RouterDelegate4Dart with IRouterDelegate {
   @override
   void notifyListeners() {}
 }
@@ -145,12 +141,19 @@ class RouterDelegate4Dart extends IRouterDelegate {
 // ********************************************
 
 /// Helper singleton class for navigating to [TypedPath]
-class RiverpodNavigator<T extends INavigationState> {
-  RiverpodNavigator(this.ref)
+class RiverpodNavigator {
+  RiverpodNavigator(Ref ref, {List<AlwaysAliveProviderListenable>? dependsOn}) : this._(ref, dependsOn: dependsOn);
+
+  RiverpodNavigator._(this.ref, {List<AlwaysAliveProviderListenable>? dependsOn})
       : config = ref.read(config4DartProvider),
         routerDelegate = ref.read(config4DartProvider).routerDelegateCreator(ref) {
     routerDelegate.navigator = this;
-    ref.onDispose(() => _unlistenRedirects?.call());
+
+    _defer2NextTick = Defer2NextTick(runNextTick: () => appNavigationLogic(ref, currentTypedPath));
+    final allDepends = <AlwaysAliveProviderListenable>[ongoingTypedPath, if (dependsOn != null) ...dependsOn];
+    for (final depend in allDepends) _unlistens.add(ref.listen<dynamic>(depend, (previous, next) => defer2NextTick.start()));
+    // ignore: avoid_function_literals_in_foreach_calls
+    ref.onDispose(() => _unlistens.forEach((f) => f()));
   }
 
   @protected
@@ -158,19 +161,20 @@ class RiverpodNavigator<T extends INavigationState> {
   @protected
   final Config4Dart config;
 
-  Function? _unlistenRedirects;
+  Defer2NextTick get defer2NextTick => _defer2NextTick as Defer2NextTick;
+  Defer2NextTick? _defer2NextTick;
+
+  final List<Function> _unlistens = [];
 
   final IRouterDelegate routerDelegate;
 
-  T readNavigationState() => ref.read(navigationStateNotifierProvider) as T;
-  void updateNavigationState(T update(T state)) {
-    ref.read(navigationStateNotifierProvider.notifier).update((s) => update(s as T));
-  }
+  Future<void> get navigationCompleted => defer2NextTick.future;
 
   /// put all change-route application logic here (redirects, needs login etc.)
   ///
   /// Returns redirect path or null (if newPath is already processed)
-  FutureOr<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, INavigationState newState) => null;
+  FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) => null;
+  //FutureOr<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, INavigationState newState) => null;
 
   /// Main [RiverpodNavigator] method. Provides navigation to the new [TypedPath].
   ///
@@ -179,42 +183,45 @@ class RiverpodNavigator<T extends INavigationState> {
   @nonVirtual
   Future<void> navigate(TypedPath newPath) async {
     // listen for redirects (appNavigationLogicProvider returns or null or redirect path)
-    _unlistenRedirects ??= ref.listen<INavigationState>(navigationStateNotifierProvider, (_, __) async {
-      final oldPath = actualTypedPath;
-      final newState = ref.read(navigationStateNotifierProvider);
+    // _unlistenRedirects ??= ref.listen<INavigationState>(navigationStateNotifierProvider, (_, __) async {
+    //   final oldPath = currentTypedPath;
+    //   final newState = ref.read(navigationStateNotifierProvider);
 
-      final redirectPathFuture = appNavigationLogic(ref, oldPath, newState);
-      final redirectPath = redirectPathFuture is Future<TypedPath?> ? await redirectPathFuture : redirectPathFuture;
+    //   final redirectPathFuture = appNavigationLogic(ref, oldPath, newState);
+    //   final redirectPath = redirectPathFuture is Future<TypedPath?> ? await redirectPathFuture : redirectPathFuture;
 
-      // redirect
-      if (redirectPath != null) {
-        scheduleMicrotask(() => navigate(redirectPath));
-        return;
-      }
+    //   // redirect
+    //   if (redirectPath != null) {
+    //     scheduleMicrotask(() => navigate(redirectPath));
+    //     return;
+    //   }
 
-      // no redirect => actualize navigation stack
-      routerDelegate.currentConfiguration = newState.path;
-      routerDelegate.notifyListeners();
-    });
+    //   // no redirect => actualize navigation stack
+    //   routerDelegate.currentConfiguration = newState.path;
+    //   routerDelegate.notifyListeners();
+    // });
     // refresh navigation state
-    updateNavigationState((state) => state.copyWithPath(newPath) as T);
+    // updateNavigationState((state) => state.copyWithPath(newPath) as T);
+    ref.read(ongoingTypedPath.notifier).state = newPath;
+    return navigationCompleted;
 
     // This line is necessary to activate the [navigationStateProvider].
     // Without this line [navigationStateProvider] is not listened.
     // ignore: unused_local_variable
-    final res = ref.read(navigationStateNotifierProvider);
+    // return defer2NextTick.future;
+    //final res = ref.read(navigationStateNotifierProvider);
   }
 
   @nonVirtual
-  TypedPath get actualTypedPath => routerDelegate.currentConfiguration;
+  TypedPath get currentTypedPath => routerDelegate.currentConfiguration;
 
   @nonVirtual
-  String debugTypedPath2String() => config.pathParser.debugTypedPath2String(actualTypedPath);
+  String debugTypedPath2String() => config.pathParser.debugTypedPath2String(currentTypedPath);
 
   /// for [Navigator.onPopPage] in [RiverpodRouterDelegate.build]
   @nonVirtual
   bool onPopRoute() {
-    final actPath = actualTypedPath;
+    final actPath = currentTypedPath;
     if (actPath.length <= 1) return false;
     navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i]]);
     return false;
@@ -238,18 +245,18 @@ class RiverpodNavigator<T extends INavigationState> {
 
   @nonVirtual
   Future<bool> pop() async {
-    final actPath = actualTypedPath;
+    final actPath = currentTypedPath;
     if (actPath.length <= 1) return false;
     await navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i]]);
     return true;
   }
 
   @nonVirtual
-  Future<void> push(TypedSegment segment) => navigate([...actualTypedPath, segment]);
+  Future<void> push(TypedSegment segment) => navigate([...currentTypedPath, segment]);
 
   @nonVirtual
   Future<void> replaceLast(TypedSegment segment) {
-    final actPath = actualTypedPath;
+    final actPath = currentTypedPath;
     return navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i], segment]);
   }
 }
@@ -282,6 +289,33 @@ class PathParser {
 
   /// Friendly display of TypedPath
   String debugTypedPath2String(TypedPath typedPath) => typedPath.map((s) => s.toString()).join(' / ');
+}
+
+// ********************************************
+//   Defer2NextTick
+// ********************************************
+
+class Defer2NextTick {
+  Defer2NextTick({required this.runNextTick});
+  Completer? _completer;
+  FutureOr<void> Function() runNextTick;
+
+  void start() {
+    if (_completer != null) return;
+    _completer = Completer();
+    scheduleMicrotask(() async {
+      try {
+        final value = runNextTick();
+        if (value is Future) await value;
+        _completer?.complete();
+      } catch (e, s) {
+        _completer?.completeError(e, s);
+      }
+      _completer = null;
+    });
+  }
+
+  Future<void> get future => _completer != null ? Future.value() : (_completer as Completer).future;
 }
 
 // ********************************************

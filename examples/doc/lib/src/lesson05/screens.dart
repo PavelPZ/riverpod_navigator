@@ -73,7 +73,7 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
       actions: [
         if (isLoginPage != true)
           Consumer(builder: (_, ref, __) {
-            final isLogged = (ref.watch(navigationStateNotifierProvider) as LoginNavigationState).userIsLogged;
+            final isLogged = ref.watch(userIsLoggedProvider);
             return ElevatedButton(
               onPressed: () => isLogged ? navigator.globalLogoutButton() : navigator.globalLoginButton(),
               child: Text(isLogged ? 'Logout' : 'Login'),
@@ -93,4 +93,3 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
     ),
   );
 }
-

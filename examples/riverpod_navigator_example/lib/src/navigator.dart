@@ -14,10 +14,10 @@ part 'navigator.g.dart';
 // ********************************************
 
 /// Terminology:
-/// - string path => 'home/books/book;id=2'
-/// - the string path consists of segments => 'home', 'books', 'book;id=2'
-/// - typed path => [HomeSegment(), BooksSegment(), BookSegment(id:2)]
-/// - the typed path consists of typed segments => HomeSegment(), BooksSegment(), BookSegment(id:2)
+/// - string path: 'home/books/book;id=2'
+/// - the string path consists of segments: 'home', 'books', 'book;id=2'
+/// - typed path: [HomeSegment(), BooksSegment(), BookSegment(id:2)]
+/// - the typed path consists of typed segments: HomeSegment(), BooksSegment(), BookSegment(id:2)
 @freezed
 class ExampleSegments with _$ExampleSegments {
   ExampleSegments._();
@@ -38,23 +38,57 @@ typedef TypedPath = List<ExampleSegments>;
 bool needsLogin(ExampleSegments segment) => segment is BookSegment && segment.id.isOdd;
 
 // ********************************************
-// navigation state
-// ********************************************
-
-@freezed
-class NavigationState with _$NavigationState {
-  factory NavigationState({required TypedPath path, required bool userIsLogged}) = _NavigationState;
-}
-
-// ********************************************
 // providers
 // ********************************************
 
 /// RiverpodNavigator
 final riverpodNavigatorProvider = Provider<RiverpodNavigator>((ref) => RiverpodNavigator(ref));
 
-/// monitoring of all states that affect navigation
-final navigationStateProvider = StateProvider<NavigationState>((ref) => NavigationState(path: [], userIsLogged: false));
+/// ongoing TypedPath provider
+///
+/// [ongoingTypedPath] may differ from [RiverpodNavigatorLow.currentTypedPath] during navigation calculation
+final ongoingTypedPath = StateProvider<TypedPath>((_) => []);
+
+/// watching userIsLogged state
+final userIsLoggedProvider = StateProvider<bool>((_) => false);
+
+// ********************************************
+//   Defer2NextTick
+// ********************************************
+
+/// helper class that solves the problem where two providers (on which navigation depends) change in one tick, e.g.
+///
+/// ```
+/// ref.read(userIsLoggedProvider.notifier).update((s) => !s)
+/// ref.read(ongoingTypedPath.notifier).state = [HomeSegment(), BooksSegment()];
+/// ```
+/// without the Defer2NextTick class, [RiverpodRouterDelegate.doNotifyListener] is called twice in code:
+/// ```
+/// routerDelegate.currentConfiguration = ref.read(ongoingTypedPath);
+/// routerDelegate.doNotifyListener();
+/// ```
+class Defer2NextTick {
+  Defer2NextTick({required this.runNextTick});
+  Completer? _completer;
+  FutureOr<void> Function() runNextTick;
+
+  void start() {
+    if (_completer != null) return;
+    _completer = Completer();
+    scheduleMicrotask(() async {
+      try {
+        final value = runNextTick();
+        if (value is Future) await value;
+        _completer?.complete();
+      } catch (e, s) {
+        _completer?.completeError(e, s);
+      }
+      _completer = null;
+    });
+  }
+
+  Future<void> get future => _completer != null ? Future.value() : (_completer as Completer).future;
+}
 
 // ********************************************
 //   RiverpodNavigatorLow
@@ -62,57 +96,48 @@ final navigationStateProvider = StateProvider<NavigationState>((ref) => Navigati
 
 /// Helper singleton class for manaing navigation state
 class RiverpodNavigatorLow {
-  RiverpodNavigatorLow(this.ref) : routerDelegate = RiverpodRouterDelegate() {
+  RiverpodNavigatorLow(this.ref, {required List<AlwaysAliveProviderListenable> dependsOn}) : routerDelegate = RiverpodRouterDelegate() {
     routerDelegate.navigator = this;
-    ref.onDispose(() => _unlistenNavigationState?.call());
+
+    _defer2NextTick = Defer2NextTick(runNextTick: _runNavigation);
+    final allDepends = <AlwaysAliveProviderListenable>[ongoingTypedPath, ...dependsOn];
+    for (final depend in allDepends) _unlistens.add(ref.listen<dynamic>(depend, (previous, next) => defer2NextTick.start()));
+    // ignore: avoid_function_literals_in_foreach_calls
+    ref.onDispose(() => _unlistens.forEach((f) => f()));
   }
 
   @protected
   Ref ref;
 
-  Function? _unlistenNavigationState;
+  Defer2NextTick get defer2NextTick => _defer2NextTick as Defer2NextTick;
+  Defer2NextTick? _defer2NextTick;
+
+  /// for ref.onDispose
+  final List<Function> _unlistens = [];
 
   /// Flutter Navigation 2.0 RouterDelegate
   RiverpodRouterDelegate routerDelegate;
 
-  /// implements all navigation change application logic (redirection, login required, etc.)
-  ///
-  /// Returns:
-  /// - redirect path, when application logic requires redirect to other typed path
-  /// - null if newPath is already processed
-  TypedPath? appNavigationLogic(TypedPath oldPath, NavigationState navigationState) => null;
+  /// implements all navigation change application logic here (redirection, login required, etc.)
+  FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) => null;
+
+  /// synchronize [ongoingTypedPath] with [RiverpodRouterDelegate.currentConfiguration]
+  Future<void> _runNavigation() async {
+    final appLogic = appNavigationLogic(ref, currentTypedPath);
+    if (appLogic is Future) await appLogic;
+    routerDelegate.currentConfiguration = ref.read(ongoingTypedPath);
+    routerDelegate.doNotifyListener();
+  }
 
   /// Main [RiverpodNavigatorLow] method. Provides navigation to the new [TypedPath].
+  /// After changing [ongoingTypedPath], the navigation state is updated
   @nonVirtual
   void navigate(TypedPath newPath) {
-    // listen for changing navigation state
-    _unlistenNavigationState ??= ref.listen<NavigationState>(navigationStateProvider, (_, newNavigationState) {
-      final oldPath = routerDelegatePath;
-
-      final redirectPath = appNavigationLogic(oldPath, newNavigationState);
-
-      // redirect
-      if (redirectPath != null) {
-        scheduleMicrotask(() => navigate(redirectPath));
-        return;
-      }
-
-      // no redirect => actualize navigation stack
-      routerDelegate.currentConfiguration = newNavigationState.path;
-      routerDelegate.doNotifyListener();
-    });
-
-    // change actualTypedPath => refresh navigation state
-    ref.read(navigationStateProvider.notifier).update((state) => state.copyWith(path: newPath));
-
-    // This line is necessary to activate the [navigationStateProvider].
-    // Without this line [navigationStateProvider] is not listened.
-    // ignore: unused_local_variable
-    final res = ref.read(navigationStateProvider);
+    ref.read(ongoingTypedPath.notifier).state = newPath;
   }
 
   @nonVirtual
-  TypedPath get routerDelegatePath => routerDelegate.currentConfiguration;
+  TypedPath get currentTypedPath => routerDelegate.currentConfiguration;
 
   /// for [Navigator.onPopRoute] in [RiverpodRouterDelegate.build]
   @nonVirtual
@@ -122,17 +147,17 @@ class RiverpodNavigatorLow {
 
   @nonVirtual
   void pop() {
-    final actPath = routerDelegatePath;
+    final actPath = currentTypedPath;
     if (actPath.length <= 1) return;
     navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i]]);
   }
 
   @nonVirtual
-  void push(ExampleSegments segment) => navigate([...routerDelegatePath, segment]);
+  void push(ExampleSegments segment) => navigate([...currentTypedPath, segment]);
 
   @nonVirtual
   void replaceLast(ExampleSegments segment) {
-    final actPath = routerDelegatePath;
+    final actPath = currentTypedPath;
     return navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i], segment]);
   }
 }
@@ -142,23 +167,28 @@ class RiverpodNavigatorLow {
 // ********************************************
 
 /// navigator is available throw riverpodNavigatorProvider
+///
+/// Navigator state depends on [ongoingTypedPath] and [userIsLoggedProvider] providers
 class RiverpodNavigator extends RiverpodNavigatorLow {
-  RiverpodNavigator(Ref ref) : super(ref);
+  RiverpodNavigator(Ref ref) : super(ref, dependsOn: [ongoingTypedPath, userIsLoggedProvider]);
 
-  /// returns redirected TypeedPath when:
+  /// redirects to new TypeedPath when:
   /// - not logged in
-  /// - newPath contains a book with an odd id  @override
+  /// - newPath contains a book with an odd id
   @override
-  TypedPath? appNavigationLogic(TypedPath oldPath, NavigationState navigationState) {
-    return !navigationState.userIsLogged && navigationState.path.any(needsLogin) ? [HomeSegment(), BooksSegment()] : null;
+  FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
+    final userIsLogged = ref.read(userIsLoggedProvider);
+    final ongoingNotifier = ref.read(ongoingTypedPath.notifier);
+
+    if (!userIsLogged && ongoingNotifier.state.any(needsLogin)) ongoingNotifier.state = [HomeSegment(), BooksSegment()];
   }
 
   void toHome() => navigate([HomeSegment()]);
   void toBooks() => navigate([HomeSegment(), BooksSegment()]);
   void toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
   void bookNextPrevButton({bool? isPrev}) {
-    assert(routerDelegatePath.last is BookSegment);
-    var id = (routerDelegatePath.last as BookSegment).id;
+    assert(currentTypedPath.last is BookSegment);
+    var id = (currentTypedPath.last as BookSegment).id;
     if (isPrev == true)
       id = id == 0 ? booksLen - 1 : id - 1;
     else
@@ -166,7 +196,7 @@ class RiverpodNavigator extends RiverpodNavigatorLow {
     toBook(id: id);
   }
 
-  void toogleLogin() => ref.read(navigationStateProvider.notifier).update((s) => s.copyWith(userIsLogged: !s.userIsLogged));
+  void toogleLogin() => ref.read(userIsLoggedProvider.notifier).update((s) => !s);
 }
 
 /// number of books

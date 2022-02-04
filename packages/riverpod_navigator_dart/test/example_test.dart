@@ -10,6 +10,13 @@ import 'testLib.dart';
 final intProvider = Provider<int>((_) => throw UnimplementedError());
 
 void main() {
+  test('foreach', () async {
+    final fncs = <Function>[() => print(1), () => print(2)];
+    // ignore: avoid_function_literals_in_foreach_calls
+    final all = () => fncs.forEach((f) => f());
+    all();
+    return;
+  });
   test('overrides', () async {
     final container = createContainer(overrides: [
       intProvider.overrideWithValue(1),

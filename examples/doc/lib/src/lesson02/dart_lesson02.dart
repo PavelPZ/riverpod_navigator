@@ -35,8 +35,8 @@ class AppNavigator extends RiverpodNavigator {
   void toBooks() => navigate([HomeSegment(), BooksSegment()]);
   void toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
   void bookNextPrevButton({bool? isPrev}) {
-    assert(actualTypedPath.last is BookSegment);
-    var id = (actualTypedPath.last as BookSegment).id;
+    assert(currentTypedPath.last is BookSegment);
+    var id = (currentTypedPath.last as BookSegment).id;
     if (isPrev == true)
       id = id == 0 ? booksLen - 1 : id - 1;
     else
@@ -57,4 +57,3 @@ final config4DartCreator = () => Config4Dart(
       json2Segment: json2AppSegments,
       riverpodNavigatorCreator: (ref) => AppNavigator(ref),
     );
-
