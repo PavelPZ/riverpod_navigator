@@ -149,7 +149,7 @@ class RiverpodNavigator {
         routerDelegate = ref.read(config4DartProvider).routerDelegateCreator(ref) {
     routerDelegate.navigator = this;
 
-    _defer2NextTick = Defer2NextTick(runNextTick: () => appNavigationLogic(ref, currentTypedPath));
+    _defer2NextTick = Defer2NextTick(runNextTick: _runNavigation);
     final allDepends = <AlwaysAliveProviderListenable>[ongoingTypedPath, if (dependsOn != null) ...dependsOn];
     for (final depend in allDepends) _unlistens.add(ref.listen<dynamic>(depend, (previous, next) => defer2NextTick.start()));
     // ignore: avoid_function_literals_in_foreach_calls
@@ -174,42 +174,20 @@ class RiverpodNavigator {
   ///
   /// Returns redirect path or null (if newPath is already processed)
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) => null;
-  //FutureOr<TypedPath?> appNavigationLogic(Ref ref, TypedPath oldPath, INavigationState newState) => null;
+
+  /// synchronize [ongoingTypedPath] with [RiverpodRouterDelegate.currentConfiguration]
+  Future<void> _runNavigation() async {
+    final appLogic = appNavigationLogic(ref, currentTypedPath);
+    if (appLogic is Future) await appLogic;
+    routerDelegate.currentConfiguration = ref.read(ongoingTypedPath);
+    routerDelegate.notifyListeners();
+  }
 
   /// Main [RiverpodNavigator] method. Provides navigation to the new [TypedPath].
-  ///
-  /// If the navigation logic depends on another state (e.g. whether the user is logged in or not),
-  /// use watch for this state in overrided [RiverpodNavigator.appNavigationLogic]
   @nonVirtual
   Future<void> navigate(TypedPath newPath) async {
-    // listen for redirects (appNavigationLogicProvider returns or null or redirect path)
-    // _unlistenRedirects ??= ref.listen<INavigationState>(navigationStateNotifierProvider, (_, __) async {
-    //   final oldPath = currentTypedPath;
-    //   final newState = ref.read(navigationStateNotifierProvider);
-
-    //   final redirectPathFuture = appNavigationLogic(ref, oldPath, newState);
-    //   final redirectPath = redirectPathFuture is Future<TypedPath?> ? await redirectPathFuture : redirectPathFuture;
-
-    //   // redirect
-    //   if (redirectPath != null) {
-    //     scheduleMicrotask(() => navigate(redirectPath));
-    //     return;
-    //   }
-
-    //   // no redirect => actualize navigation stack
-    //   routerDelegate.currentConfiguration = newState.path;
-    //   routerDelegate.notifyListeners();
-    // });
-    // refresh navigation state
-    // updateNavigationState((state) => state.copyWithPath(newPath) as T);
     ref.read(ongoingTypedPath.notifier).state = newPath;
     return navigationCompleted;
-
-    // This line is necessary to activate the [navigationStateProvider].
-    // Without this line [navigationStateProvider] is not listened.
-    // ignore: unused_local_variable
-    // return defer2NextTick.future;
-    //final res = ref.read(navigationStateNotifierProvider);
   }
 
   @nonVirtual
@@ -244,21 +222,14 @@ class RiverpodNavigator {
   // *** common navigation-agnostic app actions ***
 
   @nonVirtual
-  Future<bool> pop() async {
-    final actPath = currentTypedPath;
-    if (actPath.length <= 1) return false;
-    await navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i]]);
-    return true;
-  }
+  Future<void> pop() =>
+      currentTypedPath.length <= 1 ? Future.value() : navigate([for (var i = 0; i < currentTypedPath.length - 1; i++) currentTypedPath[i]]);
 
   @nonVirtual
   Future<void> push(TypedSegment segment) => navigate([...currentTypedPath, segment]);
 
   @nonVirtual
-  Future<void> replaceLast(TypedSegment segment) {
-    final actPath = currentTypedPath;
-    return navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i], segment]);
-  }
+  Future<void> replaceLast(TypedSegment segment) => navigate([for (var i = 0; i < currentTypedPath.length - 1; i++) currentTypedPath[i], segment]);
 }
 
 // ********************************************
@@ -315,7 +286,7 @@ class Defer2NextTick {
     });
   }
 
-  Future<void> get future => _completer != null ? Future.value() : (_completer as Completer).future;
+  Future<void> get future => _completer != null ? (_completer as Completer).future : Future.value();
 }
 
 // ********************************************
