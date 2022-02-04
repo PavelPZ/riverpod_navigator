@@ -132,8 +132,9 @@ class RiverpodNavigatorLow {
   /// Main [RiverpodNavigatorLow] method. Provides navigation to the new [TypedPath].
   /// After changing [ongoingTypedPath], the navigation state is updated
   @nonVirtual
-  void navigate(TypedPath newPath) {
+  Future<void> navigate(TypedPath newPath) {
     ref.read(ongoingTypedPath.notifier).state = newPath;
+    return defer2NextTick.future;
   }
 
   @nonVirtual
@@ -158,7 +159,7 @@ class RiverpodNavigatorLow {
   @nonVirtual
   void replaceLast(ExampleSegments segment) {
     final actPath = currentTypedPath;
-    return navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i], segment]);
+    navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i], segment]);
   }
 }
 

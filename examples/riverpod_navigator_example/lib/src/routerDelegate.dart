@@ -39,8 +39,8 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
   }
 
   @override
-  Future<void> setNewRoutePath(TypedPath configuration) async => navigator?.navigate(configuration);
+  Future<void> setNewRoutePath(TypedPath configuration) => (navigator as RiverpodNavigatorLow).navigate(configuration);
 
   @override
-  Future<void> setInitialRoutePath(TypedPath configuration) async => navigator?.navigate([HomeSegment()]);
+  Future<void> setInitialRoutePath(TypedPath configuration) => (navigator as RiverpodNavigatorLow).navigate([HomeSegment()]);
 }
