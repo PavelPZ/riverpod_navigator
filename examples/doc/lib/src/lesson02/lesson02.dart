@@ -83,6 +83,7 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
           screenBuilder: appSegmentsScreenBuilder,
+          splashBuilder: SplashScreen.new,
           segment2AsyncScreenActions: segment2AsyncScreenActions, // <============================
         );
 

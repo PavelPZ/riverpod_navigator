@@ -16,7 +16,7 @@ part 'lesson04.g.dart';
 // Example04
 // - introduction route concept
 // *************************************
-// 
+//
 // *** 1. classes for typed path segments (TypedSegment)
 
 @freezed
@@ -49,7 +49,7 @@ abstract class AppRoute<T extends TypedSegment> extends TypedRoute<T> {
 class AppRouter extends TypedRouter {
   AppRouter() : super([AppRouteGroup(), LoginRouteGroup()]);
 
-   bool needsLogin(TypedSegment segment) => (segment2Group(segment).segment2Route(segment) as AppRoute).needsLogin(segment);
+  bool needsLogin(TypedSegment segment) => (segment2Group(segment).segment2Route(segment) as AppRoute).needsLogin(segment);
 }
 
 class AppRouteGroup extends RouteGroup<AppSegments> {
@@ -98,6 +98,7 @@ class BookRoute extends AppRoute<BookSegment> {
 }
 
 class LoginRouteGroup extends RouteGroup<LoginSegments> {
+  LoginRouteGroup() : super(unionKey: LoginSegments.jsonNameSpace);
   @override
   LoginSegments json2Segment(JsonMap jsonMap) => LoginSegments.fromJson(jsonMap);
 
@@ -125,13 +126,14 @@ class AppNavigator extends RiverpodNavigator {
           ref,
           dependsOn: [userIsLoggedProvider],
           initPath: [HomeSegment()],
+          splashBuilder: SplashScreen.new,
           router: AppRouter(), // <========================
         );
 
   /// The needLogin logic is handled by the router
   bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin(segment);
 
-@override
+  @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
     final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
@@ -208,7 +210,7 @@ class AppNavigator extends RiverpodNavigator {
 // *** 3. Root widget and entry point (same for all examples)
 
 // Root app widget
-// 
+//
 // To make it less verbose, we use the functional_widget package to generate widgets.
 // See *.g.dart file for details.
 @cwidget
@@ -222,13 +224,12 @@ Widget booksExampleApp(WidgetRef ref) {
   );
 }
 
-/// app entry point with ProviderScope  
+/// app entry point with ProviderScope
 void runMain() => runApp(
-    ProviderScope(
-      overrides: [
-        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
-      ],
-      child: const BooksExampleApp(),
-    ),
-  );
-
+      ProviderScope(
+        overrides: [
+          riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
+        ],
+        child: const BooksExampleApp(),
+      ),
+    );

@@ -4,8 +4,8 @@ part of 'index.dart';
 //   PathParser
 // ********************************************
 
-/// String path <==> TypedPath
-class PathParser {
+/// Path parser interface
+abstract class PathParser {
   PathParser(this.json2Segment);
 
   @protected
@@ -14,21 +14,20 @@ class PathParser {
   static const String defaultJsonUnionKey = 'runtimeType';
 
   /// String path => TypedPath
-  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.toString())).join('/');
+  String typedPath2Path(TypedPath typedPath);
 
   /// TypedPath => String path, suitable for browser
-  TypedPath path2TypedPath(String? path) {
-    if (path == null || path.isEmpty) return [];
-    return [
-      for (final s in path.split('/'))
-        if (s.isNotEmpty) json2Segment(jsonDecode(Uri.decodeFull(s)), defaultJsonUnionKey)
-    ];
-  }
+  TypedPath path2TypedPath(String? path);
 
   /// Friendly display of TypedPath
   String debugTypedPath2String(TypedPath typedPath) => typedPath.map((s) => s.toString()).join(' / ');
 }
 
+/// Simple url path parser
+///
+/// provides a general method for coding or decoding [TypedSegment]'s with limited capabilities:
+/// - attribute values [bool], [String], [int] or [double] only (no [List] or inner classes)
+/// = produces one url path segment for one TypedSegment format eg 'home/books/book;id=3'
 class SimplePathParser extends PathParser {
   SimplePathParser(Json2Segment json2Segment) : super(json2Segment);
 

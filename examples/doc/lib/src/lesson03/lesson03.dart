@@ -17,7 +17,7 @@ part 'lesson03.g.dart';
 // - More TypedPath roots
 // - Login application logic (where some pages are not available without a logged in user)
 // *************************************
-// 
+//
 // *** 1. classes for typed path segments (TypedSegment)
 
 @freezed
@@ -51,7 +51,9 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
     return title;
   }
 
-  return (segment as AppSegments).maybeMap(
+  if (segment is! AppSegments) return null;
+
+  return segment.maybeMap(
     book: (_) => AsyncScreenActions<BookSegment>(
       // for every Book screen: creating takes some time
       creating: (newSegment) => simulateAsyncResult('Book creating async result after 1 sec', 1000),
@@ -78,12 +80,14 @@ class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
+
           /// the navigation state also depends on the userIsLoggedProvider
           dependsOn: [userIsLoggedProvider],
           initPath: [HomeSegment()],
           segment2AsyncScreenActions: segment2AsyncScreenActions,
+          splashBuilder: SplashScreen.new,
           //----- the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
-          json2Segment: (jsonMap, unionKey) => 
+          json2Segment: (jsonMap, unionKey) =>
               unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
           screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
         );
@@ -91,7 +95,7 @@ class AppNavigator extends RiverpodNavigator {
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 
-@override
+  @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
     final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
@@ -168,7 +172,7 @@ class AppNavigator extends RiverpodNavigator {
 // *** 3. Root widget and entry point (same for all examples)
 
 // Root app widget
-// 
+//
 // To make it less verbose, we use the functional_widget package to generate widgets.
 // See *.g.dart file for details.
 @cwidget
@@ -182,13 +186,12 @@ Widget booksExampleApp(WidgetRef ref) {
   );
 }
 
-/// app entry point with ProviderScope  
+/// app entry point with ProviderScope
 void runMain() => runApp(
-    ProviderScope(
-      overrides: [
-        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
-      ],
-      child: const BooksExampleApp(),
-    ),
-  );
-
+      ProviderScope(
+        overrides: [
+          riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
+        ],
+        child: const BooksExampleApp(),
+      ),
+    );

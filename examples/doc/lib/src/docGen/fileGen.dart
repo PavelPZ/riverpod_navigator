@@ -203,6 +203,8 @@ class AppRouteGroup extends RouteGroup<AppSegments> {
 }
 
 class LoginHomeRoute extends TypedRoute<LoginHomeSegment> {
+  LoginRouteGroup() : super(unionKey: LoginSegments.jsonNameSpace);
+  
   @override
   Widget screenBuilder(LoginHomeSegment segment) => LoginHomeScreen(segment);
 }
@@ -290,6 +292,7 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
           screenBuilder: appSegmentsScreenBuilder,
+          splashBuilder: SplashScreen.new,
           segment2AsyncScreenActions: segment2AsyncScreenActions, // <============================
         );
 
@@ -323,6 +326,7 @@ class AppNavigator extends RiverpodNavigator {
           dependsOn: [userIsLoggedProvider],
           initPath: [HomeSegment()],
           segment2AsyncScreenActions: segment2AsyncScreenActions,
+          splashBuilder: SplashScreen.new,
           //----- the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
           json2Segment: (jsonMap, unionKey) => 
               unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
@@ -343,6 +347,7 @@ class AppNavigator extends RiverpodNavigator {
           ref,
           dependsOn: [userIsLoggedProvider],
           initPath: [HomeSegment()],
+          splashBuilder: SplashScreen.new,
           router: AppRouter(), // <========================
         );
 
@@ -523,7 +528,7 @@ Widget bookScreen(BookSegment segment) => PageHelper(
         LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
       ],
     );
-''')) + filter(l2, 0, b('''
+
 @swidget
 Widget splashScreen() =>
     SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));

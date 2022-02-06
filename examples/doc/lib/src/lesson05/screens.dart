@@ -44,6 +44,10 @@ Widget bookScreen(BookSegment segment) => PageHelper(
       ],
     );
 
+@swidget
+Widget splashScreen() =>
+    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
+
 @cwidget
 Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator)}) {
   final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;

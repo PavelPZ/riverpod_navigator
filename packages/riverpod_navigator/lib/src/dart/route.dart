@@ -22,7 +22,10 @@ abstract class RouteGroup<T extends TypedSegment> {
 }
 
 class TypedRouter {
-  TypedRouter(this.groups);
+  TypedRouter(this.groups) {
+    final unionKeys = groups.map((e) => e.unionKey).toSet();
+    if (unionKeys.length != groups.length) throw 'Missing RouteGroup(unionKey: \'XXX\')';
+  }
   final List<RouteGroup> groups;
 
   RouteGroup segment2Group(TypedSegment segment) => groups.singleWhere((g) => g.isGroup(segment));

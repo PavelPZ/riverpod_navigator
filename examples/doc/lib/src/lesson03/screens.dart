@@ -44,6 +44,10 @@ Widget bookScreen(BookSegment segment) => PageHelper(
       ],
     );
 
+@swidget
+Widget splashScreen() =>
+    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
+
 final ScreenBuilder loginSegmentsScreenBuilder = (segment) => (segment as LoginHomeSegment).map(
       (value) => throw UnimplementedError(),
       home: LoginHomeScreen.new,

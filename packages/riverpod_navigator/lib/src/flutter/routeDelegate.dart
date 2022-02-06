@@ -1,8 +1,6 @@
 part of 'index.dart';
 
 class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath>, IRouterDelegate {
-  RiverpodRouterDelegate();
-
   @override
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 

@@ -6,6 +6,7 @@ part of 'index.dart';
 
 /// Helper singleton class for navigating to [TypedPath]
 abstract class RiverpodNavigator extends RiverpodNavigatorFlutter {
+  /// [router] is mutually exclusive with [json2Segment], [screen2Page], [segment2AsyncScreenActions], [screen2Page]
   RiverpodNavigator(
     this.ref, {
     required this.initPath,
@@ -18,12 +19,14 @@ abstract class RiverpodNavigator extends RiverpodNavigatorFlutter {
     ScreenBuilder? screenBuilder,
     NavigatorWidgetBuilder? navigatorWidgetBuilder,
     SplashBuilder? splashBuilder,
+    bool isDebugRouteDelegate = false,
   })  : assert((json2Segment != null) != (router != null), 'json2Segment or router required, but not both'),
         assert(router == null || segment2AsyncScreenActions == null, 'segment2AsyncScreenActions is ignored when a router is provided'),
+        assert((screenBuilder != null) != (router != null), 'screenBuilder or router required, but not both'),
+        assert(router == null || screen2Page == null, 'screen2Page is ignored when a router is provided'),
         json2Segment = json2Segment ?? (router as TypedRouter).json2Segment,
         segment2AsyncScreenActions = segment2AsyncScreenActions ?? router?.segment2AsyncScreenActions,
-        flutterConfig = Object(),
-        routerDelegate = RouterDelegate4Dart(),
+        routerDelegate = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate(),
         super(
           router: router,
           screen2Page: screen2Page,
@@ -50,9 +53,7 @@ abstract class RiverpodNavigator extends RiverpodNavigatorFlutter {
   /// It is used as the basis for the PathParser.
   Json2Segment json2Segment;
 
-  /// properties which needs Flutter library
-  Object flutterConfig = Object();
-
+  /// [router] is mutually exclusive with [json2Segment], [screen2Page], [segment2AsyncScreenActions], [screen2Page]
   TypedRouter? router;
 
   /// Overwrite for another [PathParser]

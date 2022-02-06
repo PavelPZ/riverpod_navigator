@@ -1,12 +1,22 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart'
-    show RiverpodNavigatorFlutter, Screen2Page, ScreenBuilder, NavigatorWidgetBuilder, SplashBuilder, RouteFlutter, screen2PageDefault;
+    show
+        RiverpodNavigatorFlutter,
+        Screen2Page,
+        ScreenBuilder,
+        NavigatorWidgetBuilder,
+        SplashBuilder,
+        RouteFlutter,
+        screen2PageDefault,
+        RiverpodRouterDelegate;
 import 'package:tuple/tuple.dart';
 
 part 'navigator.dart';
