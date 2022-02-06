@@ -13,20 +13,20 @@ part 'lesson04.freezed.dart';
 part 'lesson04.g.dart';
 
 // The mission:
-// 
+//
 // - **string path:** ```stringPath = 'home/books/book;id=2';```
 // - **string segment** (the string path consists of three string segments, delimited by slash): 'home', 'books', 'book;id=2'
 // - **typed path**: ```typedPath = <TypedSegment>[HomeSegment(), BooksSegment(), BookSegment(id:2)];```
 // - **typed segment** (the typed path consists of three instances of [TypedSegment]'s): [HomeSegment], [BooksSegment], [BookSegment]
 // - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
-// 
+//
 // The mission of navigation is to keep **string path** <=> **typed path** <=> **navigation stack** always in a synchronous state.
 // *************************************
 // Example04
 // - introduction of the route concept
 // - modification of the Exemple03 using routes
 // *************************************
- 
+
 // *** 1. classes for typed path segments (TypedSegment)
 
 @freezed
@@ -65,7 +65,7 @@ class AppRouter extends TypedRouter {
   }
 }
 
-class AppRouteGroup extends RouteGroup<AppSegments> {
+class AppRouteGroup extends TypedRouteGroup<AppSegments> {
   @override
   AppSegments json2Segment(JsonMap jsonMap) => AppSegments.fromJson(jsonMap);
 
@@ -110,7 +110,7 @@ class BookRoute extends AppRoute<BookSegment> {
   bool needsLogin(BookSegment segment) => segment.id.isOdd;
 }
 
-class LoginRouteGroup extends RouteGroup<LoginSegments> {
+class LoginRouteGroup extends TypedRouteGroup<LoginSegments> {
   LoginRouteGroup() : super(unionKey: LoginSegments.jsonNameSpace);
 
   @override
@@ -147,7 +147,7 @@ class AppNavigator extends RiverpodNavigator {
   /// The needLogin logic is handled by the router
   bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin(segment);
 
-@override
+  @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
     final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
@@ -224,7 +224,7 @@ class AppNavigator extends RiverpodNavigator {
 // *** 3. Root widget and entry point (same for all examples)
 
 /// Root app widget
-/// 
+///
 /// To make it less verbose, we use the functional_widget package to generate widgets.
 /// See *.g.dart file for details.
 @cwidget
@@ -238,15 +238,14 @@ Widget booksExampleApp(WidgetRef ref) {
   );
 }
 
-/// app entry point with ProviderScope  
+/// app entry point with ProviderScope
 void runMain() => runApp(
-    ProviderScope(
-      overrides: [
-        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
-      ],
-      child: const BooksExampleApp(),
-    ),
-  );
+      ProviderScope(
+        overrides: [
+          riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
+        ],
+        child: const BooksExampleApp(),
+      ),
+    );
 
 const booksLen = 5;
-

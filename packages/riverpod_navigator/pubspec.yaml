@@ -34,3 +34,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+# dartdoc
+# cd doc\api
+# dhttpd
+# open http://localhost:8080/index.html

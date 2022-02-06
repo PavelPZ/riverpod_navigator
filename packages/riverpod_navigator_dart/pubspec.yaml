@@ -5,6 +5,7 @@ version: 0.2.2
 homepage: https://github.com/PavelPZ/riverpod_navigator
 repository: https://github.com/PavelPZ/riverpod_navigator
 # publish_to: 'none'
+discontinued:
 
 environment:
   sdk: ">=2.15.0 <3.0.0"

@@ -1,2 +1,2 @@
-export 'riverpod_navigator_dart.dart';
+export 'src/dart/index.dart';
 export 'src/flutter/index.dart';

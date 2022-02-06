@@ -15,3 +15,4 @@ pubspec.lock
 windows/
 **/*.g.dart
 **/*.freezed.dart
+packages/riverpod_navigator/

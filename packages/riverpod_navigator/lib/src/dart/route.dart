@@ -12,8 +12,8 @@ abstract class TypedRoute<T extends TypedSegment> extends RouteFlutter<T> {
       );
 }
 
-abstract class RouteGroup<T extends TypedSegment> {
-  RouteGroup({this.unionKey = 'runtimeType'});
+abstract class TypedRouteGroup<T extends TypedSegment> {
+  TypedRouteGroup({this.unionKey = 'runtimeType'});
   final String unionKey;
   bool isGroup(TypedSegment segment) => segment is T;
   // *** to override
@@ -26,9 +26,9 @@ class TypedRouter {
     final unionKeys = groups.map((e) => e.unionKey).toSet();
     if (unionKeys.length != groups.length) throw 'Missing RouteGroup(unionKey: \'XXX\')';
   }
-  final List<RouteGroup> groups;
+  final List<TypedRouteGroup> groups;
 
-  RouteGroup segment2Group(TypedSegment segment) => groups.singleWhere((g) => g.isGroup(segment));
+  TypedRouteGroup segment2Group(TypedSegment segment) => groups.singleWhere((g) => g.isGroup(segment));
 
   AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) => segment2Group(segment).segment2Route(segment).toAsyncScreenActions();
   TypedSegment json2Segment(JsonMap jsonMap, String unionKey) => groups.singleWhere((g) => g.unionKey == unionKey).json2Segment(jsonMap);
