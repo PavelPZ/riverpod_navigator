@@ -32,16 +32,6 @@ String fileGen(
     return body;
   }
 
-  String filterScreen(bool? forSplitDartFlutter, String body) {
-    assert(forSplitDartFlutter != false);
-    if (screenSplitDartFlutterOnly != null) {
-      if (forSplitDartFlutter != screenSplitDartFlutterOnly) return '';
-    } else {
-      if (forSplitDartFlutter != null) return '';
-    }
-    return body;
-  }
-
   String filter2(int maskPlus, int? maskMinus, String title, String subTitle, String body) {
     final mask = maskPlus & ~(maskMinus ?? 0);
     if ((lessonMask & mask) == 0) return '';
@@ -49,17 +39,18 @@ String fileGen(
     return title + subTitle + body;
   }
 
-  String comment(String body) => LineSplitter().convert(body).map((l) => '// $l').join('\n');
+  String comment(String body, {bool twoSlash = false}) => LineSplitter().convert(body).map((l) => '${twoSlash ? '//' : '///'} $l').join('\n');
 
   String t(String title) => (title = title.trim()).isEmpty ? '' : '// *** $title\n\n';
   String st(String subTitle) => (subTitle = subTitle.trim()).isEmpty ? '' : '${comment(subTitle)}\n';
   String b(String body) => (body = body.trim()).isEmpty ? '' : '$body\n\n';
 
   String exHeader(String body) => '''
+
 // *************************************
-${comment(body)}
+${comment(body, twoSlash: true)}
 // *************************************
-// 
+ 
 ''';
 
   String lessonGen() => filter(all, null, b('''
@@ -76,41 +67,45 @@ import 'screens.dart';
 
 part 'lesson$lessonId.freezed.dart';
 part 'lesson$lessonId.g.dart';
-''')) + filter(l1, null, exHeader('''
+''')) + filter(all, null, comment('''
+The mission:
+
+- **string path:** ```stringPath = 'home/books/book;id=2';```
+- **string segment** (the string path consists of three string segments, delimited by slash): 'home', 'books', 'book;id=2'
+- **typed path**: ```typedPath = <TypedSegment>[HomeSegment(), BooksSegment(), BookSegment(id:2)];```
+- **typed segment** (the typed path consists of three instances of [TypedSegment]'s): [HomeSegment], [BooksSegment], [BookSegment]
+- **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
+
+The mission of navigation is to keep **string path** <=> **typed path** <=> **navigation stack** always in a synchronous state.
+''', twoSlash: true)) + filter(l1, null, exHeader('''
 Example01
-- Simple example
+- simple example
 ''')) + filter(l2, null, exHeader('''
 Example02
-- Screens require some asynchronous actions (when creating, deactivating or merging)
-- The splash screen appeared before the HomeScreen was created
+- screens require some asynchronous actions (when creating, deactivating or merging)
+- extension of the Example01
+- the splash screen appears before the HomeScreen is displayed
 ''')) + filter(l3, null, exHeader('''
 Example03
-- More TypedPath roots
-- Login application logic (where some pages are not available without a logged in user)
+- login application logic (where some pages are not available without a logged in user)
+- more TypedPath roots (AppSegments and LoginSegments)
+- navigation state also depends on another provider (userIsLoggedProvider)
+- extension of the Example02
 ''')) + filter(l4, null, exHeader('''
 Example04
-- introduction route concept
+- introduction of the route concept
+- modification of the Exemple03 using routes
 ''')) + filter(l5, null, exHeader('''
 Example05
 ''')) + filter(l6, null, exHeader('''
 Example06
 ''')) + filter(l7, null, exHeader('''
 Example07
+''')) + filter(l7, null, exHeader('''
+-------------------------------------------
 ''')) + filter2(all, l3 + l4, t('''
 1. classes for typed path segments (TypedSegment)
 '''), st('''
-Terminology:
-- string path:
-```
-final stringPath = 'home/books/book;id=2';
-```
-- the string path consists of three string segments: 'home', 'books', 'book;id=2'
-- typed path:
-```
-final typedPath = <ExampleSegments>[HomeSegment(), BooksSegment(), BookSegment(id:2)];
-```
-- the typed path consists of three typed segments: HomeSegment(), BooksSegment(), BookSegment(id:2)
----------------------
 From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes,
 HomeSegment, BooksSegment and BookSegment.
 
@@ -161,7 +156,9 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
     return title;
   }
 
-  return (segment as AppSegments).maybeMap(
+  if (segment is! AppSegments) return null;
+
+  return segment.maybeMap(
     book: (_) => AsyncScreenActions<BookSegment>(
       // for every Book screen: creating takes some time
       creating: (newSegment) => simulateAsyncResult('Book creating async result after 1 sec', 1000),
@@ -187,7 +184,10 @@ abstract class AppRoute<T extends TypedSegment> extends TypedRoute<T> {
 class AppRouter extends TypedRouter {
   AppRouter() : super([AppRouteGroup(), LoginRouteGroup()]);
 
-   bool needsLogin(TypedSegment segment) => (segment2Group(segment).segment2Route(segment) as AppRoute).needsLogin(segment);
+  bool needsLogin(TypedSegment segment) {
+    final route = segment2Group(segment).segment2Route(segment);
+    return route is! AppRoute || route.needsLogin(segment);
+  }
 }
 
 class AppRouteGroup extends RouteGroup<AppSegments> {
@@ -203,8 +203,6 @@ class AppRouteGroup extends RouteGroup<AppSegments> {
 }
 
 class LoginHomeRoute extends TypedRoute<LoginHomeSegment> {
-  LoginRouteGroup() : super(unionKey: LoginSegments.jsonNameSpace);
-  
   @override
   Widget screenBuilder(LoginHomeSegment segment) => LoginHomeScreen(segment);
 }
@@ -238,6 +236,8 @@ class BookRoute extends AppRoute<BookSegment> {
 }
 
 class LoginRouteGroup extends RouteGroup<LoginSegments> {
+  LoginRouteGroup() : super(unionKey: LoginSegments.jsonNameSpace);
+
   @override
   LoginSegments json2Segment(JsonMap jsonMap) => LoginSegments.fromJson(jsonMap);
 
@@ -252,11 +252,11 @@ Future<String> _simulateAsyncResult(String title, int msec) async {
   return title;
 }
 ''')) + filter2(all, l2 + l3 + l4, t('''
-2. Specify navigation-aware actions in the navigator. The actions are then used in the screen widgets.
+2. App-specific navigator. 
 '''), st('''
+- contains navigation-oriented actions with respect to navigation. The actions are then used in the screen widgets.
+- configures various navigation properties 
 '''), b('''
-const booksLen = 5;
-
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -279,12 +279,15 @@ class AppNavigator extends RiverpodNavigator {
     return toBook(id: id);
   }
 }
+''')) + filter(l3 + l4, 0, b('''
+/// the navigation state also depends on the following [userIsLoggedProvider]
+final userIsLoggedProvider = StateProvider<bool>((_) => false);
 ''')) + filter2(l2, 0, t('''
-2. Specify navigation-aware actions in the navigator. The actions are then used in the screen widgets.
+2. App-specific navigator. 
 '''), st('''
+- contains navigation-oriented actions with respect to navigation. The actions are then used in the screen widgets.
+- configures various navigation properties 
 '''), b('''
-const booksLen = 5;
-
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -310,14 +313,11 @@ class AppNavigator extends RiverpodNavigator {
   }
 }
 ''')) + filter2(l3 + l4, null, t('''
-2. App-specific navigator with navigation aware actions (used in screens)  
+2. App-specific navigator. 
 '''), st('''
+- contains navigation-oriented actions with respect to navigation. The actions are then used in the screen widgets.
+- configures various navigation properties 
 '''), filter(l3, 0, b('''
-/// the navigation state also depends on the following [userIsLoggedProvider]
-final userIsLoggedProvider = StateProvider<bool>((_) => false);
-
-const booksLen = 5;
-
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -336,11 +336,6 @@ class AppNavigator extends RiverpodNavigator {
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 ''')) + filter(l4, 0, b('''
-/// the navigation state also depends on the following [userIsLoggedProvider]
-final userIsLoggedProvider = StateProvider<bool>((_) => false);
-
-const booksLen = 5;
-
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -455,12 +450,14 @@ void runMain() => runApp(
       child: const BooksExampleApp(),
     ),
   );
+
+const booksLen = 5;
 ''')) + filter2(all, null, t('''
 '''), st('''
 '''), b('''
 '''));
 
-  String screenGen() => filterScreen(null, b('''
+  String screenGen() => b('''
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
@@ -482,29 +479,11 @@ final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegme
 
 @swidget
 Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedButton(onPressed: onPressed, child: Text(title));
-''')) + filterScreen(true, b('''
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:functional_widget_annotation/functional_widget_annotation.dart';
-import 'package:riverpod_navigator/riverpod_navigator.dart';
-
-import 'dart_lesson$lessonId.dart';
-
-part 'screens.g.dart';
-
-final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
-      home: HomeScreen.new,
-      books: BooksScreen.new,
-      book: BookScreen.new,
-    );
-
-// ************************************
-// Using "functional_widget" package to be less verbose.
-// ************************************
 
 @swidget
-Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedButton(onPressed: onPressed, child: Text(title));
-''')) + filter(all, 0, b('''
+Widget splashScreen() =>
+    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
+''') + filter(all, 0, b('''
 @swidget
 Widget homeScreen(HomeSegment segment) => PageHelper(
       title: 'Home Screen',
@@ -513,13 +492,25 @@ Widget homeScreen(HomeSegment segment) => PageHelper(
       ],
     );
 
+''')) + filter(all, l3 + l4, b('''
 @swidget
 Widget booksScreen(BooksSegment segment) => PageHelper(
       title: 'Books Screen',
       buildChildren: (navigator) =>
           [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book Screen, id=\$id', onPressed: () => navigator.toBook(id: id))],
     );
-
+''')) + filter(l3 + l4, 0, b('''
+@cwidget
+Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
+      title: 'Books Screen',
+      buildChildren: (navigator) => [
+        for (var id = 0; id < booksLen; id++)
+          LinkHelper(
+              title: 'Book Screen, id=$id\${!ref.watch(userIsLoggedProvider) && id.isOdd ? ' (log in first)' : ''}',
+              onPressed: () => navigator.toBook(id: id))
+      ],
+    );
+''')) + filter(all, 0, b('''
 @swidget
 Widget bookScreen(BookSegment segment) => PageHelper(
       title: 'Book Screen, id=\${segment.id}',
@@ -528,10 +519,6 @@ Widget bookScreen(BookSegment segment) => PageHelper(
         LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
       ],
     );
-
-@swidget
-Widget splashScreen() =>
-    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
 ''')) + filter(l3 + l4, 0, b('''
 final ScreenBuilder loginSegmentsScreenBuilder = (segment) => (segment as LoginHomeSegment).map(
       (value) => throw UnimplementedError(),

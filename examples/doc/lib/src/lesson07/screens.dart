@@ -21,6 +21,10 @@ final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegme
 Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedButton(onPressed: onPressed, child: Text(title));
 
 @swidget
+Widget splashScreen() =>
+    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
+
+@swidget
 Widget homeScreen(HomeSegment segment) => PageHelper(
       title: 'Home Screen',
       buildChildren: (navigator) => [
@@ -43,10 +47,6 @@ Widget bookScreen(BookSegment segment) => PageHelper(
         LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
       ],
     );
-
-@swidget
-Widget splashScreen() =>
-    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
 
 @cwidget
 Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator)}) {

@@ -1,13 +1,13 @@
 import 'package:riverpod/riverpod.dart';
-import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
+import 'package:riverpod_navigator/riverpod_navigator.dart';
 import 'package:test/test.dart';
 
 // ignore: avoid_relative_lib_imports
-import '../lib/src/lesson02/lesson02.dart';
+import '../lib/src/lesson03/lesson03.dart';
 
 ProviderContainer createContainer() {
   final res = ProviderContainer(overrides: [
-    riverpodNavigatorCreatorProvider.overrideWithValue((Ref ref) => AppNavigator(ref)),
+    riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
   ]);
   addTearDown(res.dispose);
   return res;
@@ -24,9 +24,10 @@ void main() {
     final container = createContainer();
     final navigator = container.read(riverpodNavigatorProvider) as AppNavigator;
 
-    await printElapsed(() => navigator.toBook(id: 3));
+    //********** test without the need to log in (book with even id only)
+    await printElapsed(() => navigator.toBook(id: 0));
     await container.pump();
-    expect(navigator.debugTypedPath2String(), 'home/books/book;id=3');
+    expect(navigator.debugTypedPath2String(), 'home/books/book;id=0');
 
     await printElapsed(() => navigator.toBooks());
     await container.pump();
@@ -48,13 +49,16 @@ void main() {
     await container.pump();
     expect(navigator.debugTypedPath2String(), 'home/books');
 
-    await printElapsed(() => navigator.push(BookSegment(id: 1)));
+    await printElapsed(() => navigator.push(BookSegment(id: 4)));
     await container.pump();
-    expect(navigator.debugTypedPath2String(), 'home/books/book;id=1');
+    expect(navigator.debugTypedPath2String(), 'home/books/book;id=4');
 
-    await printElapsed(() => navigator.replaceLast(BookSegment(id: 3)));
+    await printElapsed(() => navigator.replaceLast(BookSegment(id: 0)));
     await container.pump();
-    expect(navigator.debugTypedPath2String(), 'home/books/book;id=3');
+    expect(navigator.debugTypedPath2String(), 'home/books/book;id=0');
+
+    //********** log in tests
+
     return;
   });
 }

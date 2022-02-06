@@ -1,233 +1,89 @@
-# riverpod_navigator_ideas
+## Classic navigation vs. Strictly typed navigation
 
-Demonstration of ideas on how to use [riverpod](https://riverpod.dev/) and [freezed](https://github.com/rrousselGit/freezed) 
-to simplify the use of Flutter [Navigator 2.0](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade).
+With a great deal of simplification and abstraction, we can imagine the whole complex flutter navigation as follows:
 
------------------
+1. what we see in the flutter application is the top page in the NavigationStack.
+2. app has some app specific inner NavigationState
+3. changing this NavigationState will also change NavigationStack
 
-This example of classic ```Home => Books => Book*``` app solves the following problems:
+NavigationStack can be understood as a collection of [here](https://api.flutter.dev/flutter/widgets/Page-class.html) widgets.
 
-- **Strictly typed navigation:** use ```dart navigate([Home(), Books(), Book(id: bookId)])``` instead of ```dart navigate('home/books/$bookId')```.
-- **Easier coding:** Problem of the navigation is reduced to manipulating a immutable collection.
-- **Better separation of concerns: UI x Model** (riverpod offers this feature too): 
-  Whole app state management (including navigation) can be tested in Dart environment only without typing a single line of widget code.
-- **Clean codebase:** This example consists of only 118 lines of generic code (which can be used in other app) and 120 lines of app specific code. 
+There are several cases when the NavigationState changes
+1. the first page appears when the application starts
+2. for Flutter for Web: url in browser is changed
+3. in the android application: back action is called
+4. navigation to another screen is called in the application code using something like a ```navigate (newAppNavigationState)``` function.
 
-What is not solved:
+Flutter Navigator 2.0 provide solutions and connections of navigation to the surrounding Flutter system my means of **RouterDelegate** and **RouteInformationParser**. 
+However, they require the app to provide the following functions:
 
-- better and nice URL parser for Flutter Web app (parser in this example is really horrible - just Uri-encode x -decode JSON string)
-- introduction of the "route" concept. Route can easy customize different navigation aspects
-- async navigation (for cases when page needs some async action during activating x deactivating)
-- navigation for authentication, route guards etc.
-- more 
-
-Those problems will be solved by two packages (riverpod_navigator and riverpod_navigator_dart). Preview version of them will be published in a few days.
-
-
-Generic x app vs. dart x flutter code yelds in this source code matrix:
-
-
-| | dart | flutter |
-|---|---|--- |
-| **generic** | packageDart.dart | packageFlutter.dart |
-| **app specific** | appDart/ | appFlutter/  |
-
-
-## Using example
-
-After clonning repository, in ```examples\riverpod_navigator_idea``` directory execute:
-
-- ```flutter create .```
-- ```flutter pub get```
-- ```flutter pub run build_runner watch --delete-conflicting-outputs```
-
-## What does mean "Strictly typed"
-
-### url path 
-```'home/books/book;id-3'```
-
-### url segments (as string)
-```'home', 'books', 'book;id-3'```
-
-### typed url segments definition
 ```dart
-class HomeSegment {} 
+NavigationState stringUrl2NavigationState (String url);
+String navigationState2StringUrl (NavigationState navigationState);
+NavigationStack navigationState2NavigationStack (NavigationState navigationState);
+/// called when e.g. back Android button is presses:
+NavigationState changeNavigationStateOnPopPage (NavigationState navigationState);
+/// navigation in the application code to a new page
+void navigate(NavigationState newNavigationState);
+```
 
-class BooksSegment {} 
 
-class BookSegment { 
-    Book({required this.id}) { final int id; } 
+
+
+Riverpod_navigator
+
+```dart
+class BookRoutePath {
+  final int? id;
+  BookRoutePath.home() : id = null;
+  BookRoutePath.details(this.id);
+  bool get isHomePage => id == null;
+  bool get isDetailsPage => id != null;
 }
 ```
 
-### typed url path
 ```dart
-final typedPath = [HomeSegment(), BooksSegment(), BookSegment(id: 3)];
+List<Page> flutterNavigation(String stringUrl);
 ```
 
-### using typed url path
-instead of 
+
+### Classic navigation
+
+With a great deal of simplification and abstraction, we can imagine the whole complex flutter navigation as a function:
 
 ```dart
-navigate('home/books/book;id-3')
-``` 
-
-we can use 
-
-```dart
-navigate([HomeSegment(), BooksSegment(), BookSegment(id: 3)])
+List<Page> flutterNavigation(String stringUrl);
 ```
 
-## Books example, dart part (with no dependency on Flutter)
+where Page is defined [here](https://api.flutter.dev/flutter/widgets/Page-class.html);
 
-### Use "freezed" package for all typed segments:
+### Strictly typed navigation
 
+In **riverpod_navigator**, navigation is understood as two functions:
 
 ```dart
-@freezed
-class ExampleSegments with _$ExampleSegments, TypedSegment {
-  factory ExampleSegments.home() = HomeSegment;
-  factory ExampleSegments.books() = BooksSegment;
-  factory ExampleSegments.book({required int id}) = BookSegment;
+List<Page> flutterNavigation(TypedPath typedUrl );
+String flutterNavigation(TypedPath typedUrl);
+TypedPath flutterNavigation(TypedPath typedUrl);
+```
+
+
+## Explanation on examples
+
+*For a better understanding, everything is explained on the classic example:<br>
+[Home] => [Books] => [Book\*]*
+
+Annotated examples [can be found here](/examples.md).
+
+
+
+
+...
+class RiverpodRouterDelegate extends RouterDelegate ... {
+  @override
+  Widget build(BuildContext context) => Navigator(pages: flutterNavigation(currentConfiguration));
+  ...
 }
-```
-
-### Use RiverpodNavigator for app navigation logic:
-
-All magic is contained in ```RiverpodNavigator.navigate``` method (explanation see bellow).
-
-```dart
-class ExampleRiverpodNavigator extends RiverpodNavigator {
-    // ...
-    void toHome() => navigate([HomeSegment()]);
-    void toBooks() => navigate([HomeSegment(), BooksSegment()]);
-    void toBook({required int id}) 
-      => navigate([HomeSegment(), BooksSegment(), BookSegment(id:id)]);
-    // .... other app navigation-aware actions
-}
-
-### Provide "ExampleRiverpodNavigator" to whole app
-
-final exampleRiverpodNavigatorProvider = Provider<ExampleRiverpodNavigator>((_) => ExampleRiverpodNavigator());
-
-```
-### Testing app navigation with no dependency on Flutter
-```
-import 'package:riverpod/riverpod.dart';
-import 'package:test/test.dart';
-//... import dart part of example
-
-void main() {
-    test('example test', () async {
-        final container = ProviderContainer();
-        final navigator = container.read(exampleRiverpodNavigator);
-
-        navigator.toBook(id:3); 
-        await container.pump();
-        //... inspect actual typed path by "navigator.actualTypedPath"
-        
-        navigator.toBooks(); await container.pump(); //...
-        navigator.toHome(); await container.pump(); //...
-        navigator.pop(); await container.pump(); //...
-        navigator.push(BookSegment(id:2)); await container.pump(); //...
-
-    });
-}
-
-```
-
-## Books example, flutter part
-
-All magic is contained in ```RiverpodRouterDelegate extends RouterDelegate``` and ```RouteInformationParserImpl```, explanation see bellow.
-
-```dart
-class AppRoot extends ConsumerWidget {
-  //...
-    @override
-    Widget build(BuildContext context, WidgetRef ref) {
-        final navigator = ref.read(appNavigatorProvider);
-        final delegate = RiverpodRouterDelegate(navigator, initPath: [HomeSegment()]);
-        ref.listen(typedPathNotifierProvider, (_, __) => delegate.notifyListeners());
-        return MaterialApp.router(
-            title: 'Books App',
-            routerDelegate: delegate,
-            routeInformationParser: RouteInformationParserImpl(),
-        );
-    }
-}
-
-void main() {
-  runApp(ProviderScope(child: AppRoot());
-}
-
-```
-
-## How "RiverpodNavigator", "RiverpodRouterDelegate" and "RouteInformationParserImpl" works
-
-### Dart part with no dependency on Flutter
-
-```dart
-class TypedPathNotifier extends StateController<TypedPath> {
-  TypedPathNotifier() : super([]);
-  TypedPath get actualTypedPath => ref.read(typedPathNotifierProvider);
-}
-
-final typedPathNotifierProvider = 
-    StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());
-
-final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier();
-
-class RiverpodNavigator {
-    RiverpodNavigator(this.ref);
-    final Ref ref;
-
-    navigate(TypedPath newPath) => ref.read(typedPathNotifierProvider.notifier).state = newPath);
-    
-    //--- helper methods ---
-    TypedPath get actualTypedPath => ref.read(typedPathNotifierProvider);
-    void push(TypedSegment segment) => navigate([...state, segment]);
-    void pop() 
-      => navigate([for (var i = 0; i < actualTypedPath.length - 1; i++) actualTypedPath[i]]);
-}
-```
-
-### Flutter part
-
-
-## String- vs. typed-segments: freezed package
-
-**"String-url-path"** (e.g. ```'home/books/book;id-3'```) consists of three **"string-url-segments"** (```'home', 'books', 'book;id-3'```).
-
-From Flutter Navigator point of view, this string-url-path represents navigation stack "HomePage => BooksPage => BookPage for book with id=3".
-
-Using **Strictly typed navigation**, instead of string-url-path and string-url-segments we will use TypedPath and TypedSegment.
-Thanks to the excelend [freezed](https://github.com/rrousselGit/freezed) package, we can define TypedSegment as follows:
-
-```dart
-abstract class TypedSegment {}
-
-@freezed
-class ExampleSegments with _$ExampleSegments, TypedSegment {
-  factory ExampleSegments.home() = HomeSegment;
-  factory ExampleSegments.books() = BooksSegment;
-  factory ExampleSegments.book({required int id}) = BookSegment;
-}
-
-typedef TypedPath = List<TypedSegment>;
-```
-
-## StateNotifier as a source of true: riverpod
-
-```dart
-class TypedPathNotifier extends StateNotifier<TypedPath> {
-  TypedPathNotifier() : super([]);
-  void setNewTypedPath(TypedPath newTypedPath) => state = newTypedPath;
-}
-
-final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier());
-``` 
-
-```dart
-void listenByChangeNotifier(WidgetRef ref, Function notifyListeners) => ref.listen(typedPathNotifierProvider, (_, __) => notifyListeners());
-```
+...
+navigate('home/books/1') => 
 

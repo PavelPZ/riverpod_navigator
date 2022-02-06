@@ -21,6 +21,10 @@ final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegme
 Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedButton(onPressed: onPressed, child: Text(title));
 
 @swidget
+Widget splashScreen() =>
+    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
+
+@swidget
 Widget homeScreen(HomeSegment segment) => PageHelper(
       title: 'Home Screen',
       buildChildren: (navigator) => [
@@ -28,11 +32,15 @@ Widget homeScreen(HomeSegment segment) => PageHelper(
       ],
     );
 
-@swidget
-Widget booksScreen(BooksSegment segment) => PageHelper(
+@cwidget
+Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
       title: 'Books Screen',
-      buildChildren: (navigator) =>
-          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book Screen, id=$id', onPressed: () => navigator.toBook(id: id))],
+      buildChildren: (navigator) => [
+        for (var id = 0; id < booksLen; id++)
+          LinkHelper(
+              title: 'Book Screen, id=3${!ref.watch(userIsLoggedProvider) && id.isOdd ? ' (log in first)' : ''}',
+              onPressed: () => navigator.toBook(id: id))
+      ],
     );
 
 @swidget
@@ -43,10 +51,6 @@ Widget bookScreen(BookSegment segment) => PageHelper(
         LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
       ],
     );
-
-@swidget
-Widget splashScreen() =>
-    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
 
 final ScreenBuilder loginSegmentsScreenBuilder = (segment) => (segment as LoginHomeSegment).map(
       (value) => throw UnimplementedError(),
