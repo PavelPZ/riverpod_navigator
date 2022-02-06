@@ -5,16 +5,8 @@
 			"path": "."
 		},
 		{
-			"name": "riverpod_navigator_dart",
-			"path": "packages\\riverpod_navigator_dart"
-		},
-		{
 			"name": "riverpod_navigator",
 			"path": "packages\\riverpod_navigator"
-		},
-		{
-			"name": "riverpod_navigator_idea",
-			"path": "examples\\riverpod_navigator_idea"
 		},
 		{
 			"path": "examples\\doc"
