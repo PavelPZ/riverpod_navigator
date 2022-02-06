@@ -1,4 +1,33 @@
-import '../riverpod_navigator_dart.dart';
+part of 'index.dart';
+
+// ********************************************
+//   PathParser
+// ********************************************
+
+/// String path <==> TypedPath
+class PathParser {
+  PathParser(this.json2Segment);
+
+  @protected
+  final Json2Segment json2Segment;
+
+  static const String defaultJsonUnionKey = 'runtimeType';
+
+  /// String path => TypedPath
+  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(s.toString())).join('/');
+
+  /// TypedPath => String path, suitable for browser
+  TypedPath path2TypedPath(String? path) {
+    if (path == null || path.isEmpty) return [];
+    return [
+      for (final s in path.split('/'))
+        if (s.isNotEmpty) json2Segment(jsonDecode(Uri.decodeFull(s)), defaultJsonUnionKey)
+    ];
+  }
+
+  /// Friendly display of TypedPath
+  String debugTypedPath2String(TypedPath typedPath) => typedPath.map((s) => s.toString()).join(' / ');
+}
 
 class SimplePathParser extends PathParser {
   SimplePathParser(Json2Segment json2Segment) : super(json2Segment);

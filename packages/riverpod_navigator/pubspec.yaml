@@ -17,8 +17,8 @@ dependencies:
   json_annotation: ^4.4.0
   meta: ^1.7.0
   riverpod: ^1.0.0
-  riverpod_navigator_dart:
-    path: ../riverpod_navigator_dart
+  # riverpod_navigator_dart:
+  #  path: ../riverpod_navigator_dart
   # riverpod_navigator_dart: ^0.2.0
   tuple: ^2.0.0
 

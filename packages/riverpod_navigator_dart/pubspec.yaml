@@ -7,7 +7,7 @@ repository: https://github.com/PavelPZ/riverpod_navigator
 # publish_to: 'none'
 
 environment:
-  sdk: ">=2.14.0 <3.0.0"
+  sdk: ">=2.15.0 <3.0.0"
 
 dependencies:
   freezed_annotation: ^1.1.0

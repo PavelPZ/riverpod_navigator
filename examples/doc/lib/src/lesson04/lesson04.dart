@@ -14,22 +14,6 @@ part 'lesson04.g.dart';
 
 // *** 1. classes for typed path segments (TypedSegment)
 
-/// Terminology:
-/// - string path:
-/// ```
-/// final stringPath = 'home/books/book;id=2';
-/// ```
-/// - the string path consists of three string segments: 'home', 'books', 'book;id=2'
-/// - typed path:
-/// ```
-/// final typedPath = <ExampleSegments>[HomeSegment(), BooksSegment(), BookSegment(id:2)];
-/// ```
-/// - the typed path consists of three typed segments: HomeSegment(), BooksSegment(), BookSegment(id:2)
-/// ---------------------
-/// From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes,
-/// HomeSegment, BooksSegment and BookSegment.
-/// 
-/// See [Freezed](https://github.com/rrousselGit/freezed) for details.
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {
   AppSegments._();
@@ -40,36 +24,24 @@ class AppSegments with _$AppSegments, TypedSegment {
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
 
-/// create segment from JSON map
-TypedSegment json2Segment(JsonMap jsonMap, String unionKey) => AppSegments.fromJson(jsonMap);
+@Freezed(unionKey: LoginSegments.jsonNameSpace)
+class LoginSegments with _$LoginSegments, TypedSegment {
+  /// json serialization hack: must be at least two constructors
+  factory LoginSegments() = _LoginSegments;
+  LoginSegments._();
+  factory LoginSegments.home({String? loggedUrl, String? canceledUrl}) = LoginHomeSegment;
 
-// *** 1.1. async screen actions
-
-/// Each screen may require an asynchronous action during its creation, merging, or deactivating.
-AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
-  /// helper for simulating asynchronous action
-  Future<String> simulateAsyncResult(String title, int msec) async {
-    await Future.delayed(Duration(milliseconds: msec));
-    return title;
-  }
-
-  return (segment as AppSegments).maybeMap(
-    book: (_) => AsyncScreenActions<BookSegment>(
-      // for every Book screen: creating takes some time
-      creating: (newSegment) async => simulateAsyncResult('Book creating async result after 1 sec', 1000),
-      // for every Book screen with odd id: changing to another Book screen takes some time
-      merging: (_, newSegment) async => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
-      // for every Book screen with even id: deactivating takes some time
-      deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
-    ),
-    home: (_) => AsyncScreenActions<HomeSegment>(
-      creating: (_) async => simulateAsyncResult('Home creating async result after 1 sec', 1000),
-    ),
-    orElse: () => null,
-  );
+  factory LoginSegments.fromJson(Map<String, dynamic> json) => _$LoginSegmentsFromJson(json);
+  static const String jsonNameSpace = '_login';
 }
 
-// *** 2. Specify navigation-aware actions in the navigator. The actions are then used in the screen widgets.
+/// mark screens which needs login: every 'id.isOdd' book needs it
+bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
+
+/// the navigation state also depends on the following [userIsLoggedProvider]
+final userIsLoggedProvider = StateProvider<bool>((_) => false);
+
+// *** 2. App-specific navigator with navigation aware actions (used in screens)
 
 const booksLen = 5;
 
@@ -77,10 +49,40 @@ class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
+          /// the navigation state also depends on the userIsLoggedProvider
+          dependsOn: [userIsLoggedProvider],
           initPath: [HomeSegment()],
-          json2Segment: json2Segment,
-          segment2AsyncScreenActions: segment2AsyncScreenActions,
+          //----- the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
+          json2Segment: (jsonMap, unionKey) => 
+              unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
+          screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
         );
+
+  @override
+  FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
+    final userIsLogged = ref.read(userIsLoggedProvider);
+    final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
+
+    if (!userIsLogged) {
+      final pathNeedsLogin = ongoingNotifier.state.any((segment) => needsLogin(segment));
+
+      // login needed => redirect to login page
+      if (pathNeedsLogin) {
+        // parametters for login screen
+        final loggedUrl = pathParser.typedPath2Path(ongoingNotifier.state);
+        var canceledUrl = currentPath.isEmpty || currentPath.last is LoginHomeSegment ? '' : pathParser.typedPath2Path(currentPath);
+        // chance to exit login loop
+        if (loggedUrl == canceledUrl) canceledUrl = '';
+        // redirect to login screen
+        ongoingNotifier.state = [LoginHomeSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
+      }
+    } else {
+      // user logged and navigation to Login page => redirect to home
+      if (ongoingNotifier.state.isEmpty || ongoingNotifier.state.last is LoginHomeSegment) ongoingNotifier.state = [HomeSegment()];
+    }
+    // here can be async action for <oldPath, ongoingNotifier.state> pair
+    return null;
+  }
 
   Future<void> toHome() => navigate([HomeSegment()]);
   Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
@@ -94,16 +96,43 @@ class AppNavigator extends RiverpodNavigator {
       id = booksLen - 1 > id ? id + 1 : 0;
     return toBook(id: id);
   }
+
+  Future<void> globalLogoutButton() {
+    final loginNotifier = ref.read(userIsLoggedProvider.notifier);
+    // checking
+    assert(loginNotifier.state); // is logged?
+    // change login state
+    loginNotifier.state = false;
+    return navigationCompleted;
+  }
+
+  Future<void> globalLoginButton() {
+    // checking
+    assert(!ref.read(userIsLoggedProvider)); // is logoff?
+    // navigate to login page
+    final segment = pathParser.typedPath2Path(currentTypedPath);
+    return navigate([LoginHomeSegment(loggedUrl: segment, canceledUrl: segment)]);
+  }
+
+  Future<void> loginPageCancel() => _loginPageButtons(true);
+  Future<void> loginPageOK() => _loginPageButtons(false);
+
+  Future<void> _loginPageButtons(bool cancel) async {
+    assert(currentTypedPath.last is LoginHomeSegment);
+    final loginNotifier = ref.read(userIsLoggedProvider.notifier);
+    final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
+
+    final loginHomeSegment = currentTypedPath.last as LoginHomeSegment;
+    var newSegment = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
+    if (newSegment.isEmpty) newSegment = [HomeSegment()];
+    ongoingNotifier.state = newSegment;
+
+    if (!cancel) loginNotifier.state = true;
+    return navigationCompleted;
+  }
 }
 
-// *** 3. Navigator creator for flutter
-
-AppNavigator appNavigatorCreator(Ref ref) => AppNavigator(ref)
-  ..flutterInit(
-    screenBuilder: appSegmentsScreenBuilder,
-  );
-
-// *** 4. Root app widget and entry point
+// *** 3. Root widget and entry point (same for all examples)
 
 /// Root app widget
 /// 
@@ -124,7 +153,7 @@ Widget booksExampleApp(WidgetRef ref) {
 void runMain() => runApp(
     ProviderScope(
       overrides: [
-        riverpodNavigatorCreatorProvider.overrideWithValue(appNavigatorCreator),
+        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
       ],
       child: const BooksExampleApp(),
     ),

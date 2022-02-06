@@ -28,7 +28,7 @@ part 'lesson02.g.dart';
 /// ---------------------
 /// From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes,
 /// HomeSegment, BooksSegment and BookSegment.
-///
+/// 
 /// See [Freezed](https://github.com/rrousselGit/freezed) for details.
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {
@@ -39,9 +39,6 @@ class AppSegments with _$AppSegments, TypedSegment {
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
-
-/// create segment from JSON map
-TypedSegment json2Segment(JsonMap jsonMap, String unionKey) => AppSegments.fromJson(jsonMap);
 
 // *** 1.1. async screen actions
 
@@ -78,8 +75,9 @@ class AppNavigator extends RiverpodNavigator {
       : super(
           ref,
           initPath: [HomeSegment()],
-          json2Segment: json2Segment,
-          segment2AsyncScreenActions: segment2AsyncScreenActions, // <===========
+          json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
+          screenBuilder: appSegmentsScreenBuilder,
+          segment2AsyncScreenActions: segment2AsyncScreenActions, // <============================
         );
 
   Future<void> toHome() => navigate([HomeSegment()]);
@@ -96,17 +94,10 @@ class AppNavigator extends RiverpodNavigator {
   }
 }
 
-// *** 3. Navigator creator for flutter
-
-AppNavigator appNavigatorCreator(Ref ref) => AppNavigator(ref)
-  ..flutterInit(
-    screenBuilder: appSegmentsScreenBuilder,
-  );
-
-// *** 4. Root app widget and entry point
+// *** 3. Root widget and entry point (same for all examples)
 
 /// Root app widget
-///
+/// 
 /// To make it less verbose, we use the functional_widget package to generate widgets.
 /// See .g.dart file for details.
 @cwidget
@@ -120,12 +111,13 @@ Widget booksExampleApp(WidgetRef ref) {
   );
 }
 
-/// app entry point with ProviderScope
+/// app entry point with ProviderScope  
 void runMain() => runApp(
-      ProviderScope(
-        overrides: [
-          riverpodNavigatorCreatorProvider.overrideWithValue(appNavigatorCreator),
-        ],
-        child: const BooksExampleApp(),
-      ),
-    );
+    ProviderScope(
+      overrides: [
+        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
+      ],
+      child: const BooksExampleApp(),
+    ),
+  );
+

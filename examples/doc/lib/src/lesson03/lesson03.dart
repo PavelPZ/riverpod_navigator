@@ -1,12 +1,16 @@
 // ignore: unused_import
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:riverpod_navigator_dart/riverpod_navigator_dart.dart';
+import 'package:functional_widget_annotation/functional_widget_annotation.dart';
+import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-part 'dart_lesson03.freezed.dart';
-part 'dart_lesson03.g.dart';
+import 'screens.dart';
+
+part 'lesson03.freezed.dart';
+part 'lesson03.g.dart';
 
 // *** 1. classes for typed path segments (TypedSegment)
 
@@ -35,9 +39,6 @@ class AppSegments with _$AppSegments, TypedSegment {
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
-
-/// create segment from JSON map
-TypedSegment json2Segment(JsonMap jsonMap, String unionKey) => AppSegments.fromJson(jsonMap);
 
 // *** 1.1. async screen actions
 
@@ -74,8 +75,9 @@ class AppNavigator extends RiverpodNavigator {
       : super(
           ref,
           initPath: [HomeSegment()],
-          json2Segment: json2Segment,
-          segment2AsyncScreenActions: segment2AsyncScreenActions,
+          json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
+          screenBuilder: appSegmentsScreenBuilder,
+          segment2AsyncScreenActions: segment2AsyncScreenActions, // <============================
         );
 
   Future<void> toHome() => navigate([HomeSegment()]);
@@ -91,4 +93,31 @@ class AppNavigator extends RiverpodNavigator {
     return toBook(id: id);
   }
 }
+
+// *** 3. Root widget and entry point (same for all examples)
+
+/// Root app widget
+/// 
+/// To make it less verbose, we use the functional_widget package to generate widgets.
+/// See .g.dart file for details.
+@cwidget
+Widget booksExampleApp(WidgetRef ref) {
+  final navigator = ref.read(riverpodNavigatorProvider);
+  return MaterialApp.router(
+    title: 'Books App',
+    routerDelegate: navigator.routerDelegate as RiverpodRouterDelegate,
+    routeInformationParser: RouteInformationParserImpl(navigator.pathParser),
+    debugShowCheckedModeBanner: false,
+  );
+}
+
+/// app entry point with ProviderScope  
+void runMain() => runApp(
+    ProviderScope(
+      overrides: [
+        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
+      ],
+      child: const BooksExampleApp(),
+    ),
+  );
 

@@ -40,15 +40,18 @@ class AppSegments with _$AppSegments, TypedSegment {
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
 
-/// create segment from JSON map
-TypedSegment json2Segment(JsonMap jsonMap, String unionKey) => AppSegments.fromJson(jsonMap);
-
 // *** 2. Specify navigation-aware actions in the navigator. The actions are then used in the screen widgets.
 
 const booksLen = 5;
 
 class AppNavigator extends RiverpodNavigator {
-  AppNavigator(Ref ref) : super(ref, initPath: [HomeSegment()], json2Segment: json2Segment);
+  AppNavigator(Ref ref)
+      : super(
+          ref,
+          initPath: [HomeSegment()],
+          json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
+          screenBuilder: appSegmentsScreenBuilder,
+        );
 
   Future<void> toHome() => navigate([HomeSegment()]);
   Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
@@ -64,14 +67,7 @@ class AppNavigator extends RiverpodNavigator {
   }
 }
 
-// *** 3. Navigator creator for flutter
-
-AppNavigator appNavigatorCreator(Ref ref) => AppNavigator(ref)
-  ..flutterInit(
-    screenBuilder: appSegmentsScreenBuilder,
-  );
-
-// *** 4. Root app widget and entry point
+// *** 3. Root widget and entry point (same for all examples)
 
 /// Root app widget
 /// 
@@ -92,7 +88,7 @@ Widget booksExampleApp(WidgetRef ref) {
 void runMain() => runApp(
     ProviderScope(
       overrides: [
-        riverpodNavigatorCreatorProvider.overrideWithValue(appNavigatorCreator),
+        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
       ],
       child: const BooksExampleApp(),
     ),

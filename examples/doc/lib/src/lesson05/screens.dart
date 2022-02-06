@@ -8,9 +8,9 @@ import 'lesson05.dart';
 part 'screens.g.dart';
 
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
-      home: (home) => HomeScreen(home),
-      books: (books) => BooksScreen(books),
-      book: (book) => BookScreen(book),
+      home: HomeScreen.new,
+      books: BooksScreen.new,
+      book: BookScreen.new,
     );
 
 // ************************************
@@ -44,46 +44,16 @@ Widget bookScreen(BookSegment segment) => PageHelper(
       ],
     );
 
-final ScreenBuilder loginSegmentsScreenBuilder = (segment) => (segment as LoginHomeSegment).map(
-      (value) => throw UnimplementedError(),
-      home: (loginHome) => LoginScreen(loginHome),
-    );
-
-@swidget
-Widget loginScreen(LoginHomeSegment segment) => PageHelper(
-      title: 'Login Page',
-      isLoginPage: true,
-      buildChildren: (navigator) => [
-        ElevatedButton(onPressed: navigator.loginPageOK, child: Text('Login')),
-      ],
-    );
-
 @cwidget
-Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator), bool? isLoginPage}) {
+Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator)}) {
   final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
   return Scaffold(
     appBar: AppBar(
       title: Text(title),
-      leading: isLoginPage == true
-          ? IconButton(
-              onPressed: navigator.loginPageCancel,
-              icon: Icon(Icons.cancel),
-            )
-          : null,
-      actions: [
-        if (isLoginPage != true)
-          Consumer(builder: (_, ref, __) {
-            final isLogged = ref.watch(userIsLoggedProvider);
-            return ElevatedButton(
-              onPressed: () => isLogged ? navigator.globalLogoutButton() : navigator.globalLoginButton(),
-              child: Text(isLogged ? 'Logout' : 'Login'),
-            );
-          }),
-      ],
     ),
     body: Center(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: (() {
           final res = <Widget>[SizedBox(height: 20)];
           for (final w in buildChildren(navigator)) res.addAll([w, SizedBox(height: 20)]);

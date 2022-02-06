@@ -8,9 +8,9 @@ import 'lesson07.dart';
 part 'screens.g.dart';
 
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
-      home: (home) => HomeScreen(home),
-      books: (books) => BooksScreen(books),
-      book: (book) => BookScreen(book),
+      home: HomeScreen.new,
+      books: BooksScreen.new,
+      book: BookScreen.new,
     );
 
 // ************************************

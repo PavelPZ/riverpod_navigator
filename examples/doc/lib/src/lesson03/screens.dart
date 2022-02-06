@@ -3,14 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-import 'dart_lesson03.dart';
+import 'lesson03.dart';
 
 part 'screens.g.dart';
 
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
-      home: (home) => HomeScreen(home),
-      books: (books) => BooksScreen(books),
-      book: (book) => BookScreen(book),
+      home: HomeScreen.new,
+      books: BooksScreen.new,
+      book: BookScreen.new,
     );
 
 // ************************************
@@ -43,6 +43,10 @@ Widget bookScreen(BookSegment segment) => PageHelper(
         LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
       ],
     );
+
+@swidget
+Widget splashScreen() =>
+    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
 
 @cwidget
 Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator)}) {
