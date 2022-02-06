@@ -12,10 +12,7 @@
   - loading data for new screen
 - **Dependence on external providers:**<br>
   The navigation state may also depend on external providers, e.g. user login status
-- **Possibility to configure many navigation parameters**, e.g.
-  - Page builder
-  - Navigator builder
-  - Splash screen
+- **Possibility to configure many navigation parameters**, e.g. Page builder, Navigator builder, Splash screen
 
 ## The mission
 

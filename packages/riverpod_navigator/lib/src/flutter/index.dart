@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-// import 'riverpod_navigator_dart.dart';
-import 'package:riverpod_navigator/riverpod_navigator_dart.dart_';
+
+import '../dart/index.dart';
 
 part 'routeDelegate.dart';
 part 'navigator.dart';
