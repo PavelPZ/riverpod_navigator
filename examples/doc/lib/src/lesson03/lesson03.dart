@@ -21,7 +21,6 @@ part 'lesson03.g.dart';
 // - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
 // 
 // The mission of navigation is to keep **string path** <=> **typed path** <=> **navigation stack** always in a synchronous state.
-// 
 // *************************************
 // Example03
 // - login application logic (where some pages are not available without a logged in user)
@@ -68,14 +67,14 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   return segment.maybeMap(
     book: (_) => AsyncScreenActions<BookSegment>(
       // for every Book screen: creating takes some time
-      creating: (newSegment) => simulateAsyncResult('Book creating async result after 1 sec', 1000),
+      creating: (newSegment) => simulateAsyncResult('Book creating: async result after 700 msec', 700),
       // for every Book screen with odd id: changing to another Book screen takes some time
-      merging: (_, newSegment) => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
+      merging: (_, newSegment) => newSegment.id.isOdd ? simulateAsyncResult('Book merging: async result after 500 msec', 500) : null,
       // for every Book screen with even id: deactivating takes some time
       deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
     ),
     home: (_) => AsyncScreenActions<HomeSegment>(
-      creating: (_) async => simulateAsyncResult('Home creating async result after 1 sec', 1000),
+      creating: (_) async => simulateAsyncResult('Home creating: async result after 1000 msec', 1000),
     ),
     orElse: () => null,
   );

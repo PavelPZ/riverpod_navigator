@@ -161,14 +161,14 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   return segment.maybeMap(
     book: (_) => AsyncScreenActions<BookSegment>(
       // for every Book screen: creating takes some time
-      creating: (newSegment) => simulateAsyncResult('Book creating async result after 1 sec', 1000),
+      creating: (newSegment) => simulateAsyncResult('Book.creating: async result after 700 msec', 700),
       // for every Book screen with odd id: changing to another Book screen takes some time
-      merging: (_, newSegment) => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
+      merging: (_, newSegment) => newSegment.id.isOdd ? simulateAsyncResult('Book.merging: async result after 500 msec', 500) : null,
       // for every Book screen with even id: deactivating takes some time
       deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
     ),
     home: (_) => AsyncScreenActions<HomeSegment>(
-      creating: (_) async => simulateAsyncResult('Home creating async result after 1 sec', 1000),
+      creating: (_) async => simulateAsyncResult('Home.creating: async result after 1000 msec', 1000),
     ),
     orElse: () => null,
   );
@@ -211,7 +211,7 @@ class HomeRoute extends AppRoute<HomeSegment> {
   @override
   Widget screenBuilder(HomeSegment segment) => HomeScreen(segment);
   @override
-  Future<void>? creating(HomeSegment newPath) => _simulateAsyncResult('Home creating async result after 1 sec', 1000);
+  Future<void>? creating(HomeSegment newPath) => _simulateAsyncResult('Home.creating: async result after 1000 msec', 1000);
 }
 
 class BooksRoute extends AppRoute<BooksSegment> {
@@ -224,10 +224,10 @@ class BookRoute extends AppRoute<BookSegment> {
   Widget screenBuilder(BookSegment segment) => BookScreen(segment);
 
   @override
-  Future<void>? creating(BookSegment newPath) => _simulateAsyncResult('Book creating async result after 1 sec', 1000);
+  Future<void>? creating(BookSegment newPath) => _simulateAsyncResult('Book.creating: async result after 700 msec', 700);
   @override
   Future<void>? merging(oldPath, BookSegment newPath) =>
-      newPath.id.isOdd ? _simulateAsyncResult('Book merging async result after 500 msec', 500) : null;
+      newPath.id.isOdd ? _simulateAsyncResult('Book.merging: async result after 500 msec', 500) : null;
   @override
   Future<void>? deactivating(BookSegment oldPath) => oldPath.id.isEven ? _simulateAsyncResult('', 500) : null;
 
@@ -459,6 +459,7 @@ const booksLen = 5;
 
   String screenGen() => b('''
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
@@ -483,10 +484,18 @@ Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedB
 @swidget
 Widget splashScreen() =>
     SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
+
+@hwidget
+Widget countBuilds() {
+  final count = useState(0);
+  count.value++;
+  return Text('Builded \${count.value} times.');
+}
 ''') + filter(all, 0, b('''
 @swidget
 Widget homeScreen(HomeSegment segment) => PageHelper(
       title: 'Home Screen',
+      asyncActionResult: segment.asyncActionResult,
       buildChildren: (navigator) => [
         LinkHelper(title: 'Books Page', onPressed: navigator.toBooks),
       ],
@@ -496,6 +505,7 @@ Widget homeScreen(HomeSegment segment) => PageHelper(
 @swidget
 Widget booksScreen(BooksSegment segment) => PageHelper(
       title: 'Books Screen',
+      asyncActionResult: segment.asyncActionResult,
       buildChildren: (navigator) =>
           [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book Screen, id=\$id', onPressed: () => navigator.toBook(id: id))],
     );
@@ -503,6 +513,7 @@ Widget booksScreen(BooksSegment segment) => PageHelper(
 @cwidget
 Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
       title: 'Books Screen',
+      asyncActionResult: segment.asyncActionResult,
       buildChildren: (navigator) => [
         for (var id = 0; id < booksLen; id++)
           LinkHelper(
@@ -514,6 +525,7 @@ Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
 @swidget
 Widget bookScreen(BookSegment segment) => PageHelper(
       title: 'Book Screen, id=\${segment.id}',
+      asyncActionResult: segment.asyncActionResult,
       buildChildren: (navigator) => [
         LinkHelper(title: 'Next >>', onPressed: navigator.bookNextPrevButton),
         LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
@@ -535,7 +547,7 @@ Widget loginHomeScreen(LoginHomeSegment segment) => PageHelper(
     );
 ''')) + filter(all, l3 + l4, b('''
 @cwidget
-Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator)}) {
+Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator), dynamic asyncActionResult}) {
   final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
   return Scaffold(
     appBar: AppBar(
@@ -547,6 +559,8 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
         children: (() {
           final res = <Widget>[SizedBox(height: 20)];
           for (final w in buildChildren(navigator)) res.addAll([w, SizedBox(height: 20)]);
+          if (asyncActionResult!=null) res.addAll([Text(asyncActionResult.toString()), SizedBox(height: 20)]);
+          res.add(CountBuilds());
           return res;
         })(),
       ),
@@ -555,7 +569,13 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
 }
 ''')) + filter(l3 + l4, 0, b('''
 @cwidget
-Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator), bool? isLoginPage}) {
+Widget pageHelper(
+  WidgetRef ref, {
+  required String title,
+  required List<Widget> buildChildren(AppNavigator navigator),
+  bool? isLoginPage,
+  dynamic asyncActionResult,
+}) {
   final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
   return Scaffold(
     appBar: AppBar(
@@ -579,10 +599,13 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
     ),
     body: Center(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: (() {
           final res = <Widget>[SizedBox(height: 20)];
           for (final w in buildChildren(navigator)) res.addAll([w, SizedBox(height: 20)]);
+          res.add(CountBuilds());
+          if (asyncActionResult!=null) res.addAll([Text(asyncActionResult.toString()), SizedBox(height: 20)]);
+          SizedBox(height: 40);
           return res;
         })(),
       ),

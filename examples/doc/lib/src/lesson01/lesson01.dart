@@ -21,7 +21,6 @@ part 'lesson01.g.dart';
 // - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
 // 
 // The mission of navigation is to keep **string path** <=> **typed path** <=> **navigation stack** always in a synchronous state.
-// 
 // *************************************
 // Example01
 // - simple example

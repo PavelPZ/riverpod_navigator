@@ -21,7 +21,6 @@ part 'lesson04.g.dart';
 // - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
 // 
 // The mission of navigation is to keep **string path** <=> **typed path** <=> **navigation stack** always in a synchronous state.
-// 
 // *************************************
 // Example04
 // - introduction of the route concept
@@ -87,7 +86,7 @@ class HomeRoute extends AppRoute<HomeSegment> {
   @override
   Widget screenBuilder(HomeSegment segment) => HomeScreen(segment);
   @override
-  Future<void>? creating(HomeSegment newPath) => _simulateAsyncResult('Home creating async result after 1 sec', 1000);
+  Future<void>? creating(HomeSegment newPath) => _simulateAsyncResult('Home creating: async result after 1000 msec', 1000);
 }
 
 class BooksRoute extends AppRoute<BooksSegment> {
@@ -100,10 +99,10 @@ class BookRoute extends AppRoute<BookSegment> {
   Widget screenBuilder(BookSegment segment) => BookScreen(segment);
 
   @override
-  Future<void>? creating(BookSegment newPath) => _simulateAsyncResult('Book creating async result after 1 sec', 1000);
+  Future<void>? creating(BookSegment newPath) => _simulateAsyncResult('Book creating: async result after 700 msec', 700);
   @override
   Future<void>? merging(oldPath, BookSegment newPath) =>
-      newPath.id.isOdd ? _simulateAsyncResult('Book merging async result after 500 msec', 500) : null;
+      newPath.id.isOdd ? _simulateAsyncResult('Book merging: async result after 500 msec', 500) : null;
   @override
   Future<void>? deactivating(BookSegment oldPath) => oldPath.id.isEven ? _simulateAsyncResult('', 500) : null;
 
