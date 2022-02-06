@@ -16,7 +16,7 @@ part 'lesson04.g.dart';
 // Example04
 // - introduction route concept
 // *************************************
-//
+// 
 // *** 1. classes for typed path segments (TypedSegment)
 
 @freezed
@@ -40,10 +40,33 @@ class LoginSegments with _$LoginSegments, TypedSegment {
   static const String jsonNameSpace = '_login';
 }
 
-// *** 1.1.
+// *** 1.1. App route definition
 
 abstract class AppRoute<T extends TypedSegment> extends TypedRoute<T> {
   bool needsLogin(T segment) => false;
+}
+
+class AppRouter extends TypedRouter {
+  AppRouter() : super([AppRouteGroup(), LoginRouteGroup()]);
+
+   bool needsLogin(TypedSegment segment) => (segment2Group(segment).segment2Route(segment) as AppRoute).needsLogin(segment);
+}
+
+class AppRouteGroup extends RouteGroup<AppSegments> {
+  @override
+  AppSegments json2Segment(JsonMap jsonMap) => AppSegments.fromJson(jsonMap);
+
+  @override
+  TypedRoute segment2Route(AppSegments segment) => segment.map(home: (_) => homeRoute, books: (_) => booksRoute, book: (_) => bookRoute);
+
+  final homeRoute = HomeRoute();
+  final booksRoute = BooksRoute();
+  final bookRoute = BookRoute();
+}
+
+class LoginHomeRoute extends TypedRoute<LoginHomeSegment> {
+  @override
+  Widget screenBuilder(LoginHomeSegment segment) => LoginHomeScreen(segment);
 }
 
 class HomeRoute extends AppRoute<HomeSegment> {
@@ -74,23 +97,6 @@ class BookRoute extends AppRoute<BookSegment> {
   bool needsLogin(BookSegment segment) => segment.id.isOdd;
 }
 
-class LoginHomeRoute extends TypedRoute<LoginHomeSegment> {
-  @override
-  Widget screenBuilder(LoginHomeSegment segment) => LoginHomeScreen(segment);
-}
-
-class AppRouteGroup extends RouteGroup<AppSegments> {
-  @override
-  AppSegments json2Segment(JsonMap jsonMap) => AppSegments.fromJson(jsonMap);
-
-  @override
-  TypedRoute segment2Route(AppSegments segment) => segment.map(home: (_) => homeRoute, books: (_) => booksRoute, book: (_) => bookRoute);
-
-  final homeRoute = HomeRoute();
-  final booksRoute = BooksRoute();
-  final bookRoute = BookRoute();
-}
-
 class LoginRouteGroup extends RouteGroup<LoginSegments> {
   @override
   LoginSegments json2Segment(JsonMap jsonMap) => LoginSegments.fromJson(jsonMap);
@@ -99,12 +105,6 @@ class LoginRouteGroup extends RouteGroup<LoginSegments> {
   TypedRoute segment2Route(LoginSegments segment) => segment.map((value) => throw UnimplementedError(), home: (_) => loginHomeRoute);
 
   final loginHomeRoute = LoginHomeRoute();
-}
-
-class AppRouter extends TypedRouter {
-  AppRouter() : super([AppRouteGroup(), LoginRouteGroup()]);
-
-  bool needsLogin() => false;
 }
 
 Future<String> _simulateAsyncResult(String title, int msec) async {
@@ -128,10 +128,10 @@ class AppNavigator extends RiverpodNavigator {
           router: AppRouter(), // <========================
         );
 
-  /// mark screens which needs login: every 'id.isOdd' book needs it
-  bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin();
+  /// The needLogin logic is handled by the router
+  bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin(segment);
 
-  @override
+@override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
     final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
@@ -208,7 +208,7 @@ class AppNavigator extends RiverpodNavigator {
 // *** 3. Root widget and entry point (same for all examples)
 
 // Root app widget
-//
+// 
 // To make it less verbose, we use the functional_widget package to generate widgets.
 // See *.g.dart file for details.
 @cwidget
@@ -222,12 +222,13 @@ Widget booksExampleApp(WidgetRef ref) {
   );
 }
 
-/// app entry point with ProviderScope
+/// app entry point with ProviderScope  
 void runMain() => runApp(
-      ProviderScope(
-        overrides: [
-          riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
-        ],
-        child: const BooksExampleApp(),
-      ),
-    );
+    ProviderScope(
+      overrides: [
+        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
+      ],
+      child: const BooksExampleApp(),
+    ),
+  );
+

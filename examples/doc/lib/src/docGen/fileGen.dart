@@ -177,11 +177,34 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   );
 }
 ''')) + filter2(l4, null, t('''
-1.1. 
+1.1. App route definition
 '''), st('''
 '''), b('''
 abstract class AppRoute<T extends TypedSegment> extends TypedRoute<T> {
   bool needsLogin(T segment) => false;
+}
+
+class AppRouter extends TypedRouter {
+  AppRouter() : super([AppRouteGroup(), LoginRouteGroup()]);
+
+   bool needsLogin(TypedSegment segment) => (segment2Group(segment).segment2Route(segment) as AppRoute).needsLogin(segment);
+}
+
+class AppRouteGroup extends RouteGroup<AppSegments> {
+  @override
+  AppSegments json2Segment(JsonMap jsonMap) => AppSegments.fromJson(jsonMap);
+
+  @override
+  TypedRoute segment2Route(AppSegments segment) => segment.map(home: (_) => homeRoute, books: (_) => booksRoute, book: (_) => bookRoute);
+
+  final homeRoute = HomeRoute();
+  final booksRoute = BooksRoute();
+  final bookRoute = BookRoute();
+}
+
+class LoginHomeRoute extends TypedRoute<LoginHomeSegment> {
+  @override
+  Widget screenBuilder(LoginHomeSegment segment) => LoginHomeScreen(segment);
 }
 
 class HomeRoute extends AppRoute<HomeSegment> {
@@ -212,23 +235,6 @@ class BookRoute extends AppRoute<BookSegment> {
   bool needsLogin(BookSegment segment) => segment.id.isOdd;
 }
 
-class LoginHomeRoute extends TypedRoute<LoginHomeSegment> {
-  @override
-  Widget screenBuilder(LoginHomeSegment segment) => LoginHomeScreen(segment);
-}
-
-class AppRouteGroup extends RouteGroup<AppSegments> {
-  @override
-  AppSegments json2Segment(JsonMap jsonMap) => AppSegments.fromJson(jsonMap);
-
-  @override
-  TypedRoute segment2Route(AppSegments segment) => segment.map(home: (_) => homeRoute, books: (_) => booksRoute, book: (_) => bookRoute);
-
-  final homeRoute = HomeRoute();
-  final booksRoute = BooksRoute();
-  final bookRoute = BookRoute();
-}
-
 class LoginRouteGroup extends RouteGroup<LoginSegments> {
   @override
   LoginSegments json2Segment(JsonMap jsonMap) => LoginSegments.fromJson(jsonMap);
@@ -239,17 +245,11 @@ class LoginRouteGroup extends RouteGroup<LoginSegments> {
   final loginHomeRoute = LoginHomeRoute();
 }
 
-
-class AppRouter extends TypedRouter {
-  AppRouter() : super([AppRouteGroup(), LoginRouteGroup()]);
-
-  bool needsLogin() => false;
-}
-
 Future<String> _simulateAsyncResult(String title, int msec) async {
   await Future.delayed(Duration(milliseconds: msec));
   return title;
-}''')) + filter2(all, l2 + l3 + l4, t('''
+}
+''')) + filter2(all, l2 + l3 + l4, t('''
 2. Specify navigation-aware actions in the navigator. The actions are then used in the screen widgets.
 '''), st('''
 '''), b('''
@@ -347,7 +347,7 @@ class AppNavigator extends RiverpodNavigator {
         );
 
   /// The needLogin logic is handled by the router
-  bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin();
+  bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin(segment);
 ''')) + filter(l3 + l4, 0, b('''
   @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
