@@ -15,7 +15,7 @@ typedef Screen2Page = Page Function(TypedSegment segment, ScreenBuilder screenBu
 final Screen2Page screen2PageDefault = (segment, screenBuilder) => _Screen2PageDefault(segment, screenBuilder);
 
 abstract class RouteFlutter<T extends TypedSegment> {
-  Widget screenBuilder(TypedSegment segment);
+  Widget screenBuilder(T segment);
   Screen2Page? screen2Page;
 }
 

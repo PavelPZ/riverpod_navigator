@@ -12,24 +12,30 @@ import 'screens.dart';
 part 'lesson02.freezed.dart';
 part 'lesson02.g.dart';
 
+// *************************************
+// Example02
+// - Screens require some asynchronous actions (when creating, deactivating or merging)
+// - The splash screen appeared before the HomeScreen was created
+// *************************************
+// 
 // *** 1. classes for typed path segments (TypedSegment)
 
-/// Terminology:
-/// - string path:
-/// ```
-/// final stringPath = 'home/books/book;id=2';
-/// ```
-/// - the string path consists of three string segments: 'home', 'books', 'book;id=2'
-/// - typed path:
-/// ```
-/// final typedPath = <ExampleSegments>[HomeSegment(), BooksSegment(), BookSegment(id:2)];
-/// ```
-/// - the typed path consists of three typed segments: HomeSegment(), BooksSegment(), BookSegment(id:2)
-/// ---------------------
-/// From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes,
-/// HomeSegment, BooksSegment and BookSegment.
-/// 
-/// See [Freezed](https://github.com/rrousselGit/freezed) for details.
+// Terminology:
+// - string path:
+// ```
+// final stringPath = 'home/books/book;id=2';
+// ```
+// - the string path consists of three string segments: 'home', 'books', 'book;id=2'
+// - typed path:
+// ```
+// final typedPath = <ExampleSegments>[HomeSegment(), BooksSegment(), BookSegment(id:2)];
+// ```
+// - the typed path consists of three typed segments: HomeSegment(), BooksSegment(), BookSegment(id:2)
+// ---------------------
+// From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes,
+// HomeSegment, BooksSegment and BookSegment.
+// 
+// See [Freezed](https://github.com/rrousselGit/freezed) for details.
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {
   AppSegments._();
@@ -42,7 +48,7 @@ class AppSegments with _$AppSegments, TypedSegment {
 
 // *** 1.1. async screen actions
 
-/// Each screen may require an asynchronous action during its creation, merging, or deactivating.
+// Each screen may require an asynchronous action during its creation, merging, or deactivating.
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   /// helper for simulating asynchronous action
   Future<String> simulateAsyncResult(String title, int msec) async {
@@ -53,9 +59,9 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   return (segment as AppSegments).maybeMap(
     book: (_) => AsyncScreenActions<BookSegment>(
       // for every Book screen: creating takes some time
-      creating: (newSegment) async => simulateAsyncResult('Book creating async result after 1 sec', 1000),
+      creating: (newSegment) => simulateAsyncResult('Book creating async result after 1 sec', 1000),
       // for every Book screen with odd id: changing to another Book screen takes some time
-      merging: (_, newSegment) async => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
+      merging: (_, newSegment) => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
       // for every Book screen with even id: deactivating takes some time
       deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
     ),
@@ -96,10 +102,10 @@ class AppNavigator extends RiverpodNavigator {
 
 // *** 3. Root widget and entry point (same for all examples)
 
-/// Root app widget
-/// 
-/// To make it less verbose, we use the functional_widget package to generate widgets.
-/// See .g.dart file for details.
+// Root app widget
+// 
+// To make it less verbose, we use the functional_widget package to generate widgets.
+// See *.g.dart file for details.
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
   final navigator = ref.read(riverpodNavigatorProvider);

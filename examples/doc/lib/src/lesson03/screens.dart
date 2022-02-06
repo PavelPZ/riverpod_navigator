@@ -44,20 +44,46 @@ Widget bookScreen(BookSegment segment) => PageHelper(
       ],
     );
 
+final ScreenBuilder loginSegmentsScreenBuilder = (segment) => (segment as LoginHomeSegment).map(
+      (value) => throw UnimplementedError(),
+      home: LoginHomeScreen.new,
+    );
+
 @swidget
-Widget splashScreen() =>
-    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
+Widget loginHomeScreen(LoginHomeSegment segment) => PageHelper(
+      title: 'Login Page',
+      isLoginPage: true,
+      buildChildren: (navigator) => [
+        ElevatedButton(onPressed: navigator.loginPageOK, child: Text('Login')),
+      ],
+    );
 
 @cwidget
-Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator)}) {
+Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator), bool? isLoginPage}) {
   final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
   return Scaffold(
     appBar: AppBar(
       title: Text(title),
+      leading: isLoginPage == true
+          ? IconButton(
+              onPressed: navigator.loginPageCancel,
+              icon: Icon(Icons.cancel),
+            )
+          : null,
+      actions: [
+        if (isLoginPage != true)
+          Consumer(builder: (_, ref, __) {
+            final isLogged = ref.watch(userIsLoggedProvider);
+            return ElevatedButton(
+              onPressed: () => isLogged ? navigator.globalLogoutButton() : navigator.globalLoginButton(),
+              child: Text(isLogged ? 'Logout' : 'Login'),
+            );
+          }),
+      ],
     ),
     body: Center(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: (() {
           final res = <Widget>[SizedBox(height: 20)];
           for (final w in buildChildren(navigator)) res.addAll([w, SizedBox(height: 20)]);

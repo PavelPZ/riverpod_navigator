@@ -2,17 +2,14 @@ import 'dart:convert';
 
 const all = 0xffffff;
 const l1 = 1;
-const l2 = 2; // async screen actions
-//const l3 = 8; // async screen actions with testing
-const l3 = 16; // async screen actions with splash screen
-const l4 = 32;
-const l5 = 64;
-const l6 = 128;
-const l7 = 256;
-const l8 = 512;
-const l_async = l2 + l3;
+const l2 = 2; // async screen actions with splash screen
+const l3 = 4; // login
+const l4 = 8;
+const l5 = 16;
+const l6 = 32;
+const l7 = 64;
 
-const lessonMasks = <int>[0, l1, l2, l3, l4, l5, l6, l7, l8];
+const lessonMasks = <int>[0, l1, l2, l3, l4, l5, l6, l7];
 
 String int2LessonId(int id) => id.toString().padLeft(2, '0');
 
@@ -52,11 +49,18 @@ String fileGen(
     return title + subTitle + body;
   }
 
-  String comment(String body) => LineSplitter().convert(body).map((l) => '/// $l').join('\n');
+  String comment(String body) => LineSplitter().convert(body).map((l) => '// $l').join('\n');
 
   String t(String title) => (title = title.trim()).isEmpty ? '' : '// *** $title\n\n';
   String st(String subTitle) => (subTitle = subTitle.trim()).isEmpty ? '' : '${comment(subTitle)}\n';
   String b(String body) => (body = body.trim()).isEmpty ? '' : '$body\n\n';
+
+  String exHeader(String body) => '''
+// *************************************
+${comment(body)}
+// *************************************
+// 
+''';
 
   String lessonGen() => filter(all, null, b('''
 // ignore: unused_import
@@ -72,7 +76,27 @@ import 'screens.dart';
 
 part 'lesson$lessonId.freezed.dart';
 part 'lesson$lessonId.g.dart';
-''')) + filter2(all, l4, t('''
+''')) + filter(l1, null, exHeader('''
+Example01
+- Simple example
+''')) + filter(l2, null, exHeader('''
+Example02
+- Screens require some asynchronous actions (when creating, deactivating or merging)
+- The splash screen appeared before the HomeScreen was created
+''')) + filter(l3, null, exHeader('''
+Example03
+- More TypedPath roots
+- Login application logic (where some pages are not available without a logged in user)
+''')) + filter(l4, null, exHeader('''
+Example04
+- introduction route concept
+''')) + filter(l5, null, exHeader('''
+Example05
+''')) + filter(l6, null, exHeader('''
+Example06
+''')) + filter(l7, null, exHeader('''
+Example07
+''')) + filter2(all, l3 + l4, t('''
 1. classes for typed path segments (TypedSegment)
 '''), st('''
 Terminology:
@@ -101,7 +125,7 @@ class AppSegments with _\$AppSegments, TypedSegment {
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _\$AppSegmentsFromJson(json);
 }
-''')) + filter2(l4, null, t('''
+''')) + filter2(l3 + l4, null, t('''
 1. classes for typed path segments (TypedSegment)
 '''), st('''
 '''), b(''' 
@@ -125,13 +149,7 @@ class LoginSegments with _\$LoginSegments, TypedSegment {
   factory LoginSegments.fromJson(Map<String, dynamic> json) => _\$LoginSegmentsFromJson(json);
   static const String jsonNameSpace = '_login';
 }
-
-/// mark screens which needs login: every 'id.isOdd' book needs it
-bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
-
-/// the navigation state also depends on the following [userIsLoggedProvider]
-final userIsLoggedProvider = StateProvider<bool>((_) => false);
-''')) + filter2(l_async, null, t('''
+''')) + filter2(l2 + l3, null, t('''
 1.1. async screen actions  
 '''), st('''
 Each screen may require an asynchronous action during its creation, merging, or deactivating.
@@ -146,9 +164,9 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   return (segment as AppSegments).maybeMap(
     book: (_) => AsyncScreenActions<BookSegment>(
       // for every Book screen: creating takes some time
-      creating: (newSegment) async => simulateAsyncResult('Book creating async result after 1 sec', 1000),
+      creating: (newSegment) => simulateAsyncResult('Book creating async result after 1 sec', 1000),
       // for every Book screen with odd id: changing to another Book screen takes some time
-      merging: (_, newSegment) async => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
+      merging: (_, newSegment) => newSegment.id.isOdd ? simulateAsyncResult('Book merging async result after 500 msec', 500) : null,
       // for every Book screen with even id: deactivating takes some time
       deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
     ),
@@ -158,7 +176,80 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
     orElse: () => null,
   );
 }
-''')) + filter2(all, l4 + l_async, t('''
+''')) + filter2(l4, null, t('''
+1.1. 
+'''), st('''
+'''), b('''
+abstract class AppRoute<T extends TypedSegment> extends TypedRoute<T> {
+  bool needsLogin(T segment) => false;
+}
+
+class HomeRoute extends AppRoute<HomeSegment> {
+  @override
+  Widget screenBuilder(HomeSegment segment) => HomeScreen(segment);
+  @override
+  Future<void>? creating(HomeSegment newPath) => _simulateAsyncResult('Home creating async result after 1 sec', 1000);
+}
+
+class BooksRoute extends AppRoute<BooksSegment> {
+  @override
+  Widget screenBuilder(BooksSegment segment) => BooksScreen(segment);
+}
+
+class BookRoute extends AppRoute<BookSegment> {
+  @override
+  Widget screenBuilder(BookSegment segment) => BookScreen(segment);
+
+  @override
+  Future<void>? creating(BookSegment newPath) => _simulateAsyncResult('Book creating async result after 1 sec', 1000);
+  @override
+  Future<void>? merging(oldPath, BookSegment newPath) =>
+      newPath.id.isOdd ? _simulateAsyncResult('Book merging async result after 500 msec', 500) : null;
+  @override
+  Future<void>? deactivating(BookSegment oldPath) => oldPath.id.isEven ? _simulateAsyncResult('', 500) : null;
+
+  @override
+  bool needsLogin(BookSegment segment) => segment.id.isOdd;
+}
+
+class LoginHomeRoute extends TypedRoute<LoginHomeSegment> {
+  @override
+  Widget screenBuilder(LoginHomeSegment segment) => LoginHomeScreen(segment);
+}
+
+class AppRouteGroup extends RouteGroup<AppSegments> {
+  @override
+  AppSegments json2Segment(JsonMap jsonMap) => AppSegments.fromJson(jsonMap);
+
+  @override
+  TypedRoute segment2Route(AppSegments segment) => segment.map(home: (_) => homeRoute, books: (_) => booksRoute, book: (_) => bookRoute);
+
+  final homeRoute = HomeRoute();
+  final booksRoute = BooksRoute();
+  final bookRoute = BookRoute();
+}
+
+class LoginRouteGroup extends RouteGroup<LoginSegments> {
+  @override
+  LoginSegments json2Segment(JsonMap jsonMap) => LoginSegments.fromJson(jsonMap);
+
+  @override
+  TypedRoute segment2Route(LoginSegments segment) => segment.map((value) => throw UnimplementedError(), home: (_) => loginHomeRoute);
+
+  final loginHomeRoute = LoginHomeRoute();
+}
+
+
+class AppRouter extends TypedRouter {
+  AppRouter() : super([AppRouteGroup(), LoginRouteGroup()]);
+
+  bool needsLogin() => false;
+}
+
+Future<String> _simulateAsyncResult(String title, int msec) async {
+  await Future.delayed(Duration(milliseconds: msec));
+  return title;
+}''')) + filter2(all, l2 + l3 + l4, t('''
 2. Specify navigation-aware actions in the navigator. The actions are then used in the screen widgets.
 '''), st('''
 '''), b('''
@@ -186,7 +277,7 @@ class AppNavigator extends RiverpodNavigator {
     return toBook(id: id);
   }
 }
-''')) + filter2(l_async, 0, t('''
+''')) + filter2(l2, 0, t('''
 2. Specify navigation-aware actions in the navigator. The actions are then used in the screen widgets.
 '''), st('''
 '''), b('''
@@ -215,10 +306,13 @@ class AppNavigator extends RiverpodNavigator {
     return toBook(id: id);
   }
 }
-''')) + filter2(l4, null, t('''
+''')) + filter2(l3 + l4, null, t('''
 2. App-specific navigator with navigation aware actions (used in screens)  
 '''), st('''
-'''), b('''
+'''), filter(l3, 0, b('''
+/// the navigation state also depends on the following [userIsLoggedProvider]
+final userIsLoggedProvider = StateProvider<bool>((_) => false);
+
 const booksLen = 5;
 
 class AppNavigator extends RiverpodNavigator {
@@ -228,12 +322,33 @@ class AppNavigator extends RiverpodNavigator {
           /// the navigation state also depends on the userIsLoggedProvider
           dependsOn: [userIsLoggedProvider],
           initPath: [HomeSegment()],
+          segment2AsyncScreenActions: segment2AsyncScreenActions,
           //----- the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
           json2Segment: (jsonMap, unionKey) => 
               unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
           screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
         );
 
+  /// mark screens which needs login: every 'id.isOdd' book needs it
+  bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
+''')) + filter(l4, 0, b('''
+/// the navigation state also depends on the following [userIsLoggedProvider]
+final userIsLoggedProvider = StateProvider<bool>((_) => false);
+
+const booksLen = 5;
+
+class AppNavigator extends RiverpodNavigator {
+  AppNavigator(Ref ref)
+      : super(
+          ref,
+          dependsOn: [userIsLoggedProvider],
+          initPath: [HomeSegment()],
+          router: AppRouter(), // <========================
+        );
+
+  /// The needLogin logic is handled by the router
+  bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin();
+''')) + filter(l3 + l4, 0, b('''
   @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
@@ -279,7 +394,7 @@ class AppNavigator extends RiverpodNavigator {
     assert(loginNotifier.state); // is logged?
     // change login state
     loginNotifier.state = false;
-    return navigationCompleted;
+    return navigationCompleted; // wait for the navigation to end
   }
 
   Future<void> globalLoginButton() {
@@ -295,25 +410,25 @@ class AppNavigator extends RiverpodNavigator {
 
   Future<void> _loginPageButtons(bool cancel) async {
     assert(currentTypedPath.last is LoginHomeSegment);
-    final loginNotifier = ref.read(userIsLoggedProvider.notifier);
-    final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
-
     final loginHomeSegment = currentTypedPath.last as LoginHomeSegment;
+
     var newSegment = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
     if (newSegment.isEmpty) newSegment = [HomeSegment()];
-    ongoingNotifier.state = newSegment;
 
-    if (!cancel) loginNotifier.state = true;
-    return navigationCompleted;
+    // change both providers on which the navigation status depends
+    ref.read(ongoingPathProvider.notifier).state = newSegment;
+    if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true;
+
+    return navigationCompleted; // wait for the navigation to end
   }
 }
-''')) + filter2(all, null, t('''
+'''))) + filter2(all, null, t('''
 3. Root widget and entry point (same for all examples)
 '''), st('''
 Root app widget
 
 To make it less verbose, we use the functional_widget package to generate widgets.
-See .g.dart file for details.
+See *.g.dart file for details.
 '''), b('''
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
@@ -408,25 +523,25 @@ Widget bookScreen(BookSegment segment) => PageHelper(
         LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
       ],
     );
-''')) + filter(l3, 0, b('''
+''')) + filter(l2, 0, b('''
 @swidget
 Widget splashScreen() =>
     SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.circle_outlined, size: 150, color: Colors.deepPurple))));
-''')) + filter(l4, 0, b('''
+''')) + filter(l3 + l4, 0, b('''
 final ScreenBuilder loginSegmentsScreenBuilder = (segment) => (segment as LoginHomeSegment).map(
       (value) => throw UnimplementedError(),
-      home: LoginScreen.new,
+      home: LoginHomeScreen.new,
     );
 
 @swidget
-Widget loginScreen(LoginHomeSegment segment) => PageHelper(
+Widget loginHomeScreen(LoginHomeSegment segment) => PageHelper(
       title: 'Login Page',
       isLoginPage: true,
       buildChildren: (navigator) => [
         ElevatedButton(onPressed: navigator.loginPageOK, child: Text('Login')),
       ],
     );
-''')) + filter(all, l4, b('''
+''')) + filter(all, l3 + l4, b('''
 @cwidget
 Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator)}) {
   final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
@@ -446,7 +561,7 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
     ),
   );
 }
-''')) + filter(l4, 0, b('''
+''')) + filter(l3 + l4, 0, b('''
 @cwidget
 Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator), bool? isLoginPage}) {
   final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;

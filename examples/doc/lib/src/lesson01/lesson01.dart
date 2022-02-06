@@ -12,24 +12,29 @@ import 'screens.dart';
 part 'lesson01.freezed.dart';
 part 'lesson01.g.dart';
 
+// *************************************
+// Example01
+// - Simple example
+// *************************************
+// 
 // *** 1. classes for typed path segments (TypedSegment)
 
-/// Terminology:
-/// - string path:
-/// ```
-/// final stringPath = 'home/books/book;id=2';
-/// ```
-/// - the string path consists of three string segments: 'home', 'books', 'book;id=2'
-/// - typed path:
-/// ```
-/// final typedPath = <ExampleSegments>[HomeSegment(), BooksSegment(), BookSegment(id:2)];
-/// ```
-/// - the typed path consists of three typed segments: HomeSegment(), BooksSegment(), BookSegment(id:2)
-/// ---------------------
-/// From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes,
-/// HomeSegment, BooksSegment and BookSegment.
-/// 
-/// See [Freezed](https://github.com/rrousselGit/freezed) for details.
+// Terminology:
+// - string path:
+// ```
+// final stringPath = 'home/books/book;id=2';
+// ```
+// - the string path consists of three string segments: 'home', 'books', 'book;id=2'
+// - typed path:
+// ```
+// final typedPath = <ExampleSegments>[HomeSegment(), BooksSegment(), BookSegment(id:2)];
+// ```
+// - the typed path consists of three typed segments: HomeSegment(), BooksSegment(), BookSegment(id:2)
+// ---------------------
+// From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes,
+// HomeSegment, BooksSegment and BookSegment.
+// 
+// See [Freezed](https://github.com/rrousselGit/freezed) for details.
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {
   AppSegments._();
@@ -69,10 +74,10 @@ class AppNavigator extends RiverpodNavigator {
 
 // *** 3. Root widget and entry point (same for all examples)
 
-/// Root app widget
-/// 
-/// To make it less verbose, we use the functional_widget package to generate widgets.
-/// See .g.dart file for details.
+// Root app widget
+// 
+// To make it less verbose, we use the functional_widget package to generate widgets.
+// See *.g.dart file for details.
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
   final navigator = ref.read(riverpodNavigatorProvider);

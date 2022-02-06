@@ -46,11 +46,11 @@ Widget bookScreen(BookSegment segment) => PageHelper(
 
 final ScreenBuilder loginSegmentsScreenBuilder = (segment) => (segment as LoginHomeSegment).map(
       (value) => throw UnimplementedError(),
-      home: LoginScreen.new,
+      home: LoginHomeScreen.new,
     );
 
 @swidget
-Widget loginScreen(LoginHomeSegment segment) => PageHelper(
+Widget loginHomeScreen(LoginHomeSegment segment) => PageHelper(
       title: 'Login Page',
       isLoginPage: true,
       buildChildren: (navigator) => [
