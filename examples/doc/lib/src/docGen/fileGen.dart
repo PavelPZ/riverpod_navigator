@@ -294,7 +294,7 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 AppNavigator is a singleton class that does the following:
 - configures various navigation parameters 
 - contains actions related to navigation. The actions are then used in the screen widgets.
-'''), '') + filter2(l1, null, l1, '', '', b('''
+'''), '') + filter2(l1, null, l1, t('Basic navigation parameters'), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -306,7 +306,7 @@ class AppNavigator extends RiverpodNavigator {
           /// map TypedSegment's to Screens
           screenBuilder: appSegmentsScreenBuilder,
         );
-''')) + filter2(l2, 0, l2, '', '', b('''
+''')) + filter2(l2, 0, l2, t('Basic navigation parameters'), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -320,7 +320,7 @@ class AppNavigator extends RiverpodNavigator {
           /// splash screen that appears before the home page is created
           splashBuilder: SplashScreen.new,
         );
-''')) + filter2(l35, 0, l3, '', '', b('''
+''')) + filter2(l35, 0, l3, t('Basic navigation parameters'), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -340,7 +340,7 @@ class AppNavigator extends RiverpodNavigator {
 
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
-''')) + filter2(l4, 0, l4, '', '', b('''
+''')) + filter2(l4, 0, l4, t('Basic navigation parameters'), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -356,7 +356,7 @@ class AppNavigator extends RiverpodNavigator {
   /// The needLogin logic is handled by the router
   bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin(segment);
 ''')) + filter2(l35 + l4, 0, l3, t('''
-2.1. Login app logic
+Login app logic
 '''), '', b('''
   @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
@@ -384,7 +384,7 @@ class AppNavigator extends RiverpodNavigator {
     return null;
   }
 ''')) + filter2(l35 + l4, 0, l3, t('''
-2.2. Login specific navigation actions
+Login specific navigation actions
 '''), '', b('''
   Future<void> globalLogoutButton() {
     final loginNotifier = ref.read(userIsLoggedProvider.notifier);

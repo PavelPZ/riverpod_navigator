@@ -42,6 +42,8 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
 
 ### 2. App-specific navigator
 
+### Basic navigation parameters
+
 
 
 ```dart

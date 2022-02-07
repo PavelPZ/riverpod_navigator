@@ -18,6 +18,8 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 
 ### 2. App-specific navigator
 
+### Basic navigation parameters
+
 
 
 ```dart
@@ -42,7 +44,7 @@ class AppNavigator extends RiverpodNavigator {
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 ```
 
-### 2.1. Login app logic
+### Login app logic
 
 
 
@@ -74,7 +76,7 @@ class AppNavigator extends RiverpodNavigator {
   }
 ```
 
-### 2.2. Login specific navigation actions
+### Login specific navigation actions
 
 
 

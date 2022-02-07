@@ -90,6 +90,8 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 /// AppNavigator is a singleton class that does the following:
 /// - configures various navigation parameters 
 /// - contains actions related to navigation. The actions are then used in the screen widgets.
+// *** Basic navigation parameters
+
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -110,7 +112,7 @@ class AppNavigator extends RiverpodNavigator {
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 
-// *** 2.1. Login app logic
+// *** Login app logic
 
 @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
@@ -138,7 +140,7 @@ class AppNavigator extends RiverpodNavigator {
     return null;
   }
 
-// *** 2.2. Login specific navigation actions
+// *** Login specific navigation actions
 
 Future<void> globalLogoutButton() {
     final loginNotifier = ref.read(userIsLoggedProvider.notifier);

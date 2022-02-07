@@ -73,6 +73,8 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
 /// AppNavigator is a singleton class that does the following:
 /// - configures various navigation parameters 
 /// - contains actions related to navigation. The actions are then used in the screen widgets.
+// *** Basic navigation parameters
+
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(

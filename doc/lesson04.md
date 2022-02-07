@@ -6,6 +6,8 @@ See [lesson04.dart source code](/examples/doc/lib/src/lesson04/lesson04.dart)
 
 ### 2. App-specific navigator
 
+### Basic navigation parameters
+
 
 
 ```dart
