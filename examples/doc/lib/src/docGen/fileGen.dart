@@ -60,23 +60,25 @@ String fileGen(
   String lessonDocUrl(String lesson, {bool wd = true}) => '[$lesson${wd ? ' documentation' : ''}](/doc/$lesson.md)';
 
   final l2hdr = '''
-${lessonDocUrl('lesson01', wd: false)} extended by:
+Lesson02 is ${lessonDocUrl('lesson01', wd: false)} enhanced with:
 
-- screens require some asynchronous actions (when creating, deactivating or merging)
+XXX is enhanced with asynchronous navigation when screens require some asynchronous actions (when creating, deactivating, or merging)
+
+- asynchronous navigation when screens require some asynchronous actions (when creating, deactivating, or merging)
 - the splash screen appears before the HomeScreen is displayed
 ''';
   final l3hdr = '''
-${lessonDocUrl('lesson02', wd: false)} extended by:
+Lesson03 is ${lessonDocUrl('lesson02', wd: false)} extended by:
 
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
 - navigation state also depends on another provider (userIsLoggedProvider)
 ''';
   final l4hdr = '''
- ${lessonDocUrl('lesson03', wd: false)} prepared using the router concept.
+Lesson04 is ${lessonDocUrl('lesson03', wd: false)} prepared using the router concept.
 ''';
   final l5hdr = '''
-Test for ${lessonDocUrl('lesson03', wd: false)}.
+Lesson05 includes a test for ${lessonDocUrl('lesson03', wd: false)}.
 ''';
 
   String exHeader(String body) => forDoc

@@ -1,6 +1,6 @@
 
 ### Lesson03
-[lesson02](/doc/lesson02.md) extended by:
+Lesson03 is [lesson02](/doc/lesson02.md) extended by:
 
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)

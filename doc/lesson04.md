@@ -1,6 +1,6 @@
 
 ### Lesson04
- [lesson03](/doc/lesson03.md) prepared using the router concept.
+Lesson04 is [lesson03](/doc/lesson03.md) prepared using the router concept.
 
 See [lesson04.dart source code](/examples/doc/lib/src/lesson04/lesson04.dart)
 

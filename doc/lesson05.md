@@ -1,6 +1,6 @@
 
 ### Lesson05
-Test for [lesson03](/doc/lesson03.md).
+Lesson05 includes a test for [lesson03](/doc/lesson03.md).
 
 See the source code of the test here: [lesson03_test.dart](/examples/doc/test/lesson03_test.dart).
 

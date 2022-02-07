@@ -27,7 +27,7 @@ part 'lesson04.g.dart';
 
 // *************************************
 // Lesson04
-//  [lesson03](/doc/lesson03.md) prepared using the router concept.
+// Lesson04 is [lesson03](/doc/lesson03.md) prepared using the router concept.
 // 
 // 
 // *************************************

@@ -1,8 +1,10 @@
 
 ### Lesson02
-[lesson01](/doc/lesson01.md) extended by:
+Lesson02 is [lesson01](/doc/lesson01.md) enhanced with:
 
-- screens require some asynchronous actions (when creating, deactivating or merging)
+XXX is enhanced with asynchronous navigation when screens require some asynchronous actions (when creating, deactivating, or merging)
+
+- asynchronous navigation when screens require some asynchronous actions (when creating, deactivating, or merging)
 - the splash screen appears before the HomeScreen is displayed
 
 See [lesson02.dart source code](/examples/doc/lib/src/lesson02/lesson02.dart)
