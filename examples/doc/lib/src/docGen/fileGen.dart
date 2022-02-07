@@ -53,16 +53,16 @@ String fileGen(
   String sourceUrl(String lesson, {bool isScreen = false}) =>
       '[${isScreen == true ? 'screen' : lesson}.dart source code](examples/doc/lib/src/$lesson/${isScreen == true ? 'screens' : lesson}.dart)';
 
-  String lessonDocUrl(String lesson, {bool wd = true}) => '[$lesson${wd ? 'documentation' : ''}](doc/$lesson.md)';
+  String lessonDocUrl(String lesson, {bool wd = true}) => '[$lesson${wd ? ' documentation' : ''}](doc/$lesson.md)';
 
   final l2hdr = '''
-It enriches ${lessonDocUrl('Lesson01', wd: false)} by:
+It enriches ${lessonDocUrl('lesson01', wd: false)} by:
 
 - screens require some asynchronous actions (when creating, deactivating or merging)
 - the splash screen appears before the HomeScreen is displayed
 ''';
   final l3hdr = '''
-It enriches  ${lessonDocUrl('Lesson02', wd: false)}  by:
+It enriches  ${lessonDocUrl('lesson02', wd: false)}  by:
 
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
@@ -70,12 +70,12 @@ It enriches  ${lessonDocUrl('Lesson02', wd: false)}  by:
 - extension of the Lesson02
 ''';
   final l4hdr = '''
-It modified ${lessonDocUrl('Lesson03', wd: false)} by:
+It modified ${lessonDocUrl('lesson03', wd: false)} by:
 
 - introduction of the route concept
 ''';
   final l5hdr = '''
-Test for ${lessonDocUrl('Lesson03', wd: false)}
+Test for ${lessonDocUrl('lesson03', wd: false)}
 ''';
 
   String exHeader(String body) => forDoc

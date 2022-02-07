@@ -27,7 +27,7 @@ part 'lesson04.g.dart';
 
 // *************************************
 // Lesson04
-// It modified [Lesson03](doc/Lesson03.md) by:
+// It modified [lesson03](doc/lesson03.md) by:
 // 
 // - introduction of the route concept
 // 

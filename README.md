@@ -131,32 +131,32 @@ final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegme
 ## Other lessons:
 
 ### Lesson02
-It enriches [Lesson01](doc/Lesson01.md) by:
+It enriches [lesson01](doc/lesson01.md) by:
 
 - screens require some asynchronous actions (when creating, deactivating or merging)
 - the splash screen appears before the HomeScreen is displayed
 
-See [lesson02documentation](doc/lesson02.md)
+See [lesson02 documentation](doc/lesson02.md)
 
 ### Lesson03
-It enriches  [Lesson02](doc/Lesson02.md)  by:
+It enriches  [lesson02](doc/lesson02.md)  by:
 
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
 - navigation state also depends on another provider (userIsLoggedProvider)
 - extension of the Lesson02
 
-See [lesson03documentation](doc/lesson03.md)
+See [lesson03 documentation](doc/lesson03.md)
 
 ### Lesson04
-It modified [Lesson03](doc/Lesson03.md) by:
+It modified [lesson03](doc/lesson03.md) by:
 
 - introduction of the route concept
 
-See [lesson04documentation](doc/lesson04.md)
+See [lesson04 documentation](doc/lesson04.md)
 
 ### Lesson05
-Test for [Lesson03](doc/Lesson03.md)
+Test for [lesson03](doc/lesson03.md)
 
-See [lesson05documentation](doc/lesson05.md)
+See [lesson05 documentation](doc/lesson05.md)
 ## Todo
