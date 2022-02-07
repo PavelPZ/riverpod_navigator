@@ -27,7 +27,7 @@ part 'lesson03.g.dart';
 
 // *************************************
 // Lesson03
-// It enriches  [lesson02](doc/lesson02.md)  by:
+// It enriches  [lesson02](/doc/lesson02.md)  by:
 // 
 // - login application logic (where some pages are not available without a logged in user)
 // - more TypedPath roots (AppSegments and LoginSegments)

@@ -1,13 +1,13 @@
 
 ### Lesson03
-It enriches  [lesson02](doc/lesson02.md)  by:
+It enriches  [lesson02](/doc/lesson02.md)  by:
 
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
 - navigation state also depends on another provider (userIsLoggedProvider)
 - extension of the Lesson02
 
-See [lesson03.dart source code](examples/doc/lib/src/lesson03/lesson03.dart)
+See [lesson03.dart source code](/examples/doc/lib/src/lesson03/lesson03.dart)
 
 ### 1. classes for typed path segments (aka TypedSegment)
 
@@ -213,7 +213,7 @@ const booksLen = 5;
 
 ### 5. Map TypedSegment's to Screens
 
-Only the *TypedSegment => Screen* mapping is displayed.. You can view all application widgets here: [screen.dart source code](examples/doc/lib/src/lesson01/screens.dart)
+Only the *TypedSegment => Screen* mapping is displayed.. You can view all application widgets here: [screen.dart source code](/examples/doc/lib/src/lesson01/screens.dart)
 
 ```dart
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(

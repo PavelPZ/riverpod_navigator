@@ -1,11 +1,11 @@
 
 ### Lesson02
-It enriches [lesson01](doc/lesson01.md) by:
+It enriches [lesson01](/doc/lesson01.md) by:
 
 - screens require some asynchronous actions (when creating, deactivating or merging)
 - the splash screen appears before the HomeScreen is displayed
 
-See [lesson02.dart source code](examples/doc/lib/src/lesson02/lesson02.dart)
+See [lesson02.dart source code](/examples/doc/lib/src/lesson02/lesson02.dart)
 
 ### 1. classes for typed path segments (aka TypedSegment)
 
@@ -123,7 +123,7 @@ const booksLen = 5;
 
 ### 5. Map TypedSegment's to Screens
 
-Only the *TypedSegment => Screen* mapping is displayed.. You can view all application widgets here: [screen.dart source code](examples/doc/lib/src/lesson01/screens.dart)
+Only the *TypedSegment => Screen* mapping is displayed.. You can view all application widgets here: [screen.dart source code](/examples/doc/lib/src/lesson01/screens.dart)
 
 ```dart
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(

@@ -1,9 +1,9 @@
 
 ### Lesson05
 ### Lesson05
-Test for [lesson03](doc/lesson03.md)
+Test for [lesson03](/doc/lesson03.md)
 
-See [lesson05.dart source code](examples/doc/lib/src/lesson05/lesson05.dart)
+See [lesson05.dart source code](/examples/doc/lib/src/lesson05/lesson05.dart)
 
 ### 1. classes for typed path segments (aka TypedSegment)
 
@@ -88,7 +88,7 @@ const booksLen = 5;
 
 ### 5. Map TypedSegment's to Screens
 
-Only the *TypedSegment => Screen* mapping is displayed.. You can view all application widgets here: [screen.dart source code](examples/doc/lib/src/lesson01/screens.dart)
+Only the *TypedSegment => Screen* mapping is displayed.. You can view all application widgets here: [screen.dart source code](/examples/doc/lib/src/lesson01/screens.dart)
 
 ```dart
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(

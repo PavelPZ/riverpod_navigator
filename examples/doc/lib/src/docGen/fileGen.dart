@@ -51,9 +51,9 @@ String fileGen(
   String codeIgn(String body) => forDoc ? body : '';
 
   String sourceUrl(String lesson, {bool isScreen = false}) =>
-      '[${isScreen == true ? 'screen' : lesson}.dart source code](examples/doc/lib/src/$lesson/${isScreen == true ? 'screens' : lesson}.dart)';
+      '[${isScreen == true ? 'screen' : lesson}.dart source code](/examples/doc/lib/src/$lesson/${isScreen == true ? 'screens' : lesson}.dart)';
 
-  String lessonDocUrl(String lesson, {bool wd = true}) => '[$lesson${wd ? ' documentation' : ''}](doc/$lesson.md)';
+  String lessonDocUrl(String lesson, {bool wd = true}) => '[$lesson${wd ? ' documentation' : ''}](/doc/$lesson.md)';
 
   final l2hdr = '''
 It enriches ${lessonDocUrl('lesson01', wd: false)} by:

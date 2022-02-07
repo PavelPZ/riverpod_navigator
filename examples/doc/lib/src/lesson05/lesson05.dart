@@ -28,7 +28,7 @@ part 'lesson05.g.dart';
 // *************************************
 // Lesson05
 // Lesson05
-// Test for [lesson03](doc/lesson03.md)
+// Test for [lesson03](/doc/lesson03.md)
 // 
 // 
 // *************************************
