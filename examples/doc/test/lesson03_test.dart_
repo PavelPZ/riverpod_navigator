@@ -13,51 +13,62 @@ ProviderContainer createContainer() {
   return res;
 }
 
-Future printElapsed(Future run()) async {
-  final start = DateTime.now();
-  await run();
-  print('${DateTime.now().difference(start).inMilliseconds} msec');
-}
-
 void main() {
   test('navigation test', () async {
     final container = createContainer();
     final navigator = container.read(riverpodNavigatorProvider) as AppNavigator;
 
-    //********** test without the need to log in (book with even id only)
-    await printElapsed(() => navigator.toBook(id: 0));
-    await container.pump();
-    expect(navigator.debugTypedPath2String(), 'home/books/book;id=0');
+    Future navigTest(Future action(), String expected) async {
+      final start = DateTime.now();
+      await action();
+      print('${DateTime.now().difference(start).inMilliseconds} msec ($expected)');
+      await container.pump();
+      expect(navigator.debugTypedPath2String(), expected);
+    }
 
-    await printElapsed(() => navigator.toBooks());
-    await container.pump();
-    expect(navigator.debugTypedPath2String(), 'home/books');
+    //**********
+    // test without the need to log in (book with even id only)
+    //**********
 
-    await printElapsed(() => navigator.toHome());
-    await container.pump();
-    expect(navigator.debugTypedPath2String(), 'home');
+    await navigTest(() => navigator.toBook(id: 0), 'home/books/book;id=0');
 
-    await printElapsed(() => navigator.pop());
-    await container.pump();
-    expect(navigator.debugTypedPath2String(), 'home');
+    await navigTest(() => navigator.toBooks(), 'home/books');
 
-    await printElapsed(() => navigator.toBook(id: 2));
-    await container.pump();
-    expect(navigator.debugTypedPath2String(), 'home/books/book;id=2');
+    await navigTest(() => navigator.toHome(), 'home');
 
-    await printElapsed(() => navigator.pop());
-    await container.pump();
-    expect(navigator.debugTypedPath2String(), 'home/books');
+    await navigTest(() => navigator.pop(), 'home');
 
-    await printElapsed(() => navigator.push(BookSegment(id: 4)));
-    await container.pump();
-    expect(navigator.debugTypedPath2String(), 'home/books/book;id=4');
+    await navigTest(() => navigator.toBook(id: 2), 'home/books/book;id=2');
 
-    await printElapsed(() => navigator.replaceLast(BookSegment(id: 0)));
-    await container.pump();
-    expect(navigator.debugTypedPath2String(), 'home/books/book;id=0');
+    await navigTest(() => navigator.pop(), 'home/books');
 
-    //********** log in tests
+    await navigTest(() => navigator.push(BookSegment(id: 4)), 'home/books/book;id=4');
+
+    await navigTest(() => navigator.replaceLast(BookSegment(id: 0)), 'home/books/book;id=0');
+
+    //**********
+    // log in tests
+    //**********
+
+    await navigTest(() => navigator.toHome(), 'home');
+
+    // navigate to book 3, book 3 needs login => redirected to login page
+    await navigTest(() => navigator.toBook(id: 3), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D3;canceledUrl=home');
+
+    // confirm login => redirect book 3
+    await navigTest(() => navigator.loginPageOK(), 'home/books/book;id=3');
+
+    // to previous book 2
+    await navigTest(() => navigator.bookNextPrevButton(isPrev: true), 'home/books/book;id=2');
+
+    // to previous book 1
+    await navigTest(() => navigator.bookNextPrevButton(isPrev: true), 'home/books/book;id=1');
+
+    // logout but book 1needs login => redirected to login page
+    await navigTest(() => navigator.globalLogoutButton(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=');
+
+    // cancel login => goto home
+    await navigTest(() => navigator.loginPageCancel(), 'home');
 
     return;
   });

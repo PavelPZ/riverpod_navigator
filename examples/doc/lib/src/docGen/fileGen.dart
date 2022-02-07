@@ -60,25 +60,23 @@ String fileGen(
   String lessonDocUrl(String lesson, {bool wd = true}) => '[$lesson${wd ? ' documentation' : ''}](/doc/$lesson.md)';
 
   final l2hdr = '''
-It enriches ${lessonDocUrl('lesson01', wd: false)} by:
+${lessonDocUrl('lesson01', wd: false)} extended by:
 
 - screens require some asynchronous actions (when creating, deactivating or merging)
 - the splash screen appears before the HomeScreen is displayed
 ''';
   final l3hdr = '''
-It enriches  ${lessonDocUrl('lesson02', wd: false)}  by:
+${lessonDocUrl('lesson02', wd: false)} extended by:
 
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
 - navigation state also depends on another provider (userIsLoggedProvider)
 ''';
   final l4hdr = '''
-It modified ${lessonDocUrl('lesson03', wd: false)} by:
-
-- introduction of the route concept
+ ${lessonDocUrl('lesson03', wd: false)} prepared using the router concept.
 ''';
   final l5hdr = '''
-Test for ${lessonDocUrl('lesson03', wd: false)}
+Test for ${lessonDocUrl('lesson03', wd: false)}.
 ''';
 
   String exHeader(String body) => forDoc
@@ -136,7 +134,7 @@ ${codeIgn('See ${sourceUrl('lesson04')}')}
 ''')) + filter(l5, null, exHeader('''
 ${lName('Lesson05')}
 $l5hdr
-${codeIgn('See ${sourceUrl('lesson05')}')}
+See the source code of the test here: [lesson03_test.dart](/examples/doc/test/lesson03_test.dart).
 ''')) + filter(l6, null, exHeader('''
 Lesson06
 ''')) + filter(l7, null, exHeader('''
@@ -303,7 +301,7 @@ Future<String> _simulateAsyncResult(String title, int msec) async {
 the navigation state also depends on the following [userIsLoggedProvider]
 '''), b('''
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
-''')) + filter2(all, 0, all, t('''
+''')) + filter2(all, 0, all - l5, t('''
 2. App-specific navigator
 '''), st(''), b('')) + filter2(all, 0, l1, '', st('''
 - contains actions related to navigation. The actions are then used in the screen widgets.
@@ -425,11 +423,11 @@ class AppNavigator extends RiverpodNavigator {
     assert(currentTypedPath.last is LoginHomeSegment);
     final loginHomeSegment = currentTypedPath.last as LoginHomeSegment;
 
-    var newSegment = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
-    if (newSegment.isEmpty) newSegment = [HomeSegment()];
+    var newPath = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
+    if (newPath.isEmpty) newPath = [HomeSegment()];
 
     // change both providers on which the navigation status depends
-    ref.read(ongoingPathProvider.notifier).state = newSegment;
+    ref.read(ongoingPathProvider.notifier).state = newPath;
     if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true;
 
     return navigationCompleted; // wait for the navigation to end
@@ -482,10 +480,32 @@ void runMain() => runApp(
     ),
   );
 const booksLen = 5;
-''')) + filter2(all, null, 0, t('''
-'''), st('''
-'''), b('''
-'''));
+''')) + codeIgn(filter2(l5, null, l5, 'Ukázka testu', '', b('''
+//
+    //**********
+    // log in tests
+    //**********
+
+    await navigTest(() => navigator.toHome(), 'home');
+
+    // navigate to book 3, book 3 needs login => redirected to login page
+    await navigTest(() => navigator.toBook(id: 3), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D3;canceledUrl=home');
+
+    // confirm login => redirect book 3
+    await navigTest(() => navigator.loginPageOK(), 'home/books/book;id=3');
+
+    // to previous book 2
+    await navigTest(() => navigator.bookNextPrevButton(isPrev: true), 'home/books/book;id=2');
+
+    // to previous book 1
+    await navigTest(() => navigator.bookNextPrevButton(isPrev: true), 'home/books/book;id=1');
+
+    // logout but book 1needs login => redirected to login page
+    await navigTest(() => navigator.globalLogoutButton(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=');
+
+    // cancel login => goto home
+    await navigTest(() => navigator.loginPageCancel(), 'home');
+''')));
 
 //*********************************
 //*********************************

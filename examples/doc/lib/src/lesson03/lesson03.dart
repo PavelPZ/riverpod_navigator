@@ -27,7 +27,7 @@ part 'lesson03.g.dart';
 
 // *************************************
 // Lesson03
-// It enriches  [lesson02](/doc/lesson02.md)  by:
+// [lesson02](/doc/lesson02.md) extended by:
 // 
 // - login application logic (where some pages are not available without a logged in user)
 // - more TypedPath roots (AppSegments and LoginSegments)
@@ -172,11 +172,11 @@ Future<void> globalLogoutButton() {
     assert(currentTypedPath.last is LoginHomeSegment);
     final loginHomeSegment = currentTypedPath.last as LoginHomeSegment;
 
-    var newSegment = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
-    if (newSegment.isEmpty) newSegment = [HomeSegment()];
+    var newPath = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
+    if (newPath.isEmpty) newPath = [HomeSegment()];
 
     // change both providers on which the navigation status depends
-    ref.read(ongoingPathProvider.notifier).state = newSegment;
+    ref.read(ongoingPathProvider.notifier).state = newPath;
     if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true;
 
     return navigationCompleted; // wait for the navigation to end

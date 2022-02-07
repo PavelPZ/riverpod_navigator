@@ -27,9 +27,9 @@ part 'lesson05.g.dart';
 
 // *************************************
 // Lesson05
-// Test for [lesson03](/doc/lesson03.md)
+// Test for [lesson03](/doc/lesson03.md).
 // 
-// 
+// See the source code of the test here: [lesson03_test.dart](/examples/doc/test/lesson03_test.dart).
 // *************************************
 
 // *** 1. classes for typed path segments (aka TypedSegment)
@@ -168,11 +168,11 @@ Future<void> globalLogoutButton() {
     assert(currentTypedPath.last is LoginHomeSegment);
     final loginHomeSegment = currentTypedPath.last as LoginHomeSegment;
 
-    var newSegment = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
-    if (newSegment.isEmpty) newSegment = [HomeSegment()];
+    var newPath = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
+    if (newPath.isEmpty) newPath = [HomeSegment()];
 
     // change both providers on which the navigation status depends
-    ref.read(ongoingPathProvider.notifier).state = newSegment;
+    ref.read(ongoingPathProvider.notifier).state = newPath;
     if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true;
 
     return navigationCompleted; // wait for the navigation to end

@@ -13,25 +13,23 @@ part 'lesson04.freezed.dart';
 part 'lesson04.g.dart';
 
 // The mission:
-//
+// 
 // Take a look at the following terms:
-//
+// 
 // - **string path:** ```stringPath = 'home/books/book;id=2';```
 // - **string segment** - the string path consists of three string segments: 'home', 'books', 'book;id=2'
 // - **typed path**: ```typedPath = <TypedSegment>[HomeSegment(), BooksSegment(), BookSegment(id:2)];```
 // - **typed segment** - the typed path consists of three instances of [TypedSegment]'s: [HomeSegment], [BooksSegment], [BookSegment]
 // - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
-//
+// 
 // The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
 // And with **typed path** as the source of the truth.
 
 // *************************************
 // Lesson04
-// It modified [lesson03](/doc/lesson03.md) by:
-//
-// - introduction of the route concept
-//
-//
+//  [lesson03](/doc/lesson03.md) prepared using the router concept.
+// 
+// 
 // *************************************
 
 // *** 1. classes for typed path segments (aka TypedSegment)
@@ -59,10 +57,9 @@ class LoginSegments with _$LoginSegments, TypedSegment {
 
 // *** 1.1. App route definition
 
-abstract class AppRoute<T extends TypedSegment> extends TypedRoute<T> {
-  bool needsLogin(T segment) => false;
-}
-
+//***********************
+// AppRouter
+//***********************
 class AppRouter extends TypedRouter {
   AppRouter() : super([AppRouteGroup(), LoginRouteGroup()]);
 
@@ -72,6 +69,9 @@ class AppRouter extends TypedRouter {
   }
 }
 
+//***********************
+// 
+//***********************
 class AppRouteGroup extends TypedRouteGroup<AppSegments> {
   @override
   AppSegments json2Segment(JsonMap jsonMap) => AppSegments.fromJson(jsonMap);
@@ -84,11 +84,10 @@ class AppRouteGroup extends TypedRouteGroup<AppSegments> {
   final bookRoute = BookRoute();
 }
 
-class LoginHomeRoute extends TypedRoute<LoginHomeSegment> {
-  @override
-  Widget screenBuilder(LoginHomeSegment segment) => LoginHomeScreen(segment);
+/// extends route for "needsLogin" information
+abstract class AppRoute<T extends TypedSegment> extends TypedRoute<T> {
+  bool needsLogin(T segment) => false;
 }
-
 class HomeRoute extends AppRoute<HomeSegment> {
   @override
   Widget screenBuilder(HomeSegment segment) => HomeScreen(segment);
@@ -129,6 +128,11 @@ class LoginRouteGroup extends TypedRouteGroup<LoginSegments> {
   final loginHomeRoute = LoginHomeRoute();
 }
 
+class LoginHomeRoute extends TypedRoute<LoginHomeSegment> {
+  @override
+  Widget screenBuilder(LoginHomeSegment segment) => LoginHomeScreen(segment);
+}
+
 Future<String> _simulateAsyncResult(String title, int msec) async {
   await Future.delayed(Duration(milliseconds: msec));
   return title;
@@ -150,9 +154,9 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           dependsOn: [userIsLoggedProvider],
           splashBuilder: SplashScreen.new,
-          //*** router configuration.
-          // the router replaces the following par: json2Segment, screenBuilder, segment2AsyncScreenActions
-          router: AppRouter(),
+  //*** router configuration.
+  // the router replaces the following par: json2Segment, screenBuilder, segment2AsyncScreenActions
+          router: AppRouter(), 
         );
 
   /// The needLogin logic is handled by the router
@@ -160,7 +164,7 @@ class AppNavigator extends RiverpodNavigator {
 
 // *** 2.1. Login app logic
 
-  @override
+@override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
     final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
@@ -188,7 +192,7 @@ class AppNavigator extends RiverpodNavigator {
 
 // *** 2.2. Login specific navigation actions
 
-  Future<void> globalLogoutButton() {
+Future<void> globalLogoutButton() {
     final loginNotifier = ref.read(userIsLoggedProvider.notifier);
     // checking
     assert(loginNotifier.state); // is logged?
@@ -212,11 +216,11 @@ class AppNavigator extends RiverpodNavigator {
     assert(currentTypedPath.last is LoginHomeSegment);
     final loginHomeSegment = currentTypedPath.last as LoginHomeSegment;
 
-    var newSegment = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
-    if (newSegment.isEmpty) newSegment = [HomeSegment()];
+    var newPath = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
+    if (newPath.isEmpty) newPath = [HomeSegment()];
 
     // change both providers on which the navigation status depends
-    ref.read(ongoingPathProvider.notifier).state = newSegment;
+    ref.read(ongoingPathProvider.notifier).state = newPath;
     if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true;
 
     return navigationCompleted; // wait for the navigation to end
@@ -224,7 +228,7 @@ class AppNavigator extends RiverpodNavigator {
 
 // *** Common navigation actions
 
-  Future<void> toHome() => navigate([HomeSegment()]);
+Future<void> toHome() => navigate([HomeSegment()]);
   Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
   Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
   Future<void> bookNextPrevButton({bool? isPrev}) {
@@ -236,6 +240,7 @@ class AppNavigator extends RiverpodNavigator {
       id = booksLen - 1 > id ? id + 1 : 0;
     return toBook(id: id);
   }
+
 }
 
 // *** 3. Root widget
@@ -257,11 +262,12 @@ Widget booksExampleApp(WidgetRef ref) {
 
 /// app entry point with ProviderScope's override
 void runMain() => runApp(
-      ProviderScope(
-        overrides: [
-          riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new /*See Constructor tear-offs in Dart ^2.15*/),
-        ],
-        child: const BooksExampleApp(),
-      ),
-    );
+    ProviderScope(
+      overrides: [
+        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new /*See Constructor tear-offs in Dart ^2.15*/),
+      ],
+      child: const BooksExampleApp(),
+    ),
+  );
 const booksLen = 5;
+

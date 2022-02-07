@@ -1,8 +1,6 @@
 
 ### Lesson04
-It modified [lesson03](/doc/lesson03.md) by:
-
-- introduction of the route concept
+ [lesson03](/doc/lesson03.md) prepared using the router concept.
 
 See [lesson04.dart source code](/examples/doc/lib/src/lesson04/lesson04.dart)
 

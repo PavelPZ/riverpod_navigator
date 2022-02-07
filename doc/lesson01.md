@@ -96,7 +96,8 @@ const booksLen = 5;
 
 ### 5. Map TypedSegment's to Screens
 
-Only the *TypedSegment => Screen* mapping is displayed.. You can view all application widgets here: [screen.dart source code](/examples/doc/lib/src/lesson01/screens.dart)
+Note: *Only the "TypedSegment => Screen" mapping is displayed. 
+You can view all application screens and widgets here: [screen.dart source code](/examples/doc/lib/src/lesson01/screens.dart)
 
 ```dart
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
@@ -110,7 +111,7 @@ final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegme
 ## Other lessons:
 
 ### Lesson02
-It enriches [lesson01](/doc/lesson01.md) by:
+[lesson01](/doc/lesson01.md) extended by:
 
 - screens require some asynchronous actions (when creating, deactivating or merging)
 - the splash screen appears before the HomeScreen is displayed
@@ -118,7 +119,7 @@ It enriches [lesson01](/doc/lesson01.md) by:
 See [lesson02 documentation](/doc/lesson02.md)
 
 ### Lesson03
-It enriches  [lesson02](/doc/lesson02.md)  by:
+[lesson02](/doc/lesson02.md) extended by:
 
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
@@ -127,13 +128,11 @@ It enriches  [lesson02](/doc/lesson02.md)  by:
 See [lesson03 documentation](/doc/lesson03.md)
 
 ### Lesson04
-It modified [lesson03](/doc/lesson03.md) by:
-
-- introduction of the route concept
+ [lesson03](/doc/lesson03.md) prepared using the router concept.
 
 See [lesson04 documentation](/doc/lesson04.md)
 
 ### Lesson05
-Test for [lesson03](/doc/lesson03.md)
+Test for [lesson03](/doc/lesson03.md).
 
 See [lesson05 documentation](/doc/lesson05.md)

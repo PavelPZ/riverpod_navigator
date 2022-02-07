@@ -27,7 +27,7 @@ part 'lesson02.g.dart';
 
 // *************************************
 // Lesson02
-// It enriches [lesson01](/doc/lesson01.md) by:
+// [lesson01](/doc/lesson01.md) extended by:
 // 
 // - screens require some asynchronous actions (when creating, deactivating or merging)
 // - the splash screen appears before the HomeScreen is displayed
