@@ -1,3 +1,7 @@
+## 0.6.0
+
+Fixing documentation
+
 ## 0.5.0
 
 Better documentation with examples Lesson01 - Lesson05.

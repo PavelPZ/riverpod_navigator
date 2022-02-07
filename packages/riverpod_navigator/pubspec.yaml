@@ -1,12 +1,12 @@
 name: riverpod_navigator
 description: Simple but powerfull Flutter navigation with riverpod, freezed and Navigator 2.0.
-version: 0.5.0
+version: 0.6.0
 homepage: https://github.com/PavelPZ/riverpod_navigator
 repository: https://github.com/PavelPZ/riverpod_navigator
 # publish_to: 'none'
 
 environment:
-  sdk: ">=2.14.0 <3.0.0"
+  sdk: ">=2.15.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -17,9 +17,6 @@ dependencies:
   json_annotation: ^4.4.0
   meta: ^1.7.0
   riverpod: ^1.0.0
-  # riverpod_navigator_dart:
-  #  path: ../riverpod_navigator_dart
-  # riverpod_navigator_dart: ^0.2.0
   tuple: ^2.0.0
 
 dev_dependencies: 
