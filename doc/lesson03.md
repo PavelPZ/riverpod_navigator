@@ -9,68 +9,11 @@ It enriches  [lesson02](/doc/lesson02.md)  by:
 
 See [lesson03.dart source code](/examples/doc/lib/src/lesson03/lesson03.dart)
 
-### 1. classes for typed path segments (aka TypedSegment)
+### 1.2. userIsLoggedProvider
 
-
-
-```dart
-@freezed
-class AppSegments with _$AppSegments, TypedSegment {
-  AppSegments._();
-  factory AppSegments.home() = HomeSegment;
-  factory AppSegments.books() = BooksSegment;
-  factory AppSegments.book({required int id}) = BookSegment;
-
-  factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
-}
-
-@Freezed(unionKey: LoginSegments.jsonNameSpace)
-class LoginSegments with _$LoginSegments, TypedSegment {
-  /// json serialization hack: must be at least two constructors
-  factory LoginSegments() = _LoginSegments;
-  LoginSegments._();
-  factory LoginSegments.home({String? loggedUrl, String? canceledUrl}) = LoginHomeSegment;
-
-  factory LoginSegments.fromJson(Map<String, dynamic> json) => _$LoginSegmentsFromJson(json);
-  static const String jsonNameSpace = '_login';
-}
-```
-
-### 1.1. async screen actions
-
-Each screen may require an asynchronous action during its creation, merging, or deactivating.
+the navigation state also depends on the following [userIsLoggedProvider]
 
 ```dart
-AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
-  /// helper for simulating asynchronous action
-  Future<String> simulateAsyncResult(String title, int msec) async {
-    await Future.delayed(Duration(milliseconds: msec));
-    return title;
-  }
-
-  if (segment is! AppSegments) return null;
-
-  return segment.maybeMap(
-    book: (_) => AsyncScreenActions<BookSegment>(
-      // for every Book screen: creating takes some time
-      creating: (newSegment) => simulateAsyncResult('Book.creating: async result after 700 msec', 700),
-      // for every Book screen with odd id: changing to another Book screen takes some time
-      merging: (_, newSegment) => newSegment.id.isOdd ? simulateAsyncResult('Book.merging: async result after 500 msec', 500) : null,
-      // for every Book screen with even id: deactivating takes some time
-      deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
-    ),
-    home: (_) => AsyncScreenActions<HomeSegment>(
-      creating: (_) async => simulateAsyncResult('Home.creating: async result after 1000 msec', 1000),
-    ),
-    orElse: () => null,
-  );
-}
-```
-
-
-
-```dart
-/// the navigation state also depends on the following [userIsLoggedProvider]
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
 ```
 
@@ -98,6 +41,8 @@ class AppNavigator extends RiverpodNavigator {
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 ```
+
+### 2.1. Login app logic
 
 
 
@@ -127,21 +72,14 @@ class AppNavigator extends RiverpodNavigator {
     // here can be async action for <oldPath, ongoingNotifier.state> pair
     return null;
   }
+```
 
-  Future<void> toHome() => navigate([HomeSegment()]);
-  Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
-  Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
-  Future<void> bookNextPrevButton({bool? isPrev}) {
-    assert(currentTypedPath.last is BookSegment);
-    var id = (currentTypedPath.last as BookSegment).id;
-    if (isPrev == true)
-      id = id == 0 ? booksLen - 1 : id - 1;
-    else
-      id = booksLen - 1 > id ? id + 1 : 0;
-    return toBook(id: id);
-  }
+### 2.2. Login specific navigation actions
 
-  Future<void> globalLogoutButton() {
+
+
+```dart
+Future<void> globalLogoutButton() {
     final loginNotifier = ref.read(userIsLoggedProvider.notifier);
     // checking
     assert(loginNotifier.state); // is logged?
@@ -174,53 +112,5 @@ class AppNavigator extends RiverpodNavigator {
 
     return navigationCompleted; // wait for the navigation to end
   }
-}
-```
-
-### 3. Root widget
-
-Note: *To make it less verbose, we use the functional_widget package to generate widgets.
-See generated "lesson??.g.dart"" file for details.*
-
-```dart
-@cwidget
-Widget booksExampleApp(WidgetRef ref) {
-  final navigator = ref.read(riverpodNavigatorProvider);
-  return MaterialApp.router(
-    title: 'Books App',
-    routerDelegate: navigator.routerDelegate as RiverpodRouterDelegate,
-    routeInformationParser: RouteInformationParserImpl(navigator.pathParser),
-    debugShowCheckedModeBanner: false,
-  );
-}
-```
-
-### 4. App entry point
-
-app entry point with ProviderScope's override
-
-```dart
-void runMain() => runApp(
-    ProviderScope(
-      overrides: [
-        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new /*See Constructor tear-offs in Dart ^2.15*/),
-      ],
-      child: const BooksExampleApp(),
-    ),
-  );
-const booksLen = 5;
-```
-
-### 5. Map TypedSegment's to Screens
-
-Only the *TypedSegment => Screen* mapping is displayed.. You can view all application widgets here: [screen.dart source code](/examples/doc/lib/src/lesson01/screens.dart)
-
-```dart
-final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
-  // See Constructor tear-offs in Dart ^2.15, "HomeScreen.new" is equivalent to "(segment) => HomeScreen(segment)"
-      home: HomeScreen.new,
-      books: BooksScreen.new,
-      book: BookScreen.new,
-    );
 ```
 

@@ -88,6 +88,8 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   );
 }
 
+// *** 1.2. userIsLoggedProvider
+
 /// the navigation state also depends on the following [userIsLoggedProvider]
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
 
@@ -112,6 +114,8 @@ class AppNavigator extends RiverpodNavigator {
 
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
+
+// *** 2.1. Login app logic
 
 @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
@@ -139,20 +143,9 @@ class AppNavigator extends RiverpodNavigator {
     return null;
   }
 
-  Future<void> toHome() => navigate([HomeSegment()]);
-  Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
-  Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
-  Future<void> bookNextPrevButton({bool? isPrev}) {
-    assert(currentTypedPath.last is BookSegment);
-    var id = (currentTypedPath.last as BookSegment).id;
-    if (isPrev == true)
-      id = id == 0 ? booksLen - 1 : id - 1;
-    else
-      id = booksLen - 1 > id ? id + 1 : 0;
-    return toBook(id: id);
-  }
+// *** 2.2. Login specific navigation actions
 
-  Future<void> globalLogoutButton() {
+Future<void> globalLogoutButton() {
     final loginNotifier = ref.read(userIsLoggedProvider.notifier);
     // checking
     assert(loginNotifier.state); // is logged?
@@ -185,6 +178,22 @@ class AppNavigator extends RiverpodNavigator {
 
     return navigationCompleted; // wait for the navigation to end
   }
+
+// *** Common navigation actions
+
+Future<void> toHome() => navigate([HomeSegment()]);
+  Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
+  Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
+  Future<void> bookNextPrevButton({bool? isPrev}) {
+    assert(currentTypedPath.last is BookSegment);
+    var id = (currentTypedPath.last as BookSegment).id;
+    if (isPrev == true)
+      id = id == 0 ? booksLen - 1 : id - 1;
+    else
+      id = booksLen - 1 > id ? id + 1 : 0;
+    return toBook(id: id);
+  }
+
 }
 
 // *** 3. Root widget

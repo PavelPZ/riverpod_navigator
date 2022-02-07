@@ -35,8 +35,14 @@ class AppNavigator extends RiverpodNavigator {
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
           screenBuilder: appSegmentsScreenBuilder,
         );
+```
 
-  Future<void> toHome() => navigate([HomeSegment()]);
+### Common navigation actions
+
+
+
+```dart
+Future<void> toHome() => navigate([HomeSegment()]);
   Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
   Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
   Future<void> bookNextPrevButton({bool? isPrev}) {
@@ -48,7 +54,6 @@ class AppNavigator extends RiverpodNavigator {
       id = booksLen - 1 > id ? id + 1 : 0;
     return toBook(id: id);
   }
-}
 ```
 
 ### 3. Root widget

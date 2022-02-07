@@ -24,8 +24,8 @@ void gen() {
     File(fn).writeAsStringSync(content);
   }
 
-  for (var i = 1; i < lessonMasks.length; i++) {
-    // if (i != 1) continue; // !!!
+  for (var i = 1; i < 6; i++) {
+    // if (i = 1) continue; // !!!
     final lessonId = int2LessonId(i);
 
     writeFile(lessonFn(lessonId), fileGen(true, i, false));

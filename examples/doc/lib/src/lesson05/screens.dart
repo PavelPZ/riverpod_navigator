@@ -44,12 +44,16 @@ Widget homeScreen(HomeSegment segment) => PageHelper(
       ],
     );
 
-@swidget
-Widget booksScreen(BooksSegment segment) => PageHelper(
+@cwidget
+Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
       title: 'Books Screen',
       asyncActionResult: segment.asyncActionResult,
-      buildChildren: (navigator) =>
-          [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book Screen, id=$id', onPressed: () => navigator.toBook(id: id))],
+      buildChildren: (navigator) => [
+        for (var id = 0; id < booksLen; id++)
+          LinkHelper(
+              title: 'Book Screen, id=5${!ref.watch(userIsLoggedProvider) && id.isOdd ? ' (log in first)' : ''}',
+              onPressed: () => navigator.toBook(id: id))
+      ],
     );
 
 @swidget
@@ -62,12 +66,48 @@ Widget bookScreen(BookSegment segment) => PageHelper(
       ],
     );
 
+final ScreenBuilder loginSegmentsScreenBuilder = (segment) => (segment as LoginHomeSegment).map(
+      (value) => throw UnimplementedError(),
+      home: LoginHomeScreen.new,
+    );
+
+@swidget
+Widget loginHomeScreen(LoginHomeSegment segment) => PageHelper(
+      title: 'Login Page',
+      isLoginPage: true,
+      buildChildren: (navigator) => [
+        ElevatedButton(onPressed: navigator.loginPageOK, child: Text('Login')),
+      ],
+    );
+
 @cwidget
-Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator), dynamic asyncActionResult}) {
+Widget pageHelper(
+  WidgetRef ref, {
+  required String title,
+  required List<Widget> buildChildren(AppNavigator navigator),
+  bool? isLoginPage,
+  dynamic asyncActionResult,
+}) {
   final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
   return Scaffold(
     appBar: AppBar(
       title: Text(title),
+      leading: isLoginPage == true
+          ? IconButton(
+              onPressed: navigator.loginPageCancel,
+              icon: Icon(Icons.cancel),
+            )
+          : null,
+      actions: [
+        if (isLoginPage != true)
+          Consumer(builder: (_, ref, __) {
+            final isLogged = ref.watch(userIsLoggedProvider);
+            return ElevatedButton(
+              onPressed: () => isLogged ? navigator.globalLogoutButton() : navigator.globalLoginButton(),
+              child: Text(isLogged ? 'Logout' : 'Login'),
+            );
+          }),
+      ],
     ),
     body: Center(
       child: Column(
@@ -75,8 +115,9 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
         children: (() {
           final res = <Widget>[SizedBox(height: 20)];
           for (final w in buildChildren(navigator)) res.addAll([w, SizedBox(height: 20)]);
-          if (asyncActionResult!=null) res.addAll([Text(asyncActionResult.toString()), SizedBox(height: 20)]);
           res.add(CountBuilds());
+          if (asyncActionResult!=null) res.addAll([Text(asyncActionResult.toString()), SizedBox(height: 20)]);
+          SizedBox(height: 40);
           return res;
         })(),
       ),
