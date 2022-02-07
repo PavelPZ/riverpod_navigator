@@ -287,8 +287,6 @@ final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegme
 ### Lesson02
 Lesson02 is [lesson01](/doc/lesson01.md) enhanced with:
 
-XXX is enhanced with asynchronous navigation when screens require some asynchronous actions (when creating, deactivating, or merging)
-
 - asynchronous navigation when screens require some asynchronous actions (when creating, deactivating, or merging)
 - the splash screen appears before the HomeScreen is displayed
 

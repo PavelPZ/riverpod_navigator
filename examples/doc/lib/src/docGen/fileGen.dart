@@ -62,8 +62,6 @@ String fileGen(
   final l2hdr = '''
 Lesson02 is ${lessonDocUrl('lesson01', wd: false)} enhanced with:
 
-XXX is enhanced with asynchronous navigation when screens require some asynchronous actions (when creating, deactivating, or merging)
-
 - asynchronous navigation when screens require some asynchronous actions (when creating, deactivating, or merging)
 - the splash screen appears before the HomeScreen is displayed
 ''';
