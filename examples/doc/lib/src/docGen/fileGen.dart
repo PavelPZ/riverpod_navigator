@@ -50,7 +50,7 @@ String fileGen(
   String docIgn(String body) => forDoc ? '' : body;
 
   String sourceUrl(String lesson, {bool isScreen = false}) =>
-      '[${isScreen == true ? 'screen' : lesson}.dart source code](examples/doc/lib/src/$lesson/${isScreen == true ? 'screen' : lesson}.dart)';
+      '[${isScreen == true ? 'screen' : lesson}.dart source code](examples/doc/lib/src/$lesson/${isScreen == true ? 'screens' : lesson}.dart)';
 
   String exHeader(String body) => forDoc
       ? '\n$body\n'
