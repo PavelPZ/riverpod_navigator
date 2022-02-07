@@ -2,7 +2,7 @@
 ### Example01
 - simple example
 
-See [example01.dart source code](/examples/doc/lib/src/example01/example01.dart)
+See [example01.dart source code](/blob/main/examples/doc/lib/src/example01/example01.dart)
 
 ### 1. classes for typed path segments (aka TypedSegment)
 
