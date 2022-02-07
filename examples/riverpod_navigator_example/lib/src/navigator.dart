@@ -114,7 +114,7 @@ class RiverpodNavigator {
   }
 
   /// implements all navigation change application logic here (redirection, login required, etc.)
-  FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) => null;
+  void appNavigationLogic(Ref ref, TypedPath currentPath) {}
 
   @protected
   Ref ref;
@@ -129,9 +129,8 @@ class RiverpodNavigator {
   RiverpodRouterDelegate routerDelegate;
 
   /// synchronize [ongoingPathProvider] with [RiverpodRouterDelegate.currentConfiguration]
-  Future<void> _runNavigation() async {
-    final appLogic = appNavigationLogic(ref, currentTypedPath);
-    if (appLogic is Future) await appLogic;
+  void _runNavigation() {
+    appNavigationLogic(ref, currentTypedPath);
     routerDelegate.currentConfiguration = ref.read(ongoingPathProvider);
     routerDelegate.doNotifyListener();
   }
@@ -186,7 +185,7 @@ class AppNavigator extends RiverpodNavigator {
   /// Avoid navigation to [BookSegment] with odd [BookSegment.id] (and instead redirects to [HomeSegment (), BooksSegment ()])
   /// when not logged in
   @override
-  FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
+  void appNavigationLogic(Ref ref, TypedPath currentPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
     final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
 
