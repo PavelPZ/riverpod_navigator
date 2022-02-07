@@ -8,7 +8,7 @@ import 'widgets.dart';
 class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
   RiverpodRouterDelegate();
 
-  RiverpodNavigatorLow? navigator;
+  RiverpodNavigator? navigator;
 
   // make [notifyListeners] public
   void doNotifyListener() => notifyListeners();
@@ -39,8 +39,8 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
   }
 
   @override
-  Future<void> setNewRoutePath(TypedPath configuration) => (navigator as RiverpodNavigatorLow).navigate(configuration);
+  Future<void> setNewRoutePath(TypedPath configuration) => (navigator as RiverpodNavigator).navigate(configuration);
 
   @override
-  Future<void> setInitialRoutePath(TypedPath configuration) => (navigator as RiverpodNavigatorLow).navigate([HomeSegment()]);
+  Future<void> setInitialRoutePath(TypedPath configuration) => (navigator as RiverpodNavigator).navigate([HomeSegment()]);
 }

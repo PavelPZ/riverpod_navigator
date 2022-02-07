@@ -217,10 +217,9 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
 1.1. App route definition
 '''), st('''
 '''), b('''
-abstract class AppRoute<T extends TypedSegment> extends TypedRoute<T> {
-  bool needsLogin(T segment) => false;
-}
-
+//***********************
+// AppRouter
+//***********************
 class AppRouter extends TypedRouter {
   AppRouter() : super([AppRouteGroup(), LoginRouteGroup()]);
 
@@ -230,6 +229,9 @@ class AppRouter extends TypedRouter {
   }
 }
 
+//***********************
+// 
+//***********************
 class AppRouteGroup extends TypedRouteGroup<AppSegments> {
   @override
   AppSegments json2Segment(JsonMap jsonMap) => AppSegments.fromJson(jsonMap);
@@ -242,11 +244,10 @@ class AppRouteGroup extends TypedRouteGroup<AppSegments> {
   final bookRoute = BookRoute();
 }
 
-class LoginHomeRoute extends TypedRoute<LoginHomeSegment> {
-  @override
-  Widget screenBuilder(LoginHomeSegment segment) => LoginHomeScreen(segment);
+/// extends route for "needsLogin" information
+abstract class AppRoute<T extends TypedSegment> extends TypedRoute<T> {
+  bool needsLogin(T segment) => false;
 }
-
 class HomeRoute extends AppRoute<HomeSegment> {
   @override
   Widget screenBuilder(HomeSegment segment) => HomeScreen(segment);
@@ -285,6 +286,11 @@ class LoginRouteGroup extends TypedRouteGroup<LoginSegments> {
   TypedRoute segment2Route(LoginSegments segment) => segment.map((value) => throw UnimplementedError(), home: (_) => loginHomeRoute);
 
   final loginHomeRoute = LoginHomeRoute();
+}
+
+class LoginHomeRoute extends TypedRoute<LoginHomeSegment> {
+  @override
+  Widget screenBuilder(LoginHomeSegment segment) => LoginHomeScreen(segment);
 }
 
 Future<String> _simulateAsyncResult(String title, int msec) async {
@@ -501,9 +507,10 @@ import 'lesson$lessonId.dart';
 part 'screens.g.dart';
 ''')) + filter2(all, null, l1, t('''
 5. Map TypedSegment's to Screens
-'''), st('''
-${codeIgn('Only the *TypedSegment => Screen* mapping is displayed.. You can view all application widgets here: ${sourceUrl('lesson01', isScreen: true)}')}
-'''), b('''
+'''), st('${codeIgn('''
+Note: *Only the "TypedSegment => Screen" mapping is displayed. 
+You can view all application screens and widgets here: ${sourceUrl('lesson01', isScreen: true)}
+''')}'), b('''
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
   // See Constructor tear-offs in Dart ^2.15, "HomeScreen.new" is equivalent to "(segment) => HomeScreen(segment)"
       home: HomeScreen.new,

@@ -182,3 +182,41 @@ abstract class RiverpodNavigator extends RiverpodNavigatorFlutter {
   @nonVirtual
   Future<void> replaceLast(TypedSegment segment) => navigate([for (var i = 0; i < currentTypedPath.length - 1; i++) currentTypedPath[i], segment]);
 }
+
+// ********************************************
+//   Defer2NextTick
+// ********************************************
+
+/// helper class that solves the problem where two providers (on which navigation depends) change in one tick, e.g.
+///
+/// ```
+/// ref.read(userIsLoggedProvider.notifier).update((s) => !s)
+/// ref.read(ongoingTypedPath.notifier).state = [HomeSegment(), BooksSegment()];
+/// ```
+/// without the Defer2NextTick class, [RouterDelegate.notifyListeners] is called twice:
+/// ```
+/// routerDelegate.currentConfiguration = ref.read(ongoingTypedPath);
+/// routerDelegate.doNotifyListener();
+/// ```
+class Defer2NextTick {
+  Defer2NextTick({required this.runNextTick});
+  Completer? _completer;
+  FutureOr<void> Function() runNextTick;
+
+  void start() {
+    if (_completer != null) return;
+    _completer = Completer();
+    scheduleMicrotask(() async {
+      try {
+        final value = runNextTick();
+        if (value is Future) await value;
+        _completer?.complete();
+      } catch (e, s) {
+        _completer?.completeError(e, s);
+      }
+      _completer = null;
+    });
+  }
+
+  Future<void> get future => _completer != null ? (_completer as Completer).future : Future.value();
+}

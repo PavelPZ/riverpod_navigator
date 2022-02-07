@@ -8,6 +8,9 @@ import 'pathParser.dart';
 // flutter pub run build_runner watch
 part 'widgets.g.dart';
 
+/// Note: *To make it less verbose, we use the functional_widget package to generate widgets.
+/// See generated "widgets.g.dart"" file for details.*
+
 /// Flutter app root
 @hcwidget
 Widget appRoot(WidgetRef ref) => MaterialApp.router(
@@ -54,7 +57,7 @@ Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedB
     );
 
 @cwidget
-Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(RiverpodNavigator navigator)}) {
+Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator)}) {
   final navigator = ref.read(riverpodNavigatorProvider);
   return Scaffold(
     appBar: AppBar(
