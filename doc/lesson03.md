@@ -1,39 +1,15 @@
-// ignore: unused_import
-import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:functional_widget_annotation/functional_widget_annotation.dart';
-import 'package:riverpod_navigator/riverpod_navigator.dart';
+### Example03
+- login application logic (where some pages are not available without a logged in user)
+- more TypedPath roots (AppSegments and LoginSegments)
+- navigation state also depends on another provider (userIsLoggedProvider)
+- extension of the Example02
 
-import 'screens.dart';
+### 1. classes for typed path segments (aka TypedSegment)
 
-part 'lesson03.freezed.dart';
-part 'lesson03.g.dart';
 
-// The mission:
-// 
-// Take a look at the following terms:
-// 
-// - **string path:** ```stringPath = 'home/books/book;id=2';```
-// - **string segment** - the string path consists of three string segments: 'home', 'books', 'book;id=2'
-// - **typed path**: ```typedPath = <TypedSegment>[HomeSegment(), BooksSegment(), BookSegment(id:2)];```
-// - **typed segment** - the typed path consists of three instances of [TypedSegment]'s: [HomeSegment], [BooksSegment], [BookSegment]
-// - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
-// 
-// The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
-// With **typed path** as the source of the truth.
-// *************************************
-// Example03
-// - login application logic (where some pages are not available without a logged in user)
-// - more TypedPath roots (AppSegments and LoginSegments)
-// - navigation state also depends on another provider (userIsLoggedProvider)
-// - extension of the Example02
-// *************************************
 
-// *** 1. classes for typed path segments (aka TypedSegment)
-
+```dart
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {
   AppSegments._();
@@ -54,10 +30,13 @@ class LoginSegments with _$LoginSegments, TypedSegment {
   factory LoginSegments.fromJson(Map<String, dynamic> json) => _$LoginSegmentsFromJson(json);
   static const String jsonNameSpace = '_login';
 }
+```
 
-// *** 1.1. async screen actions
+### 1.1. async screen actions
 
-/// Each screen may require an asynchronous action during its creation, merging, or deactivating.
+Each screen may require an asynchronous action during its creation, merging, or deactivating.
+
+```dart
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   /// helper for simulating asynchronous action
   Future<String> simulateAsyncResult(String title, int msec) async {
@@ -82,14 +61,21 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
     orElse: () => null,
   );
 }
+```
 
+
+
+```dart
 /// the navigation state also depends on the following [userIsLoggedProvider]
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
+```
 
-// *** 2. App-specific navigator
+### 2. App-specific navigator
 
-/// - contains actions related to navigation. The actions are then used in the screen widgets.
-/// - configures various navigation properties
+- contains actions related to navigation. The actions are then used in the screen widgets.
+- configures various navigation properties
+
+```dart
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -107,7 +93,11 @@ class AppNavigator extends RiverpodNavigator {
 
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
+```
 
+
+
+```dart
 @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
@@ -181,11 +171,14 @@ class AppNavigator extends RiverpodNavigator {
     return navigationCompleted; // wait for the navigation to end
   }
 }
+```
 
-// *** 3. Root widget
+### 3. Root widget
 
-/// Note: *To make it less verbose, we use the functional_widget package to generate widgets.
-/// See generated "lesson??.g.dart"" file for details.*
+Note: *To make it less verbose, we use the functional_widget package to generate widgets.
+See generated "lesson??.g.dart"" file for details.*
+
+```dart
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
   final navigator = ref.read(riverpodNavigatorProvider);
@@ -196,10 +189,13 @@ Widget booksExampleApp(WidgetRef ref) {
     debugShowCheckedModeBanner: false,
   );
 }
+```
 
-// *** 4. App entry point
+### 4. App entry point
 
-/// app entry point with ProviderScope's override
+app entry point with ProviderScope's override
+
+```dart
 void runMain() => runApp(
     ProviderScope(
       overrides: [
@@ -209,4 +205,18 @@ void runMain() => runApp(
     ),
   );
 const booksLen = 5;
+```
+
+### 5. Map TypedSegment's to Screens
+
+
+
+```dart
+final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
+  // See Constructor tear-offs in Dart ^2.15
+      home: HomeScreen.new,
+      books: BooksScreen.new,
+      book: BookScreen.new,
+    );
+```
 

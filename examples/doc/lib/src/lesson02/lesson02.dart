@@ -14,26 +14,29 @@ part 'lesson02.g.dart';
 
 // The mission:
 // 
+// Take a look at the following terms:
+// 
 // - **string path:** ```stringPath = 'home/books/book;id=2';```
-// - **string segment** (the string path consists of three string segments, delimited by slash): 'home', 'books', 'book;id=2'
+// - **string segment** - the string path consists of three string segments: 'home', 'books', 'book;id=2'
 // - **typed path**: ```typedPath = <TypedSegment>[HomeSegment(), BooksSegment(), BookSegment(id:2)];```
-// - **typed segment** (the typed path consists of three instances of [TypedSegment]'s): [HomeSegment], [BooksSegment], [BookSegment]
+// - **typed segment** - the typed path consists of three instances of [TypedSegment]'s: [HomeSegment], [BooksSegment], [BookSegment]
 // - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
 // 
-// The mission of navigation is to keep **string path** <=> **typed path** <=> **navigation stack** always in a synchronous state.
+// The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
+// With **typed path** as the source of the truth.
 // *************************************
 // Example02
+// 
+// It enriches Example01 by:
+// 
 // - screens require some asynchronous actions (when creating, deactivating or merging)
-// - extension of the Example01
 // - the splash screen appears before the HomeScreen is displayed
 // *************************************
- 
-// *** 1. classes for typed path segments (TypedSegment)
 
-/// From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes,
+// *** 1. classes for typed path segments (aka TypedSegment)
+
+/// From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes: 
 /// HomeSegment, BooksSegment and BookSegment.
-/// 
-/// See [Freezed](https://github.com/rrousselGit/freezed) for details.
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {
   AppSegments._();
@@ -59,22 +62,22 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   return segment.maybeMap(
     book: (_) => AsyncScreenActions<BookSegment>(
       // for every Book screen: creating takes some time
-      creating: (newSegment) => simulateAsyncResult('Book creating: async result after 700 msec', 700),
+      creating: (newSegment) => simulateAsyncResult('Book.creating: async result after 700 msec', 700),
       // for every Book screen with odd id: changing to another Book screen takes some time
-      merging: (_, newSegment) => newSegment.id.isOdd ? simulateAsyncResult('Book merging: async result after 500 msec', 500) : null,
+      merging: (_, newSegment) => newSegment.id.isOdd ? simulateAsyncResult('Book.merging: async result after 500 msec', 500) : null,
       // for every Book screen with even id: deactivating takes some time
       deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
     ),
     home: (_) => AsyncScreenActions<HomeSegment>(
-      creating: (_) async => simulateAsyncResult('Home creating: async result after 1000 msec', 1000),
+      creating: (_) async => simulateAsyncResult('Home.creating: async result after 1000 msec', 1000),
     ),
     orElse: () => null,
   );
 }
 
-// *** 2. App-specific navigator.
+// *** 2. App-specific navigator
 
-/// - contains navigation-oriented actions with respect to navigation. The actions are then used in the screen widgets.
+/// - contains actions related to navigation. The actions are then used in the screen widgets.
 /// - configures various navigation properties
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
@@ -101,12 +104,10 @@ class AppNavigator extends RiverpodNavigator {
   }
 }
 
-// *** 3. Root widget and entry point (same for all examples)
+// *** 3. Root widget
 
-/// Root app widget
-/// 
-/// To make it less verbose, we use the functional_widget package to generate widgets.
-/// See *.g.dart file for details.
+/// Note: *To make it less verbose, we use the functional_widget package to generate widgets.
+/// See generated "lesson??.g.dart"" file for details.*
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
   final navigator = ref.read(riverpodNavigatorProvider);
@@ -118,15 +119,16 @@ Widget booksExampleApp(WidgetRef ref) {
   );
 }
 
-/// app entry point with ProviderScope  
+// *** 4. App entry point
+
+/// app entry point with ProviderScope's override
 void runMain() => runApp(
     ProviderScope(
       overrides: [
-        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
+        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new /*See Constructor tear-offs in Dart ^2.15*/),
       ],
       child: const BooksExampleApp(),
     ),
   );
-
 const booksLen = 5;
 

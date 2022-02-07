@@ -39,21 +39,29 @@ String fileGen(
     return title + subTitle + body;
   }
 
-  String comment(String body, {bool twoSlash = false}) => LineSplitter().convert(body).map((l) => '${twoSlash ? '//' : '///'} $l').join('\n');
+  String comment(String body, {bool twoSlash = false}) =>
+      forDoc ? '\n$body\n' : LineSplitter().convert(body).map((l) => '${twoSlash ? '//' : '///'} $l').join('\n');
 
-  String t(String title) => (title = title.trim()).isEmpty ? '' : '// *** $title\n\n';
-  String st(String subTitle) => (subTitle = subTitle.trim()).isEmpty ? '' : '${comment(subTitle)}\n';
-  String b(String body) => (body = body.trim()).isEmpty ? '' : '$body\n\n';
+  String t(String title) => (title = title.trim()).isEmpty ? '' : (forDoc ? '### ' : '// *** ') + '$title\n\n';
+  String st(String subTitle) => (subTitle = subTitle.trim()).isEmpty ? '' : (forDoc ? '$subTitle' : '${comment(subTitle)}\n');
+  String b(String body) => (body = body.trim()).isEmpty ? '' : (forDoc ? '\n\n```dart\n$body\n```\n\n' : '$body\n\n');
 
-  String exHeader(String body) => '''
+  String lName(String name) => forDoc ? '### $name' : name;
+  String docIgn(String body, {bool? notIgn}) => forDoc
+      ? (notIgn == true ? body : '')
+      : notIgn != true
+          ? body
+          : '';
 
-// *************************************
+  String exHeader(String body) => forDoc
+      ? '\n$body\n'
+      : '''
+\n// *************************************
 ${comment(body, twoSlash: true)}
-// *************************************
- 
+// *************************************\n
 ''';
 
-  String lessonGen() => filter(all, null, b('''
+  String lessonGen() => filter(forDoc ? 0 : all, null, b('''
 // ignore: unused_import
 import 'dart:async';
 
@@ -67,36 +75,41 @@ import 'screens.dart';
 
 part 'lesson$lessonId.freezed.dart';
 part 'lesson$lessonId.g.dart';
-''')) + filter(all, null, comment('''
+''')) + filter(forDoc ? 0 : all, null, comment('''
 The mission:
 
+Take a look at the following terms:
+
 - **string path:** ```stringPath = 'home/books/book;id=2';```
-- **string segment** (the string path consists of three string segments, delimited by slash): 'home', 'books', 'book;id=2'
+- **string segment** - the string path consists of three string segments: 'home', 'books', 'book;id=2'
 - **typed path**: ```typedPath = <TypedSegment>[HomeSegment(), BooksSegment(), BookSegment(id:2)];```
-- **typed segment** (the typed path consists of three instances of [TypedSegment]'s): [HomeSegment], [BooksSegment], [BookSegment]
+- **typed segment** - the typed path consists of three instances of [TypedSegment]'s: [HomeSegment], [BooksSegment], [BookSegment]
 - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
 
-The mission of navigation is to keep **string path** <=> **typed path** <=> **navigation stack** always in a synchronous state.
+The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
+With **typed path** as the source of the truth.
 ''', twoSlash: true)) + filter(l1, null, exHeader('''
-Example01
+${lName('Example01')}
 - simple example
 ''')) + filter(l2, null, exHeader('''
-Example02
+${lName('Example02')}
+
+It enriches Example01 by:
+
 - screens require some asynchronous actions (when creating, deactivating or merging)
-- extension of the Example01
 - the splash screen appears before the HomeScreen is displayed
 ''')) + filter(l3, null, exHeader('''
-Example03
+${lName('Example03')}
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
 - navigation state also depends on another provider (userIsLoggedProvider)
 - extension of the Example02
 ''')) + filter(l4, null, exHeader('''
-Example04
+${lName('Example04')}
 - introduction of the route concept
 - modification of the Exemple03 using routes
 ''')) + filter(l5, null, exHeader('''
-Example05
+${lName('Example05')}
 ''')) + filter(l6, null, exHeader('''
 Example06
 ''')) + filter(l7, null, exHeader('''
@@ -104,12 +117,10 @@ Example07
 ''')) + filter(l7, null, exHeader('''
 -------------------------------------------
 ''')) + filter2(all, l3 + l4, t('''
-1. classes for typed path segments (TypedSegment)
+1. classes for typed path segments (aka TypedSegment)
 '''), st('''
-From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes,
+From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes: 
 HomeSegment, BooksSegment and BookSegment.
-
-See [Freezed](https://github.com/rrousselGit/freezed) for details.
 '''), b(''' 
 @freezed
 class AppSegments with _\$AppSegments, TypedSegment {
@@ -121,7 +132,7 @@ class AppSegments with _\$AppSegments, TypedSegment {
   factory AppSegments.fromJson(Map<String, dynamic> json) => _\$AppSegmentsFromJson(json);
 }
 ''')) + filter2(l3 + l4, null, t('''
-1. classes for typed path segments (TypedSegment)
+1. classes for typed path segments (aka TypedSegment)
 '''), st('''
 '''), b(''' 
 @freezed
@@ -190,7 +201,7 @@ class AppRouter extends TypedRouter {
   }
 }
 
-class AppRouteGroup extends RouteGroup<AppSegments> {
+class AppRouteGroup extends TypedRouteGroup<AppSegments> {
   @override
   AppSegments json2Segment(JsonMap jsonMap) => AppSegments.fromJson(jsonMap);
 
@@ -235,7 +246,7 @@ class BookRoute extends AppRoute<BookSegment> {
   bool needsLogin(BookSegment segment) => segment.id.isOdd;
 }
 
-class LoginRouteGroup extends RouteGroup<LoginSegments> {
+class LoginRouteGroup extends TypedRouteGroup<LoginSegments> {
   LoginRouteGroup() : super(unionKey: LoginSegments.jsonNameSpace);
 
   @override
@@ -252,9 +263,9 @@ Future<String> _simulateAsyncResult(String title, int msec) async {
   return title;
 }
 ''')) + filter2(all, l2 + l3 + l4, t('''
-2. App-specific navigator. 
+2. App-specific navigator
 '''), st('''
-- contains navigation-oriented actions with respect to navigation. The actions are then used in the screen widgets.
+- contains actions related to navigation. The actions are then used in the screen widgets.
 - configures various navigation properties 
 '''), b('''
 class AppNavigator extends RiverpodNavigator {
@@ -283,9 +294,9 @@ class AppNavigator extends RiverpodNavigator {
 /// the navigation state also depends on the following [userIsLoggedProvider]
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
 ''')) + filter2(l2, 0, t('''
-2. App-specific navigator. 
+2. App-specific navigator
 '''), st('''
-- contains navigation-oriented actions with respect to navigation. The actions are then used in the screen widgets.
+- contains actions related to navigation. The actions are then used in the screen widgets.
 - configures various navigation properties 
 '''), b('''
 class AppNavigator extends RiverpodNavigator {
@@ -313,9 +324,9 @@ class AppNavigator extends RiverpodNavigator {
   }
 }
 ''')) + filter2(l3 + l4, null, t('''
-2. App-specific navigator. 
+2. App-specific navigator
 '''), st('''
-- contains navigation-oriented actions with respect to navigation. The actions are then used in the screen widgets.
+- contains actions related to navigation. The actions are then used in the screen widgets.
 - configures various navigation properties 
 '''), filter(l3, 0, b('''
 class AppNavigator extends RiverpodNavigator {
@@ -423,12 +434,10 @@ class AppNavigator extends RiverpodNavigator {
   }
 }
 '''))) + filter2(all, null, t('''
-3. Root widget and entry point (same for all examples)
+3. Root widget
 '''), st('''
-Root app widget
-
-To make it less verbose, we use the functional_widget package to generate widgets.
-See *.g.dart file for details.
+Note: *To make it less verbose, we use the functional_widget package to generate widgets.
+See generated "lesson??.g.dart"" file for details.*
 '''), b('''
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
@@ -440,24 +449,34 @@ Widget booksExampleApp(WidgetRef ref) {
     debugShowCheckedModeBanner: false,
   );
 }
-
-/// app entry point with ProviderScope  
+''')) + filter2(all, null, t('''
+4. App entry point
+'''), st('''
+app entry point with ProviderScope's override
+'''), b('''
 void runMain() => runApp(
     ProviderScope(
       overrides: [
-        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
+        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new /*See Constructor tear-offs in Dart ^2.15*/),
       ],
       child: const BooksExampleApp(),
     ),
   );
-
 const booksLen = 5;
 ''')) + filter2(all, null, t('''
 '''), st('''
 '''), b('''
 '''));
 
-  String screenGen() => b('''
+//*********************************
+//*********************************
+//
+//  SCREENS
+//
+//*********************************
+//*********************************
+
+  String screenGen() => docIgn(b('''
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -467,13 +486,17 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 import 'lesson$lessonId.dart';
 
 part 'screens.g.dart';
-
+''')) + filter2(all, null, t('''
+5. Map TypedSegment's to Screens
+'''), st('''
+'''), b('''
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
+  // See Constructor tear-offs in Dart ^2.15
       home: HomeScreen.new,
       books: BooksScreen.new,
       book: BookScreen.new,
     );
-
+''')) + docIgn(b('''
 // ************************************
 // Using "functional_widget" package to be less verbose.
 // ************************************
@@ -491,7 +514,7 @@ Widget countBuilds() {
   count.value++;
   return Text('Builded \${count.value} times.');
 }
-''') + filter(all, 0, b('''
+''')) + filter(all, 0, docIgn(b('''
 @swidget
 Widget homeScreen(HomeSegment segment) => PageHelper(
       title: 'Home Screen',
@@ -501,7 +524,7 @@ Widget homeScreen(HomeSegment segment) => PageHelper(
       ],
     );
 
-''')) + filter(all, l3 + l4, b('''
+'''))) + filter(all, l3 + l4, docIgn(b('''
 @swidget
 Widget booksScreen(BooksSegment segment) => PageHelper(
       title: 'Books Screen',
@@ -509,7 +532,7 @@ Widget booksScreen(BooksSegment segment) => PageHelper(
       buildChildren: (navigator) =>
           [for (var id = 0; id < booksLen; id++) LinkHelper(title: 'Book Screen, id=\$id', onPressed: () => navigator.toBook(id: id))],
     );
-''')) + filter(l3 + l4, 0, b('''
+'''))) + filter(l3 + l4, 0, docIgn(b('''
 @cwidget
 Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
       title: 'Books Screen',
@@ -521,7 +544,7 @@ Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
               onPressed: () => navigator.toBook(id: id))
       ],
     );
-''')) + filter(all, 0, b('''
+'''))) + filter(all, 0, docIgn(b('''
 @swidget
 Widget bookScreen(BookSegment segment) => PageHelper(
       title: 'Book Screen, id=\${segment.id}',
@@ -531,7 +554,7 @@ Widget bookScreen(BookSegment segment) => PageHelper(
         LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
       ],
     );
-''')) + filter(l3 + l4, 0, b('''
+'''))) + filter(l3 + l4, 0, docIgn(b('''
 final ScreenBuilder loginSegmentsScreenBuilder = (segment) => (segment as LoginHomeSegment).map(
       (value) => throw UnimplementedError(),
       home: LoginHomeScreen.new,
@@ -545,7 +568,7 @@ Widget loginHomeScreen(LoginHomeSegment segment) => PageHelper(
         ElevatedButton(onPressed: navigator.loginPageOK, child: Text('Login')),
       ],
     );
-''')) + filter(all, l3 + l4, b('''
+'''))) + filter(all, l3 + l4, docIgn(b('''
 @cwidget
 Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator), dynamic asyncActionResult}) {
   final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
@@ -567,7 +590,7 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
     ),
   );
 }
-''')) + filter(l3 + l4, 0, b('''
+'''))) + filter(l3 + l4, 0, docIgn(b('''
 @cwidget
 Widget pageHelper(
   WidgetRef ref, {
@@ -612,7 +635,7 @@ Widget pageHelper(
     ),
   );
 }
-'''));
+''')));
 
   return isLesson ? lessonGen() : screenGen();
 }

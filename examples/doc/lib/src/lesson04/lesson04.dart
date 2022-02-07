@@ -13,21 +13,24 @@ part 'lesson04.freezed.dart';
 part 'lesson04.g.dart';
 
 // The mission:
-//
+// 
+// Take a look at the following terms:
+// 
 // - **string path:** ```stringPath = 'home/books/book;id=2';```
-// - **string segment** (the string path consists of three string segments, delimited by slash): 'home', 'books', 'book;id=2'
+// - **string segment** - the string path consists of three string segments: 'home', 'books', 'book;id=2'
 // - **typed path**: ```typedPath = <TypedSegment>[HomeSegment(), BooksSegment(), BookSegment(id:2)];```
-// - **typed segment** (the typed path consists of three instances of [TypedSegment]'s): [HomeSegment], [BooksSegment], [BookSegment]
+// - **typed segment** - the typed path consists of three instances of [TypedSegment]'s: [HomeSegment], [BooksSegment], [BookSegment]
 // - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
-//
-// The mission of navigation is to keep **string path** <=> **typed path** <=> **navigation stack** always in a synchronous state.
+// 
+// The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
+// With **typed path** as the source of the truth.
 // *************************************
 // Example04
 // - introduction of the route concept
 // - modification of the Exemple03 using routes
 // *************************************
 
-// *** 1. classes for typed path segments (TypedSegment)
+// *** 1. classes for typed path segments (aka TypedSegment)
 
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {
@@ -86,7 +89,7 @@ class HomeRoute extends AppRoute<HomeSegment> {
   @override
   Widget screenBuilder(HomeSegment segment) => HomeScreen(segment);
   @override
-  Future<void>? creating(HomeSegment newPath) => _simulateAsyncResult('Home creating: async result after 1000 msec', 1000);
+  Future<void>? creating(HomeSegment newPath) => _simulateAsyncResult('Home.creating: async result after 1000 msec', 1000);
 }
 
 class BooksRoute extends AppRoute<BooksSegment> {
@@ -99,10 +102,10 @@ class BookRoute extends AppRoute<BookSegment> {
   Widget screenBuilder(BookSegment segment) => BookScreen(segment);
 
   @override
-  Future<void>? creating(BookSegment newPath) => _simulateAsyncResult('Book creating: async result after 700 msec', 700);
+  Future<void>? creating(BookSegment newPath) => _simulateAsyncResult('Book.creating: async result after 700 msec', 700);
   @override
   Future<void>? merging(oldPath, BookSegment newPath) =>
-      newPath.id.isOdd ? _simulateAsyncResult('Book merging: async result after 500 msec', 500) : null;
+      newPath.id.isOdd ? _simulateAsyncResult('Book.merging: async result after 500 msec', 500) : null;
   @override
   Future<void>? deactivating(BookSegment oldPath) => oldPath.id.isEven ? _simulateAsyncResult('', 500) : null;
 
@@ -130,9 +133,9 @@ Future<String> _simulateAsyncResult(String title, int msec) async {
 /// the navigation state also depends on the following [userIsLoggedProvider]
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
 
-// *** 2. App-specific navigator.
+// *** 2. App-specific navigator
 
-/// - contains navigation-oriented actions with respect to navigation. The actions are then used in the screen widgets.
+/// - contains actions related to navigation. The actions are then used in the screen widgets.
 /// - configures various navigation properties
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
@@ -147,7 +150,7 @@ class AppNavigator extends RiverpodNavigator {
   /// The needLogin logic is handled by the router
   bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin(segment);
 
-  @override
+@override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
     final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
@@ -221,12 +224,10 @@ class AppNavigator extends RiverpodNavigator {
   }
 }
 
-// *** 3. Root widget and entry point (same for all examples)
+// *** 3. Root widget
 
-/// Root app widget
-///
-/// To make it less verbose, we use the functional_widget package to generate widgets.
-/// See *.g.dart file for details.
+/// Note: *To make it less verbose, we use the functional_widget package to generate widgets.
+/// See generated "lesson??.g.dart"" file for details.*
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
   final navigator = ref.read(riverpodNavigatorProvider);
@@ -238,14 +239,16 @@ Widget booksExampleApp(WidgetRef ref) {
   );
 }
 
-/// app entry point with ProviderScope
-void runMain() => runApp(
-      ProviderScope(
-        overrides: [
-          riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
-        ],
-        child: const BooksExampleApp(),
-      ),
-    );
+// *** 4. App entry point
 
+/// app entry point with ProviderScope's override
+void runMain() => runApp(
+    ProviderScope(
+      overrides: [
+        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new /*See Constructor tear-offs in Dart ^2.15*/),
+      ],
+      child: const BooksExampleApp(),
+    ),
+  );
 const booksLen = 5;
+

@@ -1,39 +1,13 @@
-// ignore: unused_import
-import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:functional_widget_annotation/functional_widget_annotation.dart';
-import 'package:riverpod_navigator/riverpod_navigator.dart';
+### Example04
+- introduction of the route concept
+- modification of the Exemple03 using routes
 
-import 'screens.dart';
+### 1. classes for typed path segments (aka TypedSegment)
 
-part 'lesson03.freezed.dart';
-part 'lesson03.g.dart';
 
-// The mission:
-// 
-// Take a look at the following terms:
-// 
-// - **string path:** ```stringPath = 'home/books/book;id=2';```
-// - **string segment** - the string path consists of three string segments: 'home', 'books', 'book;id=2'
-// - **typed path**: ```typedPath = <TypedSegment>[HomeSegment(), BooksSegment(), BookSegment(id:2)];```
-// - **typed segment** - the typed path consists of three instances of [TypedSegment]'s: [HomeSegment], [BooksSegment], [BookSegment]
-// - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
-// 
-// The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
-// With **typed path** as the source of the truth.
-// *************************************
-// Example03
-// - login application logic (where some pages are not available without a logged in user)
-// - more TypedPath roots (AppSegments and LoginSegments)
-// - navigation state also depends on another provider (userIsLoggedProvider)
-// - extension of the Example02
-// *************************************
 
-// *** 1. classes for typed path segments (aka TypedSegment)
-
+```dart
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {
   AppSegments._();
@@ -54,60 +28,119 @@ class LoginSegments with _$LoginSegments, TypedSegment {
   factory LoginSegments.fromJson(Map<String, dynamic> json) => _$LoginSegmentsFromJson(json);
   static const String jsonNameSpace = '_login';
 }
+```
 
-// *** 1.1. async screen actions
+### 1.1. App route definition
 
-/// Each screen may require an asynchronous action during its creation, merging, or deactivating.
-AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
-  /// helper for simulating asynchronous action
-  Future<String> simulateAsyncResult(String title, int msec) async {
-    await Future.delayed(Duration(milliseconds: msec));
-    return title;
-  }
 
-  if (segment is! AppSegments) return null;
 
-  return segment.maybeMap(
-    book: (_) => AsyncScreenActions<BookSegment>(
-      // for every Book screen: creating takes some time
-      creating: (newSegment) => simulateAsyncResult('Book.creating: async result after 700 msec', 700),
-      // for every Book screen with odd id: changing to another Book screen takes some time
-      merging: (_, newSegment) => newSegment.id.isOdd ? simulateAsyncResult('Book.merging: async result after 500 msec', 500) : null,
-      // for every Book screen with even id: deactivating takes some time
-      deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
-    ),
-    home: (_) => AsyncScreenActions<HomeSegment>(
-      creating: (_) async => simulateAsyncResult('Home.creating: async result after 1000 msec', 1000),
-    ),
-    orElse: () => null,
-  );
+```dart
+abstract class AppRoute<T extends TypedSegment> extends TypedRoute<T> {
+  bool needsLogin(T segment) => false;
 }
 
+class AppRouter extends TypedRouter {
+  AppRouter() : super([AppRouteGroup(), LoginRouteGroup()]);
+
+  bool needsLogin(TypedSegment segment) {
+    final route = segment2Group(segment).segment2Route(segment);
+    return route is! AppRoute || route.needsLogin(segment);
+  }
+}
+
+class AppRouteGroup extends TypedRouteGroup<AppSegments> {
+  @override
+  AppSegments json2Segment(JsonMap jsonMap) => AppSegments.fromJson(jsonMap);
+
+  @override
+  TypedRoute segment2Route(AppSegments segment) => segment.map(home: (_) => homeRoute, books: (_) => booksRoute, book: (_) => bookRoute);
+
+  final homeRoute = HomeRoute();
+  final booksRoute = BooksRoute();
+  final bookRoute = BookRoute();
+}
+
+class LoginHomeRoute extends TypedRoute<LoginHomeSegment> {
+  @override
+  Widget screenBuilder(LoginHomeSegment segment) => LoginHomeScreen(segment);
+}
+
+class HomeRoute extends AppRoute<HomeSegment> {
+  @override
+  Widget screenBuilder(HomeSegment segment) => HomeScreen(segment);
+  @override
+  Future<void>? creating(HomeSegment newPath) => _simulateAsyncResult('Home.creating: async result after 1000 msec', 1000);
+}
+
+class BooksRoute extends AppRoute<BooksSegment> {
+  @override
+  Widget screenBuilder(BooksSegment segment) => BooksScreen(segment);
+}
+
+class BookRoute extends AppRoute<BookSegment> {
+  @override
+  Widget screenBuilder(BookSegment segment) => BookScreen(segment);
+
+  @override
+  Future<void>? creating(BookSegment newPath) => _simulateAsyncResult('Book.creating: async result after 700 msec', 700);
+  @override
+  Future<void>? merging(oldPath, BookSegment newPath) =>
+      newPath.id.isOdd ? _simulateAsyncResult('Book.merging: async result after 500 msec', 500) : null;
+  @override
+  Future<void>? deactivating(BookSegment oldPath) => oldPath.id.isEven ? _simulateAsyncResult('', 500) : null;
+
+  @override
+  bool needsLogin(BookSegment segment) => segment.id.isOdd;
+}
+
+class LoginRouteGroup extends TypedRouteGroup<LoginSegments> {
+  LoginRouteGroup() : super(unionKey: LoginSegments.jsonNameSpace);
+
+  @override
+  LoginSegments json2Segment(JsonMap jsonMap) => LoginSegments.fromJson(jsonMap);
+
+  @override
+  TypedRoute segment2Route(LoginSegments segment) => segment.map((value) => throw UnimplementedError(), home: (_) => loginHomeRoute);
+
+  final loginHomeRoute = LoginHomeRoute();
+}
+
+Future<String> _simulateAsyncResult(String title, int msec) async {
+  await Future.delayed(Duration(milliseconds: msec));
+  return title;
+}
+```
+
+
+
+```dart
 /// the navigation state also depends on the following [userIsLoggedProvider]
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
+```
 
-// *** 2. App-specific navigator
+### 2. App-specific navigator
 
-/// - contains actions related to navigation. The actions are then used in the screen widgets.
-/// - configures various navigation properties
+- contains actions related to navigation. The actions are then used in the screen widgets.
+- configures various navigation properties
+
+```dart
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          /// the navigation state also depends on the userIsLoggedProvider
           dependsOn: [userIsLoggedProvider],
           initPath: [HomeSegment()],
-          segment2AsyncScreenActions: segment2AsyncScreenActions,
           splashBuilder: SplashScreen.new,
-          //----- the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
-          json2Segment: (jsonMap, unionKey) => 
-              unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
-          screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
+          router: AppRouter(), // <========================
         );
 
-  /// mark screens which needs login: every 'id.isOdd' book needs it
-  bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
+  /// The needLogin logic is handled by the router
+  bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin(segment);
+```
 
+
+
+```dart
 @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
@@ -181,11 +214,14 @@ class AppNavigator extends RiverpodNavigator {
     return navigationCompleted; // wait for the navigation to end
   }
 }
+```
 
-// *** 3. Root widget
+### 3. Root widget
 
-/// Note: *To make it less verbose, we use the functional_widget package to generate widgets.
-/// See generated "lesson??.g.dart"" file for details.*
+Note: *To make it less verbose, we use the functional_widget package to generate widgets.
+See generated "lesson??.g.dart"" file for details.*
+
+```dart
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
   final navigator = ref.read(riverpodNavigatorProvider);
@@ -196,10 +232,13 @@ Widget booksExampleApp(WidgetRef ref) {
     debugShowCheckedModeBanner: false,
   );
 }
+```
 
-// *** 4. App entry point
+### 4. App entry point
 
-/// app entry point with ProviderScope's override
+app entry point with ProviderScope's override
+
+```dart
 void runMain() => runApp(
     ProviderScope(
       overrides: [
@@ -209,4 +248,18 @@ void runMain() => runApp(
     ),
   );
 const booksLen = 5;
+```
+
+### 5. Map TypedSegment's to Screens
+
+
+
+```dart
+final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
+  // See Constructor tear-offs in Dart ^2.15
+      home: HomeScreen.new,
+      books: BooksScreen.new,
+      book: BookScreen.new,
+    );
+```
 

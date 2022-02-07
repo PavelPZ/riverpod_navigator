@@ -8,7 +8,10 @@ import 'lesson01.dart';
 
 part 'screens.g.dart';
 
+// *** 5. Map TypedSegment's to Screens
+
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
+  // See Constructor tear-offs in Dart ^2.15
       home: HomeScreen.new,
       books: BooksScreen.new,
       book: BookScreen.new,
