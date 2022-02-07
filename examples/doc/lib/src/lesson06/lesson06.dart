@@ -23,14 +23,15 @@ part 'lesson06.g.dart';
 // - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
 // 
 // The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
-// With **typed path** as the source of the truth.
+// And with **typed path** as the source of the truth.
+
 // *************************************
 // Example06
 // *************************************
 
 // *** 1. classes for typed path segments (aka TypedSegment)
 
-/// From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes: 
+/// From the following definition, [freezed package](https://github.com/rrousselGit/freezed) generates three typed segment classes: 
 /// HomeSegment, BooksSegment and BookSegment.
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {

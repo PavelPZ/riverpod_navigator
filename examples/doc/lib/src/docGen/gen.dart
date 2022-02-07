@@ -34,6 +34,9 @@ void gen() {
   }
 
   // lesson 1 example to the end of readme.md
-  final readme = File(r'D:\riverpod_navigator\README.md').readAsStringSync().split('## Examples\n')[0];
-  File(r'D:\riverpod_navigator\README.md').writeAsStringSync(readme, mode: FileMode.append);
+  var readme = File(r'D:\riverpod_navigator\README.md').readAsStringSync();
+  readme = readme.split('## Examples')[0];
+  readme += '## Examples\n';
+  readme += fileGen(true, 1, true) + fileGen(false, 1, true) + File(r'D:\riverpod_navigator\doc\README_end.md').readAsStringSync();
+  File(r'D:\riverpod_navigator\README.md').writeAsStringSync(readme);
 }

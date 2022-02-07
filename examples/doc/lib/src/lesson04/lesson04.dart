@@ -23,11 +23,14 @@ part 'lesson04.g.dart';
 // - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
 // 
 // The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
-// With **typed path** as the source of the truth.
+// And with **typed path** as the source of the truth.
+
 // *************************************
 // Example04
+// 
+// It modified *Example03* by:
+// 
 // - introduction of the route concept
-// - modification of the Exemple03 using routes
 // *************************************
 
 // *** 1. classes for typed path segments (aka TypedSegment)

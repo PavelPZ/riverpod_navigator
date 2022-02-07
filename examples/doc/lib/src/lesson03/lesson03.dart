@@ -23,9 +23,13 @@ part 'lesson03.g.dart';
 // - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
 // 
 // The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
-// With **typed path** as the source of the truth.
+// And with **typed path** as the source of the truth.
+
 // *************************************
 // Example03
+// 
+// It enriches *Example02* by:
+// 
 // - login application logic (where some pages are not available without a logged in user)
 // - more TypedPath roots (AppSegments and LoginSegments)
 // - navigation state also depends on another provider (userIsLoggedProvider)

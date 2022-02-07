@@ -47,16 +47,15 @@ String fileGen(
   String b(String body) => (body = body.trim()).isEmpty ? '' : (forDoc ? '\n\n```dart\n$body\n```\n\n' : '$body\n\n');
 
   String lName(String name) => forDoc ? '### $name' : name;
-  String docIgn(String body, {bool? notIgn}) => forDoc
-      ? (notIgn == true ? body : '')
-      : notIgn != true
-          ? body
-          : '';
+  String docIgn(String body) => forDoc ? '' : body;
+
+  String sourceUrl(String lesson, {bool isScreen = false}) =>
+      '[${isScreen == true ? 'screen' : lesson}.dart source code](examples/doc/lib/src/$lesson/${isScreen == true ? 'screen' : lesson}.dart)';
 
   String exHeader(String body) => forDoc
       ? '\n$body\n'
       : '''
-\n// *************************************
+\n\n// *************************************
 ${comment(body, twoSlash: true)}
 // *************************************\n
 ''';
@@ -87,27 +86,34 @@ Take a look at the following terms:
 - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
 
 The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
-With **typed path** as the source of the truth.
+And with **typed path** as the source of the truth.
 ''', twoSlash: true)) + filter(l1, null, exHeader('''
 ${lName('Example01')}
 - simple example
+
+See ${sourceUrl('example01')}
 ''')) + filter(l2, null, exHeader('''
 ${lName('Example02')}
 
-It enriches Example01 by:
+It enriches *Example01* by:
 
 - screens require some asynchronous actions (when creating, deactivating or merging)
 - the splash screen appears before the HomeScreen is displayed
 ''')) + filter(l3, null, exHeader('''
 ${lName('Example03')}
+
+It enriches *Example02* by:
+
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
 - navigation state also depends on another provider (userIsLoggedProvider)
 - extension of the Example02
 ''')) + filter(l4, null, exHeader('''
 ${lName('Example04')}
+
+It modified *Example03* by:
+
 - introduction of the route concept
-- modification of the Exemple03 using routes
 ''')) + filter(l5, null, exHeader('''
 ${lName('Example05')}
 ''')) + filter(l6, null, exHeader('''
@@ -119,7 +125,7 @@ Example07
 ''')) + filter2(all, l3 + l4, t('''
 1. classes for typed path segments (aka TypedSegment)
 '''), st('''
-From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes: 
+From the following definition, [freezed package](https://github.com/rrousselGit/freezed) generates three typed segment classes: 
 HomeSegment, BooksSegment and BookSegment.
 '''), b(''' 
 @freezed
@@ -491,7 +497,7 @@ part 'screens.g.dart';
 '''), st('''
 '''), b('''
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
-  // See Constructor tear-offs in Dart ^2.15
+  // See Constructor tear-offs in Dart ^2.15, "HomeScreen.new" is equivalent to "(segment) => HomeScreen(segment)"
       home: HomeScreen.new,
       books: BooksScreen.new,
       book: BookScreen.new,

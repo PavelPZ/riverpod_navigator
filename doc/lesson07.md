@@ -6,7 +6,7 @@ Example07
 
 ### 1. classes for typed path segments (aka TypedSegment)
 
-From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes: 
+From the following definition, [freezed package](https://github.com/rrousselGit/freezed) generates three typed segment classes: 
 HomeSegment, BooksSegment and BookSegment.
 
 ```dart
@@ -91,7 +91,7 @@ const booksLen = 5;
 
 ```dart
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
-  // See Constructor tear-offs in Dart ^2.15
+  // See Constructor tear-offs in Dart ^2.15, "HomeScreen.new" is equivalent to "(segment) => HomeScreen(segment)"
       home: HomeScreen.new,
       books: BooksScreen.new,
       book: BookScreen.new,

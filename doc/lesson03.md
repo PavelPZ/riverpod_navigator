@@ -1,5 +1,8 @@
 
 ### Example03
+
+It enriches *Example02* by:
+
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
 - navigation state also depends on another provider (userIsLoggedProvider)
@@ -213,7 +216,7 @@ const booksLen = 5;
 
 ```dart
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
-  // See Constructor tear-offs in Dart ^2.15
+  // See Constructor tear-offs in Dart ^2.15, "HomeScreen.new" is equivalent to "(segment) => HomeScreen(segment)"
       home: HomeScreen.new,
       books: BooksScreen.new,
       book: BookScreen.new,

@@ -32,9 +32,11 @@ With **typed path** as the source of the truth.
 ### Example01
 - simple example
 
-### 1. classes for typed path segments (TypedSegment)
+See [example01.dart source code](examples/doc/lib/src/example01/example01.dart)
 
-From the following definition, [Freezed](https://github.com/rrousselGit/freezed) generates three typed segment classes: 
+### 1. classes for typed path segments (aka TypedSegment)
+
+From the following definition, [freezed package](https://github.com/rrousselGit/freezed) generates three typed segment classes: 
 HomeSegment, BooksSegment and BookSegment.
 
 ```dart
@@ -47,9 +49,9 @@ class AppSegments with _$AppSegments, TypedSegment {
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
-
 ```
-### 2. App-specific navigator.
+
+### 2. App-specific navigator
 
 - contains actions related to navigation. The actions are then used in the screen widgets.
 - configures various navigation properties
@@ -77,8 +79,8 @@ class AppNavigator extends RiverpodNavigator {
     return toBook(id: id);
   }
 }
-
 ```
+
 ### 3. Root widget
 
 Note: *To make it less verbose, we use the functional_widget package to generate widgets.
@@ -95,8 +97,8 @@ Widget booksExampleApp(WidgetRef ref) {
     debugShowCheckedModeBanner: false,
   );
 }
-
 ```
+
 ### 4. App entry point
 
 app entry point with ProviderScope's override
@@ -111,17 +113,19 @@ void runMain() => runApp(
     ),
   );
 const booksLen = 5;
-
 ```
+
 ### 5. Map TypedSegment's to Screens
+
 
 
 ```dart
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
-  // /*See Constructor tear-offs in Dart ^2.15*/
+  // See Constructor tear-offs in Dart ^2.15, "HomeScreen.new" is equivalent to "(segment) => HomeScreen(segment)"
       home: HomeScreen.new,
       books: BooksScreen.new,
       book: BookScreen.new,
     );
-
 ```
+
+## Todo
