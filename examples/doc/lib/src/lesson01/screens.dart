@@ -10,6 +10,7 @@ part 'screens.g.dart';
 
 // *** 5. Map TypedSegment's to Screens
 
+/// You can view all application widgets here: [screen.dart source code](examples/doc/lib/src/lesson01/screen.dart)
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
   // See Constructor tear-offs in Dart ^2.15, "HomeScreen.new" is equivalent to "(segment) => HomeScreen(segment)"
       home: HomeScreen.new,

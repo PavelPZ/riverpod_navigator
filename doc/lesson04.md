@@ -5,6 +5,8 @@ It modified *Lesson03* by:
 
 - introduction of the route concept
 
+See [lesson04.dart source code](examples/doc/lib/src/lesson04/lesson04.dart)
+
 ### 1. classes for typed path segments (aka TypedSegment)
 
 
@@ -254,7 +256,7 @@ const booksLen = 5;
 
 ### 5. Map TypedSegment's to Screens
 
-
+You can view all application widgets here: [screen.dart source code](examples/doc/lib/src/lesson01/screen.dart)
 
 ```dart
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(

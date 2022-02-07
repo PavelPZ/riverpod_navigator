@@ -99,6 +99,8 @@ It enriches *Lesson01* by:
 
 - screens require some asynchronous actions (when creating, deactivating or merging)
 - the splash screen appears before the HomeScreen is displayed
+
+See ${sourceUrl('lesson02')}
 ''')) + filter(l3, null, exHeader('''
 ${lName('Lesson03')}
 
@@ -108,12 +110,16 @@ It enriches *Lesson02* by:
 - more TypedPath roots (AppSegments and LoginSegments)
 - navigation state also depends on another provider (userIsLoggedProvider)
 - extension of the Lesson02
+
+See ${sourceUrl('lesson03')}
 ''')) + filter(l4, null, exHeader('''
 ${lName('Lesson04')}
 
 It modified *Lesson03* by:
 
 - introduction of the route concept
+
+See ${sourceUrl('lesson04')}
 ''')) + filter(l5, null, exHeader('''
 ${lName('Lesson05')}
 ''')) + filter(l6, null, exHeader('''
@@ -495,6 +501,7 @@ part 'screens.g.dart';
 ''')) + filter2(all, null, t('''
 5. Map TypedSegment's to Screens
 '''), st('''
+You can view all application widgets here: ${sourceUrl('lesson01', isScreen: true)}
 '''), b('''
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
   // See Constructor tear-offs in Dart ^2.15, "HomeScreen.new" is equivalent to "(segment) => HomeScreen(segment)"

@@ -8,6 +8,8 @@ It enriches *Lesson02* by:
 - navigation state also depends on another provider (userIsLoggedProvider)
 - extension of the Lesson02
 
+See [lesson03.dart source code](examples/doc/lib/src/lesson03/lesson03.dart)
+
 ### 1. classes for typed path segments (aka TypedSegment)
 
 
@@ -212,7 +214,7 @@ const booksLen = 5;
 
 ### 5. Map TypedSegment's to Screens
 
-
+You can view all application widgets here: [screen.dart source code](examples/doc/lib/src/lesson01/screen.dart)
 
 ```dart
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
