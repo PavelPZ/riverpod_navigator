@@ -12,18 +12,7 @@ import 'screens.dart';
 part 'lesson02.freezed.dart';
 part 'lesson02.g.dart';
 
-// The mission:
-// 
-// Take a look at the following terms:
-// 
-// - **string path:** ```stringPath = 'home/books/book;id=2';```
-// - **string segment** - the string path consists of three string segments: 'home', 'books', 'book;id=2'
-// - **typed path**: ```typedPath = <TypedSegment>[HomeSegment(), BooksSegment(), BookSegment(id:2)];```
-// - **typed segment** - the typed path consists of three instances of [TypedSegment]'s: [HomeSegment], [BooksSegment], [BookSegment]
-// - **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
-// 
-// The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
-// And with **typed path** as the source of the truth.
+
 
 // *************************************
 // Lesson02
@@ -37,8 +26,8 @@ part 'lesson02.g.dart';
 
 // *** 1. classes for typed path segments (aka TypedSegment)
 
-/// From the following definition, [freezed package](https://github.com/rrousselGit/freezed) generates three typed segment classes: 
-/// HomeSegment, BooksSegment and BookSegment.
+/// From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
+/// generates three typed segment classes: *HomeSegment, BooksSegment and BookSegment*.
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {
   AppSegments._();
@@ -81,8 +70,9 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
 
 // *** 2. App-specific navigator
 
+/// AppNavigator is a singleton class that does the following:
+/// - configures various navigation parameters 
 /// - contains actions related to navigation. The actions are then used in the screen widgets.
-/// - configures various navigation parameters
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(

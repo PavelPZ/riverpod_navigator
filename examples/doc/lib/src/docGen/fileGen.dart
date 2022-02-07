@@ -102,23 +102,8 @@ import 'screens.dart';
 part 'lesson$lessonId.freezed.dart';
 part 'lesson$lessonId.g.dart';
 ''')) + filter(forDoc ? 0 : all, null, comment('''
-The mission:
-
-Take a look at the following terms:
-
-- **string path:** ```stringPath = 'home/books/book;id=2';```
-- **string segment** - the string path consists of three string segments: 'home', 'books', 'book;id=2'
-- **typed path**: ```typedPath = <TypedSegment>[HomeSegment(), BooksSegment(), BookSegment(id:2)];```
-- **typed segment** - the typed path consists of three instances of [TypedSegment]'s: [HomeSegment], [BooksSegment], [BookSegment]
-- **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
-
-The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
-And with **typed path** as the source of the truth.
 ''', twoSlash: true)) + filter(l1, null, exHeader('''
-${lName('Lesson01')}
-
-${codeIgn('(whole example see ${sourceUrl('lesson01')}')})
-
+${lName('Lesson01')}${codeIgn('\n\n(whole example see at ${sourceUrl('lesson01')})\n')}
 ''')) + filter(l2, null, exHeader('''
 ${lName('Lesson02')}
 $l2hdr
@@ -144,8 +129,8 @@ Lesson07
 ''')) + filter2(all, l35 + l4, l1, t('''
 1. classes for typed path segments (aka TypedSegment)
 '''), st('''
-From the following definition, [freezed package](https://github.com/rrousselGit/freezed) generates three typed segment classes: 
-HomeSegment, BooksSegment and BookSegment.
+From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
+generates three typed segment classes: *HomeSegment, BooksSegment and BookSegment*.
 '''), b(''' 
 @freezed
 class AppSegments with _\$AppSegments, TypedSegment {
@@ -159,6 +144,8 @@ class AppSegments with _\$AppSegments, TypedSegment {
 ''')) + filter2(l35 + l4, null, l1, t('''
 1. classes for typed path segments (aka TypedSegment)
 '''), st('''
+From the following AppSegments and LoginSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
+generates four typed segment classes: *HomeSegment, BooksSegment, BookSegment and LoginHomeSegment*.
 '''), b(''' 
 @freezed
 class AppSegments with _\$AppSegments, TypedSegment {
@@ -304,14 +291,14 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 ''')) + filter2(all, 0, all - l5, t('''
 2. App-specific navigator
 '''), st(''), b('')) + filter2(all, 0, l1, '', st('''
-- contains actions related to navigation. The actions are then used in the screen widgets.
+AppNavigator is a singleton class that does the following:
 - configures various navigation parameters 
+- contains actions related to navigation. The actions are then used in the screen widgets.
 '''), '') + filter2(l1, null, l1, '', '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-  //*** parameters common to all examples
           /// home (initial) navigation path
           initPath: [HomeSegment()],
           /// how to decode JSON to AppSegments

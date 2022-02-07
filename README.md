@@ -39,13 +39,13 @@ The repository verifies the idea of connecting [Riverpod](https://riverpod.dev/)
 The best documentation is a simple source code. See examples of Lesson01, ... Lesson 05 below.
 ### Lesson01
 
-(whole example see [lesson01.dart source code](/examples/doc/lib/src/lesson01/lesson01.dart))
+(whole example see at [lesson01.dart source code](/examples/doc/lib/src/lesson01/lesson01.dart))
 
 
 ### 1. classes for typed path segments (aka TypedSegment)
 
-From the following definition, [freezed package](https://github.com/rrousselGit/freezed) generates three typed segment classes: 
-HomeSegment, BooksSegment and BookSegment.
+From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
+generates three typed segment classes: *HomeSegment, BooksSegment and BookSegment*.
 
 ```dart
 @freezed
@@ -61,15 +61,15 @@ class AppSegments with _$AppSegments, TypedSegment {
 
 ### 2. App-specific navigator
 
+AppNavigator is a singleton class that does the following:
+- configures various navigation parameters 
 - contains actions related to navigation. The actions are then used in the screen widgets.
-- configures various navigation parameters
 
 ```dart
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-  //*** parameters common to all examples
           /// home (initial) navigation path
           initPath: [HomeSegment()],
           /// how to decode JSON to AppSegments
