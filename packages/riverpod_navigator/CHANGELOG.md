@@ -1,3 +1,7 @@
+## 0.5.0
+
+Better documentation with examples Lesson01 - Lesson05.
+
 ## 0.4.0
 
 Test force

@@ -62,7 +62,7 @@ abstract class RiverpodNavigator extends RiverpodNavigatorFlutter {
   /// When changing navigation state: completed after Flutter navigation stack is actual
   Future<void> get navigationCompleted => _defer2NextTick.future;
 
-  /// Put all change-route application logic here (redirects, logged in test etc.)
+  /// Enter application navigation logic here (redirection, login, etc.). Could be empty.
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) => null;
 
   /// depends on the used platform: flutter (= [RiverpodRouterDelegate]) x dart only (= [RouterDelegate4Dart])

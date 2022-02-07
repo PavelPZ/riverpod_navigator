@@ -29,7 +29,8 @@ With **typed path** as the source of the truth.
 
 ## How does it work
 
-
+If anyone wants to understand how the riverpod_navigator package works, 
+let them look at [riverpod_navigator_example](examples/riverpod_navigator_example/).
 
 ## How to use it
 

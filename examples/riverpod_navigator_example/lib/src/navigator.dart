@@ -106,27 +106,27 @@ class RiverpodNavigator {
   RiverpodNavigator(this.ref, {required List<AlwaysAliveProviderListenable> dependsOn}) : routerDelegate = RiverpodRouterDelegate() {
     routerDelegate.navigator = this;
 
+    // See Defer2NextTick documenation bellow
     _defer2NextTick = Defer2NextTick(runNextTick: _runNavigation);
+
+    // 1. Listen for [ongoingPathProvider, ...dependsOn] riverpod providers - call defer2NextTick.start().
+    // 2. Add RemoveListener's to _unlistens
+    // 3. Use _unlistens in ref.onDispose
     final allDepends = <AlwaysAliveProviderListenable>[ongoingPathProvider, ...dependsOn];
     for (final depend in allDepends) _unlistens.add(ref.listen<dynamic>(depend, (previous, next) => defer2NextTick.start()));
     // ignore: avoid_function_literals_in_foreach_calls
     ref.onDispose(() => _unlistens.forEach((f) => f()));
   }
 
-  /// implements all navigation change application logic here (redirection, login required, etc.)
+  /// Enter application navigation logic here (redirection, login, etc.). Could be empty.
   void appNavigationLogic(Ref ref, TypedPath currentPath) {}
-
-  @protected
-  Ref ref;
-
-  Defer2NextTick get defer2NextTick => _defer2NextTick as Defer2NextTick;
-  Defer2NextTick? _defer2NextTick;
-
-  /// for ref.onDispose
-  final List<Function> _unlistens = [];
 
   /// Flutter Navigation 2.0 RouterDelegate
   RiverpodRouterDelegate routerDelegate;
+
+  /// Note: [ongoingPathProvider] state may differ from [currentTypedPath] during navigation calculation.
+  @nonVirtual
+  TypedPath get currentTypedPath => routerDelegate.currentConfiguration;
 
   /// synchronize [ongoingPathProvider] with [RiverpodRouterDelegate.currentConfiguration]
   void _runNavigation() {
@@ -136,15 +136,21 @@ class RiverpodNavigator {
   }
 
   /// Main [RiverpodNavigator] method. Provides navigation to the new [TypedPath].
-  /// After changing [ongoingPathProvider], the navigation state is updated
+  /// After changing [ongoingPathProvider] state, the navigation state is updated.
   @nonVirtual
   Future<void> navigate(TypedPath newPath) {
     ref.read(ongoingPathProvider.notifier).state = newPath;
     return defer2NextTick.future;
   }
 
-  @nonVirtual
-  TypedPath get currentTypedPath => routerDelegate.currentConfiguration;
+  @protected
+  Ref ref;
+
+  Defer2NextTick get defer2NextTick => _defer2NextTick as Defer2NextTick;
+  Defer2NextTick? _defer2NextTick;
+
+  /// for ref.onDispose
+  final List<Function> _unlistens = [];
 
   /// for [Navigator.onPopRoute] in [RiverpodRouterDelegate.build]
   @nonVirtual

@@ -11,7 +11,6 @@ The example implements a simple login logic: ```Book screen, id=1``` and ```Book
 
 ... is available [here](https://pavelpz.github.io/).
 
-
 ## To run the example on your computer
 
 - clone the repository
