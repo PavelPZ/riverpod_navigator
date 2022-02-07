@@ -54,10 +54,10 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
           screenBuilder: appSegmentsScreenBuilder,
-  //*** new parameters for this example
-          /// mocks the asynchronous screen actions
+          // ***** new parameters for this example ******
+          // simulate the asynchronous screen actions
           segment2AsyncScreenActions: segment2AsyncScreenActions,
-          /// splash screen that appears before the home page is created
+          // splash screen that appears before the home page is created
           splashBuilder: SplashScreen.new,
         );
 ```

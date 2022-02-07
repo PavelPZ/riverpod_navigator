@@ -25,7 +25,7 @@ class AppSegments with _$AppSegments, TypedSegment {
 
 AppNavigator is a singleton class that does the following:
 - configures various navigation parameters 
-- contains actions related to navigation. The actions are then used in the screen widgets.### Basic navigation parameters
+- contains actions related to navigation. The actions are then used in the screen widgets.### Basic xxnavigation parameters
 
 
 
@@ -34,11 +34,11 @@ class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          /// home (initial) navigation path
+          // home (initial) navigation path
           initPath: [HomeSegment()],
-          /// how to decode JSON to AppSegments
+          // how to decode JSON to AppSegments
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
-          /// map TypedSegment's to Screens
+          // map TypedSegment's to Screens
           screenBuilder: appSegmentsScreenBuilder,
         );
 ```

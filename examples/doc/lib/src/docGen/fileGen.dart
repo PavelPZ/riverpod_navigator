@@ -294,16 +294,18 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 AppNavigator is a singleton class that does the following:
 - configures various navigation parameters 
 - contains actions related to navigation. The actions are then used in the screen widgets.
-'''), '') + filter2(l1, null, l1, t('Basic navigation parameters'), '', b('''
+'''), '') + filter2(l1, null, l1, t('''
+Basic xxnavigation parameters
+'''), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          /// home (initial) navigation path
+          // home (initial) navigation path
           initPath: [HomeSegment()],
-          /// how to decode JSON to AppSegments
+          // how to decode JSON to AppSegments
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
-          /// map TypedSegment's to Screens
+          // map TypedSegment's to Screens
           screenBuilder: appSegmentsScreenBuilder,
         );
 ''')) + filter2(l2, 0, l2, t('Basic navigation parameters'), '', b('''
@@ -314,10 +316,10 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
           screenBuilder: appSegmentsScreenBuilder,
-  //*** new parameters for this example
-          /// mocks the asynchronous screen actions
+          // ***** new parameters for this example ******
+          // simulate the asynchronous screen actions
           segment2AsyncScreenActions: segment2AsyncScreenActions,
-          /// splash screen that appears before the home page is created
+          // splash screen that appears before the home page is created
           splashBuilder: SplashScreen.new,
         );
 ''')) + filter2(l35, 0, l3, t('Basic navigation parameters'), '', b('''
@@ -328,13 +330,12 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           segment2AsyncScreenActions: segment2AsyncScreenActions,
           splashBuilder: SplashScreen.new,
-  //*** modified parameters for this example
-  // the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
+          // ****** new and modified parameters for this example ******
+          // the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
           json2Segment: (jsonMap, unionKey) => 
               unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
           screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
-  //*** new parameter for this example
-          /// the navigation state also depends on the userIsLoggedProvider
+          // the navigation state also depends on the userIsLoggedProvider
           dependsOn: [userIsLoggedProvider],
         );
 

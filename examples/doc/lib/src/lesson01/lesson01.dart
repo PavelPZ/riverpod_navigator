@@ -12,15 +12,13 @@ import 'screens.dart';
 part 'lesson01.freezed.dart';
 part 'lesson01.g.dart';
 
-
-
 // *************************************
 // Lesson01
 // *************************************
 
 // *** 1. classes for typed path segments (aka TypedSegment)
 
-/// From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
+/// From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed)
 /// generates three typed segment classes: *HomeSegment, BooksSegment and BookSegment*.
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {
@@ -35,19 +33,19 @@ class AppSegments with _$AppSegments, TypedSegment {
 // *** 2. App-specific navigator
 
 /// AppNavigator is a singleton class that does the following:
-/// - configures various navigation parameters 
+/// - configures various navigation parameters
 /// - contains actions related to navigation. The actions are then used in the screen widgets.
-// *** Basic navigation parameters
+// *** Basic xxnavigation parameters
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          /// home (initial) navigation path
+          // home (initial) navigation path
           initPath: [HomeSegment()],
-          /// how to decode JSON to AppSegments
+          // how to decode JSON to AppSegments
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
-          /// map TypedSegment's to Screens
+          // map TypedSegment's to Screens
           screenBuilder: appSegmentsScreenBuilder,
         );
 
@@ -66,7 +64,6 @@ class AppNavigator extends RiverpodNavigator {
       id = booksLen - 1 > id ? id + 1 : 0;
     return toBook(id: id);
   }
-
 }
 
 // *** 3. Root widget
@@ -88,12 +85,11 @@ Widget booksExampleApp(WidgetRef ref) {
 
 /// app entry point with ProviderScope's override
 void runMain() => runApp(
-    ProviderScope(
-      overrides: [
-        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new /*See Constructor tear-offs in Dart ^2.15*/),
-      ],
-      child: const BooksExampleApp(),
-    ),
-  );
+      ProviderScope(
+        overrides: [
+          riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new /*See Constructor tear-offs in Dart ^2.15*/),
+        ],
+        child: const BooksExampleApp(),
+      ),
+    );
 const booksLen = 5;
-
