@@ -53,6 +53,8 @@ String fileGen(
   String sourceUrl(String lesson, {bool isScreen = false}) =>
       '[${isScreen == true ? 'screen' : lesson}.dart source code](examples/doc/lib/src/$lesson/${isScreen == true ? 'screens' : lesson}.dart)';
 
+  String lessonDocUrl(String lesson) => '[$lesson documentation](doc/$lesson.md)';
+
   String exHeader(String body) => forDoc
       ? '\n$body\n'
       : '''
@@ -652,10 +654,10 @@ Widget pageHelper(
 '''))) + filter(l1, 0, codeIgn('''
 ## Other lessons:
 
-- ${sourceUrl('lesson02')}
-- ${sourceUrl('lesson03')}
-- ${sourceUrl('lesson04')}
-- ${sourceUrl('lesson05')}
+- ${lessonDocUrl('lesson02')}
+- ${lessonDocUrl('lesson03')}
+- ${lessonDocUrl('lesson04')}
+- ${lessonDocUrl('lesson05')}
 '''));
 
   return isLesson ? lessonGen() : screenGen();

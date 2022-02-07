@@ -130,8 +130,8 @@ final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegme
 
 ## Other lessons:
 
-- [lesson02.dart source code](examples/doc/lib/src/lesson02/lesson02.dart)
-- [lesson03.dart source code](examples/doc/lib/src/lesson03/lesson03.dart)
-- [lesson04.dart source code](examples/doc/lib/src/lesson04/lesson04.dart)
-- [lesson05.dart source code](examples/doc/lib/src/lesson05/lesson05.dart)
+- [lesson02 documentation](doc/lesson02.md)
+- [lesson03 documentation](doc/lesson03.md)
+- [lesson04 documentation](doc/lesson04.md)
+- [lesson05 documentation](doc/lesson05.md)
 ## Todo
