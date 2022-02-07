@@ -35,7 +35,7 @@ part 'lesson03.g.dart';
 // - navigation state also depends on another provider (userIsLoggedProvider)
 // - extension of the Lesson02
 // 
-// See [lesson03.dart source code](examples/doc/lib/src/lesson03/lesson03.dart)
+// 
 // *************************************
 
 // *** 1. classes for typed path segments (aka TypedSegment)

@@ -33,7 +33,7 @@ part 'lesson02.g.dart';
 // - screens require some asynchronous actions (when creating, deactivating or merging)
 // - the splash screen appears before the HomeScreen is displayed
 // 
-// See [lesson02.dart source code](examples/doc/lib/src/lesson02/lesson02.dart)
+// 
 // *************************************
 
 // *** 1. classes for typed path segments (aka TypedSegment)

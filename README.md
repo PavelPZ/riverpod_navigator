@@ -117,7 +117,7 @@ const booksLen = 5;
 
 ### 5. Map TypedSegment's to Screens
 
-You can view all application widgets here: [screen.dart source code](examples/doc/lib/src/lesson01/screens.dart)
+Only the *TypedSegment => Screen* mapping is displayed.. You can view all application widgets here: [screen.dart source code](examples/doc/lib/src/lesson01/screens.dart)
 
 ```dart
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
@@ -128,4 +128,10 @@ final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegme
     );
 ```
 
+## Other lessons:
+
+- [lesson02.dart source code](examples/doc/lib/src/lesson02/lesson02.dart)
+- [lesson03.dart source code](examples/doc/lib/src/lesson03/lesson03.dart)
+- [lesson04.dart source code](examples/doc/lib/src/lesson04/lesson04.dart)
+- [lesson05.dart source code](examples/doc/lib/src/lesson05/lesson05.dart)
 ## Todo

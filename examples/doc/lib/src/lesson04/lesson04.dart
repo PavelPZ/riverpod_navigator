@@ -32,7 +32,7 @@ part 'lesson04.g.dart';
 // 
 // - introduction of the route concept
 // 
-// See [lesson04.dart source code](examples/doc/lib/src/lesson04/lesson04.dart)
+// 
 // *************************************
 
 // *** 1. classes for typed path segments (aka TypedSegment)

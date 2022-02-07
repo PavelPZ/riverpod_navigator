@@ -48,6 +48,7 @@ String fileGen(
 
   String lName(String name) => forDoc ? '### $name' : name;
   String docIgn(String body) => forDoc ? '' : body;
+  String codeIgn(String body) => forDoc ? body : '';
 
   String sourceUrl(String lesson, {bool isScreen = false}) =>
       '[${isScreen == true ? 'screen' : lesson}.dart source code](examples/doc/lib/src/$lesson/${isScreen == true ? 'screens' : lesson}.dart)';
@@ -91,7 +92,7 @@ And with **typed path** as the source of the truth.
 ${lName('Lesson01')}
 - simple example
 
-See ${sourceUrl('lesson01')}
+${codeIgn('See ${sourceUrl('lesson01')}')}
 ''')) + filter(l2, null, exHeader('''
 ${lName('Lesson02')}
 
@@ -100,7 +101,7 @@ It enriches *Lesson01* by:
 - screens require some asynchronous actions (when creating, deactivating or merging)
 - the splash screen appears before the HomeScreen is displayed
 
-See ${sourceUrl('lesson02')}
+${codeIgn('See ${sourceUrl('lesson02')}')}
 ''')) + filter(l3, null, exHeader('''
 ${lName('Lesson03')}
 
@@ -111,7 +112,7 @@ It enriches *Lesson02* by:
 - navigation state also depends on another provider (userIsLoggedProvider)
 - extension of the Lesson02
 
-See ${sourceUrl('lesson03')}
+${codeIgn('See ${sourceUrl('lesson03')}')}
 ''')) + filter(l4, null, exHeader('''
 ${lName('Lesson04')}
 
@@ -119,7 +120,7 @@ It modified *Lesson03* by:
 
 - introduction of the route concept
 
-See ${sourceUrl('lesson04')}
+${codeIgn('See ${sourceUrl('lesson04')}')}
 ''')) + filter(l5, null, exHeader('''
 ${lName('Lesson05')}
 ''')) + filter(l6, null, exHeader('''
@@ -501,7 +502,7 @@ part 'screens.g.dart';
 ''')) + filter2(all, null, t('''
 5. Map TypedSegment's to Screens
 '''), st('''
-You can view all application widgets here: ${sourceUrl('lesson01', isScreen: true)}
+${codeIgn('Only the *TypedSegment => Screen* mapping is displayed.. You can view all application widgets here: ${sourceUrl('lesson01', isScreen: true)}')}
 '''), b('''
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
   // See Constructor tear-offs in Dart ^2.15, "HomeScreen.new" is equivalent to "(segment) => HomeScreen(segment)"
@@ -648,7 +649,14 @@ Widget pageHelper(
     ),
   );
 }
-''')));
+'''))) + filter(l1, 0, codeIgn('''
+## Other lessons:
+
+- ${sourceUrl('lesson02')}
+- ${sourceUrl('lesson03')}
+- ${sourceUrl('lesson04')}
+- ${sourceUrl('lesson05')}
+'''));
 
   return isLesson ? lessonGen() : screenGen();
 }
