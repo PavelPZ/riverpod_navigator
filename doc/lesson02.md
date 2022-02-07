@@ -1,6 +1,6 @@
 
 ### Lesson02
-It enriches *Lesson01* by:
+It enriches [Lesson01](doc/Lesson01.md) by:
 
 - screens require some asynchronous actions (when creating, deactivating or merging)
 - the splash screen appears before the HomeScreen is displayed

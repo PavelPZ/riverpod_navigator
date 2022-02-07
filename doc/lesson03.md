@@ -1,6 +1,6 @@
 
 ### Lesson03
-It enriches *Lesson02* by:
+It enriches  [Lesson02](doc/Lesson02.md)  by:
 
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)

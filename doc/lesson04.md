@@ -1,6 +1,6 @@
 
 ### Lesson04
-It modified *Lesson03* by:
+It modified [Lesson03](doc/Lesson03.md) by:
 
 - introduction of the route concept
 

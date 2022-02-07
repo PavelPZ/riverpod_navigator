@@ -53,28 +53,29 @@ String fileGen(
   String sourceUrl(String lesson, {bool isScreen = false}) =>
       '[${isScreen == true ? 'screen' : lesson}.dart source code](examples/doc/lib/src/$lesson/${isScreen == true ? 'screens' : lesson}.dart)';
 
-  String lessonDocUrl(String lesson) => '[$lesson documentation](doc/$lesson.md)';
+  String lessonDocUrl(String lesson, {bool wd = true}) => '[$lesson${wd ? 'documentation' : ''}](doc/$lesson.md)';
 
-  const l2hdr = '''
-It enriches *Lesson01* by:
+  final l2hdr = '''
+It enriches ${lessonDocUrl('Lesson01', wd: false)} by:
 
 - screens require some asynchronous actions (when creating, deactivating or merging)
 - the splash screen appears before the HomeScreen is displayed
 ''';
-  const l3hdr = '''
-It enriches *Lesson02* by:
+  final l3hdr = '''
+It enriches  ${lessonDocUrl('Lesson02', wd: false)}  by:
 
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
 - navigation state also depends on another provider (userIsLoggedProvider)
 - extension of the Lesson02
 ''';
-  const l4hdr = '''
-It modified *Lesson03* by:
+  final l4hdr = '''
+It modified ${lessonDocUrl('Lesson03', wd: false)} by:
 
 - introduction of the route concept
 ''';
-  const l5hdr = '''
+  final l5hdr = '''
+Test for ${lessonDocUrl('Lesson03', wd: false)}
 ''';
 
   String exHeader(String body) => forDoc
