@@ -228,7 +228,8 @@ Future<void> globalLogoutButton() {
 
 // *** Common navigation actions
 
-Future<void> toHome() => navigate([HomeSegment()]);
+//
+  Future<void> toHome() => navigate([HomeSegment()]);
   Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
   Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
   Future<void> bookNextPrevButton({bool? isPrev}) {

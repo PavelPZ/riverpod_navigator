@@ -1,8 +1,8 @@
 
 ### Lesson01
-- simple example
 
-See [lesson01.dart source code](/examples/doc/lib/src/lesson01/lesson01.dart)
+(whole example see [lesson01.dart source code](/examples/doc/lib/src/lesson01/lesson01.dart))
+
 
 ### 1. classes for typed path segments (aka TypedSegment)
 
@@ -46,7 +46,8 @@ class AppNavigator extends RiverpodNavigator {
 
 
 ```dart
-Future<void> toHome() => navigate([HomeSegment()]);
+//
+  Future<void> toHome() => navigate([HomeSegment()]);
   Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
   Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
   Future<void> bookNextPrevButton({bool? isPrev}) {
@@ -96,7 +97,6 @@ const booksLen = 5;
 
 ### 5. Map TypedSegment's to Screens
 
-Note: *Only the "TypedSegment => Screen" mapping is displayed. 
 You can view all application screens and widgets here: [screen.dart source code](/examples/doc/lib/src/lesson01/screens.dart)
 
 ```dart

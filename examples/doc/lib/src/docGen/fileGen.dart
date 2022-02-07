@@ -116,9 +116,9 @@ The mission of navigation is to keep *string path* <= **typed path** => *navigat
 And with **typed path** as the source of the truth.
 ''', twoSlash: true)) + filter(l1, null, exHeader('''
 ${lName('Lesson01')}
-- simple example
 
-${codeIgn('See ${sourceUrl('lesson01')}')}
+${codeIgn('(whole example see ${sourceUrl('lesson01')}')})
+
 ''')) + filter(l2, null, exHeader('''
 ${lName('Lesson02')}
 $l2hdr
@@ -434,8 +434,8 @@ class AppNavigator extends RiverpodNavigator {
   }
 ''')) + filter2(all, null, l1, t('''
 Common navigation actions
-'''), st('''
-'''), b('''
+'''), '', b('''
+//
   Future<void> toHome() => navigate([HomeSegment()]);
   Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
   Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
@@ -528,7 +528,6 @@ part 'screens.g.dart';
 ''')) + filter2(all, null, l1, t('''
 5. Map TypedSegment's to Screens
 '''), st('${codeIgn('''
-Note: *Only the "TypedSegment => Screen" mapping is displayed. 
 You can view all application screens and widgets here: ${sourceUrl('lesson01', isScreen: true)}
 ''')}'), b('''
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
