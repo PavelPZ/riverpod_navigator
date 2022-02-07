@@ -32,4 +32,8 @@ void gen() {
     writeFile(screenFn(lessonId), fileGen(false, i, false));
     writeFile(docFn(lessonId), fileGen(true, i, true) + fileGen(false, i, true));
   }
+
+  // lesson 1 example to the end of readme.md
+  final readme = File(r'D:\riverpod_navigator\README.md').readAsStringSync().split('## Examples\n')[0];
+  File(r'D:\riverpod_navigator\README.md').writeAsStringSync(readme, mode: FileMode.append);
 }

@@ -27,7 +27,7 @@ Take a look at the following terms:
 The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
 With **typed path** as the source of the truth.
 
-## Simple example
+## Examples
 
 ### Example01
 - simple example
