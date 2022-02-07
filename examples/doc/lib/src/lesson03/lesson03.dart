@@ -27,7 +27,6 @@ part 'lesson03.g.dart';
 
 // *************************************
 // Lesson03
-// 
 // It enriches *Lesson02* by:
 // 
 // - login application logic (where some pages are not available without a logged in user)

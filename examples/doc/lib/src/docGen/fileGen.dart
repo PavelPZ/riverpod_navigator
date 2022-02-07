@@ -55,6 +55,28 @@ String fileGen(
 
   String lessonDocUrl(String lesson) => '[$lesson documentation](doc/$lesson.md)';
 
+  const l2hdr = '''
+It enriches *Lesson01* by:
+
+- screens require some asynchronous actions (when creating, deactivating or merging)
+- the splash screen appears before the HomeScreen is displayed
+''';
+  const l3hdr = '''
+It enriches *Lesson02* by:
+
+- login application logic (where some pages are not available without a logged in user)
+- more TypedPath roots (AppSegments and LoginSegments)
+- navigation state also depends on another provider (userIsLoggedProvider)
+- extension of the Lesson02
+''';
+  const l4hdr = '''
+It modified *Lesson03* by:
+
+- introduction of the route concept
+''';
+  const l5hdr = '''
+''';
+
   String exHeader(String body) => forDoc
       ? '\n$body\n'
       : '''
@@ -97,34 +119,21 @@ ${lName('Lesson01')}
 ${codeIgn('See ${sourceUrl('lesson01')}')}
 ''')) + filter(l2, null, exHeader('''
 ${lName('Lesson02')}
-
-It enriches *Lesson01* by:
-
-- screens require some asynchronous actions (when creating, deactivating or merging)
-- the splash screen appears before the HomeScreen is displayed
-
+$l2hdr
 ${codeIgn('See ${sourceUrl('lesson02')}')}
 ''')) + filter(l3, null, exHeader('''
 ${lName('Lesson03')}
-
-It enriches *Lesson02* by:
-
-- login application logic (where some pages are not available without a logged in user)
-- more TypedPath roots (AppSegments and LoginSegments)
-- navigation state also depends on another provider (userIsLoggedProvider)
-- extension of the Lesson02
-
+$l3hdr
 ${codeIgn('See ${sourceUrl('lesson03')}')}
 ''')) + filter(l4, null, exHeader('''
 ${lName('Lesson04')}
-
-It modified *Lesson03* by:
-
-- introduction of the route concept
-
+$l4hdr
 ${codeIgn('See ${sourceUrl('lesson04')}')}
 ''')) + filter(l5, null, exHeader('''
 ${lName('Lesson05')}
+${lName('Lesson05')}
+$l5hdr
+${codeIgn('See ${sourceUrl('lesson05')}')}
 ''')) + filter(l6, null, exHeader('''
 Lesson06
 ''')) + filter(l7, null, exHeader('''
@@ -654,10 +663,21 @@ Widget pageHelper(
 '''))) + filter(l1, 0, codeIgn('''
 ## Other lessons:
 
-- ${lessonDocUrl('lesson02')}
-- ${lessonDocUrl('lesson03')}
-- ${lessonDocUrl('lesson04')}
-- ${lessonDocUrl('lesson05')}
+### Lesson02
+$l2hdr
+See ${lessonDocUrl('lesson02')}
+
+### Lesson03
+$l3hdr
+See ${lessonDocUrl('lesson03')}
+
+### Lesson04
+$l4hdr
+See ${lessonDocUrl('lesson04')}
+
+### Lesson05
+$l5hdr
+See ${lessonDocUrl('lesson05')}
 '''));
 
   return isLesson ? lessonGen() : screenGen();

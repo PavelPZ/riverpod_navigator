@@ -27,6 +27,9 @@ part 'lesson05.g.dart';
 
 // *************************************
 // Lesson05
+// Lesson05
+// 
+// 
 // *************************************
 
 // *** 1. classes for typed path segments (aka TypedSegment)

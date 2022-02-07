@@ -27,7 +27,6 @@ part 'lesson02.g.dart';
 
 // *************************************
 // Lesson02
-// 
 // It enriches *Lesson01* by:
 // 
 // - screens require some asynchronous actions (when creating, deactivating or merging)

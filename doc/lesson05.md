@@ -1,5 +1,8 @@
 
 ### Lesson05
+### Lesson05
+
+See [lesson05.dart source code](examples/doc/lib/src/lesson05/lesson05.dart)
 
 ### 1. classes for typed path segments (aka TypedSegment)
 
