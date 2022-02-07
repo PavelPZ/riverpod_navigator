@@ -26,14 +26,14 @@ part 'lesson03.g.dart';
 // And with **typed path** as the source of the truth.
 
 // *************************************
-// Example03
+// Lesson03
 // 
-// It enriches *Example02* by:
+// It enriches *Lesson02* by:
 // 
 // - login application logic (where some pages are not available without a logged in user)
 // - more TypedPath roots (AppSegments and LoginSegments)
 // - navigation state also depends on another provider (userIsLoggedProvider)
-// - extension of the Example02
+// - extension of the Lesson02
 // *************************************
 
 // *** 1. classes for typed path segments (aka TypedSegment)

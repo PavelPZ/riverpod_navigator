@@ -1,5 +1,5 @@
 
-Example06
+Lesson06
 
 ### 1. classes for typed path segments (aka TypedSegment)
 

@@ -88,38 +88,38 @@ Take a look at the following terms:
 The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
 And with **typed path** as the source of the truth.
 ''', twoSlash: true)) + filter(l1, null, exHeader('''
-${lName('Example01')}
+${lName('Lesson01')}
 - simple example
 
-See ${sourceUrl('example01')}
+See ${sourceUrl('lesson01')}
 ''')) + filter(l2, null, exHeader('''
-${lName('Example02')}
+${lName('Lesson02')}
 
-It enriches *Example01* by:
+It enriches *Lesson01* by:
 
 - screens require some asynchronous actions (when creating, deactivating or merging)
 - the splash screen appears before the HomeScreen is displayed
 ''')) + filter(l3, null, exHeader('''
-${lName('Example03')}
+${lName('Lesson03')}
 
-It enriches *Example02* by:
+It enriches *Lesson02* by:
 
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
 - navigation state also depends on another provider (userIsLoggedProvider)
-- extension of the Example02
+- extension of the Lesson02
 ''')) + filter(l4, null, exHeader('''
-${lName('Example04')}
+${lName('Lesson04')}
 
-It modified *Example03* by:
+It modified *Lesson03* by:
 
 - introduction of the route concept
 ''')) + filter(l5, null, exHeader('''
-${lName('Example05')}
+${lName('Lesson05')}
 ''')) + filter(l6, null, exHeader('''
-Example06
+Lesson06
 ''')) + filter(l7, null, exHeader('''
-Example07
+Lesson07
 ''')) + filter(l7, null, exHeader('''
 -------------------------------------------
 ''')) + filter2(all, l3 + l4, t('''

@@ -26,7 +26,7 @@ part 'lesson07.g.dart';
 // And with **typed path** as the source of the truth.
 
 // *************************************
-// Example07
+// Lesson07
 // *************************************
 
 

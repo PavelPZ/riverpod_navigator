@@ -26,7 +26,7 @@ part 'lesson06.g.dart';
 // And with **typed path** as the source of the truth.
 
 // *************************************
-// Example06
+// Lesson06
 // *************************************
 
 // *** 1. classes for typed path segments (aka TypedSegment)

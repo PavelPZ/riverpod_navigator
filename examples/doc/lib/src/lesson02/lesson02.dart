@@ -26,9 +26,9 @@ part 'lesson02.g.dart';
 // And with **typed path** as the source of the truth.
 
 // *************************************
-// Example02
+// Lesson02
 // 
-// It enriches *Example01* by:
+// It enriches *Lesson01* by:
 // 
 // - screens require some asynchronous actions (when creating, deactivating or merging)
 // - the splash screen appears before the HomeScreen is displayed

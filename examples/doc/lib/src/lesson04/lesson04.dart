@@ -26,9 +26,9 @@ part 'lesson04.g.dart';
 // And with **typed path** as the source of the truth.
 
 // *************************************
-// Example04
+// Lesson04
 // 
-// It modified *Example03* by:
+// It modified *Lesson03* by:
 // 
 // - introduction of the route concept
 // *************************************
