@@ -142,15 +142,17 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 // *** 2. App-specific navigator
 
 /// - contains actions related to navigation. The actions are then used in the screen widgets.
-/// - configures various navigation properties
+/// - configures various navigation parameters
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          dependsOn: [userIsLoggedProvider],
           initPath: [HomeSegment()],
+          dependsOn: [userIsLoggedProvider],
           splashBuilder: SplashScreen.new,
-          router: AppRouter(), // <========================
+  //*** router configuration.
+  // the router replaces the following par: json2Segment, screenBuilder, segment2AsyncScreenActions
+          router: AppRouter(), 
         );
 
   /// The needLogin logic is handled by the router

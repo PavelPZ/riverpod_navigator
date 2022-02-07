@@ -71,7 +71,6 @@ It enriches  ${lessonDocUrl('lesson02', wd: false)}  by:
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
 - navigation state also depends on another provider (userIsLoggedProvider)
-- extension of the Lesson02
 ''';
   final l4hdr = '''
 It modified ${lessonDocUrl('lesson03', wd: false)} by:
@@ -187,12 +186,14 @@ class LoginSegments with _\$LoginSegments, TypedSegment {
 1.1. async screen actions  
 '''), st('''
 Each screen may require an asynchronous action during its creation, merging, or deactivating.
+The asynchronous result is then provided to the screen widget.
 '''), b('''
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
-  /// helper for simulating asynchronous action
-  Future<String> simulateAsyncResult(String title, int msec) async {
+  // 
+  /// helper for simulating asynchronous action. Its result is then provided to the screen widget.
+  Future<String> simulateAsyncResult(String asyncResult, int msec) async {
     await Future.delayed(Duration(milliseconds: msec));
-    return title;
+    return asyncResult;
   }
 
   if (segment is! AppSegments) return null;
@@ -298,16 +299,20 @@ the navigation state also depends on the following [userIsLoggedProvider]
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
 ''')) + filter2(all, 0, all, t('''
 2. App-specific navigator
-'''), st('''
+'''), st(''), b('')) + filter2(all, 0, l1, '', st('''
 - contains actions related to navigation. The actions are then used in the screen widgets.
-- configures various navigation properties 
-'''), b('')) + filter2(l1, null, l1, '', '', b('''
+- configures various navigation parameters 
+'''), '') + filter2(l1, null, l1, '', '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
+  //*** parameters common to all examples
+          /// home (initial) navigation path
           initPath: [HomeSegment()],
+          /// how to decode JSON to AppSegments
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
+          /// map TypedSegment's to Screens
           screenBuilder: appSegmentsScreenBuilder,
         );
 ''')) + filter2(l2, 0, l2, '', '', b('''
@@ -318,7 +323,10 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
           screenBuilder: appSegmentsScreenBuilder,
+  //*** new parameters for this example
+          /// mocks the asynchronous screen actions
           segment2AsyncScreenActions: segment2AsyncScreenActions,
+          /// splash screen that appears before the home page is created
           splashBuilder: SplashScreen.new,
         );
 ''')) + filter2(l35, 0, l3, '', '', b('''
@@ -326,15 +334,17 @@ class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          /// the navigation state also depends on the userIsLoggedProvider
-          dependsOn: [userIsLoggedProvider],
           initPath: [HomeSegment()],
           segment2AsyncScreenActions: segment2AsyncScreenActions,
           splashBuilder: SplashScreen.new,
-          //----- the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
+  //*** modified parameters for this example
+  // the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
           json2Segment: (jsonMap, unionKey) => 
               unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
           screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
+  //*** new parameter for this example
+          /// the navigation state also depends on the userIsLoggedProvider
+          dependsOn: [userIsLoggedProvider],
         );
 
   /// mark screens which needs login: every 'id.isOdd' book needs it
@@ -344,10 +354,12 @@ class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          dependsOn: [userIsLoggedProvider],
           initPath: [HomeSegment()],
+          dependsOn: [userIsLoggedProvider],
           splashBuilder: SplashScreen.new,
-          router: AppRouter(), // <========================
+  //*** router configuration.
+  // the router replaces the following par: json2Segment, screenBuilder, segment2AsyncScreenActions
+          router: AppRouter(), 
         );
 
   /// The needLogin logic is handled by the router

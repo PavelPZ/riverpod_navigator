@@ -49,13 +49,17 @@ class AppSegments with _$AppSegments, TypedSegment {
 // *** 2. App-specific navigator
 
 /// - contains actions related to navigation. The actions are then used in the screen widgets.
-/// - configures various navigation properties
+/// - configures various navigation parameters
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
+  //*** parameters common to all examples
+          /// home (initial) navigation path
           initPath: [HomeSegment()],
+          /// how to decode JSON to AppSegments
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
+          /// map TypedSegment's to Screens
           screenBuilder: appSegmentsScreenBuilder,
         );
 

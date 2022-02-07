@@ -32,7 +32,6 @@ part 'lesson03.g.dart';
 // - login application logic (where some pages are not available without a logged in user)
 // - more TypedPath roots (AppSegments and LoginSegments)
 // - navigation state also depends on another provider (userIsLoggedProvider)
-// - extension of the Lesson02
 // 
 // 
 // *************************************
@@ -63,11 +62,13 @@ class LoginSegments with _$LoginSegments, TypedSegment {
 // *** 1.1. async screen actions
 
 /// Each screen may require an asynchronous action during its creation, merging, or deactivating.
+/// The asynchronous result is then provided to the screen widget.
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
-  /// helper for simulating asynchronous action
-  Future<String> simulateAsyncResult(String title, int msec) async {
+  // 
+  /// helper for simulating asynchronous action. Its result is then provided to the screen widget.
+  Future<String> simulateAsyncResult(String asyncResult, int msec) async {
     await Future.delayed(Duration(milliseconds: msec));
-    return title;
+    return asyncResult;
   }
 
   if (segment is! AppSegments) return null;
@@ -96,20 +97,22 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 // *** 2. App-specific navigator
 
 /// - contains actions related to navigation. The actions are then used in the screen widgets.
-/// - configures various navigation properties
+/// - configures various navigation parameters
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          /// the navigation state also depends on the userIsLoggedProvider
-          dependsOn: [userIsLoggedProvider],
           initPath: [HomeSegment()],
           segment2AsyncScreenActions: segment2AsyncScreenActions,
           splashBuilder: SplashScreen.new,
-          //----- the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
+  //*** modified parameters for this example
+  // the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
           json2Segment: (jsonMap, unionKey) => 
               unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
           screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
+  //*** new parameter for this example
+          /// the navigation state also depends on the userIsLoggedProvider
+          dependsOn: [userIsLoggedProvider],
         );
 
   /// mark screens which needs login: every 'id.isOdd' book needs it

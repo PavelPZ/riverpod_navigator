@@ -10,13 +10,15 @@ See [lesson02.dart source code](/examples/doc/lib/src/lesson02/lesson02.dart)
 ### 1.1. async screen actions
 
 Each screen may require an asynchronous action during its creation, merging, or deactivating.
+The asynchronous result is then provided to the screen widget.
 
 ```dart
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
-  /// helper for simulating asynchronous action
-  Future<String> simulateAsyncResult(String title, int msec) async {
+  // 
+  /// helper for simulating asynchronous action. Its result is then provided to the screen widget.
+  Future<String> simulateAsyncResult(String asyncResult, int msec) async {
     await Future.delayed(Duration(milliseconds: msec));
-    return title;
+    return asyncResult;
   }
 
   if (segment is! AppSegments) return null;
@@ -40,8 +42,7 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
 
 ### 2. App-specific navigator
 
-- contains actions related to navigation. The actions are then used in the screen widgets.
-- configures various navigation properties
+
 
 ```dart
 class AppNavigator extends RiverpodNavigator {
@@ -51,7 +52,10 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
           screenBuilder: appSegmentsScreenBuilder,
+  //*** new parameters for this example
+          /// mocks the asynchronous screen actions
           segment2AsyncScreenActions: segment2AsyncScreenActions,
+          /// splash screen that appears before the home page is created
           splashBuilder: SplashScreen.new,
         );
 ```

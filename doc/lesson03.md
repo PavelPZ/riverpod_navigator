@@ -5,7 +5,6 @@ It enriches  [lesson02](/doc/lesson02.md)  by:
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
 - navigation state also depends on another provider (userIsLoggedProvider)
-- extension of the Lesson02
 
 See [lesson03.dart source code](/examples/doc/lib/src/lesson03/lesson03.dart)
 
@@ -19,23 +18,24 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 
 ### 2. App-specific navigator
 
-- contains actions related to navigation. The actions are then used in the screen widgets.
-- configures various navigation properties
+
 
 ```dart
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          /// the navigation state also depends on the userIsLoggedProvider
-          dependsOn: [userIsLoggedProvider],
           initPath: [HomeSegment()],
           segment2AsyncScreenActions: segment2AsyncScreenActions,
           splashBuilder: SplashScreen.new,
-          //----- the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
+  //*** modified parameters for this example
+  // the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
           json2Segment: (jsonMap, unionKey) => 
               unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
           screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
+  //*** new parameter for this example
+          /// the navigation state also depends on the userIsLoggedProvider
+          dependsOn: [userIsLoggedProvider],
         );
 
   /// mark screens which needs login: every 'id.isOdd' book needs it
