@@ -36,6 +36,7 @@ class AppNavigator extends RiverpodNavigator {
             page2: Page2Screen.new,
           ),
         );
+
   static const title = 'GoRouter Example: main';
 }
 
