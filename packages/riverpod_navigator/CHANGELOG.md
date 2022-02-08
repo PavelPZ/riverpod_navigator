@@ -1,3 +1,7 @@
+## 0.7.0
+
+Modified Readme
+
 ## 0.6.0
 
 Fixing documentation

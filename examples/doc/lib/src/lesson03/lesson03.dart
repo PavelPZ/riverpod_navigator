@@ -17,7 +17,7 @@ part 'lesson03.g.dart';
 
 // *************************************
 // Lesson03
-// Lesson03 is [lesson02](/doc/lesson02.md) extended by:
+// Lesson03 is [lesson02](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson02.md) extended by:
 // 
 // - login application logic (where some pages are not available without a logged in user)
 // - more TypedPath roots (AppSegments and LoginSegments)

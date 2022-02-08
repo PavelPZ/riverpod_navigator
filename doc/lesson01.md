@@ -1,7 +1,7 @@
 
 ### Lesson01
 
-(whole example see at [lesson01.dart source code](/examples/doc/lib/src/lesson01/lesson01.dart))
+(whole example see at [lesson01.dart source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/lesson01/lesson01.dart))
 
 
 ### 1. define classes for typed path segments (aka TypedSegment)
@@ -103,7 +103,7 @@ void runMain() => runApp(
 
 ### 5. Map TypedSegment's to Screens
 
-You can view all application screens and widgets here: [screen.dart source code](/examples/doc/lib/src/lesson01/screens.dart)
+You can view all application screens and widgets here: [screen.dart source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/lesson01/screens.dart)
 
 ```dart
 final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
@@ -117,29 +117,29 @@ final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegme
 ## Other lessons:
 
 ### Lesson02
-Lesson02 is [lesson01](/doc/lesson01.md) enhanced with:
+Lesson02 is [lesson01](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson01.md) enhanced with:
 
 - asynchronous navigation when screens require some asynchronous actions (when creating, deactivating, or merging)
 - the splash screen appears before the HomeScreen is displayed
 
-See [lesson02 documentation](/doc/lesson02.md)
+See [lesson02 documentation](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson02.md)
 
 ### Lesson03
-Lesson03 is [lesson02](/doc/lesson02.md) extended by:
+Lesson03 is [lesson02](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson02.md) extended by:
 
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
 - navigation state also depends on another provider (userIsLoggedProvider)
 
-See [lesson03 documentation](/doc/lesson03.md)
+See [lesson03 documentation](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson03.md)
 
 ### Lesson04
-Lesson04 is [lesson03](/doc/lesson03.md) prepared using the router concept.
+Lesson04 is [lesson03](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson03.md) prepared using the router concept.
 
-See [lesson04 documentation](/doc/lesson04.md)
+See [lesson04 documentation](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson04.md)
 
 ### Lesson05
-Lesson05 is the same as [lesson03](/doc/lesson03.md) but without screens and widgets.
+Lesson05 is the same as [lesson03](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson03.md) but without screens and widgets.
 It has not any GUI, only a test.
 
-See [lesson05 documentation](/doc/lesson05.md)
+See [lesson05 documentation](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson05.md)

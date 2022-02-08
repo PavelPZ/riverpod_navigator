@@ -17,7 +17,7 @@ part 'lesson04.g.dart';
 
 // *************************************
 // Lesson04
-// Lesson04 is [lesson03](/doc/lesson03.md) prepared using the router concept.
+// Lesson04 is [lesson03](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson03.md) prepared using the router concept.
 // 
 // 
 // *************************************

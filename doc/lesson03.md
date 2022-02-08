@@ -1,12 +1,12 @@
 
 ## Lesson03
-Lesson03 is [lesson02](/doc/lesson02.md) extended by:
+Lesson03 is [lesson02](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson02.md) extended by:
 
 - login application logic (where some pages are not available without a logged in user)
 - more TypedPath roots (AppSegments and LoginSegments)
 - navigation state also depends on another provider (userIsLoggedProvider)
 
-See [lesson03.dart source code](/examples/doc/lib/src/lesson03/lesson03.dart)
+See [lesson03.dart source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/lesson03/lesson03.dart)
 
 ### 1.2. userIsLoggedProvider
 

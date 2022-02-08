@@ -1,11 +1,11 @@
 
 ## Lesson02
-Lesson02 is [lesson01](/doc/lesson01.md) enhanced with:
+Lesson02 is [lesson01](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson01.md) enhanced with:
 
 - asynchronous navigation when screens require some asynchronous actions (when creating, deactivating, or merging)
 - the splash screen appears before the HomeScreen is displayed
 
-See [lesson02.dart source code](/examples/doc/lib/src/lesson02/lesson02.dart)
+See [lesson02.dart source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/lesson02/lesson02.dart)
 
 ### 1.1. async screen actions
 

@@ -54,10 +54,12 @@ String fileGen(
   String docIgn(String body) => forDoc ? '' : body;
   String codeIgn(String body) => forDoc ? body : '';
 
-  String sourceUrl(String lesson, {bool isScreen = false}) =>
-      '[${isScreen == true ? 'screen' : lesson}.dart source code](/examples/doc/lib/src/$lesson/${isScreen == true ? 'screens' : lesson}.dart)';
+  const rootUrl = 'https://github.com/PavelPZ/riverpod_navigator/blob/main';
 
-  String lessonDocUrl(String lesson, {bool wd = true}) => '[$lesson${wd ? ' documentation' : ''}](/doc/$lesson.md)';
+  String sourceUrl(String lesson, {bool isScreen = false}) =>
+      '[${isScreen == true ? 'screen' : lesson}.dart source code]($rootUrl/examples/doc/lib/src/$lesson/${isScreen == true ? 'screens' : lesson}.dart)';
+
+  String lessonDocUrl(String lesson, {bool wd = true}) => '[$lesson${wd ? ' documentation' : ''}]($rootUrl/doc/$lesson.md)';
 
   final l2hdr = '''
 Lesson02 is ${lessonDocUrl('lesson01', wd: false)} enhanced with:
