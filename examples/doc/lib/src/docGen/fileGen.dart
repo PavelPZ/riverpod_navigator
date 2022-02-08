@@ -316,10 +316,9 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
           screenBuilder: appSegmentsScreenBuilder,
-          // ***** new parameters for this example ******
-          // asynchronous screen actions
+          // new for this example: asynchronous screen actions
           segment2AsyncScreenActions: segment2AsyncScreenActions,
-          // splash screen that appears before the home page is created
+          // new for this example: splash screen that appears before the home page is created
           splashBuilder: SplashScreen.new,
         );
 ''')) + filter2(l3, 0, l3, t('2.1. Navigation parameters', h4: true), '', b('''
@@ -330,12 +329,11 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           segment2AsyncScreenActions: segment2AsyncScreenActions,
           splashBuilder: SplashScreen.new,
-          // ****** new and modified parameters for this example ******
           // the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
           json2Segment: (jsonMap, unionKey) => 
               unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
           screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
-          // the navigation state also depends on the userIsLoggedProvider
+          // new for this example: the navigation state also depends on the userIsLoggedProvider
           dependsOn: [userIsLoggedProvider],
         );
 
@@ -348,14 +346,13 @@ class AppNavigator extends RiverpodNavigator {
           ref,
           initPath: [HomeSegment()],
           segment2AsyncScreenActions: segment2AsyncScreenActions,
-          // remove splashBuilder
-          // splashBuilder: SplashScreen.new,
-          // ****** new and modified parameters for this example ******
+          dependsOn: [userIsLoggedProvider],
           json2Segment: (jsonMap, unionKey) => 
               unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
-          // fake screenBuilder
+          // remove splashBuilder:
+          // splashBuilder: SplashScreen.new,
+          // fake screenBuilder:
           screenBuilder: (segment) => SizedBox(),
-          dependsOn: [userIsLoggedProvider],
         );
 
   /// mark screens which needs login: every 'id.isOdd' book needs it
@@ -446,7 +443,7 @@ class AppNavigator extends RiverpodNavigator {
   Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
 
   Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
-  
+
   Future<void> bookNextPrevButton({bool? isPrev}) {
     assert(currentTypedPath.last is BookSegment);
     var id = (currentTypedPath.last as BookSegment).id;

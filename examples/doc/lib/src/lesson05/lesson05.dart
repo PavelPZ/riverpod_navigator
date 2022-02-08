@@ -98,14 +98,13 @@ class AppNavigator extends RiverpodNavigator {
           ref,
           initPath: [HomeSegment()],
           segment2AsyncScreenActions: segment2AsyncScreenActions,
-          // remove splashBuilder
-          // splashBuilder: SplashScreen.new,
-          // ****** new and modified parameters for this example ******
+          dependsOn: [userIsLoggedProvider],
           json2Segment: (jsonMap, unionKey) => 
               unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
-          // fake screenBuilder
+          // remove splashBuilder:
+          // splashBuilder: SplashScreen.new,
+          // fake screenBuilder:
           screenBuilder: (segment) => SizedBox(),
-          dependsOn: [userIsLoggedProvider],
         );
 
   /// mark screens which needs login: every 'id.isOdd' book needs it
@@ -181,7 +180,7 @@ Future<void> globalLogoutButton() {
   Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
 
   Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
-  
+
   Future<void> bookNextPrevButton({bool? isPrev}) {
     assert(currentTypedPath.last is BookSegment);
     var id = (currentTypedPath.last as BookSegment).id;

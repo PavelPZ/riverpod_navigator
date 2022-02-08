@@ -62,7 +62,7 @@ class AppNavigator extends RiverpodNavigator {
   Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
 
   Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
-  
+
   Future<void> bookNextPrevButton({bool? isPrev}) {
     assert(currentTypedPath.last is BookSegment);
     var id = (currentTypedPath.last as BookSegment).id;

@@ -85,10 +85,9 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
           screenBuilder: appSegmentsScreenBuilder,
-          // ***** new parameters for this example ******
-          // asynchronous screen actions
+          // new for this example: asynchronous screen actions
           segment2AsyncScreenActions: segment2AsyncScreenActions,
-          // splash screen that appears before the home page is created
+          // new for this example: splash screen that appears before the home page is created
           splashBuilder: SplashScreen.new,
         );
 
@@ -100,7 +99,7 @@ class AppNavigator extends RiverpodNavigator {
   Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
 
   Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
-  
+
   Future<void> bookNextPrevButton({bool? isPrev}) {
     assert(currentTypedPath.last is BookSegment);
     var id = (currentTypedPath.last as BookSegment).id;
