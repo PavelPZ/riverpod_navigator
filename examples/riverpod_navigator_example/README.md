@@ -7,9 +7,9 @@ Classic three-screen example [Home] => [Books] => [Book\*].
 
 The example implements a simple login logic: ```Book screen, id=1``` and ```Book screen, id=3``` screens are not available without login.
 
-## New
+> ## News
 
-I successfully used the idea from the example in my new project. 
+> I successfully used the idea from the example in my new project. 
 It seems to me that it could be useful to others. 
 So I prepared a [riverpod_navigator package](https://pub.dev/packages/riverpod_navigator).
 
