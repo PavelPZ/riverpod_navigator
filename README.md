@@ -8,11 +8,11 @@
   Navigation logic can be developed and tested without typing a single flutter widget.
 - **Asynchronous navigation:**<br>
   Prepare all necessary asynchronous operations before the navigation starts, e.g.
-  - save data from the previous screen
   - loading data for new screen
+  - save data from the previous screen
 - **Dependence on external providers:**<br>
-  The navigation state may also depend on external providers, e.g. user login status
-- **Possibility to configure many navigation parameters** (Page builder, Navigator builder, Splash screen)
+  The navigation state may also depend on external providers, e.g. on login status
+- **Possibility to configure many navigation parameters**
 
 ## The mission
 
@@ -36,7 +36,10 @@ The repository verifies the idea of connecting [Riverpod](https://riverpod.dev/)
 
 ## How to use it
 
-The best documentation is a simple source code. See examples of Lesson01, ... Lesson 05 below.
+The best documentation is a simple source code. 
+See an example of the classic ```Home => Books => Book*``` application in Lesson01 ... Lesson05 below.
+Lesson03 ... Lesson05 add a simple login logic.
+
 ### Lesson01
 
 (whole example see at [lesson01.dart source code](/examples/doc/lib/src/lesson01/lesson01.dart))
