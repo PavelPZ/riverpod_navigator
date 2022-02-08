@@ -1,3 +1,7 @@
+## 0.8.0
+
+Absolute urls in readme
+
 ## 0.7.0
 
 Modified Readme

@@ -64,27 +64,21 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 // ********************************************
 
 /// helper class that solves the problem where two providers (on which navigation depends) change in one tick, e.g.
-///
 /// ```
-/// ref.read(userIsLoggedProvider.notifier).update((s) => !s)
-/// ref.read(ongoingTypedPath.notifier).state = [HomeSegment(), BooksSegment()];
+/// ref.read(userIsLoggedProvider.notifier).update((s) => !s) // login state changed
+/// ref.read(ongoingTypedPath.notifier).state = [HomeSegment(), BooksSegment()]; // navigation path changed
 /// ```
-/// without the Defer2NextTick class, [RouterDelegate.notifyListeners] is called twice:
-/// ```
-/// routerDelegate.currentConfiguration = ref.read(ongoingTypedPath);
-/// routerDelegate.doNotifyListener();
-/// ```
+/// without the Defer2NextTick class, [RouterDelegate.notifyListeners] will be called twice in this case.
 class Defer2NextTick {
-  Defer2NextTick({required this.runNextTick});
   Completer? _completer;
-  FutureOr<void> Function() runNextTick;
+  FutureOr<void> Function()? runOnNextTick;
 
-  void start() {
+  void onNavigationStateChanged() {
     if (_completer != null) return;
     _completer = Completer();
     scheduleMicrotask(() async {
       try {
-        final value = runNextTick();
+        final value = runOnNextTick?.call();
         if (value is Future) await value;
         _completer?.complete();
       } catch (e, s) {
@@ -106,20 +100,20 @@ class RiverpodNavigator {
   RiverpodNavigator(this.ref, {required List<AlwaysAliveProviderListenable> dependsOn}) : routerDelegate = RiverpodRouterDelegate() {
     routerDelegate.navigator = this;
 
-    // See Defer2NextTick documenation bellow
-    _defer2NextTick = Defer2NextTick(runNextTick: _runNavigation);
+    // _onNavigationStateChanged is called only once on the next tick
+    defer2NextTick.runOnNextTick = _onNavigationStateChanged;
 
-    // 1. Listen for [ongoingPathProvider, ...dependsOn] riverpod providers - call defer2NextTick.start().
+    // 1. Listen for [ongoingPathProvider, ...dependsOn] riverpod providers - call defer2NextTick.onNavigationStateChanged().
     // 2. Add RemoveListener's to _unlistens
     // 3. Use _unlistens in ref.onDispose
-    final allDepends = <AlwaysAliveProviderListenable>[ongoingPathProvider, ...dependsOn];
-    for (final depend in allDepends) _unlistens.add(ref.listen<dynamic>(depend, (previous, next) => defer2NextTick.start()));
+    for (final depend in dependsOn) _unlistens.add(ref.listen<dynamic>(depend, (previous, next) => defer2NextTick.onNavigationStateChanged()));
     // ignore: avoid_function_literals_in_foreach_calls
     ref.onDispose(() => _unlistens.forEach((f) => f()));
   }
 
-  /// Enter application navigation logic here (redirection, login, etc.). Could be empty.
-  void appNavigationLogic(Ref ref, TypedPath currentPath) {}
+  /// Enter application navigation logic here (redirection, login, etc.).
+  /// It can be empty when no redirect or guard is required.
+  void appNavigationLogic(Ref ref) {}
 
   /// Flutter Navigation 2.0 RouterDelegate
   RiverpodRouterDelegate routerDelegate;
@@ -128,9 +122,9 @@ class RiverpodNavigator {
   @nonVirtual
   TypedPath get currentTypedPath => routerDelegate.currentConfiguration;
 
-  /// synchronize [ongoingPathProvider] with [RiverpodRouterDelegate.currentConfiguration]
-  void _runNavigation() {
-    appNavigationLogic(ref, currentTypedPath);
+  /// synchronize [ongoingPathProvider] with [RouterDelegate.currentConfiguration]
+  void _onNavigationStateChanged() {
+    appNavigationLogic(ref);
     routerDelegate.currentConfiguration = ref.read(ongoingPathProvider);
     routerDelegate.doNotifyListener();
   }
@@ -146,8 +140,7 @@ class RiverpodNavigator {
   @protected
   Ref ref;
 
-  Defer2NextTick get defer2NextTick => _defer2NextTick as Defer2NextTick;
-  Defer2NextTick? _defer2NextTick;
+  final Defer2NextTick defer2NextTick = Defer2NextTick();
 
   /// for ref.onDispose
   final List<Function> _unlistens = [];
@@ -179,19 +172,19 @@ class RiverpodNavigator {
 //   AppNavigator
 // ********************************************
 
-/// ... mark the segments that require login: book with odd id
-bool needsLogin(ExampleSegments segment) => segment is BookSegment && segment.id.isOdd;
-
 /// navigator is available throw riverpodNavigatorProvider
 ///
 /// Navigator state depends on [ongoingPathProvider] and [userIsLoggedProvider] providers
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref) : super(ref, dependsOn: [ongoingPathProvider, userIsLoggedProvider]);
 
+  /// ... mark the segments that require login: book with odd id
+  bool needsLogin(ExampleSegments segment) => segment is BookSegment && segment.id.isOdd;
+
   /// Avoid navigation to [BookSegment] with odd [BookSegment.id] (and instead redirects to [HomeSegment (), BooksSegment ()])
   /// when not logged in
   @override
-  void appNavigationLogic(Ref ref, TypedPath currentPath) {
+  void appNavigationLogic(Ref ref) {
     final userIsLogged = ref.read(userIsLoggedProvider);
     final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
 
