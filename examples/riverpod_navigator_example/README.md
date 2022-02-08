@@ -7,7 +7,7 @@ Classic three-screen example [Home] => [Books] => [Book\*].
 
 The example implements a simple login logic: ```Book screen, id=1``` and ```Book screen, id=3``` screens are not available without login.
 
-**Strictly typed navigation** Is used. You can use ```navigate([Home(), Books(), Book(id: bookId)]);``` instead of ```navigate('home/books/$bookId');``` in your code.
+**Strictly typed navigation** is used. You can use ```navigate([Home(), Books(), Book(id: bookId)]);``` instead of ```navigate('home/books/$bookId');``` in your code.
 
 > ## News
 

@@ -4,10 +4,10 @@
 (whole example see at [lesson01.dart source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/lesson01/lesson01.dart))
 
 
-### 1. define classes for typed path segments (aka TypedSegment)
+### 1. define classes for typed-segments (aka TypedSegment)
 
 From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
-generates three typed segment classes: *HomeSegment, BooksSegment and BookSegment*.
+generates three typed-segment classes: *HomeSegment, BooksSegment and BookSegment*.
 
 ```dart
 @freezed
@@ -38,9 +38,9 @@ class AppNavigator extends RiverpodNavigator {
           ref,
           // home (initial) navigation path
           initPath: [HomeSegment()],
-          // how to decode JSON to AppSegments
+          // how to decode JSON to TypedSegment
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
-          // map TypedSegment's to Screens
+          // map TypedSegment's to navigation-stack Screens
           screenBuilder: appSegmentsScreenBuilder,
         );
 ```

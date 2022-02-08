@@ -26,10 +26,10 @@ part 'lesson03.g.dart';
 // 
 // *************************************
 
-// *** 1. define classes for typed path segments (aka TypedSegment)
+// *** 1. define classes for typed-segments (aka TypedSegment)
 
 /// From the following AppSegments and LoginSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
-/// generates four typed segment classes: *HomeSegment, BooksSegment, BookSegment and LoginHomeSegment*.
+/// generates four typed-segment classes: *HomeSegment, BooksSegment, BookSegment and LoginHomeSegment*.
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {
   AppSegments._();
@@ -102,7 +102,7 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           segment2AsyncScreenActions: segment2AsyncScreenActions,
           splashBuilder: SplashScreen.new,
-          // the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
+          // the following two parameters are modified with respect of two different types of TypedSegment roots: [AppSegments] and [LoginSegments]
           json2Segment: (jsonMap, unionKey) => 
               unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
           screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),

@@ -131,10 +131,10 @@ Lesson07
 ''')) + filter(l7, null, exHeader('''
 -------------------------------------------
 ''')) + filter2(all, l35 + l4, l1, t('''
-1. define classes for typed path segments (aka TypedSegment)
+1. define classes for typed-segments (aka TypedSegment)
 '''), st('''
 From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
-generates three typed segment classes: *HomeSegment, BooksSegment and BookSegment*.
+generates three typed-segment classes: *HomeSegment, BooksSegment and BookSegment*.
 '''), b(''' 
 @freezed
 class AppSegments with _\$AppSegments, TypedSegment {
@@ -146,10 +146,10 @@ class AppSegments with _\$AppSegments, TypedSegment {
   factory AppSegments.fromJson(Map<String, dynamic> json) => _\$AppSegmentsFromJson(json);
 }
 ''')) + filter2(l35 + l4, null, l1, t('''
-1. define classes for typed path segments (aka TypedSegment)
+1. define classes for typed-segments (aka TypedSegment)
 '''), st('''
 From the following AppSegments and LoginSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
-generates four typed segment classes: *HomeSegment, BooksSegment, BookSegment and LoginHomeSegment*.
+generates four typed-segment classes: *HomeSegment, BooksSegment, BookSegment and LoginHomeSegment*.
 '''), b(''' 
 @freezed
 class AppSegments with _\$AppSegments, TypedSegment {
@@ -305,9 +305,9 @@ class AppNavigator extends RiverpodNavigator {
           ref,
           // home (initial) navigation path
           initPath: [HomeSegment()],
-          // how to decode JSON to AppSegments
+          // how to decode JSON to TypedSegment
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
-          // map TypedSegment's to Screens
+          // map TypedSegment's to navigation-stack Screens
           screenBuilder: appSegmentsScreenBuilder,
         );
 ''')) + filter2(l2, 0, l2, t('2.1. Navigation parameters', h4: true), '', b('''
@@ -331,7 +331,7 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           segment2AsyncScreenActions: segment2AsyncScreenActions,
           splashBuilder: SplashScreen.new,
-          // the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
+          // the following two parameters are modified with respect of two different types of TypedSegment roots: [AppSegments] and [LoginSegments]
           json2Segment: (jsonMap, unionKey) => 
               unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
           screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),

@@ -25,10 +25,10 @@ part 'lesson02.g.dart';
 // 
 // *************************************
 
-// *** 1. define classes for typed path segments (aka TypedSegment)
+// *** 1. define classes for typed-segments (aka TypedSegment)
 
 /// From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
-/// generates three typed segment classes: *HomeSegment, BooksSegment and BookSegment*.
+/// generates three typed-segment classes: *HomeSegment, BooksSegment and BookSegment*.
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {
   AppSegments._();

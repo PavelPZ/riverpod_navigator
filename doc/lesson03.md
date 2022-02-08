@@ -30,7 +30,7 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           segment2AsyncScreenActions: segment2AsyncScreenActions,
           splashBuilder: SplashScreen.new,
-          // the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
+          // the following two parameters are modified with respect of two different types of TypedSegment roots: [AppSegments] and [LoginSegments]
           json2Segment: (jsonMap, unionKey) => 
               unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
           screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
