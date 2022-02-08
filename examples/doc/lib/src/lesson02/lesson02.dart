@@ -76,7 +76,7 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
 /// - contains actions related to navigation. The actions are then used in the screen widgets.
 
 
-// *** Navigation parameters
+// *** 2.1. Navigation parameters
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)

@@ -1,5 +1,5 @@
 
-### Lesson02
+## Lesson02
 Lesson02 is [lesson01](/doc/lesson01.md) enhanced with:
 
 - asynchronous navigation when screens require some asynchronous actions (when creating, deactivating, or merging)
@@ -42,7 +42,7 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
 
 ### 2. Type App-specific navigator (aka AppNavigator)
 
-### Navigation parameters
+#### 2.1. Navigation parameters
 
 
 

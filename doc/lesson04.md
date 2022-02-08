@@ -1,12 +1,12 @@
 
-### Lesson04
+## Lesson04
 Lesson04 is [lesson03](/doc/lesson03.md) prepared using the router concept.
 
 See [lesson04.dart source code](/examples/doc/lib/src/lesson04/lesson04.dart)
 
 ### 2. Type App-specific navigator (aka AppNavigator)
 
-### Navigation parameters
+#### 2.1. Navigation parameters
 
 
 

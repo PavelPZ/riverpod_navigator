@@ -1,5 +1,5 @@
 
-### Lesson03
+## Lesson03
 Lesson03 is [lesson02](/doc/lesson02.md) extended by:
 
 - login application logic (where some pages are not available without a logged in user)
@@ -18,7 +18,7 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 
 ### 2. Type App-specific navigator (aka AppNavigator)
 
-### Navigation parameters
+#### 2.1. Navigation parameters
 
 
 

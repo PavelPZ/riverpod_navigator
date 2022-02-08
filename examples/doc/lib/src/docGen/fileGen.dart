@@ -50,7 +50,7 @@ String fileGen(
   String st(String subTitle) => (subTitle = subTitle.trim()).isEmpty ? '' : (forDoc ? '$subTitle' : '${comment(subTitle)}\n');
   String b(String body) => (body = body.trim()).isEmpty ? '' : (forDoc ? '\n\n```dart\n$body\n```\n\n' : '$body\n\n');
 
-  String lName(String name) => forDoc ? '### $name' : name;
+  String lName(String name, {bool h2 = true}) => forDoc ? (h2 ? '## ' : '### ') + name : name;
   String docIgn(String body) => forDoc ? '' : body;
   String codeIgn(String body) => forDoc ? body : '';
 
@@ -105,7 +105,7 @@ part 'lesson$lessonId.freezed.dart';
 part 'lesson$lessonId.g.dart';
 ''')) + filter(forDoc ? 0 : all, null, comment('''
 ''', twoSlash: true)) + filter(l1, null, exHeader('''
-${lName('Lesson01')}${codeIgn('\n\n(whole example see at ${sourceUrl('lesson01')})\n')}
+${lName('Lesson01', h2: false)}${codeIgn('\n\n(whole example see at ${sourceUrl('lesson01')})\n')}
 ''')) + filter(l2, null, exHeader('''
 ${lName('Lesson02')}
 $l2hdr
@@ -296,9 +296,7 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 AppNavigator is a singleton class that does the following:
 - configures various navigation parameters 
 - contains actions related to navigation. The actions are then used in the screen widgets.
-'''), '\n\n') + filter2(l1, null, l1, t('''
-2.1. Navigation parameters
-''', h4: true), '', b('''
+'''), '\n\n') + filter2(l1, null, l1, t('2.1. Navigation parameters', h4: true), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -310,7 +308,7 @@ class AppNavigator extends RiverpodNavigator {
           // map TypedSegment's to Screens
           screenBuilder: appSegmentsScreenBuilder,
         );
-''')) + filter2(l2, 0, l2, t('Navigation parameters'), '', b('''
+''')) + filter2(l2, 0, l2, t('2.1. Navigation parameters', h4: true), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -324,7 +322,7 @@ class AppNavigator extends RiverpodNavigator {
           // splash screen that appears before the home page is created
           splashBuilder: SplashScreen.new,
         );
-''')) + filter2(l3, 0, l3, t('Navigation parameters'), '', b('''
+''')) + filter2(l3, 0, l3, t('2.1. Navigation parameters', h4: true), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -343,7 +341,7 @@ class AppNavigator extends RiverpodNavigator {
 
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
-''')) + filter2(l5, 0, l5, t('Navigation parameters'), '', b('''
+''')) + filter2(l5, 0, l5, t('2.1. Navigation parameters', h4: true), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -362,7 +360,7 @@ class AppNavigator extends RiverpodNavigator {
 
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
-''')) + filter2(l4, 0, l4, t('Navigation parameters'), '', b('''
+''')) + filter2(l4, 0, l4, t('2.1. Navigation parameters', h4: true), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
