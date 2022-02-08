@@ -38,6 +38,7 @@ It validates the idea of collaboration [Riverpod](https://riverpod.dev/) + [Free
 This chapter is inspired by [Examples of go_router using riverpod](https://github.com/rrousselGit/river_pod/issues/1122).
 
 | example | go_router | code lines | riverpod_navigator | code lines |
+| --- | --- | --- | --- | --- |
 | main | [source](https://github.com/csells/go_router/blob/main/go_router/example/lib/main.dart) | 70 | [source](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/go_router/lib/main.dart) | 84  |
 | redirection | [source](https://github.com/csells/go_router/blob/main/go_router/example/lib/redirection.dart) | 167 | [source](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/go_router/lib/redirection.dart) | 149 |
 
