@@ -40,9 +40,9 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
 }
 ```
 
-### 2. App-specific navigator
+### 2. Type App-specific navigator (aka AppNavigator)
 
-### Basic navigation parameters
+### Navigation parameters
 
 
 
@@ -55,10 +55,13 @@ class AppNavigator extends RiverpodNavigator {
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
           screenBuilder: appSegmentsScreenBuilder,
           // ***** new parameters for this example ******
-          // simulate the asynchronous screen actions
+          // asynchronous screen actions
           segment2AsyncScreenActions: segment2AsyncScreenActions,
           // splash screen that appears before the home page is created
           splashBuilder: SplashScreen.new,
         );
 ```
 
+}
+
+const booksLen = 5;

@@ -46,7 +46,7 @@ String fileGen(
   String comment(String body, {bool twoSlash = false}) =>
       forDoc ? '\n$body\n' : LineSplitter().convert(body).map((l) => '${twoSlash ? '//' : '///'} $l').join('\n');
 
-  String t(String title) => (title = title.trim()).isEmpty ? '' : (forDoc ? '### ' : '// *** ') + '$title\n\n';
+  String t(String title, {bool h4 = false}) => (title = title.trim()).isEmpty ? '' : (forDoc ? (h4 ? '#### ' : '### ') : '// *** ') + '$title\n\n';
   String st(String subTitle) => (subTitle = subTitle.trim()).isEmpty ? '' : (forDoc ? '$subTitle' : '${comment(subTitle)}\n');
   String b(String body) => (body = body.trim()).isEmpty ? '' : (forDoc ? '\n\n```dart\n$body\n```\n\n' : '$body\n\n');
 
@@ -76,7 +76,8 @@ Lesson03 is ${lessonDocUrl('lesson02', wd: false)} extended by:
 Lesson04 is ${lessonDocUrl('lesson03', wd: false)} prepared using the router concept.
 ''';
   final l5hdr = '''
-Lesson05 includes a test for ${lessonDocUrl('lesson03', wd: false)}.
+Lesson05 is the same as ${lessonDocUrl('lesson03', wd: false)} but without screens and widgets.
+It has not any GUI, only a test.
 ''';
 
   String exHeader(String body) => forDoc
@@ -87,47 +88,59 @@ ${comment(body, twoSlash: true)}
 // *************************************\n
 ''';
 
-  String lessonGen() => filter(forDoc ? 0 : all, null, b('''
+  String lessonGen() =>
+      filter(forDoc ? 0 : all, null, b('''
 // ignore: unused_import
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+// ignore: unused_import
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-import 'screens.dart';
+${id == 5 ? '' : 'import \'screens.dart\';'}
 
 part 'lesson$lessonId.freezed.dart';
 part 'lesson$lessonId.g.dart';
-''')) + filter(forDoc ? 0 : all, null, comment('''
-''', twoSlash: true)) + filter(l1, null, exHeader('''
+''')) +
+      filter(forDoc ? 0 : all, null, comment('''
+''', twoSlash: true)) +
+      filter(l1, null, exHeader('''
 ${lName('Lesson01')}${codeIgn('\n\n(whole example see at ${sourceUrl('lesson01')})\n')}
-''')) + filter(l2, null, exHeader('''
+''')) +
+      filter(l2, null, exHeader('''
 ${lName('Lesson02')}
 $l2hdr
 ${codeIgn('See ${sourceUrl('lesson02')}')}
-''')) + filter(l3, null, exHeader('''
+''')) +
+      filter(l3, null, exHeader('''
 ${lName('Lesson03')}
 $l3hdr
 ${codeIgn('See ${sourceUrl('lesson03')}')}
-''')) + filter(l4, null, exHeader('''
+''')) +
+      filter(l4, null, exHeader('''
 ${lName('Lesson04')}
 $l4hdr
 ${codeIgn('See ${sourceUrl('lesson04')}')}
-''')) + filter(l5, null, exHeader('''
+''')) +
+      filter(l5, null, exHeader('''
 ${lName('Lesson05')}
 $l5hdr
-See the source code of the test here: [lesson03_test.dart](/examples/doc/test/lesson03_test.dart).
-''')) + filter(l6, null, exHeader('''
+See the source code of the test here: [lesson05_test.dart](/examples/doc/test/lesson05_test.dart).
+''')) +
+      filter(l6, null, exHeader('''
 Lesson06
-''')) + filter(l7, null, exHeader('''
+''')) +
+      filter(l7, null, exHeader('''
 Lesson07
-''')) + filter(l7, null, exHeader('''
+''')) +
+      filter(l7, null, exHeader('''
 -------------------------------------------
-''')) + filter2(all, l35 + l4, l1, t('''
-1. classes for typed path segments (aka TypedSegment)
+''')) +
+      filter2(all, l35 + l4, l1, t('''
+1. define classes for typed path segments (aka TypedSegment)
 '''), st('''
 From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
 generates three typed segment classes: *HomeSegment, BooksSegment and BookSegment*.
@@ -141,8 +154,9 @@ class AppSegments with _\$AppSegments, TypedSegment {
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _\$AppSegmentsFromJson(json);
 }
-''')) + filter2(l35 + l4, null, l1, t('''
-1. classes for typed path segments (aka TypedSegment)
+''')) +
+      filter2(l35 + l4, null, l1, t('''
+1. define classes for typed path segments (aka TypedSegment)
 '''), st('''
 From the following AppSegments and LoginSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
 generates four typed segment classes: *HomeSegment, BooksSegment, BookSegment and LoginHomeSegment*.
@@ -167,7 +181,8 @@ class LoginSegments with _\$LoginSegments, TypedSegment {
   factory LoginSegments.fromJson(Map<String, dynamic> json) => _\$LoginSegmentsFromJson(json);
   static const String jsonNameSpace = '_login';
 }
-''')) + filter2(l2 + l35, null, l2, t('''
+''')) +
+      filter2(l2 + l35, null, l2, t('''
 1.1. async screen actions  
 '''), st('''
 Each screen may require an asynchronous action during its creation, merging, or deactivating.
@@ -198,7 +213,8 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
     orElse: () => null,
   );
 }
-''')) + filter2(l4, null, l1, t('''
+''')) +
+      filter2(l4, null, l1, t('''
 1.1. App route definition
 '''), st('''
 '''), b('''
@@ -282,21 +298,25 @@ Future<String> _simulateAsyncResult(String title, int msec) async {
   await Future.delayed(Duration(milliseconds: msec));
   return title;
 }
-''')) + filter2(l35 + l4, 0, l3, t('''
+''')) +
+      filter2(l35 + l4, 0, l3, t('''
 1.2. userIsLoggedProvider
 '''), st('''
 the navigation state also depends on the following [userIsLoggedProvider]
 '''), b('''
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
-''')) + filter2(all, 0, all - l5, t('''
-2. App-specific navigator
-'''), st(''), b('')) + filter2(all, 0, l1, '', st('''
+''')) +
+      filter2(all, 0, all - l5, t('''
+2. Type App-specific navigator (aka AppNavigator)
+'''), st(''), b('')) +
+      filter2(all, 0, l1, '', st('''
 AppNavigator is a singleton class that does the following:
 - configures various navigation parameters 
 - contains actions related to navigation. The actions are then used in the screen widgets.
-'''), '') + filter2(l1, null, l1, t('''
-Basic xxnavigation parameters
-'''), '', b('''
+'''), '\n\n') +
+      filter2(l1, null, l1, t('''
+2.1. Navigation parameters
+''', h4: true), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -308,7 +328,8 @@ class AppNavigator extends RiverpodNavigator {
           // map TypedSegment's to Screens
           screenBuilder: appSegmentsScreenBuilder,
         );
-''')) + filter2(l2, 0, l2, t('Basic navigation parameters'), '', b('''
+''')) +
+      filter2(l2, 0, l2, t('Navigation parameters'), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -317,12 +338,13 @@ class AppNavigator extends RiverpodNavigator {
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
           screenBuilder: appSegmentsScreenBuilder,
           // ***** new parameters for this example ******
-          // simulate the asynchronous screen actions
+          // asynchronous screen actions
           segment2AsyncScreenActions: segment2AsyncScreenActions,
           // splash screen that appears before the home page is created
           splashBuilder: SplashScreen.new,
         );
-''')) + filter2(l35, 0, l3, t('Basic navigation parameters'), '', b('''
+''')) +
+      filter2(l3, 0, l3, t('Navigation parameters'), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -341,7 +363,28 @@ class AppNavigator extends RiverpodNavigator {
 
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
-''')) + filter2(l4, 0, l4, t('Basic navigation parameters'), '', b('''
+''')) +
+      filter2(l5, 0, l5, t('Navigation parameters'), '', b('''
+class AppNavigator extends RiverpodNavigator {
+  AppNavigator(Ref ref)
+      : super(
+          ref,
+          initPath: [HomeSegment()],
+          segment2AsyncScreenActions: segment2AsyncScreenActions,
+          // remove splashBuilder
+          // splashBuilder: SplashScreen.new,
+          // ****** new and modified parameters for this example ******
+          json2Segment: (jsonMap, unionKey) => 
+              unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
+          // fake screenBuilder
+          screenBuilder: (segment) => SizedBox(),
+          dependsOn: [userIsLoggedProvider],
+        );
+
+  /// mark screens which needs login: every 'id.isOdd' book needs it
+  bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
+''')) +
+      filter2(l4, 0, l4, t('Navigation parameters'), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -349,16 +392,17 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           dependsOn: [userIsLoggedProvider],
           splashBuilder: SplashScreen.new,
-  //*** router configuration.
-  // the router replaces the following par: json2Segment, screenBuilder, segment2AsyncScreenActions
+          //******* router configuration ********
+          // the router replaces the following parameters: json2Segment, screenBuilder, segment2AsyncScreenActions
           router: AppRouter(), 
         );
 
   /// The needLogin logic is handled by the router
   bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin(segment);
-''')) + filter2(l35 + l4, 0, l3, t('''
-Login app logic
-'''), '', b('''
+''')) +
+      filter2(l35 + l4, 0, l3, t('''
+2.1. Login app logic
+''', h4: true), '', b('''
   @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
@@ -381,12 +425,11 @@ Login app logic
       // user logged and navigation to Login page => redirect to home
       if (ongoingNotifier.state.isEmpty || ongoingNotifier.state.last is LoginHomeSegment) ongoingNotifier.state = [HomeSegment()];
     }
-    // here can be async action for <oldPath, ongoingNotifier.state> pair
-    return null;
   }
-''')) + filter2(l35 + l4, 0, l3, t('''
-Login specific navigation actions
-'''), '', b('''
+''')) +
+      filter2(l35 + l4, 0, l3, t('''
+2.1. Login specific navigation actions
+''', h4: true), '', b('''
   Future<void> globalLogoutButton() {
     final loginNotifier = ref.read(userIsLoggedProvider.notifier);
     // checking
@@ -420,9 +463,10 @@ Login specific navigation actions
 
     return navigationCompleted; // wait for the navigation to end
   }
-''')) + filter2(all, null, l1, t('''
-Common navigation actions
-'''), '', b('''
+''')) +
+      filter2(all, null, l1, t('''
+2.2. Common navigation actions
+''', h4: true), '', b('''
 //
   Future<void> toHome() => navigate([HomeSegment()]);
   Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
@@ -436,9 +480,13 @@ Common navigation actions
       id = booksLen - 1 > id ? id + 1 : 0;
     return toBook(id: id);
   }
-''')) + filter2(all, null, 0, '', '', b('''
+''')) +
+      '''
 }
-''')) + filter2(all, null, l1, t('''
+
+const booksLen = 5;
+''' +
+      filter2(all, l5, l1, t('''
 3. Root widget
 '''), st('''
 Note: *To make it less verbose, we use the functional_widget package to generate widgets.
@@ -454,7 +502,8 @@ Widget booksExampleApp(WidgetRef ref) {
     debugShowCheckedModeBanner: false,
   );
 }
-''')) + filter2(all, null, l1, t('''
+''')) +
+      filter2(all, l5, l1, t('''
 4. App entry point
 '''), st('''
 app entry point with ProviderScope's override
@@ -467,8 +516,8 @@ void runMain() => runApp(
       child: const BooksExampleApp(),
     ),
   );
-const booksLen = 5;
-''')) + codeIgn(filter2(l5, null, l5, 'Ukázka testu', '', b('''
+''')) +
+      codeIgn(filter2(l5, null, l5, 'Ukázka testu', '', b('''
 //
     //**********
     // log in tests

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+// ignore: unused_import
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
@@ -21,7 +22,7 @@ part 'lesson04.g.dart';
 // 
 // *************************************
 
-// *** 1. classes for typed path segments (aka TypedSegment)
+// *** 1. define classes for typed path segments (aka TypedSegment)
 
 /// From the following AppSegments and LoginSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
 /// generates four typed segment classes: *HomeSegment, BooksSegment, BookSegment and LoginHomeSegment*.
@@ -134,12 +135,14 @@ Future<String> _simulateAsyncResult(String title, int msec) async {
 /// the navigation state also depends on the following [userIsLoggedProvider]
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
 
-// *** 2. App-specific navigator
+// *** 2. Type App-specific navigator (aka AppNavigator)
 
 /// AppNavigator is a singleton class that does the following:
 /// - configures various navigation parameters 
 /// - contains actions related to navigation. The actions are then used in the screen widgets.
-// *** Basic navigation parameters
+
+
+// *** Navigation parameters
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
@@ -148,15 +151,15 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           dependsOn: [userIsLoggedProvider],
           splashBuilder: SplashScreen.new,
-  //*** router configuration.
-  // the router replaces the following par: json2Segment, screenBuilder, segment2AsyncScreenActions
+          //******* router configuration ********
+          // the router replaces the following parameters: json2Segment, screenBuilder, segment2AsyncScreenActions
           router: AppRouter(), 
         );
 
   /// The needLogin logic is handled by the router
   bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin(segment);
 
-// *** Login app logic
+// *** 2.1. Login app logic
 
 @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
@@ -180,11 +183,9 @@ class AppNavigator extends RiverpodNavigator {
       // user logged and navigation to Login page => redirect to home
       if (ongoingNotifier.state.isEmpty || ongoingNotifier.state.last is LoginHomeSegment) ongoingNotifier.state = [HomeSegment()];
     }
-    // here can be async action for <oldPath, ongoingNotifier.state> pair
-    return null;
   }
 
-// *** Login specific navigation actions
+// *** 2.1. Login specific navigation actions
 
 Future<void> globalLogoutButton() {
     final loginNotifier = ref.read(userIsLoggedProvider.notifier);
@@ -220,7 +221,7 @@ Future<void> globalLogoutButton() {
     return navigationCompleted; // wait for the navigation to end
   }
 
-// *** Common navigation actions
+// *** 2.2. Common navigation actions
 
 //
   Future<void> toHome() => navigate([HomeSegment()]);
@@ -238,6 +239,7 @@ Future<void> globalLogoutButton() {
 
 }
 
+const booksLen = 5;
 // *** 3. Root widget
 
 /// Note: *To make it less verbose, we use the functional_widget package to generate widgets.
@@ -264,5 +266,4 @@ void runMain() => runApp(
       child: const BooksExampleApp(),
     ),
   );
-const booksLen = 5;
 

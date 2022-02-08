@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+// ignore: unused_import
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
@@ -12,13 +13,15 @@ import 'screens.dart';
 part 'lesson01.freezed.dart';
 part 'lesson01.g.dart';
 
+
+
 // *************************************
 // Lesson01
 // *************************************
 
-// *** 1. classes for typed path segments (aka TypedSegment)
+// *** 1. define classes for typed path segments (aka TypedSegment)
 
-/// From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed)
+/// From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
 /// generates three typed segment classes: *HomeSegment, BooksSegment and BookSegment*.
 @freezed
 class AppSegments with _$AppSegments, TypedSegment {
@@ -30,12 +33,14 @@ class AppSegments with _$AppSegments, TypedSegment {
   factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
 }
 
-// *** 2. App-specific navigator
+// *** 2. Type App-specific navigator (aka AppNavigator)
 
 /// AppNavigator is a singleton class that does the following:
-/// - configures various navigation parameters
+/// - configures various navigation parameters 
 /// - contains actions related to navigation. The actions are then used in the screen widgets.
-// *** Basic xxnavigation parameters
+
+
+// *** 2.1. Navigation parameters
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
@@ -49,7 +54,7 @@ class AppNavigator extends RiverpodNavigator {
           screenBuilder: appSegmentsScreenBuilder,
         );
 
-// *** Common navigation actions
+// *** 2.2. Common navigation actions
 
 //
   Future<void> toHome() => navigate([HomeSegment()]);
@@ -64,8 +69,10 @@ class AppNavigator extends RiverpodNavigator {
       id = booksLen - 1 > id ? id + 1 : 0;
     return toBook(id: id);
   }
+
 }
 
+const booksLen = 5;
 // *** 3. Root widget
 
 /// Note: *To make it less verbose, we use the functional_widget package to generate widgets.
@@ -85,11 +92,11 @@ Widget booksExampleApp(WidgetRef ref) {
 
 /// app entry point with ProviderScope's override
 void runMain() => runApp(
-      ProviderScope(
-        overrides: [
-          riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new /*See Constructor tear-offs in Dart ^2.15*/),
-        ],
-        child: const BooksExampleApp(),
-      ),
-    );
-const booksLen = 5;
+    ProviderScope(
+      overrides: [
+        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new /*See Constructor tear-offs in Dart ^2.15*/),
+      ],
+      child: const BooksExampleApp(),
+    ),
+  );
+

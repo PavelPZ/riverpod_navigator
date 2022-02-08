@@ -4,9 +4,9 @@ Lesson04 is [lesson03](/doc/lesson03.md) prepared using the router concept.
 
 See [lesson04.dart source code](/examples/doc/lib/src/lesson04/lesson04.dart)
 
-### 2. App-specific navigator
+### 2. Type App-specific navigator (aka AppNavigator)
 
-### Basic navigation parameters
+### Navigation parameters
 
 
 
@@ -18,8 +18,8 @@ class AppNavigator extends RiverpodNavigator {
           initPath: [HomeSegment()],
           dependsOn: [userIsLoggedProvider],
           splashBuilder: SplashScreen.new,
-  //*** router configuration.
-  // the router replaces the following par: json2Segment, screenBuilder, segment2AsyncScreenActions
+          //******* router configuration ********
+          // the router replaces the following parameters: json2Segment, screenBuilder, segment2AsyncScreenActions
           router: AppRouter(), 
         );
 
@@ -27,3 +27,6 @@ class AppNavigator extends RiverpodNavigator {
   bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin(segment);
 ```
 
+}
+
+const booksLen = 5;

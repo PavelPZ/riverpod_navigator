@@ -16,9 +16,9 @@ the navigation state also depends on the following [userIsLoggedProvider]
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
 ```
 
-### 2. App-specific navigator
+### 2. Type App-specific navigator (aka AppNavigator)
 
-### Basic navigation parameters
+### Navigation parameters
 
 
 
@@ -43,7 +43,7 @@ class AppNavigator extends RiverpodNavigator {
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 ```
 
-### Login app logic
+#### 2.1. Login app logic
 
 
 
@@ -70,12 +70,10 @@ class AppNavigator extends RiverpodNavigator {
       // user logged and navigation to Login page => redirect to home
       if (ongoingNotifier.state.isEmpty || ongoingNotifier.state.last is LoginHomeSegment) ongoingNotifier.state = [HomeSegment()];
     }
-    // here can be async action for <oldPath, ongoingNotifier.state> pair
-    return null;
   }
 ```
 
-### Login specific navigation actions
+#### 2.1. Login specific navigation actions
 
 
 
@@ -115,3 +113,6 @@ Future<void> globalLogoutButton() {
   }
 ```
 
+}
+
+const booksLen = 5;

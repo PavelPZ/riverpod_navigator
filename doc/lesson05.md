@@ -1,9 +1,38 @@
 
 ### Lesson05
-Lesson05 includes a test for [lesson03](/doc/lesson03.md).
+Lesson05 is the same as [lesson03](/doc/lesson03.md) but without screens and widgets.
+It has not any GUI, only a test.
 
-See the source code of the test here: [lesson03_test.dart](/examples/doc/test/lesson03_test.dart).
+See the source code of the test here: [lesson05_test.dart](/examples/doc/test/lesson05_test.dart).
 
+### Navigation parameters
+
+
+
+```dart
+class AppNavigator extends RiverpodNavigator {
+  AppNavigator(Ref ref)
+      : super(
+          ref,
+          initPath: [HomeSegment()],
+          segment2AsyncScreenActions: segment2AsyncScreenActions,
+          // remove splashBuilder
+          // splashBuilder: SplashScreen.new,
+          // ****** new and modified parameters for this example ******
+          json2Segment: (jsonMap, unionKey) => 
+              unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
+          // fake screenBuilder
+          screenBuilder: (segment) => SizedBox(),
+          dependsOn: [userIsLoggedProvider],
+        );
+
+  /// mark screens which needs login: every 'id.isOdd' book needs it
+  bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
+```
+
+}
+
+const booksLen = 5;
 Ukázka testu
 
 ```dart

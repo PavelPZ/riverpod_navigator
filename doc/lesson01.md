@@ -4,7 +4,7 @@
 (whole example see at [lesson01.dart source code](/examples/doc/lib/src/lesson01/lesson01.dart))
 
 
-### 1. classes for typed path segments (aka TypedSegment)
+### 1. define classes for typed path segments (aka TypedSegment)
 
 From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
 generates three typed segment classes: *HomeSegment, BooksSegment and BookSegment*.
@@ -21,11 +21,13 @@ class AppSegments with _$AppSegments, TypedSegment {
 }
 ```
 
-### 2. App-specific navigator
+### 2. Type App-specific navigator (aka AppNavigator)
 
 AppNavigator is a singleton class that does the following:
 - configures various navigation parameters 
-- contains actions related to navigation. The actions are then used in the screen widgets.### Basic xxnavigation parameters
+- contains actions related to navigation. The actions are then used in the screen widgets.
+
+#### 2.1. Navigation parameters
 
 
 
@@ -43,7 +45,7 @@ class AppNavigator extends RiverpodNavigator {
         );
 ```
 
-### Common navigation actions
+#### 2.2. Common navigation actions
 
 
 
@@ -63,6 +65,9 @@ class AppNavigator extends RiverpodNavigator {
   }
 ```
 
+}
+
+const booksLen = 5;
 ### 3. Root widget
 
 Note: *To make it less verbose, we use the functional_widget package to generate widgets.
@@ -94,7 +99,6 @@ void runMain() => runApp(
       child: const BooksExampleApp(),
     ),
   );
-const booksLen = 5;
 ```
 
 ### 5. Map TypedSegment's to Screens
@@ -135,6 +139,7 @@ Lesson04 is [lesson03](/doc/lesson03.md) prepared using the router concept.
 See [lesson04 documentation](/doc/lesson04.md)
 
 ### Lesson05
-Lesson05 includes a test for [lesson03](/doc/lesson03.md).
+Lesson05 is the same as [lesson03](/doc/lesson03.md) but without screens and widgets.
+It has not any GUI, only a test.
 
 See [lesson05 documentation](/doc/lesson05.md)

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+// ignore: unused_import
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
@@ -24,7 +25,7 @@ part 'lesson02.g.dart';
 // 
 // *************************************
 
-// *** 1. classes for typed path segments (aka TypedSegment)
+// *** 1. define classes for typed path segments (aka TypedSegment)
 
 /// From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
 /// generates three typed segment classes: *HomeSegment, BooksSegment and BookSegment*.
@@ -68,12 +69,14 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
   );
 }
 
-// *** 2. App-specific navigator
+// *** 2. Type App-specific navigator (aka AppNavigator)
 
 /// AppNavigator is a singleton class that does the following:
 /// - configures various navigation parameters 
 /// - contains actions related to navigation. The actions are then used in the screen widgets.
-// *** Basic navigation parameters
+
+
+// *** Navigation parameters
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
@@ -83,13 +86,13 @@ class AppNavigator extends RiverpodNavigator {
           json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
           screenBuilder: appSegmentsScreenBuilder,
           // ***** new parameters for this example ******
-          // simulate the asynchronous screen actions
+          // asynchronous screen actions
           segment2AsyncScreenActions: segment2AsyncScreenActions,
           // splash screen that appears before the home page is created
           splashBuilder: SplashScreen.new,
         );
 
-// *** Common navigation actions
+// *** 2.2. Common navigation actions
 
 //
   Future<void> toHome() => navigate([HomeSegment()]);
@@ -107,6 +110,7 @@ class AppNavigator extends RiverpodNavigator {
 
 }
 
+const booksLen = 5;
 // *** 3. Root widget
 
 /// Note: *To make it less verbose, we use the functional_widget package to generate widgets.
@@ -133,5 +137,4 @@ void runMain() => runApp(
       child: const BooksExampleApp(),
     ),
   );
-const booksLen = 5;
 

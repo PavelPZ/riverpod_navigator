@@ -29,7 +29,7 @@ void gen() {
     final lessonId = int2LessonId(i);
 
     writeFile(lessonFn(lessonId), fileGen(true, i, false));
-    writeFile(screenFn(lessonId), fileGen(false, i, false));
+    if (i != 5) writeFile(screenFn(lessonId), fileGen(false, i, false));
     writeFile(docFn(lessonId), fileGen(true, i, true) + fileGen(false, i, true));
   }
 

@@ -4,10 +4,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+// ignore: unused_import
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-import 'screens.dart';
+
 
 part 'lesson05.freezed.dart';
 part 'lesson05.g.dart';
@@ -16,12 +17,13 @@ part 'lesson05.g.dart';
 
 // *************************************
 // Lesson05
-// Lesson05 includes a test for [lesson03](/doc/lesson03.md).
+// Lesson05 is the same as [lesson03](/doc/lesson03.md) but without screens and widgets.
+// It has not any GUI, only a test.
 // 
-// See the source code of the test here: [lesson03_test.dart](/examples/doc/test/lesson03_test.dart).
+// See the source code of the test here: [lesson05_test.dart](/examples/doc/test/lesson05_test.dart).
 // *************************************
 
-// *** 1. classes for typed path segments (aka TypedSegment)
+// *** 1. define classes for typed path segments (aka TypedSegment)
 
 /// From the following AppSegments and LoginSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
 /// generates four typed segment classes: *HomeSegment, BooksSegment, BookSegment and LoginHomeSegment*.
@@ -81,12 +83,14 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
 /// the navigation state also depends on the following [userIsLoggedProvider]
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
 
-// *** 2. App-specific navigator
+// *** 2. Type App-specific navigator (aka AppNavigator)
 
 /// AppNavigator is a singleton class that does the following:
 /// - configures various navigation parameters 
 /// - contains actions related to navigation. The actions are then used in the screen widgets.
-// *** Basic navigation parameters
+
+
+// *** Navigation parameters
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
@@ -94,20 +98,20 @@ class AppNavigator extends RiverpodNavigator {
           ref,
           initPath: [HomeSegment()],
           segment2AsyncScreenActions: segment2AsyncScreenActions,
-          splashBuilder: SplashScreen.new,
+          // remove splashBuilder
+          // splashBuilder: SplashScreen.new,
           // ****** new and modified parameters for this example ******
-          // the following two parameters respect two different types of segment roots: [AppSegments] and [LoginSegments]
           json2Segment: (jsonMap, unionKey) => 
               unionKey == LoginSegments.jsonNameSpace ? LoginSegments.fromJson(jsonMap) : AppSegments.fromJson(jsonMap),
-          screenBuilder: (segment) => segment is LoginSegments ? loginSegmentsScreenBuilder(segment) : appSegmentsScreenBuilder(segment),
-          // the navigation state also depends on the userIsLoggedProvider
+          // fake screenBuilder
+          screenBuilder: (segment) => SizedBox(),
           dependsOn: [userIsLoggedProvider],
         );
 
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 
-// *** Login app logic
+// *** 2.1. Login app logic
 
 @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
@@ -131,11 +135,9 @@ class AppNavigator extends RiverpodNavigator {
       // user logged and navigation to Login page => redirect to home
       if (ongoingNotifier.state.isEmpty || ongoingNotifier.state.last is LoginHomeSegment) ongoingNotifier.state = [HomeSegment()];
     }
-    // here can be async action for <oldPath, ongoingNotifier.state> pair
-    return null;
   }
 
-// *** Login specific navigation actions
+// *** 2.1. Login specific navigation actions
 
 Future<void> globalLogoutButton() {
     final loginNotifier = ref.read(userIsLoggedProvider.notifier);
@@ -171,7 +173,7 @@ Future<void> globalLogoutButton() {
     return navigationCompleted; // wait for the navigation to end
   }
 
-// *** Common navigation actions
+// *** 2.2. Common navigation actions
 
 //
   Future<void> toHome() => navigate([HomeSegment()]);
@@ -189,31 +191,4 @@ Future<void> globalLogoutButton() {
 
 }
 
-// *** 3. Root widget
-
-/// Note: *To make it less verbose, we use the functional_widget package to generate widgets.
-/// See generated "lesson??.g.dart"" file for details.*
-@cwidget
-Widget booksExampleApp(WidgetRef ref) {
-  final navigator = ref.read(riverpodNavigatorProvider);
-  return MaterialApp.router(
-    title: 'Books App',
-    routerDelegate: navigator.routerDelegate as RiverpodRouterDelegate,
-    routeInformationParser: RouteInformationParserImpl(navigator.pathParser),
-    debugShowCheckedModeBanner: false,
-  );
-}
-
-// *** 4. App entry point
-
-/// app entry point with ProviderScope's override
-void runMain() => runApp(
-    ProviderScope(
-      overrides: [
-        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new /*See Constructor tear-offs in Dart ^2.15*/),
-      ],
-      child: const BooksExampleApp(),
-    ),
-  );
 const booksLen = 5;
-

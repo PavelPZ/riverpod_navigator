@@ -3,7 +3,7 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 import 'package:test/test.dart';
 
 // ignore: avoid_relative_lib_imports
-import '../lib/src/lesson03/lesson03.dart';
+import '../lib/src/lesson05/lesson05.dart';
 
 ProviderContainer createContainer() {
   final res = ProviderContainer(overrides: [
