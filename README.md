@@ -33,6 +33,16 @@ If anyone wants to understand how the riverpod_navigator package works,
 let them look at [riverpod_navigator_example](examples/riverpod_navigator_example/). 
 It validates the idea of collaboration [Riverpod](https://riverpod.dev/) + [Freezed](https://github.com/rrousselGit/freezed) + Flutter Navigator 2.0.
 
+## comparison with go_router
+
+This chapter is inspired by [Examples of go_router using riverpod](https://github.com/rrousselGit/river_pod/issues/1122).
+
+| example | go_router | code lines | riverpod_navigator | code lines |
+| main | [source](https://github.com/csells/go_router/blob/main/go_router/example/lib/main.dart) | 70 | [source](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/go_router/lib/main.dart) | 84  |
+| redirection | [source](https://github.com/csells/go_router/blob/main/go_router/example/lib/redirection.dart) | 167 | [source](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/go_router/lib/redirection.dart) | 149 |
+
+If you are interested in preparing another go_router example, I will try to do it.
+
 ## How to use it
 
 The best documentation is a simple source code. 
