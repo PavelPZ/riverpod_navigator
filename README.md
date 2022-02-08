@@ -33,7 +33,7 @@ If anyone wants to understand how the riverpod_navigator package works,
 let them look at [riverpod_navigator_example](examples/riverpod_navigator_example/). 
 It validates the idea of collaboration [Riverpod](https://riverpod.dev/) + [Freezed](https://github.com/rrousselGit/freezed) + Flutter Navigator 2.0.
 
-## comparison with go_router
+## Comparison with go_router
 
 This chapter is inspired by this riverpod issue: [Examples of go_router using riverpod](https://github.com/rrousselGit/river_pod/issues/1122).
 
