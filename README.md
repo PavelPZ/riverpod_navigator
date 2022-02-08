@@ -7,7 +7,7 @@
 - **Better separation of concerns: UI x Model** (thanks to [riverpod](https://riverpod.dev/) :+1:):<br>
   Navigation logic can be developed and tested without typing a single flutter widget.
 - **Asynchronous navigation:**<br>
-  Prepare all necessary asynchronous operations before the navigation starts, e.g.
+  Before starting navigation, prepare all necessary asynchronous operations, e.g.
   - loading data for new screen
   - save data from the previous screen
 - **Dependence on external providers:**<br>
