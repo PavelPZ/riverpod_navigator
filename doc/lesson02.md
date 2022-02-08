@@ -62,6 +62,3 @@ class AppNavigator extends RiverpodNavigator {
         );
 ```
 
-}
-
-const booksLen = 5;

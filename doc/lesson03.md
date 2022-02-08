@@ -113,6 +113,3 @@ Future<void> globalLogoutButton() {
   }
 ```
 
-}
-
-const booksLen = 5;

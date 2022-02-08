@@ -30,9 +30,6 @@ class AppNavigator extends RiverpodNavigator {
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 ```
 
-}
-
-const booksLen = 5;
 Ukázka testu
 
 ```dart

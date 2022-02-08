@@ -88,8 +88,7 @@ ${comment(body, twoSlash: true)}
 // *************************************\n
 ''';
 
-  String lessonGen() =>
-      filter(forDoc ? 0 : all, null, b('''
+  String lessonGen() => filter(forDoc ? 0 : all, null, b('''
 // ignore: unused_import
 import 'dart:async';
 
@@ -104,42 +103,32 @@ ${id == 5 ? '' : 'import \'screens.dart\';'}
 
 part 'lesson$lessonId.freezed.dart';
 part 'lesson$lessonId.g.dart';
-''')) +
-      filter(forDoc ? 0 : all, null, comment('''
-''', twoSlash: true)) +
-      filter(l1, null, exHeader('''
+''')) + filter(forDoc ? 0 : all, null, comment('''
+''', twoSlash: true)) + filter(l1, null, exHeader('''
 ${lName('Lesson01')}${codeIgn('\n\n(whole example see at ${sourceUrl('lesson01')})\n')}
-''')) +
-      filter(l2, null, exHeader('''
+''')) + filter(l2, null, exHeader('''
 ${lName('Lesson02')}
 $l2hdr
 ${codeIgn('See ${sourceUrl('lesson02')}')}
-''')) +
-      filter(l3, null, exHeader('''
+''')) + filter(l3, null, exHeader('''
 ${lName('Lesson03')}
 $l3hdr
 ${codeIgn('See ${sourceUrl('lesson03')}')}
-''')) +
-      filter(l4, null, exHeader('''
+''')) + filter(l4, null, exHeader('''
 ${lName('Lesson04')}
 $l4hdr
 ${codeIgn('See ${sourceUrl('lesson04')}')}
-''')) +
-      filter(l5, null, exHeader('''
+''')) + filter(l5, null, exHeader('''
 ${lName('Lesson05')}
 $l5hdr
 See the source code of the test here: [lesson05_test.dart](/examples/doc/test/lesson05_test.dart).
-''')) +
-      filter(l6, null, exHeader('''
+''')) + filter(l6, null, exHeader('''
 Lesson06
-''')) +
-      filter(l7, null, exHeader('''
+''')) + filter(l7, null, exHeader('''
 Lesson07
-''')) +
-      filter(l7, null, exHeader('''
+''')) + filter(l7, null, exHeader('''
 -------------------------------------------
-''')) +
-      filter2(all, l35 + l4, l1, t('''
+''')) + filter2(all, l35 + l4, l1, t('''
 1. define classes for typed path segments (aka TypedSegment)
 '''), st('''
 From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
@@ -154,8 +143,7 @@ class AppSegments with _\$AppSegments, TypedSegment {
 
   factory AppSegments.fromJson(Map<String, dynamic> json) => _\$AppSegmentsFromJson(json);
 }
-''')) +
-      filter2(l35 + l4, null, l1, t('''
+''')) + filter2(l35 + l4, null, l1, t('''
 1. define classes for typed path segments (aka TypedSegment)
 '''), st('''
 From the following AppSegments and LoginSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
@@ -181,8 +169,7 @@ class LoginSegments with _\$LoginSegments, TypedSegment {
   factory LoginSegments.fromJson(Map<String, dynamic> json) => _\$LoginSegmentsFromJson(json);
   static const String jsonNameSpace = '_login';
 }
-''')) +
-      filter2(l2 + l35, null, l2, t('''
+''')) + filter2(l2 + l35, null, l2, t('''
 1.1. async screen actions  
 '''), st('''
 Each screen may require an asynchronous action during its creation, merging, or deactivating.
@@ -213,8 +200,7 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
     orElse: () => null,
   );
 }
-''')) +
-      filter2(l4, null, l1, t('''
+''')) + filter2(l4, null, l1, t('''
 1.1. App route definition
 '''), st('''
 '''), b('''
@@ -298,23 +284,19 @@ Future<String> _simulateAsyncResult(String title, int msec) async {
   await Future.delayed(Duration(milliseconds: msec));
   return title;
 }
-''')) +
-      filter2(l35 + l4, 0, l3, t('''
+''')) + filter2(l35 + l4, 0, l3, t('''
 1.2. userIsLoggedProvider
 '''), st('''
 the navigation state also depends on the following [userIsLoggedProvider]
 '''), b('''
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
-''')) +
-      filter2(all, 0, all - l5, t('''
+''')) + filter2(all, 0, all - l5, t('''
 2. Type App-specific navigator (aka AppNavigator)
-'''), st(''), b('')) +
-      filter2(all, 0, l1, '', st('''
+'''), st(''), b('')) + filter2(all, 0, l1, '', st('''
 AppNavigator is a singleton class that does the following:
 - configures various navigation parameters 
 - contains actions related to navigation. The actions are then used in the screen widgets.
-'''), '\n\n') +
-      filter2(l1, null, l1, t('''
+'''), '\n\n') + filter2(l1, null, l1, t('''
 2.1. Navigation parameters
 ''', h4: true), '', b('''
 class AppNavigator extends RiverpodNavigator {
@@ -328,8 +310,7 @@ class AppNavigator extends RiverpodNavigator {
           // map TypedSegment's to Screens
           screenBuilder: appSegmentsScreenBuilder,
         );
-''')) +
-      filter2(l2, 0, l2, t('Navigation parameters'), '', b('''
+''')) + filter2(l2, 0, l2, t('Navigation parameters'), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -343,8 +324,7 @@ class AppNavigator extends RiverpodNavigator {
           // splash screen that appears before the home page is created
           splashBuilder: SplashScreen.new,
         );
-''')) +
-      filter2(l3, 0, l3, t('Navigation parameters'), '', b('''
+''')) + filter2(l3, 0, l3, t('Navigation parameters'), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -363,8 +343,7 @@ class AppNavigator extends RiverpodNavigator {
 
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
-''')) +
-      filter2(l5, 0, l5, t('Navigation parameters'), '', b('''
+''')) + filter2(l5, 0, l5, t('Navigation parameters'), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -383,8 +362,7 @@ class AppNavigator extends RiverpodNavigator {
 
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
-''')) +
-      filter2(l4, 0, l4, t('Navigation parameters'), '', b('''
+''')) + filter2(l4, 0, l4, t('Navigation parameters'), '', b('''
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -399,8 +377,7 @@ class AppNavigator extends RiverpodNavigator {
 
   /// The needLogin logic is handled by the router
   bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin(segment);
-''')) +
-      filter2(l35 + l4, 0, l3, t('''
+''')) + filter2(l35 + l4, 0, l3, t('''
 2.1. Login app logic
 ''', h4: true), '', b('''
   @override
@@ -426,8 +403,7 @@ class AppNavigator extends RiverpodNavigator {
       if (ongoingNotifier.state.isEmpty || ongoingNotifier.state.last is LoginHomeSegment) ongoingNotifier.state = [HomeSegment()];
     }
   }
-''')) +
-      filter2(l35 + l4, 0, l3, t('''
+''')) + filter2(l35 + l4, 0, l3, t('''
 2.1. Login specific navigation actions
 ''', h4: true), '', b('''
   Future<void> globalLogoutButton() {
@@ -463,8 +439,7 @@ class AppNavigator extends RiverpodNavigator {
 
     return navigationCompleted; // wait for the navigation to end
   }
-''')) +
-      filter2(all, null, l1, t('''
+''')) + filter2(all, null, l1, t('''
 2.2. Common navigation actions
 ''', h4: true), '', b('''
 //
@@ -480,13 +455,11 @@ class AppNavigator extends RiverpodNavigator {
       id = booksLen - 1 > id ? id + 1 : 0;
     return toBook(id: id);
   }
-''')) +
-      '''
+''')) + docIgn('''
 }
 
 const booksLen = 5;
-''' +
-      filter2(all, l5, l1, t('''
+''') + filter2(all, l5, l1, t('''
 3. Root widget
 '''), st('''
 Note: *To make it less verbose, we use the functional_widget package to generate widgets.
@@ -502,8 +475,7 @@ Widget booksExampleApp(WidgetRef ref) {
     debugShowCheckedModeBanner: false,
   );
 }
-''')) +
-      filter2(all, l5, l1, t('''
+''')) + filter2(all, l5, l1, t('''
 4. App entry point
 '''), st('''
 app entry point with ProviderScope's override
@@ -516,8 +488,7 @@ void runMain() => runApp(
       child: const BooksExampleApp(),
     ),
   );
-''')) +
-      codeIgn(filter2(l5, null, l5, 'Ukázka testu', '', b('''
+''')) + codeIgn(filter2(l5, null, l5, 'Ukázka testu', '', b('''
 //
     //**********
     // log in tests

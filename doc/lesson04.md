@@ -27,6 +27,3 @@ class AppNavigator extends RiverpodNavigator {
   bool needsLogin(TypedSegment segment) => (router as AppRouter).needsLogin(segment);
 ```
 
-}
-
-const booksLen = 5;

@@ -65,9 +65,6 @@ class AppNavigator extends RiverpodNavigator {
   }
 ```
 
-}
-
-const booksLen = 5;
 ### 3. Root widget
 
 Note: *To make it less verbose, we use the functional_widget package to generate widgets.
