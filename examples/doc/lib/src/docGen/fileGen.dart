@@ -2,8 +2,8 @@ import 'dart:convert';
 
 const all = 0xffffff;
 const l1 = 1;
-const l2 = 2; // async screen actions with splash screen
-const l3 = 4; // login
+const l2 = 2;
+const l3 = 4;
 const l4 = 8;
 const l5 = 16;
 const l6 = 32;
@@ -172,7 +172,7 @@ class LoginSegments with _\$LoginSegments, TypedSegment {
 ''')) + filter2(l2 + l35, null, l2, t('''
 1.1. async screen actions  
 '''), st('''
-Each screen may require an asynchronous action during its creation, merging, or deactivating.
+Each screen may require an asynchronous action during its creating, merging, or deactivating.
 The asynchronous result is then provided to the screen widget.
 '''), b('''
 AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
@@ -190,7 +190,7 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
       // for every Book screen: creating takes some time
       creating: (newSegment) => simulateAsyncResult('Book.creating: async result after 700 msec', 700),
       // for every Book screen with odd id: changing to another Book screen takes some time
-      merging: (_, newSegment) => newSegment.id.isOdd ? simulateAsyncResult('Book.merging: async result after 500 msec', 500) : null,
+      merging: (oldSegment, newSegment) => newSegment.id.isOdd ? simulateAsyncResult('Book.merging: async result after 500 msec', 500) : null,
       // for every Book screen with even id: deactivating takes some time
       deactivating: (oldSegment) => oldSegment.id.isEven ? Future.delayed(Duration(milliseconds: 500)) : null,
     ),
