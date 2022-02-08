@@ -488,7 +488,7 @@ void runMain() => runApp(
       child: const BooksExampleApp(),
     ),
   );
-''')) + codeIgn(filter2(l5, null, l5, 'Ukázka testu', '', b('''
+''')) + codeIgn(filter2(l5, null, l5, t('Ukázka testu'), '', b('''
 //
     //**********
     // log in tests
