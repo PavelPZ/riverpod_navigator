@@ -16,7 +16,6 @@ dependencies:
   json_annotation: ^4.4.0
   path:
   riverpod_navigator: 
-    path: ../../packages/riverpod_navigator
 
 dev_dependencies: 
   build_runner:

@@ -213,7 +213,7 @@ It is possible to parameterize the values **navigator.screen2Page** and **naviga
 I prepared the package for my new project. Its further development depends on whether it will be used by the community.
 
 - proofreading because my English is not good. Community help is warmly welcomed.
-- testing on mobile (tested so far for windows and web)<br>
+- testing on mobile (tested so far for windows desktop and web)<br>
   Navigator.onPopPage may need improvements.
 - nested navigation flow<br>
   I think everything is ready, nested ProviderScope can solve nested navigation too.
