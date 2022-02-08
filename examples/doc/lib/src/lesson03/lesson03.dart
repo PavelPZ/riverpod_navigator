@@ -206,7 +206,7 @@ Widget booksExampleApp(WidgetRef ref) {
   final navigator = ref.read(riverpodNavigatorProvider);
   return MaterialApp.router(
     title: 'Books App',
-    routerDelegate: navigator.routerDelegate as RiverpodRouterDelegate,
+    routerDelegate: navigator.routerDelegate,
     routeInformationParser: RouteInformationParserImpl(navigator.pathParser),
     debugShowCheckedModeBanner: false,
   );

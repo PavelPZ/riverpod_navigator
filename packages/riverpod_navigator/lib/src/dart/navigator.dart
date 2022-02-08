@@ -26,7 +26,7 @@ abstract class RiverpodNavigator extends RiverpodNavigatorFlutter {
         assert(router == null || screen2Page == null, 'screen2Page is ignored when a router is provided'),
         json2Segment = json2Segment ?? (router as TypedRouter).json2Segment,
         segment2AsyncScreenActions = segment2AsyncScreenActions ?? router?.segment2AsyncScreenActions,
-        routerDelegate = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate(),
+        routerDelegate4Dart = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate(),
         super(
           router: router,
           screen2Page: screen2Page,
@@ -34,7 +34,7 @@ abstract class RiverpodNavigator extends RiverpodNavigatorFlutter {
           navigatorWidgetBuilder: navigatorWidgetBuilder,
           splashBuilder: splashBuilder,
         ) {
-    routerDelegate.navigator = this;
+    routerDelegate4Dart.navigator = this;
 
     _defer2NextTickLow = Defer2NextTick(runNextTick: _runNavigation);
     final allDepends = <AlwaysAliveProviderListenable>[ongoingPathProvider, if (dependsOn != null) ...dependsOn];
@@ -66,7 +66,8 @@ abstract class RiverpodNavigator extends RiverpodNavigatorFlutter {
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) => null;
 
   /// depends on the used platform: flutter (= [RiverpodRouterDelegate]) x dart only (= [RouterDelegate4Dart])
-  IRouterDelegate routerDelegate = RouterDelegate4Dart();
+  IRouterDelegate routerDelegate4Dart = RouterDelegate4Dart();
+  RiverpodRouterDelegate get routerDelegate => routerDelegate4Dart as RiverpodRouterDelegate;
 
   @protected
   Ref ref;
@@ -79,7 +80,7 @@ abstract class RiverpodNavigator extends RiverpodNavigatorFlutter {
   }
 
   @nonVirtual
-  TypedPath get currentTypedPath => routerDelegate.currentConfiguration;
+  TypedPath get currentTypedPath => routerDelegate4Dart.currentConfiguration;
 
   @nonVirtual
   String debugTypedPath2String() => pathParser.debugTypedPath2String(currentTypedPath);
@@ -102,8 +103,8 @@ abstract class RiverpodNavigator extends RiverpodNavigatorFlutter {
     // Wait for async screen actions.
     if (segment2AsyncScreenActions != null) await wait4AsyncScreenActions(currentTypedPath, ongoingPath);
     // actualize flutter navigation stack
-    routerDelegate.currentConfiguration = ongoingPath;
-    routerDelegate.notifyListeners();
+    routerDelegate4Dart.currentConfiguration = ongoingPath;
+    routerDelegate4Dart.notifyListeners();
   }
 
   /// for [Navigator.onPopPage] in [RiverpodRouterDelegate.build]

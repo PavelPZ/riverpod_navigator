@@ -13,6 +13,9 @@
 		},
 		{
 			"path": "examples\\riverpod_navigator_example"
+		},
+		{
+			"path": "examples\\go_router"
 		}
 	],
 	"settings": {
