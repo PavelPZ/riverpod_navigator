@@ -79,7 +79,7 @@ const booksLen = 5;
 // *** 3. Root widget
 
 /// Note: *To make it less verbose, we use the functional_widget package to generate widgets.
-/// See generated "lesson??.g.dart"" file for details.*
+/// See generated "lesson0?.g.dart"" file for details.*
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
   final navigator = ref.read(riverpodNavigatorProvider);
@@ -93,7 +93,7 @@ Widget booksExampleApp(WidgetRef ref) {
 
 // *** 4. App entry point
 
-/// app entry point with ProviderScope's override
+/// app entry point with ProviderScope.overrides
 void runMain() => runApp(
     ProviderScope(
       overrides: [

@@ -463,7 +463,7 @@ const booksLen = 5;
 3. Root widget
 '''), st('''
 Note: *To make it less verbose, we use the functional_widget package to generate widgets.
-See generated "lesson??.g.dart"" file for details.*
+See generated "lesson0?.g.dart"" file for details.*
 '''), b('''
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
@@ -478,7 +478,7 @@ Widget booksExampleApp(WidgetRef ref) {
 ''')) + filter2(all, l5, l1, t('''
 4. App entry point
 '''), st('''
-app entry point with ProviderScope's override
+app entry point with ProviderScope.overrides
 '''), b('''
 void runMain() => runApp(
     ProviderScope(

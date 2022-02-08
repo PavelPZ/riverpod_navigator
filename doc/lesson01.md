@@ -71,7 +71,7 @@ class AppNavigator extends RiverpodNavigator {
 ### 3. Root widget
 
 Note: *To make it less verbose, we use the functional_widget package to generate widgets.
-See generated "lesson??.g.dart"" file for details.*
+See generated "lesson0?.g.dart"" file for details.*
 
 ```dart
 @cwidget
@@ -88,7 +88,7 @@ Widget booksExampleApp(WidgetRef ref) {
 
 ### 4. App entry point
 
-app entry point with ProviderScope's override
+app entry point with ProviderScope.overrides
 
 ```dart
 void runMain() => runApp(
