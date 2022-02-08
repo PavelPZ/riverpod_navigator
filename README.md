@@ -18,21 +18,20 @@
 
 Take a look at the following terms:
 
-- **string path:** ```stringPath = 'home/books/book;id=2';```
-- **string segment** - the string path consists of three string segments: 'home', 'books', 'book;id=2'
-- **typed path**: ```typedPath = <TypedSegment>[HomeSegment(), BooksSegment(), BookSegment(id:2)];```
-- **typed segment** - the typed path consists of three instances of [TypedSegment]'s: [HomeSegment], [BooksSegment], [BookSegment]
-- **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
+- **string-path:** ```stringPath = 'home/books/book;id=2';```
+- **string-segment** - the string-path consists of three string-segments: 'home', 'books', 'book;id=2'
+- **typed-path**: ```typedPath = [HomeSegment(), BooksSegment(), BookSegment(id:2)];```
+- **typed-segment** - the typed-path consists of three typed-segments: [HomeSegment], [BooksSegment], [BookSegment]
+- **navigation-stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
 
-The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
-With **typed path** as the source of the truth.
+The mission of navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
+With **typed-path** as the source of the truth.
 
 ## How does it work
 
 If anyone wants to understand how the riverpod_navigator package works, 
-let them look at [riverpod_navigator_example](examples/riverpod_navigator_example/).
-
-The repository verifies the idea of connecting [Riverpod](https://riverpod.dev/) + [Freezed](https://github.com/rrousselGit/freezed) + flutter Navigator 2.0.
+let them look at [riverpod_navigator_example](examples/riverpod_navigator_example/). 
+It validates the idea of collaboration [Riverpod](https://riverpod.dev/) + [Freezed](https://github.com/rrousselGit/freezed) + Flutter Navigator 2.0.
 
 ## How to use it
 
