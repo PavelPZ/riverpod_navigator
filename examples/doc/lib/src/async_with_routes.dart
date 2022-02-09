@@ -5,7 +5,7 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'common.dart';
 
-part 'simple_routes.g.dart';
+part 'async_with_routes.g.dart';
 
 void main() => runApp(
       ProviderScope(
@@ -21,15 +21,25 @@ class AppNavigator extends RiverpodNavigator {
       : super.router(
           ref,
           [HomeSegment()],
-          TypedRouteGroup<SimpleSegment>(SimpleSegment.fromJson, routes: [
-            TypedRoute<HomeSegment>(
+          RGroup<SimpleSegment>(SimpleSegment.fromJson, routes: [
+            RRoute<HomeSegment>(
               builder: HomeScreen.new,
+              creating: (newSegment) => simulateAsyncResult('Home.creating', 2000),
             ),
-            TypedRoute<PageSegment>(
+            RRoute<PageSegment>(
               builder: PageScreen.new,
+              creating: (newSegment) => simulateAsyncResult('Page.creating', 400),
+              merging: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
+              deactivating: null,
             ),
           ]),
         );
+}
+
+// simulates an action such as loading external data or saving to external storage
+Future<String> simulateAsyncResult(String asyncResult, int msec) async {
+  await Future.delayed(Duration(milliseconds: msec));
+  return '$asyncResult: async result after $msec msec';
 }
 
 @cwidget

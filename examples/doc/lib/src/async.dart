@@ -26,18 +26,26 @@ class AppNavigator extends RiverpodNavigator {
             home: HomeScreen.new,
             page: PageScreen.new,
           ),
+          // returns a Future with the result of an asynchronous operation for a given segment's screen
           segment2AsyncScreenActions: (segment) => (segment as SimpleSegment).maybeMap(
-            home: (_) => AsyncScreenActions(creating: (_) => simulateAsyncResult('Home.creating: async result after 2000 msec', 2000)),
-            page: (_) => AsyncScreenActions(creating: (_) => simulateAsyncResult('Page.creating: async result after 400 msec', 400)),
+            home: (_) => AsyncScreenActions(creating: (newSegment) => simulateAsyncResult('Home.creating', 2000)),
+            page: (_) => AsyncScreenActions(
+              creating: (newSegment) => simulateAsyncResult('Page.creating', 400),
+              merging: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
+              // async operation during screen deactivating, null means no action.
+              deactivating: (oldSegment) => null,
+            ),
             orElse: () => null,
           ),
+          // splash screen that appears before the first page is created
           splashBuilder: SplashScreen.new,
         );
 }
 
+// simulates an action such as loading external data or saving to external storage
 Future<String> simulateAsyncResult(String asyncResult, int msec) async {
   await Future.delayed(Duration(milliseconds: msec));
-  return asyncResult;
+  return '$asyncResult: async result after $msec msec';
 }
 
 @cwidget
@@ -46,7 +54,7 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper<AppNavigator
       title: 'Home',
       buildChildren: (navigator) => [
         ElevatedButton(
-          onPressed: () => navigator.navigate([HomeSegment(), PageSegment(title: 'Page')]),
+          onPressed: () => navigator.navigate([HomeSegment(), PageSegment(title: 'Page1')]),
           child: const Text('Go to page'),
         ),
       ],
@@ -60,6 +68,10 @@ Widget pageScreen(WidgetRef ref, PageSegment segment) => PageHelper<AppNavigator
         ElevatedButton(
           onPressed: () => navigator.navigate([HomeSegment()]),
           child: const Text('Go to home'),
+        ),
+        ElevatedButton(
+          onPressed: () => navigator.navigate([HomeSegment(), PageSegment(title: segment.title == 'Page1' ? 'Page2' : 'Page1')]),
+          child: const Text('Go to next page'),
         ),
       ],
     );

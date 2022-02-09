@@ -1,58 +1,58 @@
 part of 'index.dart';
 
-class TypedRoute<T extends TypedSegment> {
-  TypedRoute({
+class RRoute<T extends TypedSegment> {
+  RRoute({
     required this.builder,
     this.screen2Page,
-    this.onCreate,
-    this.onMerge,
-    this.onDeactivate,
+    this.creating,
+    this.merging,
+    this.deactivating,
   });
-  TypedRoute.empty();
+  RRoute.empty();
   Widget Function(T segment)? builder;
   Screen2Page? screen2Page;
-  Future<void> Function(T newPath)? onCreate;
-  Future<void> Function(T oldPath, T newPath)? onMerge;
-  Future<void> Function(T oldPath)? onDeactivate;
+  Future<AsyncActionResult> Function(T newPath)? creating;
+  Future<AsyncActionResult> Function(T oldPath, T newPath)? merging;
+  Future<AsyncActionResult> Function(T oldPath)? deactivating;
   bool isRoute(TypedSegment segment) => segment is T;
 
   Widget screenBuilder(T segment) => builder!(segment);
-  Future<void>? creating(T newPath) => onCreate?.call(newPath);
-  Future<void>? merging(T oldPath, T newPath) => onMerge?.call(oldPath, newPath);
-  Future<void>? deactivating(T oldPath) => onDeactivate?.call(oldPath);
+  Future<AsyncActionResult>? xcreating(T newPath) => creating?.call(newPath);
+  Future<AsyncActionResult>? xmerging(T oldPath, T newPath) => merging?.call(oldPath, newPath);
+  Future<AsyncActionResult>? xdeactivating(T oldPath) => deactivating?.call(oldPath);
 
   AsyncScreenActions toAsyncScreenActions() => AsyncScreenActions(
-        creating: (n) => creating(n as T),
-        merging: (o, n) => merging(o as T, n as T),
-        deactivating: (o) => deactivating(o as T),
+        creating: (n) => xcreating(n as T),
+        merging: (o, n) => xmerging(o as T, n as T),
+        deactivating: (o) => xdeactivating(o as T),
       );
 }
 
-class TypedRouteGroup<T extends TypedSegment> {
-  TypedRouteGroup(
+class RGroup<T extends TypedSegment> {
+  RGroup(
     this.fromJson, {
     required this.routes,
     this.unionKey = 'runtimeType',
   });
-  TypedRouteGroup.empty({this.unionKey = 'runtimeType'});
-  List<TypedRoute<T>>? routes;
+  RGroup.empty({this.unionKey = 'runtimeType'});
+  List<RRoute<T>>? routes;
   final String unionKey;
   T Function(JsonMap jsonMap)? fromJson;
 
   bool isGroup(TypedSegment segment) => segment is T;
   // *** to override
   T json2Segment(JsonMap jsonMap) => fromJson!(jsonMap);
-  TypedRoute<T> segment2Route(T segment) => routes!.firstWhere((s) => s.isRoute(segment));
+  RRoute<T> segment2Route(T segment) => routes!.firstWhere((s) => s.isRoute(segment));
 }
 
-class TypedRouter {
-  TypedRouter(this.groups) {
+class RRouter {
+  RRouter(this.groups) {
     final unionKeys = groups.map((e) => e.unionKey).toSet();
     if (unionKeys.length != groups.length) throw 'Missing RouteGroup(unionKey: \'XXX\')';
   }
-  final List<TypedRouteGroup> groups;
+  final List<RGroup> groups;
 
-  TypedRouteGroup segment2Group(TypedSegment segment) => groups.singleWhere((g) => g.isGroup(segment));
+  RGroup segment2Group(TypedSegment segment) => groups.singleWhere((g) => g.isGroup(segment));
 
   AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) => segment2Group(segment).segment2Route(segment).toAsyncScreenActions();
   TypedSegment json2Segment(JsonMap jsonMap, String unionKey) => groups.singleWhere((g) => g.unionKey == unionKey).json2Segment(jsonMap);

@@ -146,11 +146,76 @@ A modified version of the previous example is here: [simple_modified.dart](https
 
 ### Async navigation and splash screen
 
-todo
+[async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async.dart)
+
+```dart
+class AppNavigator extends RiverpodNavigator {
+  AppNavigator(Ref ref)
+      : super(
+          ref,
+          initPath: [HomeSegment()],
+          fromJson: SimpleSegment.fromJson,
+          screenBuilder: (segment) => (segment as SimpleSegment).map(
+            home: HomeScreen.new,
+            page: PageScreen.new,
+          ),
+          // returns a Future with the result of an asynchronous operation for a given segment's screen
+          segment2AsyncScreenActions: (segment) => (segment as SimpleSegment).maybeMap(
+            home: (_) => AsyncScreenActions(creating: (newSegment) => simulateAsyncResult('Home.creating', 2000)),
+            page: (_) => AsyncScreenActions(
+              creating: (newSegment) => simulateAsyncResult('Page.creating', 400),
+              merging: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
+              // async operation during screen deactivating, null means no action.
+              deactivating: (oldSegment) => null,
+            ),
+            orElse: () => null,
+          ),
+          // splash screen that appears before the first page is created
+          splashBuilder: SplashScreen.new,
+        );
+}
+
+// simulates an action such as loading external data or saving to external storage
+Future<String> simulateAsyncResult(String actionName, int msec) async {
+  await Future.delayed(Duration(milliseconds: msec));
+  return '$actionName: async result after $msec msec';
+}
+```
 
 ### An alternative way to configure the navigator: using the router concept
 
-todo
+See [async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async_with_routes.dart).
+
+This example is functionally identical to the previous one. 
+But it uses the concept of "route", where all the parameters for a given segment and screen are together.
+
+```dart
+class AppNavigator extends RiverpodNavigator {
+  AppNavigator(Ref ref)
+      : super.router(
+          ref,
+          [HomeSegment()],
+          RGroup<SimpleSegment>(SimpleSegment.fromJson, routes: [
+            RRoute<HomeSegment>(
+              builder: HomeScreen.new,
+              creating: (newSegment) => simulateAsyncResult('Home.creating', 2000),
+            ),
+            RRoute<PageSegment>(
+              builder: PageScreen.new,
+              creating: (newSegment) => simulateAsyncResult('Page.creating', 400),
+              merging: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
+              deactivating: null,
+            ),
+          ]),
+        );
+}
+
+// simulates an action such as loading external data or saving to external storage
+Future<String> simulateAsyncResult(String asyncResult, int msec) async {
+  await Future.delayed(Duration(milliseconds: msec));
+  return '$asyncResult: async result after $msec msec';
+}
+```
 
 ### More TypedSegment roots
 
