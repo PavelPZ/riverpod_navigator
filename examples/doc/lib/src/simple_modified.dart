@@ -5,7 +5,7 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'common.dart';
 
-part 'simple_routes.g.dart';
+part 'simple_modified.g.dart';
 
 void main() => runApp(
       ProviderScope(
@@ -18,17 +18,14 @@ void main() => runApp(
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
-      : super.router(
+      : super(
           ref,
-          [HomeSegment()],
-          TypedRouteGroup<SimpleSegment>(SimpleSegment.fromJson, routes: [
-            TypedRoute<HomeSegment>(
-              builder: HomeScreen.new,
-            ),
-            TypedRoute<PageSegment>(
-              builder: PageScreen.new,
-            ),
-          ]),
+          initPath: [HomeSegment()],
+          fromJson: SimpleSegment.fromJson,
+          screenBuilder: (segment) => (segment as SimpleSegment).map(
+            home: HomeScreen.new,
+            page: PageScreen.new,
+          ),
         );
 }
 

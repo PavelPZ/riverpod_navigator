@@ -125,7 +125,7 @@ Only the navigation to the new screen is interesting:
 
 ```dart
 //  getting navigation stack "HomeScreen(HomeSegment()) => PageScreen(PageSegment(title: 'Page title'))".
-ref.read(riverpodNavigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page title')]);
+ref.read(riverpodNavigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]);
 ```
 
 or 
@@ -135,5 +135,46 @@ or
 ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]);
 ```
 
+## Code simplification
 
+- using the functional_widget package simplifies widgets typing. 
+- some code repeats - it is moved to common dart file
 
+A modified version of the previous example is here: [here](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple_modified.dart).
+
+## Other feartures
+
+### Async navigation and splash screen
+
+todo
+
+### An alternative way to configure the navigator: using the router concept
+
+todo
+
+### More TypedSegment roots
+
+todo
+
+### When the navigation status depends on other providers
+
+todo
+
+### Testing 
+
+Navigation logic can be developed and tested without typing a single flutter widget.
+
+todo
+
+## Roadmap
+
+I prepared this package for my new project. Its further development depends on whether it will be used by the community.
+
+- finish examples
+- proofreading because my English is not good. Community help is warmly welcomed.
+- testing on mobile (tested so far for windows desktop and web)<br>
+  Navigator.onPopPage may need improvements.
+- nested navigation flow<br>
+  I think everything is ready, nested ProviderScope can solve nested navigation too.
+- BlockGUI widget (block the GUI while asynchronous navigation is waiting to complete)
+- parameterization alowing cupertino

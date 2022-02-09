@@ -5,7 +5,7 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'common.dart';
 
-part 'simple_deep.g.dart';
+part 'async.g.dart';
 
 void main() => runApp(
       ProviderScope(
@@ -26,7 +26,18 @@ class AppNavigator extends RiverpodNavigator {
             home: HomeScreen.new,
             page: PageScreen.new,
           ),
+          segment2AsyncScreenActions: (segment) => (segment as SimpleSegment).maybeMap(
+            home: (_) => AsyncScreenActions(creating: (_) => simulateAsyncResult('Home.creating: async result after 2000 msec', 2000)),
+            page: (_) => AsyncScreenActions(creating: (_) => simulateAsyncResult('Page.creating: async result after 400 msec', 400)),
+            orElse: () => null,
+          ),
+          splashBuilder: SplashScreen.new,
         );
+}
+
+Future<String> simulateAsyncResult(String asyncResult, int msec) async {
+  await Future.delayed(Duration(milliseconds: msec));
+  return asyncResult;
 }
 
 @cwidget
@@ -35,12 +46,7 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper<AppNavigator
       title: 'Home',
       buildChildren: (navigator) => [
         ElevatedButton(
-          onPressed: () => navigator.navigate([
-            HomeSegment(),
-            PageSegment(title: 'Page1'),
-            PageSegment(title: 'Page2'),
-            PageSegment(title: 'Page3'),
-          ]),
+          onPressed: () => navigator.navigate([HomeSegment(), PageSegment(title: 'Page')]),
           child: const Text('Go to page'),
         ),
       ],

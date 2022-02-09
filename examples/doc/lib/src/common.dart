@@ -46,9 +46,14 @@ Widget pageHelper<N extends RiverpodNavigator>(
           final res = <Widget>[SizedBox(height: 20)];
           for (final w in buildChildren(navigator)) res.addAll([SizedBox(height: 20), w]);
           res.addAll([SizedBox(height: 20), Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
+          if (segment.asyncActionResult != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncActionResult}"')]);
           return res;
         })(),
       ),
     ),
   );
 }
+
+@swidget
+Widget splashScreen() =>
+    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.hourglass_full, size: 150, color: Colors.deepPurple))));
