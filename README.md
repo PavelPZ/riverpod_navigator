@@ -41,7 +41,7 @@ The full code is available here
 
 ### Step1 - imutable classes for typed-segment
 
-We use [freezed-package](https://github.com/rrousselGit/freezed) for generation immutable clasess that defines string-segments.
+We use [freezed-package](https://github.com/rrousselGit/freezed) for generation immutable clasess (that defines typed-segments).
 
 It's a good idea to be familiar with the freezed-package (including support for JSON serialization).
 
@@ -68,9 +68,9 @@ class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          // display the the home screen when you start the application
+          // which screen to run when the application starts
           initPath: [HomeSegment()],
-          // for JSON serialization of "typed-segment" 
+          // JSON serialization of "typed-segment" 
           fromJson: SimpleSegment.fromJson,
           // build a screen from segment
           screenBuilder: (segment) => (segment as SimpleSegment).map(
@@ -81,7 +81,7 @@ class AppNavigator extends RiverpodNavigator {
 }
 ```
 
-### Step3 - use navigator in MaterialApp.router
+### Step3 - use the navigator in MaterialApp.router
 
 If you are familiar with the Flutter Navigator 2.0 and the riverpod, the following code is understandable:
 
@@ -123,14 +123,14 @@ Creating screen widgets is probably an understandable part of the example.
 
 Only the navigation to the new screen is interesting:
 
-```
+```dart
 // following navigation create navigation stack "HomeScreen(HomeSegment()) => PageScreen(PageSegment(title: 'Page title'))".
 ref.read(riverpodNavigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page title')]);
 ```
 
 or 
 
-```
+```dart
 // following navigation create navigation stack "HomeScreen(HomeSegment())".
 ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]);
 ```
