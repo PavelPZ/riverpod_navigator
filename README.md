@@ -16,13 +16,14 @@
 
 ## The mission
 
-Take a look at the following terms:
+Take a look at the following terms related to url path ```home/books/book;id=2```
 
-- **string-path:** ```stringPath = 'home/books/book;id=2';```
-- **string-segment** - the string-path consists of three string-segments: 'home', 'books', 'book;id=2'
-- **typed-path**: ```typedPath = [HomeSegment(), BooksSegment(), BookSegment(id:2)];```
-- **typed-segment** - the typed-path consists of three typed-segments: [HomeSegment], [BooksSegment], [BookSegment]
-- **navigation-stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
+- **string-path:** ```final stringPath = 'home/books/book;id=2';```
+- **string-segment** - the string-path consists of three string-segments: 'home', 'books' and 'book;id=2'
+- **typed-segment** - the typed-segment is immutable class that defines string-segment: HomeSegment(), BooksSegment() and BookSegment(id:2)
+- **typed-path**: typed-path can be understood as List<typed-segment>: ```final typedPath = [HomeSegment(), BooksSegment(), BookSegment(id:2)];```
+- **navigation-stack** of Flutter Navigator 2.0 is a stack of screens, parameterized by typed-segment:
+  ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
 
 The mission of navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
 With the **typed-path** as the source of the truth.
@@ -33,198 +34,106 @@ If anyone wants to understand how the riverpod_navigator package works,
 let them look at [riverpod_navigator_example](examples/riverpod_navigator_example/). 
 It validates the idea of collaboration [Riverpod](https://riverpod.dev/) + [Freezed](https://github.com/rrousselGit/freezed) + Flutter Navigator 2.0.
 
-## Comparison with go_router
+## Simple example
 
-This chapter is inspired by this riverpod issue: [Examples of go_router using riverpod](https://github.com/rrousselGit/river_pod/issues/1122).
+The full code is available here
+[here](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple.dart).
 
-| example | go_router | code lines | riverpod_navigator | code lines |
-| --- | --- | --- | --- | --- |
-| main | [source code](https://github.com/csells/go_router/blob/main/go_router/example/lib/main.dart) | 70 | [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/go_router/lib/main.dart) | 84  |
-| redirection | [source code](https://github.com/csells/go_router/blob/main/go_router/example/lib/redirection.dart) | 167 | [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/go_router/lib/redirection.dart) | 149 |
+### Step1 - imutable classes for typed-segment
 
-If you are interested in preparing another go_router example, I will try to do it.
+We use [freezed-package](https://github.com/rrousselGit/freezed) for generation immutable clasess that defines string-segments.
 
-## How to use it
+It's a good idea to be familiar with the freezed-package (including support for JSON serialization).
 
-The best documentation is a simple source code. 
-See an example of the classic ```Home => Books => Book*``` application in Lesson01 ... Lesson05 below.
-### Lesson01
-
-(whole example see at [lesson01.dart source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/lesson01/lesson01.dart))
-
-
-### 1. define classes for typed-segments (aka TypedSegment)
-
-From the following AppSegments class declaration, the [freezed package](https://github.com/rrousselGit/freezed) 
-generates three typed-segment classes: *HomeSegment, BooksSegment and BookSegment*.
+From the following SimpleSegment class declaration, the freezed package 
+generates two classes: *HomeSegment and PageSegment*.
 
 ```dart
 @freezed
-class AppSegments with _$AppSegments, TypedSegment {
-  AppSegments._();
-  factory AppSegments.home() = HomeSegment;
-  factory AppSegments.books() = BooksSegment;
-  factory AppSegments.book({required int id}) = BookSegment;
+class SimpleSegment with _$SimpleSegment, TypedSegment {
+  SimpleSegment._();
+  factory SimpleSegment.home() = HomeSegment;
+  factory SimpleSegment.page({required String title}) = PageSegment;
 
-  factory AppSegments.fromJson(Map<String, dynamic> json) => _$AppSegmentsFromJson(json);
+  factory SimpleSegment.fromJson(Map<String, dynamic> json) => _$SimpleSegmentFromJson(json);
 }
 ```
 
-### 2. Type App-specific navigator (aka AppNavigator)
+### Step2 - navigator parameterization
 
-AppNavigator is a singleton class that does the following:
-- configures various navigation parameters 
-- contains actions related to navigation. The actions are then used in the screen widgets.
-
-#### 2.1. Navigation parameters
-
-
+Extends the RiverpodNavigator class as follows:
 
 ```dart
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          // home (initial) navigation path
+          // display the the home screen when you start the application
           initPath: [HomeSegment()],
-          // how to decode JSON to TypedSegment
-          json2Segment: (jsonMap, _) => AppSegments.fromJson(jsonMap),
-          // map TypedSegment's to navigation-stack Screens
-          screenBuilder: appSegmentsScreenBuilder,
+          // for JSON serialization of "typed-segment" 
+          fromJson: SimpleSegment.fromJson,
+          // build a screen from segment
+          screenBuilder: (segment) => (segment as SimpleSegment).map(
+            home: HomeScreen.new,
+            page: PageScreen.new,
+          ),
         );
-```
-
-#### 2.2. Common navigation actions
-
-
-
-```dart
-//
-  Future<void> toHome() => navigate([HomeSegment()]);
-
-  Future<void> toBooks() => navigate([HomeSegment(), BooksSegment()]);
-
-  Future<void> toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
-
-  Future<void> bookNextPrevButton({bool? isPrev}) {
-    assert(currentTypedPath.last is BookSegment);
-    var id = (currentTypedPath.last as BookSegment).id;
-    if (isPrev == true)
-      id = id == 0 ? booksLen - 1 : id - 1;
-    else
-      id = booksLen - 1 > id ? id + 1 : 0;
-    return toBook(id: id);
-  }
-```
-
-### 3. Root widget
-
-Note: *To make it less verbose, we use the functional_widget package to generate widgets.
-See generated "lesson0?.g.dart"" file for details.*
-
-```dart
-@cwidget
-Widget booksExampleApp(WidgetRef ref) {
-  final navigator = ref.read(riverpodNavigatorProvider);
-  return MaterialApp.router(
-    title: 'Books App',
-    routerDelegate: navigator.routerDelegate,
-    routeInformationParser: RouteInformationParserImpl(navigator.pathParser),
-    debugShowCheckedModeBanner: false,
-  );
 }
 ```
 
-### 4. App entry point
+### Step3 - use navigator in MaterialApp.router
 
-app entry point with ProviderScope.overrides
+If you are familiar with the Flutter Navigator 2.0 and the riverpod, the following code is understandable:
 
 ```dart
-void runMain() => runApp(
-    ProviderScope(
-      overrides: [
-        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new /*See Constructor tear-offs in Dart ^2.15*/),
-      ],
-      child: const BooksExampleApp(),
-    ),
-  );
+class App extends ConsumerWidget {
+  const App({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // for all widgets with riverpod support, the navigator is available via riverpodNavigatorProvider
+    final navigator = ref.read(riverpodNavigatorProvider);
+    return MaterialApp.router(
+      title: 'Riverpod Navigator Example',
+      routerDelegate: navigator.routerDelegate,
+      routeInformationParser: navigator.routeInformationParser,
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
 ```
 
-### 5. Map TypedSegment's to Screens
-
-You can view all application screens and widgets here: [screen.dart source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/lesson01/screens.dart)
+### Step4 - runApp
 
 ```dart
-final ScreenBuilder appSegmentsScreenBuilder = (segment) => (segment as AppSegments).map(
-  // See Constructor tear-offs in Dart ^2.15, "HomeScreen.new" is equivalent to "(segment) => HomeScreen(segment)"
-      home: HomeScreen.new,
-      books: BooksScreen.new,
-      book: BookScreen.new,
+void main() => runApp(
+      ProviderScope(
+        overrides: [
+          riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
+        ],
+        child: const App(),
+      ),
     );
 ```
 
-## Other lessons:
+### Step5 - widgets for screens
 
-### Lesson02
-Lesson02 is [lesson01](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson01.md) enhanced with:
+Creating screen widgets is probably an understandable part of the example.
 
-- asynchronous navigation when screens require some asynchronous actions (when creating, deactivating, or merging)
-- the splash screen appears before the HomeScreen is displayed
+Only the navigation to the new screen is interesting:
 
-See [lesson02 documentation](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson02.md)
-
-### Lesson03
-Lesson03 is [lesson02](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson02.md) extended by:
-
-- login application logic (where some pages are not available without a logged in user)
-- more TypedPath roots (AppSegments and LoginSegments)
-- navigation state also depends on another provider (userIsLoggedProvider)
-
-See [lesson03 documentation](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson03.md)
-
-### Lesson04
-Lesson04 is [lesson03](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson03.md) prepared using the router concept.
-
-See [lesson04 documentation](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson04.md)
-
-### Lesson05
-Lesson05 is the same as [lesson03](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson03.md) but without screens and widgets.
-It has not any GUI, only a test.
-
-See [lesson05 documentation](https://github.com/PavelPZ/riverpod_navigator/blob/main/doc/lesson05.md)
-
-### Doc TODO
-
-In this case, it is an advanced parameterization. Applies to the RouterDelegate.build method.
-
-It is possible to parameterize the values **navigator.screen2Page** and **navigator.navigatorWidgetBuilder** below:
-```dart
-@override
-  Widget build(BuildContext context) {
-    final actPath = currentConfiguration;
-    if (actPath.isEmpty) return navigator.splashBuilder?.call() ?? SizedBox();
-    final navigatorWidget = Navigator(
-        key: navigatorKey,
-        // segment => screen
-        pages: actPath.map((segment) => navigator.screen2Page!(segment, navigator.screenBuilder!)).toList(),
-        onPopPage: (route, result) {
-          //if (!route.didPop(result)) return false;
-          // remove last segment from path
-          navigator.onPopRoute();
-          return false;
-        });
-    return navigator.navigatorWidgetBuilder == null ? navigatorWidget : navigator.navigatorWidgetBuilder!(context, navigatorWidget);
-  }
+```
+// following navigation create navigation stack "HomeScreen(HomeSegment()) => PageScreen(PageSegment(title: 'Page title'))".
+ref.read(riverpodNavigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page title')]);
 ```
 
-## Roadmap
+or 
 
-I prepared the package for my new project. Its further development depends on whether it will be used by the community.
+```
+// following navigation create navigation stack "HomeScreen(HomeSegment())".
+ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]);
+```
 
-- proofreading because my English is not good. Community help is warmly welcomed.
-- testing on mobile (tested so far for windows desktop and web)<br>
-  Navigator.onPopPage may need improvements.
-- nested navigation flow<br>
-  I think everything is ready, nested ProviderScope can solve nested navigation too.
-- BlockGUI widget (block the GUI while asynchronous navigation is waiting to complete)
-- parameterization alowing cupertino
+
+

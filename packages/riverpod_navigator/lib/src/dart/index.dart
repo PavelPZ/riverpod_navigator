@@ -8,12 +8,13 @@ import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart'
     show
-        RiverpodNavigatorFlutter,
+        // RiverpodNavigatorFlutter,
+        RouteInformationParserImpl,
         Screen2Page,
         ScreenBuilder,
         NavigatorWidgetBuilder,
         SplashBuilder,
-        RouteFlutter,
+        // RouteFlutter,
         screen2PageDefault,
         RiverpodRouterDelegate;
 import 'package:tuple/tuple.dart';
@@ -59,9 +60,9 @@ typedef Deactivating<T extends TypedSegment> = Future? Function(T oldPath);
 
 class AsyncScreenActions<T extends TypedSegment> {
   AsyncScreenActions({this.creating, this.merging, this.deactivating});
-  final Creating<T>? creating;
-  final Merging<T>? merging;
-  final Deactivating<T>? deactivating;
+  Creating<T>? creating;
+  Merging<T>? merging;
+  Deactivating<T>? deactivating;
 
   Future<AsyncActionResult>? callCreating(TypedSegment newPath) => creating != null ? creating?.call(newPath as T) : null;
   Future<AsyncActionResult>? callMerging(TypedSegment oldPath, TypedSegment newPath) =>

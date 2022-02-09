@@ -30,7 +30,7 @@ class AppNavigator extends RiverpodNavigator {
       : super(
           ref,
           initPath: [Page1Segment()],
-          json2Segment: (jsonMap, _) => Segments.fromJson(jsonMap),
+          fromJson: Segments.fromJson,
           screenBuilder: (segment) => (segment as Segments).map(
             page1: Page1Screen.new,
             page2: Page2Screen.new,

@@ -5,36 +5,61 @@ part of 'index.dart';
 // ********************************************
 
 /// Helper singleton class for navigating to [TypedPath]
-abstract class RiverpodNavigator extends RiverpodNavigatorFlutter {
+class RiverpodNavigator {
   /// [router] is mutually exclusive with [json2Segment], [screen2Page], [segment2AsyncScreenActions], [screen2Page]
   RiverpodNavigator(
-    this.ref, {
-    required this.initPath,
+    Ref ref, {
+    required TypedPath initPath,
+    // required Json2Segment json2Segment,
+    required TypedSegment Function(JsonMap json) fromJson,
+    required ScreenBuilder screenBuilder,
     List<AlwaysAliveProviderListenable>? dependsOn,
-    Json2Segment? json2Segment,
     Segment2AsyncScreenActions? segment2AsyncScreenActions,
-    this.router,
-    // flutter part
     Screen2Page? screen2Page,
-    ScreenBuilder? screenBuilder,
     NavigatorWidgetBuilder? navigatorWidgetBuilder,
     SplashBuilder? splashBuilder,
     bool isDebugRouteDelegate = false,
-  })  : assert((json2Segment != null) != (router != null), 'json2Segment or router required, but not both'),
-        assert(router == null || segment2AsyncScreenActions == null, 'segment2AsyncScreenActions is ignored when a router is provided'),
-        assert((screenBuilder != null) != (router != null), 'screenBuilder or router required, but not both'),
-        assert(router == null || screen2Page == null, 'screen2Page is ignored when a router is provided'),
-        json2Segment = json2Segment ?? (router as TypedRouter).json2Segment,
-        segment2AsyncScreenActions = segment2AsyncScreenActions ?? router?.segment2AsyncScreenActions,
-        routerDelegate4Dart = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate(),
-        super(
-          router: router,
+  }) : this._(
+          ref,
+          initPath,
+          (json, _) => fromJson(json),
+          dependsOn: dependsOn,
+          segment2AsyncScreenActions: segment2AsyncScreenActions,
           screen2Page: screen2Page,
           screenBuilder: screenBuilder,
           navigatorWidgetBuilder: navigatorWidgetBuilder,
           splashBuilder: splashBuilder,
-        ) {
+          isDebugRouteDelegate: isDebugRouteDelegate,
+        );
+
+  RiverpodNavigator._(
+    this.ref,
+    this.initPath,
+    this._json2Segment, {
+    // by group replaced props
+    this.segment2AsyncScreenActions,
+    this.screen2Page,
+    this.screenBuilder,
+    // ...
+    this.navigatorWidgetBuilder,
+    this.splashBuilder,
+    this.router,
+    TypedRouteGroup? routerGroup,
+    List<AlwaysAliveProviderListenable>? dependsOn,
+    bool isDebugRouteDelegate = false,
+  }) {
+    routerDelegate4Dart = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate();
     routerDelegate4Dart.navigator = this;
+
+    if (routerGroup != null) router = TypedRouter([routerGroup]);
+    if (router != null) {
+      _json2Segment = router?.json2Segment;
+      segment2AsyncScreenActions = router?.segment2AsyncScreenActions;
+      screen2Page = router?.screen2Page();
+      screenBuilder = router?.screenBuilder();
+    }
+
+    screen2Page ??= screen2PageDefault;
 
     _defer2NextTickLow = Defer2NextTick(runNextTick: _runNavigation);
     final allDepends = <AlwaysAliveProviderListenable>[ongoingPathProvider, if (dependsOn != null) ...dependsOn];
@@ -42,19 +67,58 @@ abstract class RiverpodNavigator extends RiverpodNavigatorFlutter {
     // ignore: avoid_function_literals_in_foreach_calls
     ref.onDispose(() => _unlistens.forEach((f) => f()));
   }
+  RiverpodNavigator.router(
+    Ref ref,
+    TypedPath initPath,
+    TypedRouteGroup routerGroup, {
+    List<AlwaysAliveProviderListenable>? dependsOn,
+    NavigatorWidgetBuilder? navigatorWidgetBuilder,
+    SplashBuilder? splashBuilder,
+  }) : this._(
+          ref,
+          initPath,
+          null,
+          dependsOn: dependsOn,
+          routerGroup: routerGroup,
+          navigatorWidgetBuilder: navigatorWidgetBuilder,
+          splashBuilder: splashBuilder,
+        );
+
+  RiverpodNavigator.routers(
+    Ref ref,
+    TypedPath initPath,
+    TypedRouter router, {
+    List<AlwaysAliveProviderListenable>? dependsOn,
+    NavigatorWidgetBuilder? navigatorWidgetBuilder,
+    SplashBuilder? splashBuilder,
+  }) : this._(
+          ref,
+          initPath,
+          null,
+          dependsOn: dependsOn,
+          router: router,
+          navigatorWidgetBuilder: navigatorWidgetBuilder,
+          splashBuilder: splashBuilder,
+        );
 
   /// initial screen
   final TypedPath initPath;
 
   /// screen async-navigation actions
-  final Segment2AsyncScreenActions? segment2AsyncScreenActions;
+  Segment2AsyncScreenActions? segment2AsyncScreenActions;
 
   /// [JsonMap] to [TypedSegment] converter.
   /// It is used as the basis for the PathParser.
-  Json2Segment json2Segment;
+  Json2Segment? _json2Segment;
+  Json2Segment get json2Segment => _json2Segment as Json2Segment;
 
   /// [router] is mutually exclusive with [json2Segment], [screen2Page], [segment2AsyncScreenActions], [screen2Page]
   TypedRouter? router;
+
+  Screen2Page? screen2Page;
+  ScreenBuilder? screenBuilder;
+  final NavigatorWidgetBuilder? navigatorWidgetBuilder;
+  final SplashBuilder? splashBuilder;
 
   /// Overwrite for another [PathParser]
   PathParser pathParserCreator() => SimplePathParser(json2Segment);
@@ -69,6 +133,10 @@ abstract class RiverpodNavigator extends RiverpodNavigatorFlutter {
   IRouterDelegate routerDelegate4Dart = RouterDelegate4Dart();
   RiverpodRouterDelegate get routerDelegate => routerDelegate4Dart as RiverpodRouterDelegate;
 
+  RouteInformationParserImpl get routeInformationParser =>
+      _routeInformationParser ?? (_routeInformationParser = RouteInformationParserImpl(pathParser));
+  RouteInformationParserImpl? _routeInformationParser;
+
   @protected
   Ref ref;
 
@@ -81,6 +149,18 @@ abstract class RiverpodNavigator extends RiverpodNavigatorFlutter {
 
   @nonVirtual
   TypedPath get currentTypedPath => routerDelegate4Dart.currentConfiguration;
+
+  String get debugCurrentPath2String => pathParser.typedPath2Path(currentTypedPath);
+  String debugSegmentSubpath(TypedSegment s) => pathParser.typedPath2Path(segmentSubpath(s));
+
+  TypedPath segmentSubpath(TypedSegment s) {
+    final res = <TypedSegment>[];
+    for (var i = 0; i < currentTypedPath.length; i++) {
+      res.add(currentTypedPath[i]);
+      if (currentTypedPath[i] == s) break;
+    }
+    return res;
+  }
 
   @nonVirtual
   String debugTypedPath2String() => pathParser.debugTypedPath2String(currentTypedPath);

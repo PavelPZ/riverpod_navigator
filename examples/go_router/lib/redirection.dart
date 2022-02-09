@@ -37,7 +37,7 @@ class AppNavigator extends RiverpodNavigator {
           ref,
           initPath: [HomeSegment()],
           dependsOn: [loginInfoProvider],
-          json2Segment: (jsonMap, _) => Segments.fromJson(jsonMap),
+          fromJson: Segments.fromJson,
           screenBuilder: (segment) => (segment as Segments).map(
             login: LoginScreen.new,
             home: HomeScreen.new,

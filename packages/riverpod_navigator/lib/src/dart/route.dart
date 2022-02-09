@@ -1,9 +1,25 @@
 part of 'index.dart';
 
-abstract class TypedRoute<T extends TypedSegment> extends RouteFlutter<T> {
-  Future<void>? creating(T newPath) => null;
-  Future<void>? merging(T oldPath, T newPath) => null;
-  Future<void>? deactivating(T oldPath) => null;
+class TypedRoute<T extends TypedSegment> {
+  TypedRoute({
+    required this.builder,
+    this.screen2Page,
+    this.onCreate,
+    this.onMerge,
+    this.onDeactivate,
+  });
+  TypedRoute.empty();
+  Widget Function(T segment)? builder;
+  Screen2Page? screen2Page;
+  Future<void> Function(T newPath)? onCreate;
+  Future<void> Function(T oldPath, T newPath)? onMerge;
+  Future<void> Function(T oldPath)? onDeactivate;
+  bool isRoute(TypedSegment segment) => segment is T;
+
+  Widget screenBuilder(T segment) => builder!(segment);
+  Future<void>? creating(T newPath) => onCreate?.call(newPath);
+  Future<void>? merging(T oldPath, T newPath) => onMerge?.call(oldPath, newPath);
+  Future<void>? deactivating(T oldPath) => onDeactivate?.call(oldPath);
 
   AsyncScreenActions toAsyncScreenActions() => AsyncScreenActions(
         creating: (n) => creating(n as T),
@@ -12,13 +28,21 @@ abstract class TypedRoute<T extends TypedSegment> extends RouteFlutter<T> {
       );
 }
 
-abstract class TypedRouteGroup<T extends TypedSegment> {
-  TypedRouteGroup({this.unionKey = 'runtimeType'});
+class TypedRouteGroup<T extends TypedSegment> {
+  TypedRouteGroup(
+    this.fromJson, {
+    required this.routes,
+    this.unionKey = 'runtimeType',
+  });
+  TypedRouteGroup.empty({this.unionKey = 'runtimeType'});
+  List<TypedRoute<T>>? routes;
   final String unionKey;
+  T Function(JsonMap jsonMap)? fromJson;
+
   bool isGroup(TypedSegment segment) => segment is T;
   // *** to override
-  T json2Segment(JsonMap jsonMap);
-  TypedRoute segment2Route(T segment);
+  T json2Segment(JsonMap jsonMap) => fromJson!(jsonMap);
+  TypedRoute<T> segment2Route(T segment) => routes!.firstWhere((s) => s.isRoute(segment));
 }
 
 class TypedRouter {
