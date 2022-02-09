@@ -47,12 +47,12 @@ class AppNavigator extends RiverpodNavigator {
         );
 
   @override
-  FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
+  FutureOr<void> appNavigationLogic(Ref ref) {
     final loginInfo = ref.read(loginInfoProvider.notifier);
     final ongoing = ref.read(ongoingPathProvider.notifier);
 
     final loggedIn = loginInfo.state.isNotEmpty;
-    final loggingIn = currentPath.any((segment) => segment is LoginSegment);
+    final loggingIn = currentTypedPath.any((segment) => segment is LoginSegment);
     if (!loggedIn && !loggingIn) ongoing.state = [LoginSegment()];
     if (loggedIn && loggingIn) ongoing.state = [HomeSegment()];
   }

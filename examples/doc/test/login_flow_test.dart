@@ -3,7 +3,7 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 import 'package:test/test.dart';
 
 // ignore: avoid_relative_lib_imports
-import '../lib/src/lesson05/lesson05.dart';
+import '../lib/src/login_flow.dart';
 
 ProviderContainer createContainer() {
   final res = ProviderContainer(overrides: [
@@ -26,49 +26,25 @@ void main() {
       expect(navigator.debugTypedPath2String(), expected);
     }
 
-    //**********
-    // test without the need to log in (book with even id only)
-    //**********
-
-    await navigTest(() => navigator.toBook(id: 0), 'home/books/book;id=0');
-
-    await navigTest(() => navigator.toBooks(), 'home/books');
-
-    await navigTest(() => navigator.toHome(), 'home');
-
-    await navigTest(() => navigator.pop(), 'home');
-
-    await navigTest(() => navigator.toBook(id: 2), 'home/books/book;id=2');
-
-    await navigTest(() => navigator.pop(), 'home/books');
-
-    await navigTest(() => navigator.push(BookSegment(id: 4)), 'home/books/book;id=4');
-
-    await navigTest(() => navigator.replaceLast(BookSegment(id: 0)), 'home/books/book;id=0');
-
-    //**********
-    // log in tests
-    //**********
-
-    await navigTest(() => navigator.toHome(), 'home');
+    await navigTest(() => navigator.navigate([HomeSegment()]), 'home');
 
     // navigate to book 3, book 3 needs login => redirected to login page
-    await navigTest(() => navigator.toBook(id: 3), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D3;canceledUrl=home');
+    await navigTest(() => navigator.navigate([HomeSegment(), BookSegment(id: 3)]), 'login;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D3;canceledUrl=home');
 
     // confirm login => redirect to book 3
-    await navigTest(() => navigator.loginPageOK(), 'home/books/book;id=3');
+    await navigTest(() => navigator.okOnloginPage(), 'home/book;id=3');
 
     // to previous book 2
-    await navigTest(() => navigator.bookNextPrevButton(isPrev: true), 'home/books/book;id=2');
+    await navigTest(() => navigator.bookNext(), 'home/book;id=4');
 
     // to previous book 1
-    await navigTest(() => navigator.bookNextPrevButton(isPrev: true), 'home/books/book;id=1');
+    await navigTest(() => navigator.bookNext(), 'home/book;id=5');
 
     // logout, but book needs login => redirected to login page
     await navigTest(() => navigator.globalLogoutButton(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=');
 
     // cancel login => redirect to home
-    await navigTest(() => navigator.loginPageCancel(), 'home');
+    await navigTest(() => navigator.cancelOnloginPage(), 'home');
 
     return;
   });

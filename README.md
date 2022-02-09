@@ -175,7 +175,7 @@ class AppNavigator extends RiverpodNavigator {
         );
 }
 
-// simulates an action such as loading external data or saving to external storage
+// simulates an async action such as loading external data or saving to external storage
 Future<String> simulateAsyncResult(String actionName, int msec) async {
   await Future.delayed(Duration(milliseconds: msec));
   return '$actionName: async result after $msec msec';
@@ -187,7 +187,7 @@ Future<String> simulateAsyncResult(String actionName, int msec) async {
 See [async_with_routes.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async_with_routes.dart).
 
 This example is functionally identical to the previous one. 
-However, it uses the concept of "routes", where all parameters for a given segment and screen are placed together.
+However, it uses the concept of "routes", where all the parameters for a given segment and screen are placed together.
 Similar route-like concept can be used for all examples.
 
 ```dart
@@ -210,23 +210,30 @@ class AppNavigator extends RiverpodNavigator {
           ]),
         );
 }
-
-// simulates an action such as loading external data or saving to external storage
-Future<String> simulateAsyncResult(String asyncResult, int msec) async {
-  await Future.delayed(Duration(milliseconds: msec));
-  return '$asyncResult: async result after $msec msec';
-}
 ```
 
-### When the navigation status depends on other providers
+### Login flow application showing "guard", "redirect" and "dependency on another provider" features
 
-todo
+A slightly more complicated example, implementing a login flow as follows:
+
+1. there is a home screen, five book screens (with id = 1...5) and a login screen
+2. each screen (except login one) has a Login x Logout button
+3. book screen with odd 'id' is not accessible without login: the application redirects to the login page
+4. after logging in, the application redirects to the page that requires a login
+
+See [login_flow.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/login_flow.dart).
+
+todo: 
+1. explain relations ongoingPathProvider x currentTypedPath
+2. explain the purpose of RiverpodNavigator.appNavigationLogic
 
 ### Testing 
 
 Navigation logic can be developed and tested without typing a single flutter widget.
 
-todo
+See [login_flow.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/login_flow_test.dart).
+
+todo: finish test
 
 ### More TypedSegment roots
 
@@ -262,6 +269,8 @@ class PageGrp with _$PageGrp, TypedSegment {
   static const String jsonNameSpace = '_page';
 }
 ```
+
+todo: finish an example
 
 ## Roadmap
 

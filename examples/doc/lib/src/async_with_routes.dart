@@ -36,12 +36,6 @@ class AppNavigator extends RiverpodNavigator {
         );
 }
 
-// simulates an action such as loading external data or saving to external storage
-Future<String> simulateAsyncResult(String asyncResult, int msec) async {
-  await Future.delayed(Duration(milliseconds: msec));
-  return '$asyncResult: async result after $msec msec';
-}
-
 @cwidget
 Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper<AppNavigator>(
       segment: segment,

@@ -151,7 +151,7 @@ class RiverpodNavigator {
   Future<void> get navigationCompleted => _defer2NextTick.future;
 
   /// Enter application navigation logic here (redirection, login, etc.). Could be empty.
-  FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) => null;
+  FutureOr<void> appNavigationLogic(Ref ref) => null;
 
   /// depends on the used platform: flutter (= [RiverpodRouterDelegate]) x dart only (= [RouterDelegate4Dart])
   IRouterDelegate routerDelegate4Dart = RouterDelegate4Dart();
@@ -198,9 +198,9 @@ class RiverpodNavigator {
 
   /// synchronize [ongoingPathProvider] with [RiverpodRouterDelegate.currentConfiguration]
   Future<void> _runNavigation() async {
-    final appLogic = appNavigationLogic(ref, currentTypedPath);
+    final appLogic = appNavigationLogic(ref);
     if (appLogic is Future) await appLogic;
-    // when ongoingPath[i] == currentTypedPath[i], set currentTypedPath[i] = ongoingPath[i]
+    // in ongoingPath, when ongoingPath[i] == currentTypedPath[i], set ongoingPath[i] = currentTypedPath[i]
     final ongoingPath = eq2Identical(currentTypedPath, ref.read(ongoingPathProvider));
     if (ongoingPath == currentTypedPath) return;
 

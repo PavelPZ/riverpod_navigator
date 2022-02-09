@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-// import 'package:functional_widget_annotation/functional_widget_annotation.dart';
+import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-// import 'common.dart' show PageHelper, SplashScreen, App;
+import 'common.dart' show PageHelper, SplashScreen, App;
 
 part 'async-more-groups.g.dart';
 part 'async-more-groups.freezed.dart';
+
+void main() => runApp(
+      ProviderScope(
+        overrides: [
+          riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
+        ],
+        child: const App(),
+      ),
+    );
 
 // ******************************************************
 // more segment groups
@@ -36,3 +45,52 @@ class PageGrp with _$PageGrp, TypedSegment {
 
   static const String jsonNameSpace = '_page';
 }
+
+class AppNavigator extends RiverpodNavigator {
+  AppNavigator(Ref ref)
+      : super.more(
+          ref,
+          initPath: [HomeSegment()],
+          json2Segment: (jsonMap, unionKey) => unionKey == PageGrp.jsonNameSpace ? PageSegment.fromJson(jsonMap) : HomeSegment.fromJson(jsonMap),
+          screenBuilders: {
+            HomeSegment: (seg) => HomeScreen(seg as HomeSegment),
+            PageSegment: (seg) => PageScreen(seg as PageSegment),
+          },
+          // splash screen that appears before the first page is created
+          splashBuilder: SplashScreen.new,
+        );
+}
+
+// simulates an action such as loading external data or saving to external storage
+Future<String> simulateAsyncResult(String asyncResult, int msec) async {
+  await Future.delayed(Duration(milliseconds: msec));
+  return '$asyncResult: async result after $msec msec';
+}
+
+@cwidget
+Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper<AppNavigator>(
+      segment: segment,
+      title: 'Home',
+      buildChildren: (navigator) => [
+        ElevatedButton(
+          onPressed: () => navigator.navigate([HomeSegment(), PageSegment(title: 'Page1')]),
+          child: const Text('Go to page'),
+        ),
+      ],
+    );
+
+@cwidget
+Widget pageScreen(WidgetRef ref, PageSegment segment) => PageHelper<AppNavigator>(
+      segment: segment,
+      title: segment.title,
+      buildChildren: (navigator) => [
+        ElevatedButton(
+          onPressed: () => navigator.navigate([HomeSegment()]),
+          child: const Text('Go to home'),
+        ),
+        ElevatedButton(
+          onPressed: () => navigator.navigate([HomeSegment(), PageSegment(title: segment.title == 'Page1' ? 'Page2' : 'Page1')]),
+          child: const Text('Go to next page'),
+        ),
+      ],
+    );
