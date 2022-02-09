@@ -7,14 +7,19 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 part 'common.freezed.dart';
 part 'common.g.dart';
 
-@freezed
-class Segment with _$Segment, TypedSegment {
-  Segment._();
-  factory Segment.home() = HomeSegment;
-  factory Segment.page({required String title}) = PageSegment;
+// ******************************************************
+// Segment
 
-  factory Segment.fromJson(Map<String, dynamic> json) => _$SegmentFromJson(json);
+@freezed
+class SegmentGrp with _$SegmentGrp, TypedSegment {
+  SegmentGrp._();
+  factory SegmentGrp.home() = HomeSegment;
+  factory SegmentGrp.page({required String title}) = PageSegment;
+
+  factory SegmentGrp.fromJson(Map<String, dynamic> json) => _$SegmentGrpFromJson(json);
 }
+
+// ******************************************************
 
 @cwidget
 Widget app(WidgetRef ref) {

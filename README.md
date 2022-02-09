@@ -45,17 +45,17 @@ We use [freezed-package](https://github.com/rrousselGit/freezed) for generation 
 
 It's a good idea to be familiar with the freezed-package (including support for JSON serialization).
 
-From the following Segment class declaration, the freezed package 
+From the following SegmentGrp class declaration, the freezed package 
 generates two classes: *HomeSegment and PageSegment*.
 
 ```dart
 @freezed
-class Segment with _$Segment, TypedSegment {
-  Segment._();
-  factory Segment.home() = HomeSegment;
-  factory Segment.page({required String title}) = PageSegment;
+class SegmentGrp with _$SegmentGrp, TypedSegment {
+  SegmentGrp._();
+  factory SegmentGrp.home() = HomeSegment;
+  factory SegmentGrp.page({required String title}) = PageSegment;
 
-  factory Segment.fromJson(Map<String, dynamic> json) => _$SimpleSegmentFromJson(json);
+  factory SegmentGrp.fromJson(Map<String, dynamic> json) => _$SimpleSegmentFromJson(json);
 }
 ```
 
@@ -71,9 +71,9 @@ class AppNavigator extends RiverpodNavigator {
           // which screen to run when the application starts
           initPath: [HomeSegment()],
           // JSON serialization of "typed-segment" 
-          fromJson: Segment.fromJson,
+          fromJson: SegmentGrp.fromJson,
           // build a screen from segment
-          screenBuilder: (segment) => (segment as Segment).map(
+          screenBuilder: (segment) => (segment as SegmentGrp).map(
             home: HomeScreen.new,
             page: PageScreen.new,
           ),
@@ -154,13 +154,13 @@ class AppNavigator extends RiverpodNavigator {
       : super(
           ref,
           initPath: [HomeSegment()],
-          fromJson: Segment.fromJson,
-          screenBuilder: (segment) => (segment as Segment).map(
+          fromJson: SegmentGrp.fromJson,
+          screenBuilder: (segment) => (segment as SegmentGrp).map(
             home: HomeScreen.new,
             page: PageScreen.new,
           ),
           // returns a Future with the result of an asynchronous operation for a given segment's screen
-          segment2AsyncScreenActions: (segment) => (segment as Segment).maybeMap(
+          segment2AsyncScreenActions: (segment) => (segment as SegmentGrp).maybeMap(
             home: (_) => AsyncScreenActions(creating: (newSegment) => simulateAsyncResult('Home.creating', 2000)),
             page: (_) => AsyncScreenActions(
               creating: (newSegment) => simulateAsyncResult('Page.creating', 400),
@@ -187,8 +187,8 @@ Future<String> simulateAsyncResult(String actionName, int msec) async {
 See [async_with_routes.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async_with_routes.dart).
 
 This example is functionally identical to the previous one. 
-But it uses the concept of "route", where all the parameters for a given segment and screen are together.
-A route-like concept can be used for all examples.
+However, it uses the concept of "routes", where all parameters for a given segment and screen are placed together.
+Similar route-like concept can be used for all examples.
 
 ```dart
 class AppNavigator extends RiverpodNavigator {
@@ -196,7 +196,7 @@ class AppNavigator extends RiverpodNavigator {
       : super.router(
           ref,
           [HomeSegment()],
-          RGroup<Segment>(Segment.fromJson, routes: [
+          RGroup<SegmentGrp>(SegmentGrp.fromJson, routes: [
             RRoute<HomeSegment>(
               builder: HomeScreen.new,
               creating: (newSegment) => simulateAsyncResult('Home.creating', 2000),
@@ -218,10 +218,6 @@ Future<String> simulateAsyncResult(String asyncResult, int msec) async {
 }
 ```
 
-### More TypedSegment roots
-
-todo
-
 ### When the navigation status depends on other providers
 
 todo
@@ -231,6 +227,41 @@ todo
 Navigation logic can be developed and tested without typing a single flutter widget.
 
 todo
+
+### More TypedSegment roots
+
+See [async-more-groups.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async-more-groups.dart).
+
+In a real application with many dozens of screens, it would not be practical to define typed-segments using one class (as SegmentGrp is).
+Use the unique "unionKey" for the second and next segment group.
+!!!! "unionKey" must start with an underscore. !!!
+
+
+```dart
+@freezed
+class HomeGrp with _$HomeGrp, TypedSegment {
+  /// JsonSerialization curiosity: add this unused factory constructor.
+  /// If there is only one constructor (like "factory HomeGrp () = _HomeGrp;"), the resulting JSON has a different format.
+  factory HomeGrp() = _HomeGrp;
+  HomeGrp._();
+  factory HomeGrp.home() = HomeSeg;
+
+  factory HomeGrp.fromJson(Map<String, dynamic> json) => _$HomeGrpFromJson(json);
+}
+
+/// The second and another segment group needs unique "unionKey".
+/// !!!! It have to start with underscore. !!!
+@Freezed(unionKey: PageGrp.jsonNameSpace)
+class PageGrp with _$PageGrp, TypedSegment {
+  factory PageGrp() = _PageGroup;
+  PageGrp._();
+  factory PageGrp.home() = PageSeg;
+
+  factory PageGrp.fromJson(Map<String, dynamic> json) => _$PageGrpFromJson(json);
+
+  static const String jsonNameSpace = '_page';
+}
+```
 
 ## Roadmap
 

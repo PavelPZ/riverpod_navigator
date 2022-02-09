@@ -21,13 +21,13 @@ class AppNavigator extends RiverpodNavigator {
       : super(
           ref,
           initPath: [HomeSegment()],
-          fromJson: Segment.fromJson,
-          screenBuilder: (segment) => (segment as Segment).map(
+          fromJson: SegmentGrp.fromJson,
+          screenBuilder: (segment) => (segment as SegmentGrp).map(
             home: HomeScreen.new,
             page: PageScreen.new,
           ),
           // returns a Future with the result of an asynchronous operation for a given segment's screen
-          segment2AsyncScreenActions: (segment) => (segment as Segment).maybeMap(
+          segment2AsyncScreenActions: (segment) => (segment as SegmentGrp).maybeMap(
             home: (_) => AsyncScreenActions(creating: (newSegment) => simulateAsyncResult('Home.creating', 2000)),
             page: (_) => AsyncScreenActions(
               creating: (newSegment) => simulateAsyncResult('Page.creating', 400),

@@ -1,0 +1,38 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+// import 'package:functional_widget_annotation/functional_widget_annotation.dart';
+import 'package:riverpod_navigator/riverpod_navigator.dart';
+
+// import 'common.dart' show PageHelper, SplashScreen, App;
+
+part 'async-more-groups.g.dart';
+part 'async-more-groups.freezed.dart';
+
+// ******************************************************
+// more segment groups
+
+/// The first segment group does not need "unionKey".
+@freezed
+class HomeGrp with _$HomeGrp, TypedSegment {
+  /// JsonSerialization curiosity: you have to add "factory HomeGrp() = _HomeGrp" unused factory constructor.
+  /// If there is only one constructor (like "factory HomeGrp () = _HomeGrp;"), the resulting JSON has a different format.
+  factory HomeGrp() = _HomeGrp;
+  HomeGrp._();
+  factory HomeGrp.home() = HomeSegment;
+
+  factory HomeGrp.fromJson(Map<String, dynamic> json) => _$HomeGrpFromJson(json);
+}
+
+/// The second and another segment group needs unique "unionKey".
+/// !!!! It have to start with underscore !!!
+@Freezed(unionKey: PageGrp.jsonNameSpace)
+class PageGrp with _$PageGrp, TypedSegment {
+  factory PageGrp() = _PageGroup;
+  PageGrp._();
+  factory PageGrp.page({required String title}) = PageSegment;
+
+  factory PageGrp.fromJson(Map<String, dynamic> json) => _$PageGrpFromJson(json);
+
+  static const String jsonNameSpace = '_page';
+}

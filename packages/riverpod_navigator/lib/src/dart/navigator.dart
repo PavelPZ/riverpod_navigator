@@ -6,7 +6,6 @@ part of 'index.dart';
 
 /// Helper singleton class for navigating to [TypedPath]
 class RiverpodNavigator {
-  /// [router] is mutually exclusive with [json2Segment], [screen2Page], [segment2AsyncScreenActions], [screen2Page]
   RiverpodNavigator(
     Ref ref, {
     required TypedPath initPath,
@@ -31,6 +30,31 @@ class RiverpodNavigator {
           splashBuilder: splashBuilder,
           isDebugRouteDelegate: isDebugRouteDelegate,
         );
+
+  // RiverpodNavigator.more(
+  //   Ref ref, {
+  //   required TypedPath initPath,
+  //   required Json2Segment json2Segment,
+  //   // required ScreenBuilder screenBuilder,
+  //   required Map<Type, ScreenBuilder> screenBuilders,
+  //   List<AlwaysAliveProviderListenable>? dependsOn,
+  //   Segment2AsyncScreenActions? segment2AsyncScreenActions,
+  //   Screen2Page? screen2Page,
+  //   NavigatorWidgetBuilder? navigatorWidgetBuilder,
+  //   SplashBuilder? splashBuilder,
+  //   bool isDebugRouteDelegate = false,
+  // }) : this._(
+  //         ref,
+  //         initPath,
+  //         json2Segment,
+  //         dependsOn: dependsOn,
+  //         segment2AsyncScreenActions: segment2AsyncScreenActions,
+  //         screen2Page: screen2Page,
+  //         screenBuilder: (segment) => screenBuilders[segment],
+  //         navigatorWidgetBuilder: navigatorWidgetBuilder,
+  //         splashBuilder: splashBuilder,
+  //         isDebugRouteDelegate: isDebugRouteDelegate,
+  //       );
 
   RiverpodNavigator._(
     this.ref,
