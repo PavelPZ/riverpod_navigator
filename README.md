@@ -37,7 +37,7 @@ It validates the idea of collaboration [Riverpod](https://riverpod.dev/) + [Free
 ## Simple example
 
 The full code is available here
-[here](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple.dart).
+[simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple.dart).
 
 ### Step1 - imutable classes for typed-segment
 
@@ -140,7 +140,7 @@ ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]);
 - using the functional_widget package simplifies widgets typing. 
 - some code repeats - it is moved to common dart file
 
-A modified version of the previous example is here: [here](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple_modified.dart).
+A modified version of the previous example is here: [simple_modified.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple_modified.dart).
 
 ## Other feartures
 
