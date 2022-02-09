@@ -21,7 +21,7 @@ class AppNavigator extends RiverpodNavigator {
       : super.router(
           ref,
           [HomeSegment()],
-          RGroup<SimpleSegment>(SimpleSegment.fromJson, routes: [
+          RGroup<Segment>(Segment.fromJson, routes: [
             RRoute<HomeSegment>(
               builder: HomeScreen.new,
               creating: (newSegment) => simulateAsyncResult('Home.creating', 2000),

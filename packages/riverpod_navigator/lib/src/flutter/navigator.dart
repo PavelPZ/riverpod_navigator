@@ -6,7 +6,7 @@ class RiverpodNavigatorFlutter {
     this.screen2Page,
     this.navigatorWidgetBuilder,
     this.splashBuilder,
-    TypedRouter? router,
+    RRouter? router,
   })  : assert((screenBuilder == null) != (router == null), 'screenBuilder or router required, but not both'),
         assert(router == null || screen2Page == null, 'screen2Page is ignored when a router is provided') {
     if (router != null) {

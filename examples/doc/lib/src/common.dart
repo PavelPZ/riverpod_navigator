@@ -8,12 +8,12 @@ part 'common.freezed.dart';
 part 'common.g.dart';
 
 @freezed
-class SimpleSegment with _$SimpleSegment, TypedSegment {
-  SimpleSegment._();
-  factory SimpleSegment.home() = HomeSegment;
-  factory SimpleSegment.page({required String title}) = PageSegment;
+class Segment with _$Segment, TypedSegment {
+  Segment._();
+  factory Segment.home() = HomeSegment;
+  factory Segment.page({required String title}) = PageSegment;
 
-  factory SimpleSegment.fromJson(Map<String, dynamic> json) => _$SimpleSegmentFromJson(json);
+  factory Segment.fromJson(Map<String, dynamic> json) => _$SegmentFromJson(json);
 }
 
 @cwidget

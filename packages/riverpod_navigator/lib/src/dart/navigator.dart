@@ -44,14 +44,14 @@ class RiverpodNavigator {
     this.navigatorWidgetBuilder,
     this.splashBuilder,
     this.router,
-    TypedRouteGroup? routerGroup,
+    RGroup? routerGroup,
     List<AlwaysAliveProviderListenable>? dependsOn,
     bool isDebugRouteDelegate = false,
   }) {
     routerDelegate4Dart = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate();
     routerDelegate4Dart.navigator = this;
 
-    if (routerGroup != null) router = TypedRouter([routerGroup]);
+    if (routerGroup != null) router = RRouter([routerGroup]);
     if (router != null) {
       _json2Segment = router?.json2Segment;
       segment2AsyncScreenActions = router?.segment2AsyncScreenActions;
@@ -70,7 +70,7 @@ class RiverpodNavigator {
   RiverpodNavigator.router(
     Ref ref,
     TypedPath initPath,
-    TypedRouteGroup routerGroup, {
+    RGroup routerGroup, {
     List<AlwaysAliveProviderListenable>? dependsOn,
     NavigatorWidgetBuilder? navigatorWidgetBuilder,
     SplashBuilder? splashBuilder,
@@ -87,7 +87,7 @@ class RiverpodNavigator {
   RiverpodNavigator.routers(
     Ref ref,
     TypedPath initPath,
-    TypedRouter router, {
+    RRouter router, {
     List<AlwaysAliveProviderListenable>? dependsOn,
     NavigatorWidgetBuilder? navigatorWidgetBuilder,
     SplashBuilder? splashBuilder,
@@ -113,7 +113,7 @@ class RiverpodNavigator {
   Json2Segment get json2Segment => _json2Segment as Json2Segment;
 
   /// [router] is mutually exclusive with [json2Segment], [screen2Page], [segment2AsyncScreenActions], [screen2Page]
-  TypedRouter? router;
+  RRouter? router;
 
   Screen2Page? screen2Page;
   ScreenBuilder? screenBuilder;

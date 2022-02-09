@@ -45,17 +45,17 @@ We use [freezed-package](https://github.com/rrousselGit/freezed) for generation 
 
 It's a good idea to be familiar with the freezed-package (including support for JSON serialization).
 
-From the following SimpleSegment class declaration, the freezed package 
+From the following Segment class declaration, the freezed package 
 generates two classes: *HomeSegment and PageSegment*.
 
 ```dart
 @freezed
-class SimpleSegment with _$SimpleSegment, TypedSegment {
-  SimpleSegment._();
-  factory SimpleSegment.home() = HomeSegment;
-  factory SimpleSegment.page({required String title}) = PageSegment;
+class Segment with _$Segment, TypedSegment {
+  Segment._();
+  factory Segment.home() = HomeSegment;
+  factory Segment.page({required String title}) = PageSegment;
 
-  factory SimpleSegment.fromJson(Map<String, dynamic> json) => _$SimpleSegmentFromJson(json);
+  factory Segment.fromJson(Map<String, dynamic> json) => _$SimpleSegmentFromJson(json);
 }
 ```
 
@@ -71,9 +71,9 @@ class AppNavigator extends RiverpodNavigator {
           // which screen to run when the application starts
           initPath: [HomeSegment()],
           // JSON serialization of "typed-segment" 
-          fromJson: SimpleSegment.fromJson,
+          fromJson: Segment.fromJson,
           // build a screen from segment
-          screenBuilder: (segment) => (segment as SimpleSegment).map(
+          screenBuilder: (segment) => (segment as Segment).map(
             home: HomeScreen.new,
             page: PageScreen.new,
           ),
@@ -154,13 +154,13 @@ class AppNavigator extends RiverpodNavigator {
       : super(
           ref,
           initPath: [HomeSegment()],
-          fromJson: SimpleSegment.fromJson,
-          screenBuilder: (segment) => (segment as SimpleSegment).map(
+          fromJson: Segment.fromJson,
+          screenBuilder: (segment) => (segment as Segment).map(
             home: HomeScreen.new,
             page: PageScreen.new,
           ),
           // returns a Future with the result of an asynchronous operation for a given segment's screen
-          segment2AsyncScreenActions: (segment) => (segment as SimpleSegment).maybeMap(
+          segment2AsyncScreenActions: (segment) => (segment as Segment).maybeMap(
             home: (_) => AsyncScreenActions(creating: (newSegment) => simulateAsyncResult('Home.creating', 2000)),
             page: (_) => AsyncScreenActions(
               creating: (newSegment) => simulateAsyncResult('Page.creating', 400),
@@ -196,7 +196,7 @@ class AppNavigator extends RiverpodNavigator {
       : super.router(
           ref,
           [HomeSegment()],
-          RGroup<SimpleSegment>(SimpleSegment.fromJson, routes: [
+          RGroup<Segment>(Segment.fromJson, routes: [
             RRoute<HomeSegment>(
               builder: HomeScreen.new,
               creating: (newSegment) => simulateAsyncResult('Home.creating', 2000),
