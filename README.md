@@ -146,7 +146,7 @@ A modified version of the previous example is here: [simple_modified.dart](https
 
 ### Async navigation and splash screen
 
-[async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async.dart)
+See [async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async.dart)
 
 ```dart
 class AppNavigator extends RiverpodNavigator {
@@ -184,10 +184,11 @@ Future<String> simulateAsyncResult(String actionName, int msec) async {
 
 ### An alternative way to configure the navigator: using the router concept
 
-See [async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async_with_routes.dart).
+See [async_with_routes.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async_with_routes.dart).
 
 This example is functionally identical to the previous one. 
 But it uses the concept of "route", where all the parameters for a given segment and screen are together.
+A route-like concept can be used for all examples.
 
 ```dart
 class AppNavigator extends RiverpodNavigator {
