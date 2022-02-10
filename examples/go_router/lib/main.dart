@@ -29,12 +29,15 @@ class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          initPath: [Page1Segment()],
-          fromJson: Segments.fromJson,
-          screenBuilder: (segment) => (segment as Segments).map(
-            page1: Page1Screen.new,
-            page2: Page2Screen.new,
-          ),
+          [Page1Segment()],
+          [
+            // JSON serialization of HomeSegment and PageSegment
+            RRoutes<Segments>(Segments.fromJson, [
+              // build a screen from segment
+              RRoute<Page1Segment>(Page1Screen.new),
+              RRoute<Page2Segment>(Page2Screen.new),
+            ])
+          ],
         );
 
   static const title = 'GoRouter Example: main';

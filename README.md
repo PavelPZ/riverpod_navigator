@@ -138,9 +138,10 @@ The full code is available here:
 ## What's under the hood
 
 A brief introduction to the riverpod_navigation principle can help with its use.
+
 How is our mission "to keep *string-path* <= **typed-path** => *navigation-stack* always in sync" implemented?
 
-Let's look at the principles of how to implement login app flow.
+Let's look at the principles of how to implement **login app flow**.
 
 ### In the beginning there are riverpod providers and their states
 
@@ -178,6 +179,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> {
       ...
   )
   /// a notifyListeners notifies RouterDelegate that it needs to be rebuilt
+  @override
   void notifyListeners() : super.notifyListeners();
 }
 ```
@@ -193,7 +195,7 @@ How is it done?
 class RiverpodNavigator {
   RiverpodNavigator(Ref ref) {
     ...
-    /// Listen to the providers state change. Call "onStateChanged" every time it changes.
+    /// Listen to the providers and call "onStateChanged" every time they change.
     [ongoingPathProvider,userIsLoggedProvider].foreach((provider) => ref.listen(provider, (_,__) => onStateChanged())));
   }
 
@@ -214,7 +216,6 @@ class RiverpodNavigator {
   /// Enter application navigation logic here (redirection, login, etc.). 
   /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or no route guard is required)
   TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
-
 }
 ```
 
@@ -248,12 +249,12 @@ See how the Loggin button looks:
 ```dart
 Consumer(builder: (_, ref, __) {
   final userIsLoggedNotifier = ref.watch(userIsLoggedProvider.notifier);
-    return ElevatedButton(
-      // toogles the login state
-      onPressed: () => userIsLoggedNotifier.update((s) => !s),
-      // displays correct login button text
-      child: Text(userIsLoggedNotifier.state ? 'Logout' : 'Login'),
-    );
+  return ElevatedButton(
+    // toogles the login state
+    onPressed: () => userIsLoggedNotifier.update((s) => !s),
+    // displays correct login button text
+    child: Text(userIsLoggedNotifier.state ? 'Logout' : 'Login'),
+  );
 }),
 ```
 

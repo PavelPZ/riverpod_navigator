@@ -18,7 +18,7 @@ void main() => runApp(
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
-      : super.router(
+      : super(
           ref,
           [HomeSegment()],
           [

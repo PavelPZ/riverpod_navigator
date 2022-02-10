@@ -6,59 +6,65 @@ part of 'index.dart';
 
 /// Helper singleton class for navigating to [TypedPath]
 class RiverpodNavigator {
-  RiverpodNavigator(
-    Ref ref, {
-    required TypedPath initPath,
-    // required Json2Segment json2Segment,
-    required TypedSegment Function(JsonMap json) fromJson,
-    required ScreenBuilder screenBuilder,
-    List<AlwaysAliveProviderListenable>? dependsOn,
-    Segment2AsyncScreenActions? segment2AsyncScreenActions,
-    Screen2Page? screen2Page,
-    NavigatorWidgetBuilder? navigatorWidgetBuilder,
-    SplashBuilder? splashBuilder,
-    bool isDebugRouteDelegate = false,
-  }) : this._(
-          ref,
-          initPath,
-          (json, _) => fromJson(json),
-          dependsOn: dependsOn,
-          segment2AsyncScreenActions: segment2AsyncScreenActions,
-          screen2Page: screen2Page,
-          screenBuilder: screenBuilder,
-          navigatorWidgetBuilder: navigatorWidgetBuilder,
-          splashBuilder: splashBuilder,
-          isDebugRouteDelegate: isDebugRouteDelegate,
-        );
+  // RiverpodNavigator(
+  //   Ref ref, {
+  //   required TypedPath initPath,
+  //   // required Json2Segment json2Segment,
+  //   required TypedSegment Function(JsonMap json) fromJson,
+  //   required ScreenBuilder screenBuilder,
+  //   List<AlwaysAliveProviderListenable>? dependsOn,
+  //   Segment2AsyncScreenActions? segment2AsyncScreenActions,
+  //   Screen2Page? screen2Page,
+  //   NavigatorWidgetBuilder? navigatorWidgetBuilder,
+  //   SplashBuilder? splashBuilder,
+  //   bool isDebugRouteDelegate = false,
+  // }) : this._(
+  //         ref,
+  //         initPath,
+  //         (json, _) => fromJson(json),
+  //         dependsOn: dependsOn,
+  //         segment2AsyncScreenActions: segment2AsyncScreenActions,
+  //         screen2Page: screen2Page,
+  //         screenBuilder: screenBuilder,
+  //         navigatorWidgetBuilder: navigatorWidgetBuilder,
+  //         splashBuilder: splashBuilder,
+  //         isDebugRouteDelegate: isDebugRouteDelegate,
+  //       );
 
-  RiverpodNavigator._(
+  // RiverpodNavigator._(
+  //   this.ref,
+  //   this.initPath, {
+  //   // by group replaced props
+  //   // this.segment2AsyncScreenActions,
+  //   // this.screen2Page,
+  //   // this.screenBuilder,
+  //   // ...
+  //   this.navigatorWidgetBuilder,
+  //   this.splashBuilder,
+  //   required List<RRoutes> routes,
+  //   List<AlwaysAliveProviderListenable>? dependsOn,
+  //   bool isDebugRouteDelegate = false,
+  // }) : router = RRouter(routes) {
+  //   routerDelegate4Dart = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate();
+  //   routerDelegate4Dart.navigator = this;
+
+  //   _defer2NextTickLow = Defer2NextTick(runNextTick: _runNavigation);
+  //   final allDepends = <AlwaysAliveProviderListenable>[ongoingPathProvider, if (dependsOn != null) ...dependsOn];
+  //   for (final depend in allDepends) _unlistens.add(ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick.start()));
+  //   // ignore: avoid_function_literals_in_foreach_calls
+  //   ref.onDispose(() => _unlistens.forEach((f) => f()));
+  // }
+  RiverpodNavigator(
     this.ref,
     this.initPath,
-    this._json2Segment, {
-    // by group replaced props
-    this.segment2AsyncScreenActions,
-    this.screen2Page,
-    this.screenBuilder,
-    // ...
+    List<RRoutes> groups, {
+    List<AlwaysAliveProviderListenable>? dependsOn,
     this.navigatorWidgetBuilder,
     this.splashBuilder,
-    this.router,
-    List<RRoutes>? routes,
-    List<AlwaysAliveProviderListenable>? dependsOn,
     bool isDebugRouteDelegate = false,
-  }) {
+  }) : router = RRouter(groups) {
     routerDelegate4Dart = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate();
     routerDelegate4Dart.navigator = this;
-
-    if (routes != null) router = RRouter(routes);
-    if (router != null) {
-      _json2Segment = router?.json2Segment;
-      segment2AsyncScreenActions = router?.segment2AsyncScreenActions;
-      screen2Page = router?.screen2Page();
-      screenBuilder = router?.screenBuilder();
-    }
-
-    screen2Page ??= screen2PageDefault;
 
     _defer2NextTickLow = Defer2NextTick(runNextTick: _runNavigation);
     final allDepends = <AlwaysAliveProviderListenable>[ongoingPathProvider, if (dependsOn != null) ...dependsOn];
@@ -66,66 +72,23 @@ class RiverpodNavigator {
     // ignore: avoid_function_literals_in_foreach_calls
     ref.onDispose(() => _unlistens.forEach((f) => f()));
   }
-  RiverpodNavigator.router(
-    Ref ref,
-    TypedPath initPath,
-    List<RRoutes> routes, {
-    List<AlwaysAliveProviderListenable>? dependsOn,
-    NavigatorWidgetBuilder? navigatorWidgetBuilder,
-    SplashBuilder? splashBuilder,
-  }) : this._(
-          ref,
-          initPath,
-          null,
-          dependsOn: dependsOn,
-          routes: routes,
-          navigatorWidgetBuilder: navigatorWidgetBuilder,
-          splashBuilder: splashBuilder,
-        );
-
-  RiverpodNavigator.routers(
-    Ref ref,
-    TypedPath initPath,
-    RRouter router, {
-    List<AlwaysAliveProviderListenable>? dependsOn,
-    NavigatorWidgetBuilder? navigatorWidgetBuilder,
-    SplashBuilder? splashBuilder,
-  }) : this._(
-          ref,
-          initPath,
-          null,
-          dependsOn: dependsOn,
-          router: router,
-          navigatorWidgetBuilder: navigatorWidgetBuilder,
-          splashBuilder: splashBuilder,
-        );
 
   /// initial screen
   final TypedPath initPath;
 
-  /// screen async-navigation actions
-  ///
-  /// Navigation is delayed until the asynchronous actions are performed. These actions are:
-  ///- **creating** (before inserting a new screen into the navigation stack)
-  /// - **deactivating** (before removing the old screen from the navigation stack)
-  /// - **merging** (before screen replacement with the same segment type in the navigation stack)
-  Segment2AsyncScreenActions? segment2AsyncScreenActions;
+  RRouter router;
 
-  /// [JsonMap] to [TypedSegment] converter.
-  /// It is used as the basis for the PathParser.
-  Json2Segment? _json2Segment;
-  Json2Segment get json2Segment => _json2Segment as Json2Segment;
+  Page screen2Page(TypedSegment segment) {
+    final route = router.segment2Route(segment);
+    final screen2Page = route.screen2Page ?? screen2PageDefault;
+    return screen2Page(segment, (segment) => route.buildScreen(segment));
+  }
 
-  /// [router] is mutually exclusive with [json2Segment], [screen2Page], [segment2AsyncScreenActions], [screen2Page]
-  RRouter? router;
-
-  Screen2Page? screen2Page;
-  ScreenBuilder? screenBuilder;
   final NavigatorWidgetBuilder? navigatorWidgetBuilder;
   final SplashBuilder? splashBuilder;
 
   /// Overwrite for another [PathParser]
-  PathParser pathParserCreator() => SimplePathParser(json2Segment);
+  PathParser pathParserCreator() => SimplePathParser(router.json2Segment);
 
   /// When changing navigation state: completed after Flutter navigation stack is actual
   Future<void> get navigationCompleted => _defer2NextTick.future;
@@ -185,7 +148,7 @@ class RiverpodNavigator {
     if (ongoingPath == currentTypedPath) return;
 
     // Wait for async screen actions.
-    if (segment2AsyncScreenActions != null) await wait4AsyncScreenActions(currentTypedPath, ongoingPath);
+    await wait4AsyncScreenActions(currentTypedPath, ongoingPath);
     // actualize flutter navigation stack
     routerDelegate4Dart.currentConfiguration = ongoingPath;
     routerDelegate4Dart.notifyListeners();
@@ -219,28 +182,29 @@ class RiverpodNavigator {
   Future<void> wait4AsyncScreenActions(TypedPath oldPath, TypedPath newPath) async {
     final minLen = min(oldPath.length, newPath.length);
     final futures = <Tuple2<Future?, TypedSegment>>[];
-    final actions = segment2AsyncScreenActions as Segment2AsyncScreenActions;
     // merge old and new
     for (var i = 0; i < minLen; i++) {
       final o = oldPath[i];
       final n = newPath[i];
+      final or = router.segment2Route(o);
+      final nr = router.segment2Route(n);
       // nothing to merge
       if (identical(o, n)) continue;
       if (o.runtimeType == n.runtimeType)
         // old and new has the same route => merging
-        futures.add(Tuple2(actions(n)?.callMerging(o, n), n));
+        futures.add(Tuple2(or.merging?.call(o, n), n));
       else {
         // old and new has different route => deactivanting old, creating new
-        futures.add(Tuple2(actions(o)?.callDeactivating(o), o));
-        futures.add(Tuple2(actions(n)?.callCreating(n), n));
+        futures.add(Tuple2(or.deactivating?.call(o), o));
+        futures.add(Tuple2(nr.creating?.call(n), n));
       }
     }
     // deactivating the rest of old segments
     if (oldPath.length > minLen)
-      for (var i = minLen; i < oldPath.length; i++) futures.add(Tuple2(actions(oldPath[i])?.callDeactivating(oldPath[i]), oldPath[i]));
+      for (var i = minLen; i < oldPath.length; i++) futures.add(Tuple2(router.segment2Route(oldPath[i]).deactivating?.call(oldPath[i]), oldPath[i]));
     // creating the rest of new segments
     if (newPath.length > minLen)
-      for (var i = minLen; i < newPath.length; i++) futures.add(Tuple2(actions(newPath[i])?.callCreating(newPath[i]), newPath[i]));
+      for (var i = minLen; i < newPath.length; i++) futures.add(Tuple2(router.segment2Route(newPath[i]).creating?.call(newPath[i]), newPath[i]));
     // remove empty futures
     final notEmptyFutures = [
       for (final f in futures)

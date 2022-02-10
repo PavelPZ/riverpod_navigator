@@ -26,7 +26,7 @@ class SegmentGrp with _$SegmentGrp, TypedSegment {
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
-      : super.router(
+      : super(
           ref,
           // which screen to run when the application starts
           [HomeSegment()],

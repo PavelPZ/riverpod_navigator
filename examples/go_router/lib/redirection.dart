@@ -33,15 +33,19 @@ class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          initPath: [HomeSegment()],
+          // which screen to run when the application starts
+          [HomeSegment()],
+          [
+            // JSON serialization of HomeSegment and PageSegment
+            RRoutes<Segments>(Segments.fromJson, [
+              // build a screen from segment
+              RRoute<HomeSegment>(HomeScreen.new),
+              RRoute<LoginSegment>(LoginScreen.new),
+              RRoute<FamilySegment>(FamilyScreen.new),
+              RRoute<PersonSegment>(PersonScreen.new),
+            ])
+          ],
           dependsOn: [loginInfoProvider],
-          fromJson: Segments.fromJson,
-          screenBuilder: (segment) => (segment as Segments).map(
-            login: LoginScreen.new,
-            home: HomeScreen.new,
-            family: FamilyScreen.new,
-            person: PersonScreen.new,
-          ),
         );
 
   @override

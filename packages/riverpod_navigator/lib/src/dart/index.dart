@@ -11,9 +11,9 @@ import 'package:riverpod_navigator/riverpod_navigator.dart'
         // RiverpodNavigatorFlutter,
         RouteInformationParserImpl,
         Screen2Page,
-        ScreenBuilder,
         NavigatorWidgetBuilder,
         SplashBuilder,
+        ScreenBuilder,
         // RouteFlutter,
         screen2PageDefault,
         RiverpodRouterDelegate;
@@ -27,6 +27,7 @@ part 'route.dart';
 typedef JsonMap = Map<String, dynamic>;
 typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
 typedef AsyncActionResult = dynamic;
+typedef RiverpodNavigatorCreator = RiverpodNavigator Function(Ref ref);
 
 // ********************************************
 //  basic classes:  TypedSegment and TypedPath
@@ -49,30 +50,6 @@ abstract class TypedSegment {
 
 /// Typed variant of whole url path (which consists of [TypedSegment]s)
 typedef TypedPath = List<TypedSegment>;
-
-// ********************************************
-//   AsyncScreenActions
-// ********************************************
-
-typedef Creating<T extends TypedSegment> = Future? Function(T newPath);
-typedef Merging<T extends TypedSegment> = Future? Function(T oldPath, T newPath);
-typedef Deactivating<T extends TypedSegment> = Future? Function(T oldPath);
-
-class AsyncScreenActions<T extends TypedSegment> {
-  AsyncScreenActions({this.creating, this.merging, this.deactivating});
-  Creating<T>? creating;
-  Merging<T>? merging;
-  Deactivating<T>? deactivating;
-
-  Future<AsyncActionResult>? callCreating(TypedSegment newPath) => creating != null ? creating?.call(newPath as T) : null;
-  Future<AsyncActionResult>? callMerging(TypedSegment oldPath, TypedSegment newPath) =>
-      merging != null ? merging?.call(oldPath as T, newPath as T) : null;
-  Future<AsyncActionResult>? callDeactivating(TypedSegment oldPath) => creating != null ? deactivating?.call(oldPath as T) : null;
-}
-
-typedef Segment2AsyncScreenActions = AsyncScreenActions? Function(TypedSegment segment);
-
-typedef RiverpodNavigatorCreator = RiverpodNavigator Function(Ref ref);
 
 // ********************************************
 // RouterDelegate abstraction

@@ -38,7 +38,7 @@ bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.is
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
-      : super.router(
+      : super(
           ref,
           [HomeSegment()],
           [
@@ -75,8 +75,8 @@ class AppNavigator extends RiverpodNavigator {
   // ******* actions used on the screens
 
   Future gotoNextBook() {
-    // TODO
-    return navigate([]);
+    final actualBook = currentTypedPath.last as BookSegment;
+    return replaceLast(BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
   }
 
   Future globalLogoutButton() {
