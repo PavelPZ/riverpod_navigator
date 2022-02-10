@@ -1,3 +1,8 @@
+## 0.12.0
+
+- **Breaking**: only Route like navigator configuration is available
+- better readme.md and examples
+
 ## 0.11.0
 
 - new RiverpodNavigator.fromJson, alowing "fromJson: SimpleSegment.fromJson"
