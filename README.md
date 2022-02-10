@@ -28,7 +28,7 @@ Take a look at the following terms related to url path ```home/books/book;id=2``
 The mission of navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
 With the **typed-path** as the source of the truth.
 
-Note: *There is a one-to-one relationship between the given segment and the screen (HomeSegment - HomeScreen, BookSegment - BookScreen)
+Note: *There is a one-to-one relationship between the given segment and the screen (HomeSegment - HomeScreen, BookSegment - BookScreen).
 In the following text, I sometimes confuse the two terms.*.
 
 ## Simple example
@@ -184,7 +184,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> {
 ### And in the middle is RiverpodNavigator
 
 RiverpodNavigator reacts to changes of the input states (ongoingPathProvider, userIsLoggedProvider in this case) 
-and updates the output state accordingly.
+and updates the output state (navigation stack) accordingly.
 
 How is it done?
 
@@ -192,26 +192,26 @@ How is it done?
 class RiverpodNavigator {
   RiverpodNavigator(Ref ref) {
     ...
-    /// listen to the changing state of the providers and call onStateChanged
+    /// Listen to the providers state change. Call "onStateChanged" every time it changes.
     [ongoingPathProvider,userIsLoggedProvider].foreach((provider) => ref.listen(provider, (_,__) => onStateChanged())));
   }
 
   void onStateChanged() {
     //=====> at this point, "ongoingPathProvider state" and "riverpodRouterDelegate.currentConfiguration" could differ
-    // get notifier
+    // get ongoingPath notifier
     final ongoingPathNotifier = ref.read(ongoingPathProvider.notifier);
     // run app specific application navigation logic here (redirection, login, etc.).
     final newOngoingPath = appNavigationLogic(ongoingPathNotifier.state);
     // actualize a possibly changed ongoingPath
     ongoingPathNotifier.state = newOngoingPath;
-    // the next two lines will cause Flutter Navigator 2.0 to update the navigation stack according to ongoingPathProvider state
+    // the next two lines will cause Flutter Navigator 2.0 to update the navigation stack according to the ongoingPathProvider state
     riverpodRouterDelegate.currentConfiguration = newOngoingPath;
     riverpodRouterDelegate.notifyListeners();
     //=====> at this point, "ongoingPathProvider state" and  "RiverpodRouterDelegate" are in sync
   }
 
   /// Enter application navigation logic here (redirection, login, etc.). 
-  /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or no route guard is needed)
+  /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or no route guard is required)
   TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
 
 }
@@ -223,26 +223,25 @@ class RiverpodNavigator {
 @override 
 TypedPath appNavigationLogic(TypedPath ongoingPath) {
   final userIsLogged = ref.read(userIsLoggedProvider);
+
   // if user is not logged in and some of screen in navigations stack needs login => redirect to LoginScreen
   if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment)) return [LoginSegment()];
+
   // user is logged and LogginScreen is going to display => redirect to HomeScreen
   if (userIsLogged && ongoingPath.any((segment) => segment is LoginSegment) return [HomeSegment()];)
+
   // no redirection is needed
   return ongoingPath;
 }
 ```
 
-Note: we need the "needsLogin" function that returns true when a login is required for given screen segment
-
+Note: *we need the "needsLogin" function that returns true when a login is required for given screen*
 
 ### Thats it
 
-To je vše podstatné pro realizaci login flow. S riverpod je použití Flutter Navigator 2.0 opravdu jednoduché.
-Podívejte se, jak snadno pak vypadá Loggin button:
-
-This is all for implementing a login flow
-With Riverpod & Freezed, using Flutter Navigator 2.0 is really easy.
-See how easy the Loggin button looks:
+This is all essential for the implementation of the login flow.
+With Riverpod, using Flutter Navigator 2.0 is really easy.
+See how the Loggin button looks:
 
 #### Login Button
 ```dart
@@ -257,7 +256,7 @@ Consumer(builder: (_, ref, __) {
 }),
 ```
 
-## Verification of the riverpod_navigator idea
+### Verification of the riverpod_navigator idea
 
 If anyone wants to understand in detail how the riverpod_navigator package works, 
 let them look at [riverpod_navigator_example](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/riverpod_navigator_example/). 
@@ -268,10 +267,11 @@ It validates the idea of collaboration [Riverpod](https://riverpod.dev/) + [Free
 ### Code simplification
 
 Subsequent examples are prepared with simpler code:
+
 - using the functional_widget package simplifies widgets typing
 - some code is moved to common dart file
 
-A modified version of the previous example is here: [simple_modified.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple_modified.dart).
+A modified version of the first example is here: [simple_modified.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple_modified.dart).
 
 ### Async navigation and splash screen
 
