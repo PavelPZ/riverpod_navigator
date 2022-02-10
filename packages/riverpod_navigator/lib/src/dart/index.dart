@@ -14,6 +14,7 @@ import 'package:riverpod_navigator/riverpod_navigator.dart'
         NavigatorWidgetBuilder,
         SplashBuilder,
         // RouteFlutter,
+        ScreenBuilder,
         screen2PageDefault,
         RiverpodRouterDelegate;
 import 'package:tuple/tuple.dart';

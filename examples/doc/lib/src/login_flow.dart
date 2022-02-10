@@ -6,8 +6,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-import 'common.dart' show App;
-
 part 'login_flow.g.dart';
 part 'login_flow.freezed.dart';
 
@@ -19,6 +17,17 @@ void main() => runApp(
         child: const App(),
       ),
     );
+
+@cwidget
+Widget app(WidgetRef ref) {
+  final navigator = ref.read(riverpodNavigatorProvider);
+  return MaterialApp.router(
+    title: 'Riverpod Navigator Example',
+    routerDelegate: navigator.routerDelegate,
+    routeInformationParser: navigator.routeInformationParser,
+    debugShowCheckedModeBanner: false,
+  );
+}
 
 @freezed
 class SegmentGrp with _$SegmentGrp, TypedSegment {
@@ -32,6 +41,20 @@ class SegmentGrp with _$SegmentGrp, TypedSegment {
 
 /// !!! there is another provider on which the navigation status depends:
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
+
+typedef NeedsLogin<T extends TypedSegment> = bool Function(T segment);
+
+class LoginAppRoute<T extends TypedSegment> extends RRoute<T> {
+  LoginAppRoute(
+    ScreenBuilder screenBuilder, {
+    this.needsLogin,
+    Screen2Page? screen2Page,
+    Creating<T>? creating,
+    Merging<T>? merging,
+    Deactivating<T>? deactivating,
+  }) : super(screenBuilder, screen2Page: screen2Page, creating: creating, merging: merging, deactivating: deactivating);
+  NeedsLogin<T>? needsLogin = (_) => false;
+}
 
 /// !!! only book screens with odd 'id' require a login
 bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;

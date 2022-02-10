@@ -26,5 +26,8 @@ dev_dependencies:
   json_serializable:
   test:
 
+dependency_overrides:
+  analyzer: ^2.1.0
+
 flutter:
   uses-material-design: true

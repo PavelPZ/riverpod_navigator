@@ -1,5 +1,9 @@
 part of 'index.dart';
 
+typedef Creating<T extends TypedSegment> = Future<AsyncActionResult> Function(T newPath);
+typedef Merging<T extends TypedSegment> = Future<AsyncActionResult> Function(T oldPath, T newPath);
+typedef Deactivating<T extends TypedSegment> = Future<AsyncActionResult> Function(T oldPath);
+
 class RRouter {
   RRouter(this.groups) {
     final unionKeys = groups.map((e) => e.unionKey).toSet();
@@ -35,11 +39,11 @@ class RRoute<T extends TypedSegment> {
     this.merging,
     this.deactivating,
   });
-  Widget Function(T segment) screenBuilder;
-  Widget buildScreen(TypedSegment segment) => screenBuilder(segment as T);
+  ScreenBuilder<T> screenBuilder;
   Screen2Page? screen2Page;
-  Future<AsyncActionResult> Function(T newPath)? creating;
-  Future<AsyncActionResult> Function(T oldPath, T newPath)? merging;
-  Future<AsyncActionResult> Function(T oldPath)? deactivating;
+  Creating<T>? creating;
+  Merging<T>? merging;
+  Deactivating<T>? deactivating;
   bool isRoute(TypedSegment segment) => segment is T;
+  Widget buildScreen(TypedSegment segment) => screenBuilder(segment as T);
 }

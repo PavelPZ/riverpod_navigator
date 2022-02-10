@@ -9,9 +9,9 @@ part 'navigator.dart';
 part 'screenWrappers.dart';
 
 typedef NavigatorWidgetBuilder = Widget Function(BuildContext, Navigator);
-typedef ScreenBuilder = Widget Function(TypedSegment segment);
+typedef ScreenBuilder<T extends TypedSegment> = Widget Function(T);
 typedef SplashBuilder = Widget Function();
-typedef Screen2Page = Page Function(TypedSegment segment, ScreenBuilder screenBuilder);
+typedef Screen2Page<T extends TypedSegment> = Page Function(T, ScreenBuilder<T>);
 final Screen2Page screen2PageDefault = (segment, screenBuilder) => _Screen2PageDefault(segment, screenBuilder);
 
 abstract class RouteFlutter<T extends TypedSegment> {
