@@ -134,13 +134,15 @@ ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]);
 
 ### Code of example
 
-The full code is available here
+The full code is available here:
 [simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple.dart).
 
 ## What's under the hood
 
 A brief introduction to the riverpod_navigation principle can help with its use.
 How is our mission "to keep *string-path* <= **typed-path** => *navigation-stack* always in sync" implemented?
+
+Let's look at the principles of how to implement login app flow.
 
 ### In the beginning there are riverpod providers and their states
 
@@ -152,13 +154,17 @@ typedef TypedPath = List<TypedSegment>;
 
 /// this TypedPath provider is part of the riverpod_navigation package
 final ongoingPathProvider = StateProvider<TypedPath>((_) => []);
-/// another provider with a "userIsLogged state" on which the navigation state depends (and which can be part of the application)
+
+/// another provider with a "userIsLogged state" on which the navigation state depends 
+/// (and which can be part of the application)
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
+
+...
+//and of course HomeSegment, HomeScreen, LoginSegment, LoginScreen, PageSegment and PageScreen
+...
 ```
 
 ### At the end is the navigation stack, represented by Flutter Navigator 2.0 RouterDelegate
-
-(let's now omit "* string-path * <= ** typed-path **" part of our mission).
 
 ```dart
 class RiverpodRouterDelegate extends RouterDelegate<TypedPath> {
@@ -167,7 +173,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> {
   @override
   TypedPath currentConfiguration = [];
   ...
-  /// build screens from currentConfiguration (eg HomeScreen(homeSegment) or PageScreen(pageSegment) from example)
+  /// build screens from currentConfiguration 
   @override
   Widget build(BuildContext context) => Navigator(
       pages: currentConfiguration.map((typedSegment) => <some getScreenForSegment(typedSegment) logic>,
@@ -213,12 +219,7 @@ class RiverpodNavigator {
 
 ### Example of appNavigationLogic for Login flow
 
-If we have
-
-- a "needsLogin(segment)" function that returns true when a login is required for given screen segment.
-- a LoginSegment and LoginScreen
-
-then appNavigationLogic is as follows:
+(we need function that returns true when a login is required for given screen segment)
 
 ```dart
 @override 
