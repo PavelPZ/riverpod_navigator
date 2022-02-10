@@ -16,27 +16,28 @@ void main() => runApp(
     );
 
 @freezed
-class SimpleSegment with _$SimpleSegment, TypedSegment {
-  SimpleSegment._();
-  factory SimpleSegment.home() = HomeSegment;
-  factory SimpleSegment.page({required String title}) = PageSegment;
+class SegmentGrp with _$SegmentGrp, TypedSegment {
+  SegmentGrp._();
+  factory SegmentGrp.home() = HomeSegment;
+  factory SegmentGrp.page({required String title}) = PageSegment;
 
-  factory SimpleSegment.fromJson(Map<String, dynamic> json) => _$SimpleSegmentFromJson(json);
+  factory SegmentGrp.fromJson(Map<String, dynamic> json) => _$SegmentGrpFromJson(json);
 }
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
-      : super(
+      : super.router(
           ref,
-          // display the the home screen when you start the application
-          initPath: [HomeSegment()],
-          // for JSON serialization of "typed-segment"
-          fromJson: SimpleSegment.fromJson,
-          // build a screen from segment
-          screenBuilder: (segment) => (segment as SimpleSegment).map(
-            home: HomeScreen.new,
-            page: PageScreen.new,
-          ),
+          // which screen to run when the application starts
+          [HomeSegment()],
+          [
+            // JSON serialization of HomeSegment and PageSegment
+            RRoutes<SegmentGrp>(SegmentGrp.fromJson, [
+              // build a screen from segment
+              RRoute<HomeSegment>(HomeScreen.new),
+              RRoute<PageSegment>(PageScreen.new),
+            ])
+          ],
         );
 }
 
@@ -50,7 +51,6 @@ class App extends ConsumerWidget {
       title: 'Riverpod Navigator Example',
       routerDelegate: navigator.routerDelegate,
       routeInformationParser: navigator.routeInformationParser,
-      debugShowCheckedModeBanner: false,
     );
   }
 }

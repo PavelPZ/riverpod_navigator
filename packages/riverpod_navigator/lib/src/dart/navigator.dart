@@ -43,14 +43,14 @@ class RiverpodNavigator {
     this.navigatorWidgetBuilder,
     this.splashBuilder,
     this.router,
-    RGroup? routerGroup,
+    List<RRoutes>? routes,
     List<AlwaysAliveProviderListenable>? dependsOn,
     bool isDebugRouteDelegate = false,
   }) {
     routerDelegate4Dart = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate();
     routerDelegate4Dart.navigator = this;
 
-    if (routerGroup != null) router = RRouter([routerGroup]);
+    if (routes != null) router = RRouter(routes);
     if (router != null) {
       _json2Segment = router?.json2Segment;
       segment2AsyncScreenActions = router?.segment2AsyncScreenActions;
@@ -69,7 +69,7 @@ class RiverpodNavigator {
   RiverpodNavigator.router(
     Ref ref,
     TypedPath initPath,
-    RGroup routerGroup, {
+    List<RRoutes> routes, {
     List<AlwaysAliveProviderListenable>? dependsOn,
     NavigatorWidgetBuilder? navigatorWidgetBuilder,
     SplashBuilder? splashBuilder,
@@ -78,7 +78,7 @@ class RiverpodNavigator {
           initPath,
           null,
           dependsOn: dependsOn,
-          routerGroup: routerGroup,
+          routes: routes,
           navigatorWidgetBuilder: navigatorWidgetBuilder,
           splashBuilder: splashBuilder,
         );

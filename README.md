@@ -60,6 +60,23 @@ Extends the RiverpodNavigator class as follows:
 ```dart
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
+      : super.router(
+          ref,
+          // which screen to run when the application starts
+          [HomeSegment()],
+          [
+            // JSON serialization of HomeSegment and PageSegment
+            RRoutes<SegmentGrp>(SegmentGrp.fromJson, [
+              // build a screen from segment
+              RRoute<HomeSegment>(HomeScreen.new),
+              RRoute<PageSegment>(PageScreen.new),
+            ])
+          ],
+        );
+}
+
+class AppNavigator extends RiverpodNavigator {
+  AppNavigator(Ref ref)
       : super(
           ref,
           // which screen to run when the application starts
@@ -129,7 +146,7 @@ or
 ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]);
 ```
 
-### Code of the example
+#### Code of the example
 
 The full code is available here:
 [simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple.dart).
@@ -289,65 +306,32 @@ Future<String> simulateAsyncResult(String actionName, int msec) async {
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
-      : super(
-          ref,
-          initPath: [HomeSegment()],
-          fromJson: SegmentGrp.fromJson,
-          screenBuilder: (segment) => (segment as SegmentGrp).map(
-            home: HomeScreen.new,
-            page: PageScreen.new,
-          ),
-          // returns a Future with the result of an asynchronous operation for a given segment's screen
-          segment2AsyncScreenActions: (segment) => (segment as SegmentGrp).maybeMap(
-            home: (_) => AsyncScreenActions(
-              creating: (newSegment) => simulateAsyncResult('Home.creating', 2000),
-            ),
-            page: (_) => AsyncScreenActions(
-              creating: (newSegment) => simulateAsyncResult('Page.creating', 400),
-              merging: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
-              deactivating: (oldSegment) => null, // no async action
-            ),
-            orElse: () => null,
-          ),
-          // splash screen that appears before the first page is created
-          splashBuilder: SplashScreen.new,
-        );
-}
-```
-
-See [async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async.dart)
-
-### An alternative way to configure the navigator: using the router concept
-
-This example is functionally identical to the previous one. 
-However, it uses the concept of "routes", where all the parameters for a given segment and screen are placed together.
-Similar route-like concept can be used for all examples.
-
-```dart
-class AppNavigator extends RiverpodNavigator {
-  AppNavigator(Ref ref)
       : super.router(
           ref,
           [HomeSegment()],
-          RGroup<SegmentGrp>(SegmentGrp.fromJson, routes: [
-            RRoute<HomeSegment>(
-              builder: HomeScreen.new,
-              creating: (newSegment) => simulateAsyncResult('Home.creating', 2000),
-            ),
-            RRoute<PageSegment>(
-              builder: PageScreen.new,
-              creating: (newSegment) => simulateAsyncResult('Page.creating', 400),
-              merging: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
-              deactivating: null,
-            ),
-          ]),
+          [
+            RRoutes<SegmentGrp>(SegmentGrp.fromJson, [
+              RRoute<HomeSegment>(
+                HomeScreen.new,
+                creating: (newSegment) => simulateAsyncResult('Home.creating', 2000),
+              ),
+              RRoute<PageSegment>(
+                PageScreen.new,
+                creating: (newSegment) => simulateAsyncResult('Page.creating', 400),
+                merging: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
+                deactivating: null,
+              ),
+            ])
+          ],
         );
 }
 ```
 
-See [async_with_routes.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async_with_routes.dart).
+#### Code of the example
 
-### Login flow application showing "guard", "redirect" and "dependency on another provider" features
+See [async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async.dart)
+
+### Login flow application
 
 A slightly more complicated example, implementing a login flow as follows:
 
@@ -356,9 +340,7 @@ A slightly more complicated example, implementing a login flow as follows:
 3. the book screen with odd 'id' is not accessible without login (for such screens the application is redirected to the login page)
 4. after logging in, the application redirects to the page that requires a login
 
-todo: 
-1. explain relations ongoingPathProvider x currentTypedPath
-2. explain the purpose of RiverpodNavigator.appNavigationLogic
+#### Code of the example
 
 See [login_flow.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/login_flow.dart).
 

@@ -18,14 +18,15 @@ void main() => runApp(
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
-      : super(
+      : super.router(
           ref,
-          initPath: [HomeSegment()],
-          fromJson: SegmentGrp.fromJson,
-          screenBuilder: (segment) => (segment as SegmentGrp).map(
-            home: HomeScreen.new,
-            page: PageScreen.new,
-          ),
+          [HomeSegment()],
+          [
+            RRoutes<SegmentGrp>(SegmentGrp.fromJson, [
+              RRoute<HomeSegment>(HomeScreen.new),
+              RRoute<PageSegment>(PageScreen.new),
+            ])
+          ],
         );
 }
 

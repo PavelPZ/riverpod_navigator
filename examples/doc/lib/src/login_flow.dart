@@ -38,42 +38,37 @@ bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.is
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
-      : super(
+      : super.router(
           ref,
-          initPath: [HomeSegment()],
-          fromJson: SegmentGrp.fromJson,
-          screenBuilder: (segment) => (segment as SegmentGrp).map(
-            home: HomeScreen.new,
-            book: BookScreen.new,
-            login: LoginScreen.new,
-          ),
-          // !!! userIsLoggedProvider registration
+          [HomeSegment()],
+          [
+            RRoutes<SegmentGrp>(SegmentGrp.fromJson, [
+              RRoute<HomeSegment>(HomeScreen.new),
+              RRoute<BookSegment>(BookScreen.new),
+              RRoute<LoginSegment>(LoginScreen.new),
+            ])
+          ],
           dependsOn: [userIsLoggedProvider],
         );
 
   /// Quards and redirects for login flow
   @override
   TypedPath appNavigationLogic(TypedPath ongoingPath) {
-    //
     final userIsLogged = ref.read(userIsLoggedProvider);
-    //final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
 
-    if (!userIsLogged) {
-      final pathNeedsLogin = ongoingPath.any((segment) => needsLogin(segment));
-
-      // login needed => redirect to login page
-      if (pathNeedsLogin) {
-        // prepare loggedUrl and canceledUrl for login screen
-        final loggedUrl = pathParser.typedPath2Path(ongoingPath);
-        var canceledUrl = currentTypedPath.isEmpty || currentTypedPath.last is LoginSegment ? '' : pathParser.typedPath2Path(currentTypedPath);
-        if (loggedUrl == canceledUrl) canceledUrl = ''; // chance to exit login loop
-        // redirect to login screen
-        return [LoginSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
-      }
+    // if user is not logged-in and some of the screen in navigations stack needs login => redirect to LoginScreen
+    if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
+      // prepare loggedUrl and canceledUrl for login screen
+      final loggedUrl = pathParser.typedPath2Path(ongoingPath);
+      var canceledUrl = currentTypedPath.isEmpty || currentTypedPath.last is LoginSegment ? '' : pathParser.typedPath2Path(currentTypedPath);
+      if (loggedUrl == canceledUrl) canceledUrl = ''; // chance to exit login loop
+      // redirect to login screen
+      return [LoginSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
     } else {
-      // user is logged in and navigating to login screen => redirect to home
-      if (ongoingPath.isEmpty || ongoingPath.last is LoginSegment) return [HomeSegment()];
+      // user is logged and LogginScreen is going to display => redirect to HomeScreen
+      if (userIsLogged && ongoingPath.isEmpty || ongoingPath.last is LoginSegment) return [HomeSegment()];
     }
+    // no redirection is needed
     return ongoingPath;
   }
 

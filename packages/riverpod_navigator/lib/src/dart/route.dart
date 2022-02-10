@@ -1,8 +1,8 @@
 part of 'index.dart';
 
 class RRoute<T extends TypedSegment> {
-  RRoute({
-    required this.builder,
+  RRoute(
+    this.builder, {
     this.screen2Page,
     this.creating,
     this.merging,
@@ -28,13 +28,13 @@ class RRoute<T extends TypedSegment> {
       );
 }
 
-class RGroup<T extends TypedSegment> {
-  RGroup(
-    this.fromJson, {
-    required this.routes,
+class RRoutes<T extends TypedSegment> {
+  RRoutes(
+    this.fromJson,
+    this.routes, {
     this.unionKey = 'runtimeType',
   });
-  RGroup.empty({this.unionKey = 'runtimeType'});
+  RRoutes.empty({this.unionKey = 'runtimeType'});
   List<RRoute<T>>? routes;
   final String unionKey;
   T Function(JsonMap jsonMap)? fromJson;
@@ -50,9 +50,9 @@ class RRouter {
     final unionKeys = groups.map((e) => e.unionKey).toSet();
     if (unionKeys.length != groups.length) throw 'Missing RouteGroup(unionKey: \'XXX\')';
   }
-  final List<RGroup> groups;
+  final List<RRoutes> groups;
 
-  RGroup segment2Group(TypedSegment segment) => groups.singleWhere((g) => g.isGroup(segment));
+  RRoutes segment2Group(TypedSegment segment) => groups.singleWhere((g) => g.isGroup(segment));
 
   AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) => segment2Group(segment).segment2Route(segment).toAsyncScreenActions();
   TypedSegment json2Segment(JsonMap jsonMap, String unionKey) => groups.singleWhere((g) => g.unionKey == unionKey).json2Segment(jsonMap);
