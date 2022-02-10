@@ -68,7 +68,7 @@ Extends the RiverpodNavigator class as follows:
 ```dart
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
-      : super.router(
+      : super(
           ref,
           // which screen to run when the application starts
           [HomeSegment()],
@@ -100,7 +100,6 @@ class App extends ConsumerWidget {
       title: 'Riverpod Navigator Example',
       routerDelegate: navigator.routerDelegate,
       routeInformationParser: navigator.routeInformationParser,
-      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -170,7 +169,7 @@ Future<String> simulateAsyncResult(String actionName, int msec) async {
 
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
-      : super.router(
+      : super(
           ref,
           [HomeSegment()],
           [
