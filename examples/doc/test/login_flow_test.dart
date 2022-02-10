@@ -24,12 +24,13 @@ void main() {
       print('${DateTime.now().difference(start).inMilliseconds} msec ($expected)');
       await container.pump();
       expect(navigator.debugTypedPath2String(), expected);
+      // print(navigator.debugTypedPath2String());
     }
 
     await navigTest(() => navigator.navigate([HomeSegment()]), 'home');
 
     // navigate to book 3, book 3 needs login => redirected to login page
-    await navigTest(() => navigator.navigate([HomeSegment(), BookSegment(id: 3)]), 'login;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D3;canceledUrl=home');
+    await navigTest(() => navigator.navigate([HomeSegment(), BookSegment(id: 3)]), 'login;loggedUrl=home%2Fbook%3Bid%3D3;canceledUrl=home');
 
     // confirm login => redirect to book 3
     await navigTest(() => navigator.okOnloginPage(), 'home/book;id=3');
@@ -41,7 +42,7 @@ void main() {
     await navigTest(() => navigator.gotoNextBook(), 'home/book;id=5');
 
     // logout, but book needs login => redirected to login page
-    await navigTest(() => navigator.globalLogoutButton(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=');
+    await navigTest(() => navigator.globalLogoutButton(), 'login;loggedUrl=home%2Fbook%3Bid%3D5;canceledUrl=');
 
     // cancel login => redirect to home
     await navigTest(() => navigator.cancelOnloginPage(), 'home');

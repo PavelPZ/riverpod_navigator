@@ -333,46 +333,21 @@ See [login_flow.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/ex
 
 Navigation logic can be developed and tested without typing a single flutter widget.
 
-See [login_flow.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/login_flow_test.dart).
+#### Code of the example
 
-todo: finish test
+See [login_flow_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/login_flow_test.dart).
 
 ### More TypedSegment roots
 
-See [async-more-groups.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async-more-groups.dart).
-
 In a real application with many dozens of screens, it would not be practical to define typed-segments using one class (as SegmentGrp is).
 Use the unique "unionKey" for the second and next segment group.
-!!!! "unionKey" must start with an underscore. !!!
 
+!!!! "unionKey" must start with an underscore. !!!!
+!!!! There must be at least two factory constructors in one class !!!!
 
-```dart
-@freezed
-class HomeGrp with _$HomeGrp, TypedSegment {
-  /// JsonSerialization curiosity: add this unused factory constructor.
-  /// If there is only one constructor (like "factory HomeGrp () = _HomeGrp;"), the resulting JSON has a different format.
-  factory HomeGrp() = _HomeGrp;
-  HomeGrp._();
-  factory HomeGrp.home() = HomeSeg;
+#### Code of the example
 
-  factory HomeGrp.fromJson(Map<String, dynamic> json) => _$HomeGrpFromJson(json);
-}
-
-/// The second and another segment group needs unique "unionKey".
-/// !!!! It have to start with underscore. !!!
-@Freezed(unionKey: PageGrp.jsonNameSpace)
-class PageGrp with _$PageGrp, TypedSegment {
-  factory PageGrp() = _PageGroup;
-  PageGrp._();
-  factory PageGrp.home() = PageSeg;
-
-  factory PageGrp.fromJson(Map<String, dynamic> json) => _$PageGrpFromJson(json);
-
-  static const String jsonNameSpace = '_page';
-}
-```
-
-todo: finish an example
+See [more_groups.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/more_groups.dart).
 
 ## Roadmap
 

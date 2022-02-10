@@ -13,7 +13,6 @@ import 'package:riverpod_navigator/riverpod_navigator.dart'
         Screen2Page,
         NavigatorWidgetBuilder,
         SplashBuilder,
-        ScreenBuilder,
         // RouteFlutter,
         screen2PageDefault,
         RiverpodRouterDelegate;
