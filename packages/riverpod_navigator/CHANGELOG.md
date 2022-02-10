@@ -1,3 +1,7 @@
+## 0.13.0
+
+- Installation instruction
+
 ## 0.12.0
 
 - **Breaking**: only Route like navigator configuration is available
