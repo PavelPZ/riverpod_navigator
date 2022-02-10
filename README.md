@@ -28,19 +28,19 @@ Take a look at the following terms related to url path ```home/books/book;id=2``
 The mission of navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
 With the **typed-path** as the source of the truth.
 
-Note: *There is a one-to-one relationship between the specified segment and the screen (HomeSegment - HomeScreen, BookSegment - BookScreen)
+Note: *There is a one-to-one relationship between the given segment and the screen (HomeSegment - HomeScreen, BookSegment - BookScreen)
 In the following text, I sometimes confuse the two terms.*.
 
 ## Simple example
 
 ### Step1 - imutable classes for typed-segment
 
-We use [freezed-package](https://github.com/rrousselGit/freezed) for generation immutable clasess (that defines typed-segments).
+We use [freezed-package](https://github.com/rrousselGit/freezed) for generation immutable clasess (that defines typed-segment's).
 
 It's a good idea to be familiar with the freezed-package (including support for JSON serialization).
 
 From the following SegmentGrp class declaration, the freezed package 
-generates two classes: *HomeSegment and PageSegment*.
+generates two classes: *HomeSegment* and *PageSegment*.
 
 ```dart
 @freezed
@@ -64,7 +64,7 @@ class AppNavigator extends RiverpodNavigator {
           ref,
           // which screen to run when the application starts
           initPath: [HomeSegment()],
-          // JSON serialization of "typed-segment" 
+          // JSON serialization of HomeSegment and PageSegment typed-segment's
           fromJson: SegmentGrp.fromJson,
           // build a screen from segment
           screenBuilder: (segment) => (segment as SegmentGrp).map(
@@ -75,9 +75,9 @@ class AppNavigator extends RiverpodNavigator {
 }
 ```
 
-### Step3 - use the navigator in MaterialApp.router
+### Step3 - use the RiverpodNavigator in MaterialApp.router
 
-If you are familiar with the Flutter Navigator 2.0 and the riverpod, the following code is understandable:
+If you are familiar with the Flutter Navigator 2.0 and the riverpod, the following code is clear:
 
 ```dart
 class App extends ConsumerWidget {
@@ -129,7 +129,7 @@ or
 ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]);
 ```
 
-### Code of example
+### Code of the example
 
 The full code is available here:
 [simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple.dart).
