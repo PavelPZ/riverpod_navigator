@@ -17,16 +17,20 @@ So I prepared a [riverpod_navigator package](https://pub.dev/packages/riverpod_n
 
 ## The mission
 
-Take a look at the following terms:
+Take a look at the following terms related to url path ```home/books/book;id=2```
 
-- **string path:** ```stringPath = 'home/books/book;id=2';```
-- **string segment** - the string path consists of three string segments: 'home', 'books', 'book;id=2'
-- **typed path**: ```typedPath = <TypedSegment>[HomeSegment(), BooksSegment(), BookSegment(id:2)];```
-- **typed segment** - the typed path consists of three instances of [TypedSegment]'s: [HomeSegment], [BooksSegment], [BookSegment]
-- **navigation stack** of Flutter Navigator 2.0: ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
+- **string-path:** ```final stringPath = 'home/books/book;id=2';```
+- **string-segment** - the string-path consists of three string-segments: 'home', 'books' and 'book;id=2'
+- **typed-segment** - the typed-segment is immutable class that defines string-segment: HomeSegment(), BooksSegment() and BookSegment(id:2)
+- **typed-path**: typed-path can be understood as List<typed-segment>: ```final typedPath = [HomeSegment(), BooksSegment(), BookSegment(id:2)];```
+- **navigation-stack** of Flutter Navigator 2.0 is a stack of screens, parameterized by typed-segment:
+  ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
 
-The mission of navigation is to keep *string path* <= **typed path** => *navigation stack* always in sync.
-With **typed path** as the source of the truth.
+The mission of navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
+With the **typed-path** as the source of the truth.
+
+Note: *There is a one-to-one relationship between the given segment and the screen (HomeSegment - HomeScreen, BookSegment - BookScreen).
+In the following text, I sometimes confuse the two terms.*.
 
 ## Running example on the web...
 
