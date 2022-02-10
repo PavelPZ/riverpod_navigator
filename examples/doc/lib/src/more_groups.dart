@@ -37,7 +37,7 @@ class ThirdGrp with _$ThirdGrp, TypedSegment {
   factory ThirdGrp.third2() = Third2Segment;
 
   factory ThirdGrp.fromJson(Map<String, dynamic> json) => _$ThirdGrpFromJson(json);
-  static const String jsonNameSpace = '_thirdt';
+  static const String jsonNameSpace = '_third';
 }
 
 class AppNavigator extends RiverpodNavigator {
@@ -56,7 +56,7 @@ class AppNavigator extends RiverpodNavigator {
           RRoutes<ThirdGrp>(ThirdGrp.fromJson, [
             RRoute<Third1Segment>(Third1Screen.new),
             RRoute<Third2Segment>(Third2Screen.new),
-          ])
+          ]),
         ]);
 }
 

@@ -343,6 +343,7 @@ In a real application with many dozens of screens, it would not be practical to 
 Use the unique "unionKey" for the second and next segment group.
 
 !!!! "unionKey" must start with an underscore. !!!!
+
 !!!! There must be at least two factory constructors in one class !!!!
 
 #### Code of the example
