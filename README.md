@@ -144,7 +144,7 @@ The full code is available here:
 
 ## See [Other features](https://github.com/PavelPZ/riverpod_navigator/blob/main/other_features.md) for other doc and samples
 
-## See [What's under the hood](https://github.com/PavelPZ/riverpod_navigator/blob/main/other_features.md) for riverpod_navigation principle
+## See [What's under the hood](https://github.com/PavelPZ/riverpod_navigator/blob/main/under_the_hood.md) for riverpod_navigation principle
 
 ## Comparison with go_router
 
