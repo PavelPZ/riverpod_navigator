@@ -1,3 +1,7 @@
+## 0.15.0
+
+- Smaller readme.md, two others doc documents
+
 ## 0.14.0
 
 - Examples
