@@ -53,44 +53,48 @@ class AppNavigator extends RiverpodNavigator {
 
   /// Quards and redirects for login flow
   @override
-  FutureOr<void> appNavigationLogic(Ref ref) {
+  TypedPath appNavigationLogic(TypedPath ongoingPath) {
     //
     final userIsLogged = ref.read(userIsLoggedProvider);
-    final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
+    //final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
 
     if (!userIsLogged) {
-      final pathNeedsLogin = ongoingNotifier.state.any((segment) => needsLogin(segment));
+      final pathNeedsLogin = ongoingPath.any((segment) => needsLogin(segment));
 
       // login needed => redirect to login page
       if (pathNeedsLogin) {
-        // parametters for login screen
-        final loggedUrl = pathParser.typedPath2Path(ongoingNotifier.state);
+        // prepare loggedUrl and canceledUrl for login screen
+        final loggedUrl = pathParser.typedPath2Path(ongoingPath);
         var canceledUrl = currentTypedPath.isEmpty || currentTypedPath.last is LoginSegment ? '' : pathParser.typedPath2Path(currentTypedPath);
-        // chance to exit login loop
-        if (loggedUrl == canceledUrl) canceledUrl = '';
+        if (loggedUrl == canceledUrl) canceledUrl = ''; // chance to exit login loop
         // redirect to login screen
-        ongoingNotifier.state = [LoginSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
+        return [LoginSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
       }
     } else {
-      // user logged and navigation to Login page => redirect to home
-      if (ongoingNotifier.state.isEmpty || ongoingNotifier.state.last is LoginSegment) ongoingNotifier.state = [HomeSegment()];
+      // user is logged in and navigating to login screen => redirect to home
+      if (ongoingPath.isEmpty || ongoingPath.last is LoginSegment) return [HomeSegment()];
     }
+    return ongoingPath;
   }
 
-  // ******* login used on screens
+  // ******* actions used on the screens
 
-  Future bookNext() {
+  Future gotoNextBook() {
     // TODO
     return navigate([]);
   }
 
   Future globalLogoutButton() {
+    // actualize login state
     ref.read(userIsLoggedProvider.notifier).state = false;
+    // wait for the navigation to complete
     return navigationCompleted;
   }
 
   Future globalLoginButton() {
+    // current screen text-path
     final actualStringPath = pathParser.typedPath2Path(currentTypedPath);
+    // redirect to login screen
     return navigate([LoginSegment(loggedUrl: actualStringPath, canceledUrl: actualStringPath)]);
   }
 
@@ -103,10 +107,13 @@ class AppNavigator extends RiverpodNavigator {
     var newPath = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
     if (newPath.isEmpty) newPath = [HomeSegment()];
 
-    // change both providers on which the navigation status depends
+    // start navigating to a new path
     ref.read(ongoingPathProvider.notifier).state = newPath;
+
+    // actualize login state
     if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true;
 
+    // wait for the navigation to complete
     return navigationCompleted;
   }
 }
@@ -132,10 +139,7 @@ Widget bookScreen(WidgetRef ref, BookSegment book) => PageHelper(
       title: 'Book ${book.id}',
       buildChildren: (navigator) => [
         ElevatedButton(
-          onPressed: () {
-            final nextBookId = book.id >= bookCount ? 1 : book.id + 1;
-            navigator.navigate([HomeSegment(), BookSegment(id: nextBookId)]);
-          },
+          onPressed: navigator.gotoNextBook,
           child: const Text('Go to next book'),
         ),
       ],

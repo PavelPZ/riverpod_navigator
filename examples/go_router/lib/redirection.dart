@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -47,14 +45,14 @@ class AppNavigator extends RiverpodNavigator {
         );
 
   @override
-  FutureOr<void> appNavigationLogic(Ref ref) {
+  TypedPath appNavigationLogic(TypedPath ongoingPath) {
     final loginInfo = ref.read(loginInfoProvider.notifier);
-    final ongoing = ref.read(ongoingPathProvider.notifier);
 
     final loggedIn = loginInfo.state.isNotEmpty;
     final loggingIn = currentTypedPath.any((segment) => segment is LoginSegment);
-    if (!loggedIn && !loggingIn) ongoing.state = [LoginSegment()];
-    if (loggedIn && loggingIn) ongoing.state = [HomeSegment()];
+    if (!loggedIn && !loggingIn) return [LoginSegment()];
+    if (loggedIn && loggingIn) return [HomeSegment()];
+    return ongoingPath;
   }
 
   static const title = 'GoRouter Example: Redirection';

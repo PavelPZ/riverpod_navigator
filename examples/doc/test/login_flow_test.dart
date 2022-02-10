@@ -35,10 +35,10 @@ void main() {
     await navigTest(() => navigator.okOnloginPage(), 'home/book;id=3');
 
     // to previous book 2
-    await navigTest(() => navigator.bookNext(), 'home/book;id=4');
+    await navigTest(() => navigator.gotoNextBook(), 'home/book;id=4');
 
     // to previous book 1
-    await navigTest(() => navigator.bookNext(), 'home/book;id=5');
+    await navigTest(() => navigator.gotoNextBook(), 'home/book;id=5');
 
     // logout, but book needs login => redirected to login page
     await navigTest(() => navigator.globalLogoutButton(), 'login-home;loggedUrl=home%2Fbooks%2Fbook%3Bid%3D1;canceledUrl=');

@@ -36,9 +36,6 @@ It validates the idea of collaboration [Riverpod](https://riverpod.dev/) + [Free
 
 ## Simple example
 
-The full code is available here
-[simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple.dart).
-
 ### Step1 - imutable classes for typed-segment
 
 We use [freezed-package](https://github.com/rrousselGit/freezed) for generation immutable clasess (that defines typed-segments).
@@ -135,10 +132,134 @@ or
 ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]);
 ```
 
+### Code of example
+
+The full code is available here
+[simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple.dart).
+
+## What's under the hood
+
+A brief introduction to the riverpod_navigation principle can help with its use.
+How is our mission "to keep *string-path* <= **typed-path** => *navigation-stack* always in sync" implemented?
+
+### In the beginning there are riverpod providers and their states
+
+```dart
+/// All "typed-segments" (eg HomeSegment and PageSegment from example) are inherited from this class
+abstract class TypedSegment {}
+/// **typed-path**
+typedef TypedPath = List<TypedSegment>;
+
+/// this TypedPath provider is part of the riverpod_navigation package
+final ongoingPathProvider = StateProvider<TypedPath>((_) => []);
+/// another provider with a "userIsLogged state" on which the navigation state depends (and which can be part of the application)
+final userIsLoggedProvider = StateProvider<bool>((_) => false);
+```
+
+### At the end is the navigation stack, represented by Flutter Navigator 2.0 RouterDelegate
+
+(let's now omit "* string-path * <= ** typed-path **" part of our mission).
+
+```dart
+class RiverpodRouterDelegate extends RouterDelegate<TypedPath> {
+  ...
+  /// current navigation state
+  @override
+  TypedPath currentConfiguration = [];
+  ...
+  /// build screens from currentConfiguration (eg HomeScreen(homeSegment) or PageScreen(pageSegment) from example)
+  @override
+  Widget build(BuildContext context) => Navigator(
+      pages: currentConfiguration.map((typedSegment) => <some getScreenForSegment(typedSegment) logic>,
+      ...
+  )
+  /// a notifyListeners call notifies RouterDelegate that it needs to be rebuilt
+  void notifyListeners() : super.notifyListeners();
+}
+```
+
+### And in the middle is RiverpodNavigator
+
+RiverpodNavigator reacts to changes of the input states (ongoingPathProvider, userIsLoggedProvider) 
+and updates the output state accordingly (RiverpodRouterDelegate.currentConfiguration).
+
+```dart
+class RiverpodNavigator {
+  RiverpodNavigator(Ref ref) {
+    ...
+    /// listen to the changing state of the providers and call _runNavigation
+    [ongoingPathProvider,userIsLoggedProvider].foreach((provider) => ref.listen(provider, (_,__) => _runNavigation())));
+  }
+
+  void _runNavigation() {
+    //******** at this point, "ongoingPathProvider state" and "riverpodRouterDelegate.currentConfiguration" could differ
+    final ongoingPathNotifier = ref.read(ongoingPathProvider.notifier);
+    // app specific application navigation logic here (redirection, login, etc.).
+    final newOngoingPath = appNavigationLogic(ongoingPathNotifier.state);
+    // actualize a possibly changed ongoingPath
+    ongoingPathNotifier.state = newOngoingPath;
+    // the next two lines will cause Flutter Navigator 2.0 to update the navigation stack according to ongoingPathProvider state
+    riverpodRouterDelegate.currentConfiguration = newOngoingPath;
+    riverpodRouterDelegate.notifyListeners();
+    //******** at this point, "ongoingPathProvider state" and  "riverpodRouterDelegate.currentConfiguration" are in sync
+  }
+
+  /// Enter application navigation logic here (redirection, login, etc.). 
+  /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or no route guard is needed)
+  TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
+
+}
+```
+
+### Example of appNavigationLogic for Login flow
+
+If we have
+
+- a "needsLogin(segment)" function that returns true when a login is required for given screen segment.
+- a LoginSegment and LoginScreen
+
+then appNavigationLogic is as follows:
+
+```dart
+@override 
+TypedPath appNavigationLogic(TypedPath ongoingPath) {
+  final userIsLogged = ref.read(userIsLoggedProvider);
+  // if user is not logged in and some of screen in navigations stack needs login => redirect to LoginScreen
+  if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment)) return [LoginSegment()];
+  // user is logged and LogginScreen is going to display => redirect to HomeScreen
+  if (userIsLogged && ongoingPath.any((segment) => segment is LoginSegment) return [HomeSegment()];)
+  // no redirection is needed
+  return ongoingPath;
+}
+```
+
+### Thats it
+
+To je vše podstatné pro realizaci login flow. S riverpod je použití Flutter Navigator 2.0 opravdu jednoduché.
+Podívejte se, jak snadno pak vypadá Loggin button:
+
+This is all for implementing a login flow
+With Riverpod & Freezed, using Flutter Navigator 2.0 is really easy.
+See how easy the Loggin button looks:
+
+#### Login Button
+```dart
+Consumer(builder: (_, ref, __) {
+  final userIsLoggedNotifier = ref.watch(userIsLoggedProvider.notifier);
+    return ElevatedButton(
+      // toogles the login state
+      onPressed: () => userIsLoggedNotifier.update((s) => !s),
+      // displays correct login button text
+      child: Text(userIsLoggedNotifier.state ? 'Logout' : 'Login'),
+    );
+}),
+```
+
 ## Code simplification
 
-- using the functional_widget package simplifies widgets typing. 
-- some code repeats - it is moved to common dart file
+Subsequent examples are prepared with simpler code:
+- using the functional_widget package simplifies widgets typing
+- some code is moved to common dart file
 
 A modified version of the previous example is here: [simple_modified.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple_modified.dart).
 
@@ -146,9 +267,18 @@ A modified version of the previous example is here: [simple_modified.dart](https
 
 ### Async navigation and splash screen
 
-See [async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async.dart)
+Navigation is delayed until the asynchronous actions are performed. These actions are:
+- **creating** (before inserting a new screen into the navigation stack)
+- **deactivating** (before removing the old screen from the navigation stack)
+- **merging** (before screen replacement with the same segment type in the navigation stack)
 
 ```dart
+// simulates an async action such as loading external data or saving to external storage
+Future<String> simulateAsyncResult(String actionName, int msec) async {
+  await Future.delayed(Duration(milliseconds: msec));
+  return '$actionName: async result after $msec msec';
+}
+
 class AppNavigator extends RiverpodNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -161,12 +291,13 @@ class AppNavigator extends RiverpodNavigator {
           ),
           // returns a Future with the result of an asynchronous operation for a given segment's screen
           segment2AsyncScreenActions: (segment) => (segment as SegmentGrp).maybeMap(
-            home: (_) => AsyncScreenActions(creating: (newSegment) => simulateAsyncResult('Home.creating', 2000)),
+            home: (_) => AsyncScreenActions(
+              creating: (newSegment) => simulateAsyncResult('Home.creating', 2000),
+            ),
             page: (_) => AsyncScreenActions(
               creating: (newSegment) => simulateAsyncResult('Page.creating', 400),
               merging: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
-              // async operation during screen deactivating, null means no action.
-              deactivating: (oldSegment) => null,
+              deactivating: (oldSegment) => null, // no async action
             ),
             orElse: () => null,
           ),
@@ -174,17 +305,11 @@ class AppNavigator extends RiverpodNavigator {
           splashBuilder: SplashScreen.new,
         );
 }
-
-// simulates an async action such as loading external data or saving to external storage
-Future<String> simulateAsyncResult(String actionName, int msec) async {
-  await Future.delayed(Duration(milliseconds: msec));
-  return '$actionName: async result after $msec msec';
-}
 ```
 
-### An alternative way to configure the navigator: using the router concept
+See [async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async.dart)
 
-See [async_with_routes.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async_with_routes.dart).
+### An alternative way to configure the navigator: using the router concept
 
 This example is functionally identical to the previous one. 
 However, it uses the concept of "routes", where all the parameters for a given segment and screen are placed together.
@@ -212,20 +337,22 @@ class AppNavigator extends RiverpodNavigator {
 }
 ```
 
+See [async_with_routes.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async_with_routes.dart).
+
 ### Login flow application showing "guard", "redirect" and "dependency on another provider" features
 
 A slightly more complicated example, implementing a login flow as follows:
 
 1. there is a home screen, five book screens (with id = 1...5) and a login screen
 2. each screen (except login one) has a Login x Logout button
-3. book screen with odd 'id' is not accessible without login: the application redirects to the login page
+3. the book screen with odd 'id' is not accessible without login (for such screens the application is redirected to the login page)
 4. after logging in, the application redirects to the page that requires a login
-
-See [login_flow.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/login_flow.dart).
 
 todo: 
 1. explain relations ongoingPathProvider x currentTypedPath
 2. explain the purpose of RiverpodNavigator.appNavigationLogic
+
+See [login_flow.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/login_flow.dart).
 
 ### Testing 
 

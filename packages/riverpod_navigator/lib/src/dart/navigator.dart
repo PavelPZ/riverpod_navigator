@@ -31,31 +31,6 @@ class RiverpodNavigator {
           isDebugRouteDelegate: isDebugRouteDelegate,
         );
 
-  // RiverpodNavigator.more(
-  //   Ref ref, {
-  //   required TypedPath initPath,
-  //   required Json2Segment json2Segment,
-  //   // required ScreenBuilder screenBuilder,
-  //   required Map<Type, ScreenBuilder> screenBuilders,
-  //   List<AlwaysAliveProviderListenable>? dependsOn,
-  //   Segment2AsyncScreenActions? segment2AsyncScreenActions,
-  //   Screen2Page? screen2Page,
-  //   NavigatorWidgetBuilder? navigatorWidgetBuilder,
-  //   SplashBuilder? splashBuilder,
-  //   bool isDebugRouteDelegate = false,
-  // }) : this._(
-  //         ref,
-  //         initPath,
-  //         json2Segment,
-  //         dependsOn: dependsOn,
-  //         segment2AsyncScreenActions: segment2AsyncScreenActions,
-  //         screen2Page: screen2Page,
-  //         screenBuilder: (segment) => screenBuilders[segment],
-  //         navigatorWidgetBuilder: navigatorWidgetBuilder,
-  //         splashBuilder: splashBuilder,
-  //         isDebugRouteDelegate: isDebugRouteDelegate,
-  //       );
-
   RiverpodNavigator._(
     this.ref,
     this.initPath,
@@ -129,6 +104,11 @@ class RiverpodNavigator {
   final TypedPath initPath;
 
   /// screen async-navigation actions
+  ///
+  /// Navigation is delayed until the asynchronous actions are performed. These actions are:
+  ///- **creating** (before inserting a new screen into the navigation stack)
+  /// - **deactivating** (before removing the old screen from the navigation stack)
+  /// - **merging** (before screen replacement with the same segment type in the navigation stack)
   Segment2AsyncScreenActions? segment2AsyncScreenActions;
 
   /// [JsonMap] to [TypedSegment] converter.
@@ -150,8 +130,9 @@ class RiverpodNavigator {
   /// When changing navigation state: completed after Flutter navigation stack is actual
   Future<void> get navigationCompleted => _defer2NextTick.future;
 
-  /// Enter application navigation logic here (redirection, login, etc.). Could be empty.
-  FutureOr<void> appNavigationLogic(Ref ref) => null;
+  /// Enter application navigation logic here (redirection, login, etc.).
+  /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or route guard is needed)
+  TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
 
   /// depends on the used platform: flutter (= [RiverpodRouterDelegate]) x dart only (= [RouterDelegate4Dart])
   IRouterDelegate routerDelegate4Dart = RouterDelegate4Dart();
@@ -198,10 +179,9 @@ class RiverpodNavigator {
 
   /// synchronize [ongoingPathProvider] with [RiverpodRouterDelegate.currentConfiguration]
   Future<void> _runNavigation() async {
-    final appLogic = appNavigationLogic(ref);
-    if (appLogic is Future) await appLogic;
+    var ongoingPath = appNavigationLogic(ref.read(ongoingPathProvider));
     // in ongoingPath, when ongoingPath[i] == currentTypedPath[i], set ongoingPath[i] = currentTypedPath[i]
-    final ongoingPath = eq2Identical(currentTypedPath, ref.read(ongoingPathProvider));
+    ongoingPath = eq2Identical(currentTypedPath, ongoingPath);
     if (ongoingPath == currentTypedPath) return;
 
     // Wait for async screen actions.

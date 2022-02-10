@@ -6,12 +6,11 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
 
   @override
   Widget build(BuildContext context) {
-    final actPath = currentConfiguration;
-    if (actPath.isEmpty) return navigator.splashBuilder?.call() ?? SizedBox();
+    if (currentConfiguration.isEmpty) return navigator.splashBuilder?.call() ?? SizedBox();
     final navigatorWidget = Navigator(
         key: navigatorKey,
         // segment => screen
-        pages: actPath.map((segment) => navigator.screen2Page!(segment, navigator.screenBuilder!)).toList(),
+        pages: currentConfiguration.map((segment) => navigator.screen2Page!(segment, navigator.screenBuilder!)).toList(),
         onPopPage: (route, result) {
           //if (!route.didPop(result)) return false;
           // remove last segment from path
