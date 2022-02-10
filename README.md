@@ -28,11 +28,8 @@ Take a look at the following terms related to url path ```home/books/book;id=2``
 The mission of navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
 With the **typed-path** as the source of the truth.
 
-## How does it work
-
-If anyone wants to understand how the riverpod_navigator package works, 
-let them look at [riverpod_navigator_example](examples/riverpod_navigator_example/). 
-It validates the idea of collaboration [Riverpod](https://riverpod.dev/) + [Freezed](https://github.com/rrousselGit/freezed) + Flutter Navigator 2.0.
+Note: *There is a one-to-one relationship between the specified segment and the screen (HomeSegment - HomeScreen, BookSegment - BookScreen)
+In the following text, I sometimes confuse the two terms.*.
 
 ## Simple example
 
@@ -176,38 +173,41 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> {
   /// build screens from currentConfiguration 
   @override
   Widget build(BuildContext context) => Navigator(
-      pages: currentConfiguration.map((typedSegment) => <some getScreenForSegment(typedSegment) logic>,
+      pages: currentConfiguration.map((typedSegment) => <... create screen for given typedSegment ...>,
       ...
   )
-  /// a notifyListeners call notifies RouterDelegate that it needs to be rebuilt
+  /// a notifyListeners notifies RouterDelegate that it needs to be rebuilt
   void notifyListeners() : super.notifyListeners();
 }
 ```
 
 ### And in the middle is RiverpodNavigator
 
-RiverpodNavigator reacts to changes of the input states (ongoingPathProvider, userIsLoggedProvider) 
-and updates the output state accordingly (RiverpodRouterDelegate.currentConfiguration).
+RiverpodNavigator reacts to changes of the input states (ongoingPathProvider, userIsLoggedProvider in this case) 
+and updates the output state accordingly.
+
+How is it done?
 
 ```dart
 class RiverpodNavigator {
   RiverpodNavigator(Ref ref) {
     ...
-    /// listen to the changing state of the providers and call _runNavigation
-    [ongoingPathProvider,userIsLoggedProvider].foreach((provider) => ref.listen(provider, (_,__) => _runNavigation())));
+    /// listen to the changing state of the providers and call onStateChanged
+    [ongoingPathProvider,userIsLoggedProvider].foreach((provider) => ref.listen(provider, (_,__) => onStateChanged())));
   }
 
-  void _runNavigation() {
-    //******** at this point, "ongoingPathProvider state" and "riverpodRouterDelegate.currentConfiguration" could differ
+  void onStateChanged() {
+    //=====> at this point, "ongoingPathProvider state" and "riverpodRouterDelegate.currentConfiguration" could differ
+    // get notifier
     final ongoingPathNotifier = ref.read(ongoingPathProvider.notifier);
-    // app specific application navigation logic here (redirection, login, etc.).
+    // run app specific application navigation logic here (redirection, login, etc.).
     final newOngoingPath = appNavigationLogic(ongoingPathNotifier.state);
     // actualize a possibly changed ongoingPath
     ongoingPathNotifier.state = newOngoingPath;
     // the next two lines will cause Flutter Navigator 2.0 to update the navigation stack according to ongoingPathProvider state
     riverpodRouterDelegate.currentConfiguration = newOngoingPath;
     riverpodRouterDelegate.notifyListeners();
-    //******** at this point, "ongoingPathProvider state" and  "riverpodRouterDelegate.currentConfiguration" are in sync
+    //=====> at this point, "ongoingPathProvider state" and  "RiverpodRouterDelegate" are in sync
   }
 
   /// Enter application navigation logic here (redirection, login, etc.). 
@@ -218,8 +218,6 @@ class RiverpodNavigator {
 ```
 
 ### Example of appNavigationLogic for Login flow
-
-(we need function that returns true when a login is required for given screen segment)
 
 ```dart
 @override 
@@ -233,6 +231,9 @@ TypedPath appNavigationLogic(TypedPath ongoingPath) {
   return ongoingPath;
 }
 ```
+
+Note: we need the "needsLogin" function that returns true when a login is required for given screen segment
+
 
 ### Thats it
 
@@ -256,15 +257,21 @@ Consumer(builder: (_, ref, __) {
 }),
 ```
 
-## Code simplification
+## Verification of the riverpod_navigator idea
+
+If anyone wants to understand in detail how the riverpod_navigator package works, 
+let them look at [riverpod_navigator_example](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/riverpod_navigator_example/). 
+It validates the idea of collaboration [Riverpod](https://riverpod.dev/) + [Freezed](https://github.com/rrousselGit/freezed) + Flutter Navigator 2.0.
+
+## Other feartures
+
+### Code simplification
 
 Subsequent examples are prepared with simpler code:
 - using the functional_widget package simplifies widgets typing
 - some code is moved to common dart file
 
 A modified version of the previous example is here: [simple_modified.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple_modified.dart).
-
-## Other feartures
 
 ### Async navigation and splash screen
 
