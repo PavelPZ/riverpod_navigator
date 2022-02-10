@@ -74,22 +74,6 @@ class AppNavigator extends RiverpodNavigator {
           ],
         );
 }
-
-class AppNavigator extends RiverpodNavigator {
-  AppNavigator(Ref ref)
-      : super(
-          ref,
-          // which screen to run when the application starts
-          initPath: [HomeSegment()],
-          // JSON serialization of HomeSegment and PageSegment typed-segment's
-          fromJson: SegmentGrp.fromJson,
-          // build a screen from segment
-          screenBuilder: (segment) => (segment as SegmentGrp).map(
-            home: HomeScreen.new,
-            page: PageScreen.new,
-          ),
-        );
-}
 ```
 
 ### Step3 - use the RiverpodNavigator in MaterialApp.router
