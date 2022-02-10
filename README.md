@@ -229,6 +229,17 @@ Use the unique "unionKey" for the second and next segment group.
 
 See [more_groups.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/more_groups.dart).
 
+## Comparison with go_router
+
+This chapter is inspired by this riverpod issue: [Examples of go_router using riverpod](https://github.com/rrousselGit/river_pod/issues/1122).
+
+| example | go_router | code lines | riverpod_navigator | code lines |
+| --- | --- | --- | --- | --- |
+| main | [source code](https://github.com/csells/go_router/blob/main/go_router/example/lib/main.dart) | 70 | [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/go_router/lib/main.dart) | 84  |
+| redirection | [source code](https://github.com/csells/go_router/blob/main/go_router/example/lib/redirection.dart) | 167 | [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/go_router/lib/redirection.dart) | 149 |
+
+If you are interested in preparing another go_router example, I will try to do it.
+
 ## What's under the hood
 
 A brief introduction to the riverpod_navigation principle can help with its use.

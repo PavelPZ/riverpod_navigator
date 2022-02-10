@@ -31,9 +31,7 @@ class AppNavigator extends RiverpodNavigator {
           ref,
           [Page1Segment()],
           [
-            // JSON serialization of HomeSegment and PageSegment
             RRoutes<Segments>(Segments.fromJson, [
-              // build a screen from segment
               RRoute<Page1Segment>(Page1Screen.new),
               RRoute<Page2Segment>(Page2Screen.new),
             ])
