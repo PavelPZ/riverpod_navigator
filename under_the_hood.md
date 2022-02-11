@@ -89,7 +89,7 @@ class RiverpodNavigator {
 TypedPath appNavigationLogic(TypedPath ongoingPath) {
   final userIsLogged = ref.read(userIsLoggedProvider);
 
-  // if user is not logged in and some of screen in navigations stack needs login => redirect to LoginScreen
+  // if user is not logged in and some of the screen in navigations stack needs login => redirect to LoginScreen
   if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment)) return [LoginSegment()];
 
   // user is logged and LogginScreen is going to display => redirect to HomeScreen
@@ -100,7 +100,7 @@ TypedPath appNavigationLogic(TypedPath ongoingPath) {
 }
 ```
 
-Note: *we need the "needsLogin" function that returns true when a login is required for given screen*
+Note: *for this appNavigationLogic we need the "needsLogin" function that returns true when a login is required for given screen*
 
 ## Thats it
 
