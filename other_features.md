@@ -1,11 +1,11 @@
-# Other feartures
+# Other features
 
 ## Code simplification
 
 Subsequent examples are prepared with simpler code:
 
 - using the functional_widget package simplifies widgets typing
-- some code is moved to common dart file
+- some code is moved to the common dart file
 
 A modified version of the first example is here: [simple_modified.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple_modified.dart).
 
@@ -54,7 +54,7 @@ See [async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/example
 
 A slightly more complicated example, implementing a login flow as follows:
 
-1. there is a home screen, five book screens (with id = 1...5) and a login screen
+1. there is a home screen, five book screens (with id = 1...5), and a login screen
 2. each screen (except login one) has a Login x Logout button
 3. the book screen with odd 'id' is not accessible without login (for such screens the application is redirected to the login page)
 4. after logging in, the application redirects to the page that requires a login
