@@ -21,10 +21,9 @@ Take a look at the following terms related to url path ```home/books/book;id=2``
 - **string-path:** ```final stringPath = 'home/books/book;id=2';```
 - **string-segment** - the string-path consists of three string-segments: 'home', 'books' and 'book;id=2'
 - **typed-segment** - the typed-segment is immutable class that defines string-segment: HomeSegment(), BooksSegment() and BookSegment(id:2)
-- **typed-path**: typed-path can be understood as List: 
-```final typedPath = [HomeSegment(), BooksSegment(), BookSegment(id:2)];```
+- **typed-path**: typed-path can be understood as List: final typedPath = [HomeSegment(), BooksSegment(), BookSegment(id:2)];
 - **navigation-stack** of Flutter Navigator 2.0 is a stack of screens, parameterized by typed-segment:
-  ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:3))```
+  ```HomeScreen(HomeSegment())) => BooksScreen(BooksSegment()) => BookScreen(BookSegment(id:2))```
 
 The mission of navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
 With the **typed-path** as the source of the truth.
