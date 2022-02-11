@@ -1,5 +1,6 @@
 part of 'index.dart';
 
+final Screen2Page screen2PageDefault = (segment, screenBuilder) => _Screen2PageDefault(segment, screenBuilder);
 final Screen2Page screen2PageRebuild = (segment, screenBuilder) => _Screen2PageRebuild(segment, screenBuilder);
 final Screen2Page screen2PageSimple = (segment, screenBuilder) => MaterialPage(child: screenBuilder(segment));
 

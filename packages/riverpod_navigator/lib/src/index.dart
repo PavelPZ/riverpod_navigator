@@ -2,27 +2,27 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
-import 'package:riverpod_navigator/riverpod_navigator.dart'
-    show RouteInformationParserImpl, Screen2Page, NavigatorWidgetBuilder, SplashBuilder, ScreenBuilder, screen2PageDefault, RiverpodRouterDelegate;
 import 'package:tuple/tuple.dart';
 
 part 'navigator.dart';
 part 'pathParser.dart';
 part 'providers.dart';
-part 'route.dart';
+part 'routes.dart';
+part 'routeDelegate.dart';
+part 'screenWrappers.dart';
 
 typedef JsonMap = Map<String, dynamic>;
-typedef Json2Segment = TypedSegment Function(JsonMap jsonMap, String unionKey);
+typedef Json2Segment = TypedSegment Function(JsonMap, String unionKey);
 typedef AsyncActionResult = dynamic;
-typedef RiverpodNavigatorCreator = RiverpodNavigator Function(Ref ref);
-
-// ********************************************
-//  basic classes:  TypedSegment and TypedPath
-// ********************************************
+typedef RiverpodNavigatorCreator = RiverpodNavigator Function(Ref);
+typedef NavigatorWidgetBuilder = Widget Function(BuildContext, Navigator);
+typedef ScreenBuilder<T extends TypedSegment> = Widget Function(T);
+typedef SplashBuilder = Widget Function();
+typedef Screen2Page<T extends TypedSegment> = Page Function(T, ScreenBuilder<T>);
 
 /// Abstract interface for typed variant of path's segment.
 ///
@@ -46,16 +46,18 @@ typedef TypedPath = List<TypedSegment>;
 // RouterDelegate abstraction
 // ********************************************
 
-// RouterDelegate interface for dart and flutter
+// RouterDelegate interface for tests and app
 abstract class IRouterDelegate {
   TypedPath currentConfiguration = [];
+
   void notifyListeners();
+
   set navigator(RiverpodNavigator value) => _navigator = value;
   RiverpodNavigator get navigator => _navigator as RiverpodNavigator;
   RiverpodNavigator? _navigator;
 }
 
-// RouterDelegate for dart
+// RouterDelegate for tests only
 class RouterDelegate4Dart with IRouterDelegate {
   @override
   void notifyListeners() {}

@@ -1,3 +1,7 @@
+## 0.16.0
+
+- better readme.md and examples
+
 ## 0.15.0
 
 - Smaller readme.md, two others doc documents

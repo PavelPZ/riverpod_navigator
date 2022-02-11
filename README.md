@@ -126,14 +126,14 @@ Creating screen widgets is probably an understandable part of the example.
 Only the navigation to the new screen is interesting:
 
 ```dart
-//  getting navigation stack "HomeScreen(HomeSegment()) => PageScreen(PageSegment(title: 'Page title'))".
+//  create navigation stack [HomeScreen(HomeSegment()), PageScreen(PageSegment(title: 'Page title'))]
 ref.read(riverpodNavigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]);
 ```
 
 or 
 
 ```dart
-// getting navigation stack "HomeScreen(HomeSegment())".
+//  create navigation stack [HomeScreen(HomeSegment())]
 ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]);
 ```
 
