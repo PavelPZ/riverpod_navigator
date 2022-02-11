@@ -7,12 +7,12 @@ typedef Deactivating<T extends TypedSegment> = Future<AsyncActionResult> Functio
 class RRouter {
   RRouter(this.groups) {
     final unionKeys = groups.map((e) => e.unionKey).toSet();
-    if (unionKeys.length != groups.length) throw 'Missing RouteGroup(unionKey: \'XXX\')';
+    if (unionKeys.length != groups.length) throw 'Missing RouteGroup(unionKey: \'...\')';
   }
   final List<RRoutes> groups;
 
-  RRoutes segment2Group(TypedSegment segment) => groups.singleWhere((g) => g.isGroup(segment));
-  RRoute segment2Route(TypedSegment segment) => segment2Group(segment).segment2Route(segment);
+  RRoutes segment2Routes(TypedSegment segment) => groups.singleWhere((g) => g.isRoutes(segment));
+  RRoute segment2Route(TypedSegment segment) => segment2Routes(segment).segment2Route(segment);
 
   TypedSegment json2Segment(JsonMap jsonMap, String unionKey) => groups.singleWhere((g) => g.unionKey == unionKey).fromJson(jsonMap);
 }
@@ -27,7 +27,7 @@ class RRoutes<T extends TypedSegment> {
   T Function(JsonMap jsonMap) fromJson;
   final String unionKey;
 
-  bool isGroup(TypedSegment segment) => segment is T;
+  bool isRoutes(TypedSegment segment) => segment is T;
   RRoute<T> segment2Route(T segment) => routes.firstWhere((s) => s.isRoute(segment));
 }
 
@@ -44,6 +44,7 @@ class RRoute<T extends TypedSegment> {
   Creating<T>? creating;
   Merging<T>? merging;
   Deactivating<T>? deactivating;
+
   bool isRoute(TypedSegment segment) => segment is T;
   Widget buildScreen(TypedSegment segment) => screenBuilder(segment as T);
 }

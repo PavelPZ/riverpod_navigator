@@ -1,6 +1,6 @@
 part of 'index.dart';
 
-/// config4DartProvider value is initialized by:
+/// riverpodNavigatorCreatorProvider is initialized by:
 ///
 /// ```
 /// ProviderScope(
@@ -15,5 +15,5 @@ final riverpodNavigatorProvider = Provider<RiverpodNavigator>((ref) => ref.read(
 
 /// ongoing TypedPath provider
 ///
-/// [ongoingTypedPath] may differ from [RiverpodNavigatorLow.currentTypedPath] during navigation calculation
+/// [ongoingTypedPath] may differ from [RiverpodNavigatorLow.currentPath] during navigation calculation
 final ongoingPathProvider = StateProvider<TypedPath>((_) => []);

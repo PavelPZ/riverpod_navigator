@@ -6,54 +6,6 @@ part of 'index.dart';
 
 /// Helper singleton class for navigating to [TypedPath]
 class RiverpodNavigator {
-  // RiverpodNavigator(
-  //   Ref ref, {
-  //   required TypedPath initPath,
-  //   // required Json2Segment json2Segment,
-  //   required TypedSegment Function(JsonMap json) fromJson,
-  //   required ScreenBuilder screenBuilder,
-  //   List<AlwaysAliveProviderListenable>? dependsOn,
-  //   Segment2AsyncScreenActions? segment2AsyncScreenActions,
-  //   Screen2Page? screen2Page,
-  //   NavigatorWidgetBuilder? navigatorWidgetBuilder,
-  //   SplashBuilder? splashBuilder,
-  //   bool isDebugRouteDelegate = false,
-  // }) : this._(
-  //         ref,
-  //         initPath,
-  //         (json, _) => fromJson(json),
-  //         dependsOn: dependsOn,
-  //         segment2AsyncScreenActions: segment2AsyncScreenActions,
-  //         screen2Page: screen2Page,
-  //         screenBuilder: screenBuilder,
-  //         navigatorWidgetBuilder: navigatorWidgetBuilder,
-  //         splashBuilder: splashBuilder,
-  //         isDebugRouteDelegate: isDebugRouteDelegate,
-  //       );
-
-  // RiverpodNavigator._(
-  //   this.ref,
-  //   this.initPath, {
-  //   // by group replaced props
-  //   // this.segment2AsyncScreenActions,
-  //   // this.screen2Page,
-  //   // this.screenBuilder,
-  //   // ...
-  //   this.navigatorWidgetBuilder,
-  //   this.splashBuilder,
-  //   required List<RRoutes> routes,
-  //   List<AlwaysAliveProviderListenable>? dependsOn,
-  //   bool isDebugRouteDelegate = false,
-  // }) : router = RRouter(routes) {
-  //   routerDelegate4Dart = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate();
-  //   routerDelegate4Dart.navigator = this;
-
-  //   _defer2NextTickLow = Defer2NextTick(runNextTick: _runNavigation);
-  //   final allDepends = <AlwaysAliveProviderListenable>[ongoingPathProvider, if (dependsOn != null) ...dependsOn];
-  //   for (final depend in allDepends) _unlistens.add(ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick.start()));
-  //   // ignore: avoid_function_literals_in_foreach_calls
-  //   ref.onDispose(() => _unlistens.forEach((f) => f()));
-  // }
   RiverpodNavigator(
     this.ref,
     this.initPath,
@@ -62,27 +14,38 @@ class RiverpodNavigator {
     this.navigatorWidgetBuilder,
     this.splashBuilder,
     bool isDebugRouteDelegate = false,
-  }) : router = RRouter(groups) {
-    routerDelegate4Dart = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate();
-    routerDelegate4Dart.navigator = this;
+  })  : router = RRouter(groups),
+        _routerDelegate = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate() {
+    _routerDelegate.navigator = this;
 
+    // _runNavigation only once on the next tick
     _defer2NextTickLow = Defer2NextTick(runNextTick: _runNavigation);
     final allDepends = <AlwaysAliveProviderListenable>[ongoingPathProvider, if (dependsOn != null) ...dependsOn];
-    for (final depend in allDepends) _unlistens.add(ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick.start()));
+
+    // 1. Listen to the riverpod providers. If any change, call _defer2NextTick.start().
+    // 2. _defer2NextTick ensures that _runNavigation is called only once the next tick
+    // 3. Add RemoveListener's to unlistens
+    // 4. Use unlistens in ref.onDispose
+    final unlistens = allDepends.map((depend) => ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick.start())).toList();
+
     // ignore: avoid_function_literals_in_foreach_calls
-    ref.onDispose(() => _unlistens.forEach((f) => f()));
+    ref.onDispose(() => unlistens.forEach((f) => f()));
   }
 
   /// initial screen
   final TypedPath initPath;
 
-  RRouter router;
+  final RRouter router;
 
-  Page screen2Page(TypedSegment segment) {
-    final route = router.segment2Route(segment);
-    final screen2Page = route.screen2Page ?? screen2PageDefault;
-    return screen2Page(segment, (segment) => route.buildScreen(segment));
-  }
+  /// current path, corresponding to the current navigation stack
+  TypedPath get currentPath => _routerDelegate.currentConfiguration;
+
+  /// Enter application navigation logic here (redirection, login, etc.).
+  /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or route guard is needed)
+  TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
+
+  /// When changing navigation state: completed after Flutter navigation stack is actual
+  Future<void> get navigationCompleted => _defer2NextTick.future;
 
   final NavigatorWidgetBuilder? navigatorWidgetBuilder;
   final SplashBuilder? splashBuilder;
@@ -90,16 +53,11 @@ class RiverpodNavigator {
   /// Overwrite for another [PathParser]
   PathParser pathParserCreator() => SimplePathParser(router.json2Segment);
 
-  /// When changing navigation state: completed after Flutter navigation stack is actual
-  Future<void> get navigationCompleted => _defer2NextTick.future;
+  /// for app
+  RiverpodRouterDelegate get routerDelegate => _routerDelegate as RiverpodRouterDelegate;
 
-  /// Enter application navigation logic here (redirection, login, etc.).
-  /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or route guard is needed)
-  TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
-
-  /// depends on the used platform: flutter (= [RiverpodRouterDelegate]) x dart only (= [RouterDelegate4Dart])
-  IRouterDelegate routerDelegate4Dart = RouterDelegate4Dart();
-  RiverpodRouterDelegate get routerDelegate => routerDelegate4Dart as RiverpodRouterDelegate;
+  /// depends on the use: in app = RiverpodRouterDelegate(), in tests = RouterDelegate4Dart()
+  final IRouterDelegate _routerDelegate;
 
   RouteInformationParserImpl get routeInformationParser =>
       _routeInformationParser ?? (_routeInformationParser = RouteInformationParserImpl(pathParser));
@@ -109,55 +67,55 @@ class RiverpodNavigator {
   Ref ref;
 
   /// Main [RiverpodNavigator] method. Provides navigation to the new [TypedPath].
-  @nonVirtual
   Future<void> navigate(TypedPath newPath) async {
     ref.read(ongoingPathProvider.notifier).state = newPath;
     return navigationCompleted;
   }
 
-  @nonVirtual
-  TypedPath get currentTypedPath => routerDelegate4Dart.currentConfiguration;
-
-  String get debugCurrentPath2String => pathParser.typedPath2Path(currentTypedPath);
+  String get debugCurrentPath2String => pathParser.typedPath2Path(currentPath);
   String debugSegmentSubpath(TypedSegment s) => pathParser.typedPath2Path(segmentSubpath(s));
 
   TypedPath segmentSubpath(TypedSegment s) {
     final res = <TypedSegment>[];
-    for (var i = 0; i < currentTypedPath.length; i++) {
-      res.add(currentTypedPath[i]);
-      if (currentTypedPath[i] == s) break;
+    for (var i = 0; i < currentPath.length; i++) {
+      res.add(currentPath[i]);
+      if (currentPath[i] == s) break;
     }
     return res;
   }
 
-  @nonVirtual
-  String debugTypedPath2String() => pathParser.debugTypedPath2String(currentTypedPath);
+  Page screen2Page(TypedSegment segment) {
+    final route = router.segment2Route(segment);
+    final screen2Page = route.screen2Page ?? screen2PageDefault;
+    return screen2Page(segment, (segment) => route.buildScreen(segment));
+  }
+
+  String debugTypedPath2String() => pathParser.debugTypedPath2String(currentPath);
 
   PathParser get pathParser => _pathParser ?? (_pathParser = pathParserCreator());
   PathParser? _pathParser;
 
   Defer2NextTick get _defer2NextTick => _defer2NextTickLow as Defer2NextTick;
   Defer2NextTick? _defer2NextTickLow;
-  final List<Function> _unlistens = [];
 
-  /// synchronize [ongoingPathProvider] with [RiverpodRouterDelegate.currentConfiguration]
+  /// synchronize [ongoingPathProvider] with currentPath [RiverpodRouterDelegate.currentConfiguration]
   Future<void> _runNavigation() async {
     var ongoingPath = appNavigationLogic(ref.read(ongoingPathProvider));
     // in ongoingPath, when ongoingPath[i] == currentTypedPath[i], set ongoingPath[i] = currentTypedPath[i]
-    ongoingPath = eq2Identical(currentTypedPath, ongoingPath);
-    if (ongoingPath == currentTypedPath) return;
+    ongoingPath = eq2Identical(currentPath, ongoingPath);
+    if (ongoingPath == currentPath) return;
 
     // Wait for async screen actions.
-    await wait4AsyncScreenActions(currentTypedPath, ongoingPath);
+    await wait4AsyncScreenActions(currentPath, ongoingPath);
     // actualize flutter navigation stack
-    routerDelegate4Dart.currentConfiguration = ongoingPath;
-    routerDelegate4Dart.notifyListeners();
+    _routerDelegate.currentConfiguration = ongoingPath;
+    _routerDelegate.notifyListeners();
   }
 
   /// for [Navigator.onPopPage] in [RiverpodRouterDelegate.build]
   @nonVirtual
   bool onPopRoute() {
-    final actPath = currentTypedPath;
+    final actPath = currentPath;
     if (actPath.length <= 1) return false;
     navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i]]);
     return true;
@@ -222,36 +180,33 @@ class RiverpodNavigator {
   // *** common navigation-agnostic app actions ***
 
   @nonVirtual
-  Future<void> pop() =>
-      currentTypedPath.length <= 1 ? Future.value() : navigate([for (var i = 0; i < currentTypedPath.length - 1; i++) currentTypedPath[i]]);
+  Future<void> pop() => currentPath.length <= 1 ? Future.value() : navigate([for (var i = 0; i < currentPath.length - 1; i++) currentPath[i]]);
 
   @nonVirtual
-  Future<void> push(TypedSegment segment) => navigate([...currentTypedPath, segment]);
+  Future<void> push(TypedSegment segment) => navigate([...currentPath, segment]);
 
   @nonVirtual
-  Future<void> replaceLast(TypedSegment segment) => navigate([for (var i = 0; i < currentTypedPath.length - 1; i++) currentTypedPath[i], segment]);
+  Future<void> replaceLast(TypedSegment segment) => navigate([for (var i = 0; i < currentPath.length - 1; i++) currentPath[i], segment]);
 }
 
 // ********************************************
 //   Defer2NextTick
 // ********************************************
 
-/// helper class that solves the problem where two providers (on which navigation depends) change in one tick, e.g.
+/// helper class that solves the problem where two providers (on which navigation depends) change in one tick
 ///
-/// ```
-/// ref.read(userIsLoggedProvider.notifier).update((s) => !s)
-/// ref.read(ongoingTypedPath.notifier).state = [HomeSegment(), BooksSegment()];
-/// ```
-/// without the Defer2NextTick class, [RouterDelegate.notifyListeners] is called twice:
-/// ```
-/// routerDelegate.currentConfiguration = ref.read(ongoingTypedPath);
-/// routerDelegate.doNotifyListener();
-/// ```
+/// eg. if after a successful login:
+///   1. change the login state
+///   2. change the ongoingPath state by redirect to a screen requiring a login
+/// in this case, without the Defer2NextTick class, [RouterDelegate.notifyListeners] is called twice
 class Defer2NextTick {
   Defer2NextTick({required this.runNextTick});
-  Completer? _completer;
+  // called once in the next tick
   FutureOr<void> Function() runNextTick;
 
+  Completer? _completer;
+
+  /// called in every state change
   void start() {
     if (_completer != null) return;
     _completer = Completer();

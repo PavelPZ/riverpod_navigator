@@ -81,15 +81,16 @@ class AppNavigator extends RiverpodNavigator {
 
     // if user is not logged-in and some of the screen in navigations stack needs login => redirect to LoginScreen
     if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
-      // prepare loggedUrl and canceledUrl for login screen
+      // loggedUrl: destination path after login
       final loggedUrl = pathParser.typedPath2Path(ongoingPath);
-      var canceledUrl = currentTypedPath.isEmpty || currentTypedPath.last is LoginSegment ? '' : pathParser.typedPath2Path(currentTypedPath);
+      // canceledUrl: currentPath (current navigation stack)
+      var canceledUrl = currentPath.isEmpty || currentPath.last is LoginSegment ? '' : pathParser.typedPath2Path(currentPath);
       if (loggedUrl == canceledUrl) canceledUrl = ''; // chance to exit login loop
       // redirect to login screen
       return [LoginSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
     } else {
       // user is logged and LogginScreen is going to display => redirect to HomeScreen
-      if (userIsLogged && ongoingPath.isEmpty || ongoingPath.last is LoginSegment) return [HomeSegment()];
+      if (userIsLogged && (ongoingPath.isEmpty || ongoingPath.last is LoginSegment)) return [HomeSegment()];
     }
     // no redirection is needed
     return ongoingPath;
@@ -98,7 +99,7 @@ class AppNavigator extends RiverpodNavigator {
   // ******* actions used on the screens
 
   Future gotoNextBook() {
-    final actualBook = currentTypedPath.last as BookSegment;
+    final actualBook = currentPath.last as BookSegment;
     return replaceLast(BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
   }
 
@@ -111,7 +112,7 @@ class AppNavigator extends RiverpodNavigator {
 
   Future globalLoginButton() {
     // current screen text-path
-    final actualStringPath = pathParser.typedPath2Path(currentTypedPath);
+    final actualStringPath = pathParser.typedPath2Path(currentPath);
     // redirect to login screen
     return navigate([LoginSegment(loggedUrl: actualStringPath, canceledUrl: actualStringPath)]);
   }
@@ -120,7 +121,7 @@ class AppNavigator extends RiverpodNavigator {
   Future okOnloginPage() => _loginPageButtons(false);
 
   Future _loginPageButtons(bool cancel) {
-    final loginHomeSegment = currentTypedPath.last as LoginSegment;
+    final loginHomeSegment = currentPath.last as LoginSegment;
 
     var newPath = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
     if (newPath.isEmpty) newPath = [HomeSegment()];

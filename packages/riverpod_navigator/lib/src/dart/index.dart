@@ -7,16 +7,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart'
-    show
-        // RiverpodNavigatorFlutter,
-        RouteInformationParserImpl,
-        Screen2Page,
-        NavigatorWidgetBuilder,
-        SplashBuilder,
-        // RouteFlutter,
-        ScreenBuilder,
-        screen2PageDefault,
-        RiverpodRouterDelegate;
+    show RouteInformationParserImpl, Screen2Page, NavigatorWidgetBuilder, SplashBuilder, ScreenBuilder, screen2PageDefault, RiverpodRouterDelegate;
 import 'package:tuple/tuple.dart';
 
 part 'navigator.dart';

@@ -18,6 +18,7 @@ dependencies:
   meta: ^1.7.0
   riverpod: ^1.0.0
   riverpod_navigator:
+    path: ../../packages/riverpod_navigator
   tuple: ^2.0.0
 
 dev_dependencies: 

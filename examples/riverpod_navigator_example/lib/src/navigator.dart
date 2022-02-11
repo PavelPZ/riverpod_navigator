@@ -35,7 +35,7 @@ final riverpodNavigatorProvider = Provider<AppNavigator>((ref) => AppNavigator(r
 
 /// [ongoingPathProvider] TypedPath provider, source of truth for flutter navigation
 ///
-/// Note: [ongoingPathProvider] may differ from [RouterDelegate.currentTypedPath] during navigation calculation.
+/// Note: [ongoingPathProvider] may differ from [RouterDelegate.currentPath] during navigation calculation.
 final ongoingPathProvider = StateProvider<TypedPath>((_) => []);
 
 /// the navigation state also depends on the following [userIsLoggedProvider]
@@ -45,17 +45,23 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 //   RiverpodNavigator
 // ********************************************
 
-/// Helper singleton class for manaing navigation state
+/// Helper generic singleton class for manaing navigation state
+/// See [AppNavigator] for
 class RiverpodNavigator {
-  RiverpodNavigator(this.ref, {required List<AlwaysAliveProviderListenable> dependsOn}) : routerDelegate = RiverpodRouterDelegate() {
+  RiverpodNavigator(
+    this.ref, {
+    // providers on which navigation state depends.
+    required List<AlwaysAliveProviderListenable> dependsOn,
+  }) : routerDelegate = RiverpodRouterDelegate() {
     routerDelegate.navigator = this;
 
-    // 1. Listen for [ongoingPathProvider, ...dependsOn] riverpod providers - call defer2NextTick.onNavigationStateChanged().
-    // 2. Add RemoveListener's to _unlistens
-    // 3. Use _unlistens in ref.onDispose
-    for (final depend in dependsOn) _unlistens.add(ref.listen<dynamic>(depend, (previous, next) => _onNavigationStateChanged));
+    // 1. Listen to the riverpod providers. If any change, call _onNavigationStateChanged().
+    // 2. Add RemoveListener's to unlistens
+    // 3. Use unlistens in ref.onDispose
+    final List<Function> unlistens = [];
+    for (final depend in dependsOn) unlistens.add(ref.listen<dynamic>(depend, (previous, next) => _onNavigationStateChanged()));
     // ignore: avoid_function_literals_in_foreach_calls
-    ref.onDispose(() => _unlistens.forEach((f) => f()));
+    ref.onDispose(() => unlistens.forEach((f) => f()));
   }
 
   /// Enter application navigation logic here (redirection, login, etc.).
@@ -93,14 +99,12 @@ class RiverpodNavigator {
   @protected
   Ref ref;
 
-  /// for ref.onDispose
-  final List<Function> _unlistens = [];
-
   /// for [Navigator.onPopRoute] in [RiverpodRouterDelegate.build]
-  void onPopRoute() {
+  bool onPopRoute() {
     final actPath = currentTypedPath;
-    if (actPath.length <= 1) return;
+    if (actPath.length <= 1) return false;
     navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i]]);
+    return true;
   }
 }
 
@@ -121,19 +125,22 @@ class AppNavigator extends RiverpodNavigator {
   /// ... mark the segments that require login: book with odd id
   bool needsLogin(ExampleSegments segment) => segment is BookSegment && segment.id.isOdd;
 
-  /// Avoid navigation to [BookSegment] with odd [BookSegment.id] (and instead redirects to [HomeSegment (), BooksSegment ()])
-  /// when not logged in
+  /// ensure redirection
   @override
   TypedPath appNavigationLogic(TypedPath ongoingPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
+    // redirect to [HomeSegment (), BooksSegment ()] when the user is not logged in and the current path contains a book with an odd ID
     if (!userIsLogged && ongoingPath.any(needsLogin)) return [HomeSegment(), BooksSegment()];
+    // no redirection is required
     return ongoingPath;
   }
+
+  //************ actions used in screens
 
   void toHome() => navigate([HomeSegment()]);
   void toBooks() => navigate([HomeSegment(), BooksSegment()]);
   void toBook({required int id}) => navigate([HomeSegment(), BooksSegment(), BookSegment(id: id)]);
-  void bookNextPrevButton({bool? isPrev}) {
+  void toBookNextPrev({bool? isPrev}) {
     assert(currentTypedPath.last is BookSegment);
     var id = (currentTypedPath.last as BookSegment).id;
     if (isPrev == true)

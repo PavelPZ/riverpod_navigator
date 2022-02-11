@@ -42,3 +42,4 @@ flutter:
 # dart pub publish --dry-run
 # dart pub publish
 # dart pub publish --force 
+# !!!! remove local package reference for doc and example

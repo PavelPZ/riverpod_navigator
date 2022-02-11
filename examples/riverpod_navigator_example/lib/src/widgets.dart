@@ -45,8 +45,8 @@ Widget booksScreen(WidgetRef ref, BooksSegment segment) => PageHelper(
 Widget bookScreen(WidgetRef ref, BookSegment segment) => PageHelper(
       title: 'Book screen, id=${segment.id}',
       buildChildren: (navigator) => [
-        LinkHelper(title: 'Next >>', onPressed: navigator.bookNextPrevButton),
-        LinkHelper(title: '<< Prev', onPressed: () => navigator.bookNextPrevButton(isPrev: true)),
+        LinkHelper(title: 'Next >>', onPressed: navigator.toBookNextPrev),
+        LinkHelper(title: '<< Prev', onPressed: () => navigator.toBookNextPrev(isPrev: true)),
       ],
     );
 

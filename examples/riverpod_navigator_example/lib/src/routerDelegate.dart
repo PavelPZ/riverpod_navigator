@@ -9,6 +9,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
   RiverpodRouterDelegate();
 
   RiverpodNavigator? navigator;
+  RiverpodNavigator get _navigator => navigator as RiverpodNavigator;
 
   // make [notifyListeners] public
   void doNotifyListener() => notifyListeners();
@@ -33,14 +34,15 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
         key: navigatorKey,
         pages: actPath.map((segment) => MaterialPage(key: ValueKey(segment.toString), child: screenBuilder(segment))).toList(),
         onPopPage: (route, result) {
-          navigator?.onPopRoute();
-          return false;
+          if (!route.didPop(result)) return false;
+          // remove last segment from path
+          return _navigator.onPopRoute();
         });
   }
 
   @override
-  Future<void> setNewRoutePath(TypedPath configuration) async => (navigator as RiverpodNavigator).navigate(configuration);
+  Future<void> setNewRoutePath(TypedPath configuration) async => _navigator.navigate(configuration);
 
   @override
-  Future<void> setInitialRoutePath(TypedPath configuration) async => (navigator as RiverpodNavigator).navigate([HomeSegment()]);
+  Future<void> setInitialRoutePath(TypedPath configuration) async => _navigator.navigate([HomeSegment()]);
 }
