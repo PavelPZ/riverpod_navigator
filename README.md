@@ -8,7 +8,7 @@
   Navigation logic can be developed and tested without typing a single flutter widget.
 - **Asynchronous navigation:**<br>
   Before starting navigation, prepare all necessary asynchronous operations, e.g.
-  - loading data for new screen
+  - load data for the new screen
   - save data from the previous screen
 - **Dependence on external providers:**<br>
   The navigation state may also depend on external providers, e.g. on login status
