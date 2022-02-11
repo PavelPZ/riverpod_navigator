@@ -166,4 +166,4 @@ I prepared this package for my new project. Its further development depends on w
 - nested navigation flow<br>
   I think everything is ready, nested ProviderScope can solve nested navigation too.
 - BlockGUI widget (block the GUI while asynchronous navigation is waiting to complete)
-- parameterization alowing cupertino
+- parameterization allowing  cupertino
