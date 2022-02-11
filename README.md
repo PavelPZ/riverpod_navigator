@@ -31,7 +31,7 @@ With the **typed-path** as the source of the truth.
 Note: *There is a one-to-one relationship between the given segment and the screen (HomeSegment - HomeScreen, BookSegment - BookScreen).
 In the following text, I sometimes confuse the two terms.*.
 
-## Installation
+## Installation of examples
 
 After clonning repository, go to ```examples\doc``` subdirectory and execute:
 

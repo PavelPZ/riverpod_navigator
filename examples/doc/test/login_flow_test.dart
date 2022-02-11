@@ -23,7 +23,7 @@ void main() {
       await action();
       print('${DateTime.now().difference(start).inMilliseconds} msec ($expected)');
       await container.pump();
-      expect(navigator.debugTypedPath2String(), expected);
+      expect(navigator.debugCurrentPath2String, expected);
       // print(navigator.debugTypedPath2String());
     }
 
@@ -35,10 +35,10 @@ void main() {
     // confirm login => redirect to book 3
     await navigTest(() => navigator.okOnloginPage(), 'home/book;id=3');
 
-    // to previous book 2
+    // to next book 4
     await navigTest(() => navigator.gotoNextBook(), 'home/book;id=4');
 
-    // to previous book 1
+    // to next book 5
     await navigTest(() => navigator.gotoNextBook(), 'home/book;id=5');
 
     // logout, but book needs login => redirected to login page

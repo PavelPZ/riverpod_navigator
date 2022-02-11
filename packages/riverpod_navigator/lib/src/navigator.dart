@@ -90,8 +90,6 @@ class RiverpodNavigator {
     return screen2Page(segment, (segment) => route.buildScreen(segment));
   }
 
-  String debugTypedPath2String() => pathParser.debugTypedPath2String(currentPath);
-
   PathParser get pathParser => _pathParser ?? (_pathParser = pathParserCreator());
   PathParser? _pathParser;
 
