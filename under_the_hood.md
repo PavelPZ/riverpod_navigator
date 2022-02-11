@@ -100,12 +100,12 @@ TypedPath appNavigationLogic(TypedPath ongoingPath) {
 }
 ```
 
-Note: *for this appNavigationLogic we need the "needsLogin" function that returns true when a login is required for given screen*
+Note: *for this appNavigationLogic we need the "needsLogin" function that returns true when a login is required for a given screen*
 
-## Thats it
+## That's it
 
 This is all essential for the implementation of the login flow.
-With Riverpod, using Flutter Navigator 2.0 is really easy.
+With Riverpod, using Flutter Navigator 2.0 is easy.
 See how the Loggin button looks:
 
 ### Login Button
