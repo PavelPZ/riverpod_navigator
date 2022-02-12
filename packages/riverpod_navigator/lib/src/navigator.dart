@@ -8,25 +8,32 @@ part of 'index.dart';
 class RiverpodNavigator {
   RiverpodNavigator(
     this.ref,
-    this.initPath,
+    TypedPath initPath,
     List<RRoutes> groups, {
     List<AlwaysAliveProviderListenable>? dependsOn,
     this.navigatorWidgetBuilder,
     this.splashBuilder,
     bool isDebugRouteDelegate = false,
+    this.isNested = false,
+    this.restorePath,
   })  : router = RRouter(groups),
+        initPath = restorePath == null ? initPath : restorePath.getInitialPath(initPath),
         _routerDelegate = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate() {
+    ref.onDispose(() => restorePath?.onPathChanged(currentPath));
+
     _routerDelegate.navigator = this;
 
     // _runNavigation only once on the next tick
     _defer2NextTickLow = Defer2NextTick(runNextTick: _runNavigation);
-    final allDepends = <AlwaysAliveProviderListenable>[ongoingPathProvider, if (dependsOn != null) ...dependsOn];
+    this.dependsOn.add(ongoingPathProvider);
+    if (dependsOn != null) this.dependsOn.addAll(dependsOn);
+    assert(this.dependsOn.every((p) => p is Override));
 
     // 1. Listen to the riverpod providers. If any change, call _defer2NextTick.start().
     // 2. _defer2NextTick ensures that _runNavigation is called only once the next tick
     // 3. Add RemoveListener's to unlistens
     // 4. Use unlistens in ref.onDispose
-    final unlistens = allDepends.map((depend) => ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick.start())).toList();
+    final unlistens = this.dependsOn.map((depend) => ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick.start())).toList();
 
     // ignore: avoid_function_literals_in_foreach_calls
     ref.onDispose(() => unlistens.forEach((f) => f()));
@@ -62,6 +69,11 @@ class RiverpodNavigator {
   RouteInformationParserImpl get routeInformationParser =>
       _routeInformationParser ?? (_routeInformationParser = RouteInformationParserImpl(pathParser));
   RouteInformationParserImpl? _routeInformationParser;
+
+  bool isNested;
+  final List<AlwaysAliveProviderListenable> dependsOn = [];
+
+  final RestorePath? restorePath;
 
   @protected
   Ref ref;

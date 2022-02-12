@@ -7,7 +7,7 @@ import '../lib/src/login_flow.dart';
 
 ProviderContainer createContainer() {
   final res = ProviderContainer(overrides: [
-    riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
+    riverpodNavigatorProvider.overrideWithProvider(Provider(AppNavigator.new)),
   ]);
   addTearDown(res.dispose);
   return res;

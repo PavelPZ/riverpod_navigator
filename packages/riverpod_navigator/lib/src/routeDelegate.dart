@@ -6,7 +6,14 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
 
   @override
   Widget build(BuildContext context) {
-    if (currentConfiguration.isEmpty) return navigator.splashBuilder?.call() ?? SizedBox();
+    if (currentConfiguration.isEmpty) {
+      if (navigator.isNested)
+        scheduleMicrotask(() {
+          currentConfiguration = navigator.initPath;
+          notifyListeners();
+        }); //=> navigator.navigate(navigator.initPath));
+      return navigator.splashBuilder?.call() ?? SizedBox();
+    }
     final navigatorWidget = Navigator(
         key: navigatorKey,
         // segment => screen
@@ -15,9 +22,8 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
           if (!route.didPop(result)) return false;
           // remove last segment from path
           return navigator.onPopRoute();
-          // navigator.onPopRoute();
-          // return false;
         });
+
     return navigator.navigatorWidgetBuilder == null ? navigatorWidget : navigator.navigatorWidgetBuilder!(context, navigatorWidget);
   }
 

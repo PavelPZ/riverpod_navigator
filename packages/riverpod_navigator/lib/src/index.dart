@@ -23,6 +23,7 @@ typedef NavigatorWidgetBuilder = Widget Function(BuildContext, Navigator);
 typedef ScreenBuilder<T extends TypedSegment> = Widget Function(T);
 typedef SplashBuilder = Widget Function();
 typedef Screen2Page<T extends TypedSegment> = Page Function(T, ScreenBuilder<T>);
+typedef NavigatorDispose = void Function(RiverpodNavigator);
 
 /// Abstract interface for typed variant of path's segment.
 ///
@@ -61,4 +62,15 @@ abstract class IRouterDelegate {
 class RouterDelegate4Dart with IRouterDelegate {
   @override
   void notifyListeners() {}
+}
+
+// ********************************************
+// RouterDelegate abstraction
+// ********************************************
+
+class RestorePath {
+  RestorePath();
+  TypedPath? path;
+  void onPathChanged(TypedPath currentNavigatorPath) => path = currentNavigatorPath;
+  TypedPath getInitialPath(TypedPath initPath) => path ?? initPath;
 }

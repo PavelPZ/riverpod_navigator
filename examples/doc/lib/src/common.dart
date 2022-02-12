@@ -55,7 +55,7 @@ Widget pageHelper<N extends RiverpodNavigator>(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: (() {
           final res = <Widget>[SizedBox(height: 20)];
-          for (final w in buildChildren(navigator)) res.addAll([SizedBox(height: 20), w]);
+          for (final w in buildChildren(navigator)) res.addAll([w, SizedBox(height: 20)]);
           res.addAll([SizedBox(height: 20), Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
           if (segment.asyncActionResult != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncActionResult}"')]);
           return res;

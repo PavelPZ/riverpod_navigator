@@ -94,7 +94,7 @@ app entry point with ProviderScope.overrides
 void runMain() => runApp(
     ProviderScope(
       overrides: [
-        riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new /*See Constructor tear-offs in Dart ^2.15*/),
+          riverpodNavigatorProvider.overrideWithProvider(Provider(AppNavigator.new)),
       ],
       child: const BooksExampleApp(),
     ),

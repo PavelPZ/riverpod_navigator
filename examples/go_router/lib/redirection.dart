@@ -12,7 +12,7 @@ part 'redirection.g.dart';
 void main() => runApp(
       ProviderScope(
         overrides: [
-          riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
+          riverpodNavigatorProvider.overrideWithProvider(Provider(AppNavigator.new)),
         ],
         child: const App(),
       ),

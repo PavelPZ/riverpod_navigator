@@ -112,7 +112,7 @@ class App extends ConsumerWidget {
 void main() => runApp(
       ProviderScope(
         overrides: [
-          riverpodNavigatorCreatorProvider.overrideWithValue(AppNavigator.new),
+          riverpodNavigatorProvider.overrideWithProvider(Provider(AppNavigator.new)),
         ],
         child: const App(),
       ),
@@ -143,6 +143,11 @@ The full code is available here:
 [simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple.dart).
 
 ## See [Other features](https://github.com/PavelPZ/riverpod_navigator/blob/main/other_features.md) for other doc and samples
+code_simplification
+async_navigation_splash_screen
+login_flow
+testing
+more_typedSegment_roots
 
 ## See [What's under the hood](https://github.com/PavelPZ/riverpod_navigator/blob/main/under_the_hood.md) for riverpod_navigation principle
 

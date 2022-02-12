@@ -8,10 +8,10 @@ part of 'index.dart';
 ///     riverpodNavigatorCreatorProvider.overrideWithValue(...),
 ///   ],...
 /// ```
-final riverpodNavigatorCreatorProvider = Provider<RiverpodNavigatorCreator>((_) => throw UnimplementedError());
+// final riverpodNavigatorCreatorProvider = Provider<RiverpodNavigatorCreator>((_) => throw UnimplementedError());
 
 /// provider for app specific RiverpodNavigator
-final riverpodNavigatorProvider = Provider<RiverpodNavigator>((ref) => ref.read(riverpodNavigatorCreatorProvider)(ref));
+final riverpodNavigatorProvider = Provider<RiverpodNavigator>((_) => throw UnimplementedError());
 
 /// ongoing TypedPath provider
 ///
