@@ -80,4 +80,4 @@ Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment
 
 #### Code of the example
 
-See [async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/nested_navigation.dart)
+See [nested_navigation.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/nested_navigation.dart)

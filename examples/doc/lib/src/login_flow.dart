@@ -141,13 +141,16 @@ class AppNavigator extends RiverpodNavigator {
 Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
       title: 'Home',
       segment: segment,
-      buildChildren: (navigator) => [
-        for (var i = 1; i <= bookCount; i++)
-          ElevatedButton(
-            onPressed: () => navigator.navigate([HomeSegment(), BookSegment(id: i)]),
-            child: Text('Book $i'),
-          ) // normal page
-      ],
+      buildChildren: (navigator) {
+        final bool isLogged = ref.watch(userIsLoggedProvider);
+        return [
+          for (var i = 1; i <= bookCount; i++)
+            ElevatedButton(
+              onPressed: () => navigator.navigate([HomeSegment(), BookSegment(id: i)]),
+              child: Text('Book $i${!isLogged && i.isOdd ? '(log in first)' : ''}'),
+            ) // normal page
+        ];
+      },
     );
 
 const bookCount = 5;
