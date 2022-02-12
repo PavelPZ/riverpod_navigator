@@ -144,7 +144,7 @@ The full code is available here:
 
 ## Other features doc and samples 
 
-- [Code simplification](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/code_simplification.md)
+- [Code simplification](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/simple.md)
 - [Async navigation and splash screen](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async_navigation_splash_screen.md)
 - [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
 - [Testing](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/testing.md)
