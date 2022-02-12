@@ -142,12 +142,14 @@ ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]);
 The full code is available here:
 [simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple.dart).
 
-## See [Other features](https://github.com/PavelPZ/riverpod_navigator/blob/main/other_features.md) for other doc and samples
-code_simplification
-async_navigation_splash_screen
-login_flow
-testing
-more_typedSegment_roots
+## Other features doc and samples 
+
+- [Code simplification](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/code_simplification.md)
+- [Async navigation and splash screen](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async_navigation_splash_screen.md)
+- [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
+- [Testing](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/testing.md)
+- [More TypedSegment roots](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/more_typedSegment_roots.md)
+- [Nested navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/nested_navigation.md)
 
 ## See [What's under the hood](https://github.com/PavelPZ/riverpod_navigator/blob/main/under_the_hood.md) for riverpod_navigation principle
 
