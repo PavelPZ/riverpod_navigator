@@ -6,6 +6,13 @@ part of 'nested_navigation.dart';
 // FunctionalWidgetGenerator
 // **************************************************************************
 
+class App extends ConsumerWidget {
+  const App({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext _context, WidgetRef _ref) => app(_ref);
+}
+
 class HomeScreen extends ConsumerWidget {
   const HomeScreen(this.segment, {Key? key}) : super(key: key);
 
@@ -61,6 +68,25 @@ class AuthorTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext _context, WidgetRef _ref) => authorTab(_ref);
+}
+
+class PageHelper<N extends RiverpodNavigator> extends ConsumerWidget {
+  const PageHelper(
+      {Key? key,
+      required this.segment,
+      required this.title,
+      required this.buildChildren})
+      : super(key: key);
+
+  final TypedSegment segment;
+
+  final String title;
+
+  final List<Widget> Function(N) buildChildren;
+
+  @override
+  Widget build(BuildContext _context, WidgetRef _ref) => pageHelper<N>(_ref,
+      segment: segment, title: title, buildChildren: buildChildren);
 }
 
 // **************************************************************************

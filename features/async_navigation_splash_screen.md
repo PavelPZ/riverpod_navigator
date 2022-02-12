@@ -31,6 +31,7 @@ class AppNavigator extends RiverpodNavigator {
               ),
             ])
           ],
+          splashBuilder: () => SplashScreen(),
         );
 }
 ```

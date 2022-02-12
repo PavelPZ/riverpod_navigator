@@ -45,6 +45,10 @@ class RRoute<T extends TypedSegment> {
   Merging<T>? merging;
   Deactivating<T>? deactivating;
 
+  Future<AsyncActionResult>? callCreating(TypedSegment newPath) => creating?.call(newPath as T);
+  Future<AsyncActionResult>? callMerging(TypedSegment oldPath, TypedSegment newPath) => merging?.call(oldPath as T, newPath as T);
+  Future<AsyncActionResult>? callDeactivating(TypedSegment oldPath) => deactivating?.call(oldPath as T);
+
   bool isRoute(TypedSegment segment) => segment is T;
   Widget buildScreen(TypedSegment segment) => screenBuilder(segment as T);
 }

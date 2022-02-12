@@ -1,3 +1,7 @@
+## 0.17.0
+
+- nested navigator support
+
 ## 0.16.0
 
 - better readme.md and examples

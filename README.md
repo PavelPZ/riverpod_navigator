@@ -143,7 +143,9 @@ The full code is available here:
 
 ## Other features doc and samples 
 
-- [Code simplification](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/code_simplification.md)
+Note: *The following examples are prepared using a **functional_widget package** that simplifies writing widgets.
+The use of functional_widget is not mandatory*
+
 - [Async navigation and splash screen](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async_navigation_splash_screen.md)
 - [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
 - [Testing](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/testing.md)

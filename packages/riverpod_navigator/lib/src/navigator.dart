@@ -160,19 +160,19 @@ class RiverpodNavigator {
       if (identical(o, n)) continue;
       if (o.runtimeType == n.runtimeType)
         // old and new has the same route => merging
-        futures.add(Tuple2(or.merging?.call(o, n), n));
+        futures.add(Tuple2(or.callMerging(o, n), n));
       else {
         // old and new has different route => deactivanting old, creating new
-        futures.add(Tuple2(or.deactivating?.call(o), o));
-        futures.add(Tuple2(nr.creating?.call(n), n));
+        futures.add(Tuple2(or.callDeactivating(o), o));
+        futures.add(Tuple2(nr.callCreating(n), n));
       }
     }
     // deactivating the rest of old segments
     if (oldPath.length > minLen)
-      for (var i = minLen; i < oldPath.length; i++) futures.add(Tuple2(router.segment2Route(oldPath[i]).deactivating?.call(oldPath[i]), oldPath[i]));
+      for (var i = minLen; i < oldPath.length; i++) futures.add(Tuple2(router.segment2Route(oldPath[i]).callDeactivating(oldPath[i]), oldPath[i]));
     // creating the rest of new segments
     if (newPath.length > minLen)
-      for (var i = minLen; i < newPath.length; i++) futures.add(Tuple2(router.segment2Route(newPath[i]).creating?.call(newPath[i]), newPath[i]));
+      for (var i = minLen; i < newPath.length; i++) futures.add(Tuple2(router.segment2Route(newPath[i]).callCreating(newPath[i]), newPath[i]));
     // remove empty futures
     final notEmptyFutures = [
       for (final f in futures)

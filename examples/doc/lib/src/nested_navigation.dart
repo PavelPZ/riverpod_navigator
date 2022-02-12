@@ -9,8 +9,6 @@ import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-import 'common.dart';
-
 part 'nested_navigation.freezed.dart';
 part 'nested_navigation.g.dart';
 
@@ -22,6 +20,17 @@ void main() => runApp(
         child: App(),
       ),
     );
+
+@cwidget
+Widget app(WidgetRef ref) {
+  final navigator = ref.read(riverpodNavigatorProvider);
+  return MaterialApp.router(
+    title: 'Riverpod Navigator Example',
+    routerDelegate: navigator.routerDelegate,
+    routeInformationParser: navigator.routeInformationParser,
+    debugShowCheckedModeBanner: false,
+  );
+}
 
 @freezed
 class Segments with _$Segments, TypedSegment {
@@ -198,3 +207,30 @@ Widget booksTab(WidgetRef ref) => Router(routerDelegate: ref.read(riverpodNaviga
 
 @cwidget
 Widget authorTab(WidgetRef ref) => Router(routerDelegate: ref.read(riverpodNavigatorProvider).routerDelegate);
+
+@cwidget
+Widget pageHelper<N extends RiverpodNavigator>(
+  WidgetRef ref, {
+  required TypedSegment segment,
+  required String title,
+  required List<Widget> buildChildren(N navigator),
+}) {
+  final navigator = ref.read(riverpodNavigatorProvider) as N;
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(title),
+    ),
+    body: Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: (() {
+          final res = <Widget>[SizedBox(height: 20)];
+          for (final w in buildChildren(navigator)) res.addAll([w, SizedBox(height: 20)]);
+          res.addAll([SizedBox(height: 20), Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
+          if (segment.asyncActionResult != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncActionResult}"')]);
+          return res;
+        })(),
+      ),
+    ),
+  );
+}
