@@ -170,8 +170,5 @@ If you are interested in preparing another go_router example, I will try to do i
 I prepared this package for my new project. Its further development depends on whether it will be used by the community.
 
 - proofreading because my English is not good. Community help is warmly welcomed.
-- testing on mobile (tested so far for windows desktop and web)<br>
-- nested navigation flow<br>
-  I think everything is ready, nested ProviderScope can solve nested navigation too.
 - BlockGUI widget (block the GUI while asynchronous navigation is waiting to complete)
 - parameterization allowing  cupertino

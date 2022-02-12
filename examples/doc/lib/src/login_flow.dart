@@ -44,18 +44,6 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 
 typedef NeedsLogin<T extends TypedSegment> = bool Function(T segment);
 
-class LoginAppRoute<T extends TypedSegment> extends RRoute<T> {
-  LoginAppRoute(
-    ScreenBuilder screenBuilder, {
-    this.needsLogin,
-    Screen2Page? screen2Page,
-    Creating<T>? creating,
-    Merging<T>? merging,
-    Deactivating<T>? deactivating,
-  }) : super(screenBuilder, screen2Page: screen2Page, creating: creating, merging: merging, deactivating: deactivating);
-  NeedsLogin<T>? needsLogin = (_) => false;
-}
-
 /// !!! only book screens with odd 'id' require a login
 bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 
