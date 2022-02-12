@@ -37,7 +37,6 @@ After clonning repository, go to ```examples\doc``` subdirectory and execute:
 
 - ```flutter create .```
 - ```flutter pub get```
-- ```flutter pub run build_runner build --delete-conflicting-outputs```
 
 ## Simple example
 
