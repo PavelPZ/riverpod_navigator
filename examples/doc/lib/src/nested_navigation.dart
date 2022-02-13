@@ -55,9 +55,6 @@ class AppNavigator extends RiverpodNavigator {
             ])
           ],
 
-          /// required nested flag
-          isNested: true,
-
           /// The RestorePath class preserves the last state of the navigator.
           /// Used during the next navigator initialization.
           restorePath: restorePath,
@@ -88,7 +85,6 @@ class AppNavigator extends RiverpodNavigator {
               RRoute<AuthorSegment>(AuthorScreen.new),
             ])
           ],
-          isNested: true,
           restorePath: restorePath,
         ) {
     return;

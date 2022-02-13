@@ -14,7 +14,6 @@ class RiverpodNavigator {
     this.navigatorWidgetBuilder,
     this.splashBuilder,
     bool isDebugRouteDelegate = false,
-    this.isNested = false,
     this.restorePath,
   })  : router = RRouter(groups),
         initPath = restorePath == null ? initPath : restorePath.getInitialPath(initPath),
@@ -70,7 +69,6 @@ class RiverpodNavigator {
       _routeInformationParser ?? (_routeInformationParser = RouteInformationParserImpl(pathParser));
   RouteInformationParserImpl? _routeInformationParser;
 
-  bool isNested;
   final List<AlwaysAliveProviderListenable> dependsOn = [];
 
   final RestorePath? restorePath;

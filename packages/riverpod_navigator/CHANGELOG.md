@@ -1,3 +1,7 @@
+## 0.18.0
+
+- **Breaking**: isNested removed
+
 ## 0.17.0
 
 - nested navigator support
