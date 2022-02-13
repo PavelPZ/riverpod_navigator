@@ -20,11 +20,22 @@ class AppNavigator extends RiverpodNavigator {
             ])
           ],
 
-          /// The RestorePath class preserves the last state of the navigator.
-          /// Used during the next navigator initialization.
+          /// The RestorePath class preserves the last state of the nested navigator.
           restorePath: restorePath,
         );
 
+  /// constructor for author nested navigator
+  AppNavigator.forAuthor(Ref ref, RestorePath restorePath)
+      : super(
+          ref,
+          [AuthorSegment(id: 2)],
+          [
+            RRoutes<Segments>(Segments.fromJson, [
+              RRoute<AuthorSegment>(AuthorScreen.new),
+            ])
+          ],
+          restorePath: restorePath,
+        );
 ```
 
 ```dart

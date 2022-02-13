@@ -86,9 +86,7 @@ class AppNavigator extends RiverpodNavigator {
             ])
           ],
           restorePath: restorePath,
-        ) {
-    return;
-  }
+        );
 
   // ******* actions used on the screens
 
