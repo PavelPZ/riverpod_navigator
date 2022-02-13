@@ -7,10 +7,6 @@ In the following example, the same navigator is used in three contexts:
 
 The nested navigator has a "RestorePath restorePath" parameter: its purpose is to remember the state of the navigator during Tab's switching.
 
-Note: *We use **flutter_hooks package** to keep RestorePath instance. The use of flutter_hooks is not mandatory, it can be implemented using the StatefulWidget*.
-
-The nested navigator requires the ```isNested: true``` parameter.
-
 ```dart
 class AppNavigator extends RiverpodNavigator {
   /// Constructor for book nested navigator.
@@ -24,9 +20,6 @@ class AppNavigator extends RiverpodNavigator {
             ])
           ],
 
-          /// required nested flag
-          isNested: true,
-
           /// The RestorePath class preserves the last state of the navigator.
           /// Used during the next navigator initialization.
           restorePath: restorePath,
@@ -39,6 +32,8 @@ class AppNavigator extends RiverpodNavigator {
 @hcwidget
 Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment) {
   /// Remembering RestorePath throughout the widget's lifecycle
+  /// Note: *We use **flutter_hooks package** to keep RestorePath instance. 
+  /// The use of flutter_hooks is not mandatory, it can be implemented using the StatefulWidget*.
   final restoreBook = useMemoized(() => RestorePath());
   final restoreAuthor = useMemoized(() => RestorePath());
   return DefaultTabController(
