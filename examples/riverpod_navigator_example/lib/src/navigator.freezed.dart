@@ -13,7 +13,7 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
-ExampleSegments _$ExampleSegmentsFromJson(Map<String, dynamic> json) {
+Segments _$SegmentsFromJson(Map<String, dynamic> json) {
   switch (json['runtimeType']) {
     case 'home':
       return HomeSegment.fromJson(json);
@@ -23,14 +23,14 @@ ExampleSegments _$ExampleSegmentsFromJson(Map<String, dynamic> json) {
       return BookSegment.fromJson(json);
 
     default:
-      throw CheckedFromJsonException(json, 'runtimeType', 'ExampleSegments',
+      throw CheckedFromJsonException(json, 'runtimeType', 'Segments',
           'Invalid union type "${json['runtimeType']}"!');
   }
 }
 
 /// @nodoc
-class _$ExampleSegmentsTearOff {
-  const _$ExampleSegmentsTearOff();
+class _$SegmentsTearOff {
+  const _$SegmentsTearOff();
 
   HomeSegment home() {
     return HomeSegment();
@@ -46,16 +46,16 @@ class _$ExampleSegmentsTearOff {
     );
   }
 
-  ExampleSegments fromJson(Map<String, Object?> json) {
-    return ExampleSegments.fromJson(json);
+  Segments fromJson(Map<String, Object?> json) {
+    return Segments.fromJson(json);
   }
 }
 
 /// @nodoc
-const $ExampleSegments = _$ExampleSegmentsTearOff();
+const $Segments = _$SegmentsTearOff();
 
 /// @nodoc
-mixin _$ExampleSegments {
+mixin _$Segments {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() home,
@@ -104,20 +104,18 @@ mixin _$ExampleSegments {
 }
 
 /// @nodoc
-abstract class $ExampleSegmentsCopyWith<$Res> {
-  factory $ExampleSegmentsCopyWith(
-          ExampleSegments value, $Res Function(ExampleSegments) then) =
-      _$ExampleSegmentsCopyWithImpl<$Res>;
+abstract class $SegmentsCopyWith<$Res> {
+  factory $SegmentsCopyWith(Segments value, $Res Function(Segments) then) =
+      _$SegmentsCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class _$ExampleSegmentsCopyWithImpl<$Res>
-    implements $ExampleSegmentsCopyWith<$Res> {
-  _$ExampleSegmentsCopyWithImpl(this._value, this._then);
+class _$SegmentsCopyWithImpl<$Res> implements $SegmentsCopyWith<$Res> {
+  _$SegmentsCopyWithImpl(this._value, this._then);
 
-  final ExampleSegments _value;
+  final Segments _value;
   // ignore: unused_field
-  final $Res Function(ExampleSegments) _then;
+  final $Res Function(Segments) _then;
 }
 
 /// @nodoc
@@ -128,8 +126,7 @@ abstract class $HomeSegmentCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$HomeSegmentCopyWithImpl<$Res>
-    extends _$ExampleSegmentsCopyWithImpl<$Res>
+class _$HomeSegmentCopyWithImpl<$Res> extends _$SegmentsCopyWithImpl<$Res>
     implements $HomeSegmentCopyWith<$Res> {
   _$HomeSegmentCopyWithImpl(
       HomeSegment _value, $Res Function(HomeSegment) _then)
@@ -235,7 +232,7 @@ class _$HomeSegment extends HomeSegment {
   }
 }
 
-abstract class HomeSegment extends ExampleSegments {
+abstract class HomeSegment extends Segments {
   factory HomeSegment() = _$HomeSegment;
   HomeSegment._() : super._();
 
@@ -251,8 +248,7 @@ abstract class $BooksSegmentCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$BooksSegmentCopyWithImpl<$Res>
-    extends _$ExampleSegmentsCopyWithImpl<$Res>
+class _$BooksSegmentCopyWithImpl<$Res> extends _$SegmentsCopyWithImpl<$Res>
     implements $BooksSegmentCopyWith<$Res> {
   _$BooksSegmentCopyWithImpl(
       BooksSegment _value, $Res Function(BooksSegment) _then)
@@ -358,7 +354,7 @@ class _$BooksSegment extends BooksSegment {
   }
 }
 
-abstract class BooksSegment extends ExampleSegments {
+abstract class BooksSegment extends Segments {
   factory BooksSegment() = _$BooksSegment;
   BooksSegment._() : super._();
 
@@ -375,8 +371,7 @@ abstract class $BookSegmentCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$BookSegmentCopyWithImpl<$Res>
-    extends _$ExampleSegmentsCopyWithImpl<$Res>
+class _$BookSegmentCopyWithImpl<$Res> extends _$SegmentsCopyWithImpl<$Res>
     implements $BookSegmentCopyWith<$Res> {
   _$BookSegmentCopyWithImpl(
       BookSegment _value, $Res Function(BookSegment) _then)
@@ -505,7 +500,7 @@ class _$BookSegment extends BookSegment {
   }
 }
 
-abstract class BookSegment extends ExampleSegments {
+abstract class BookSegment extends Segments {
   factory BookSegment({required int id}) = _$BookSegment;
   BookSegment._() : super._();
 

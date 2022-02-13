@@ -18,7 +18,6 @@ typedef TypedPath = List<TypedSegment>;
 final ongoingPathProvider = StateProvider<TypedPath>((_) => []);
 
 /// another provider with a "userIsLogged state" on which the navigation state depends 
-/// (and which can be part of the application)
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
 
 ...
@@ -26,7 +25,7 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 ...
 ```
 
-## At the end is the navigation stack, represented by Flutter Navigator 2.0 RouterDelegate
+## At the end is the navigation stack, implemented by Flutter Navigator 2.0 RouterDelegate
 
 ```dart
 class RiverpodRouterDelegate extends RouterDelegate<TypedPath> {
@@ -35,7 +34,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> {
   @override
   TypedPath currentConfiguration = [];
   ...
-  /// build screens from currentConfiguration 
+  /// build screens from the currentConfiguration 
   @override
   Widget build(BuildContext context) => Navigator(
       pages: currentConfiguration.map((typedSegment) => <... create screen for given typedSegment ...>,
@@ -76,7 +75,7 @@ class RiverpodNavigator {
     //=====> at this point, "ongoingPathProvider state" and  "RiverpodRouterDelegate" are in sync
   }
 
-  /// Enter application navigation logic here (redirection, login, etc.). 
+  /// Enter application navigation logic here (redirection, login flow, etc.). 
   /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or no route guard is required)
   TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
 }
@@ -106,7 +105,8 @@ Note: *for this appNavigationLogic we need the "needsLogin" function that return
 
 This is all essential for the implementation of the login flow.
 With Riverpod, using Flutter Navigator 2.0 is easy.
-See how the Loggin button looks:
+
+See what the application's login button might look like:
 
 ### Login Button
 ```dart

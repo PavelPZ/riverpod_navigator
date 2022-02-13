@@ -25,7 +25,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
     final actPath = currentConfiguration;
     if (actPath.isEmpty) return SizedBox();
 
-    final screenBuilder = (ExampleSegments segment) => segment.map(
+    final screenBuilder = (Segments segment) => segment.map(
           home: (homeSegment) => HomeScreen(homeSegment),
           books: (booksSegment) => BooksScreen(booksSegment),
           book: (bookSegment) => BookScreen(bookSegment),

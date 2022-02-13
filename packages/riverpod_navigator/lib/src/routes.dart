@@ -7,7 +7,7 @@ typedef Deactivating<T extends TypedSegment> = Future<AsyncActionResult> Functio
 class RRouter {
   RRouter(this.groups) {
     final unionKeys = groups.map((e) => e.unionKey).toSet();
-    if (unionKeys.length != groups.length) throw 'Missing RouteGroup(unionKey: \'...\')';
+    if (unionKeys.length != groups.length) throw 'Missing RRouter\'s "@Freezed(unionKey: xxx.jsonNameSpace)" dekorator';
   }
   final List<RRoutes> groups;
 
@@ -40,13 +40,16 @@ class RRoute<T extends TypedSegment> {
     this.deactivating,
   });
   ScreenBuilder<T> screenBuilder;
-  Screen2Page? screen2Page;
+  Screen2Page<T>? screen2Page;
   Creating<T>? creating;
   Merging<T>? merging;
   Deactivating<T>? deactivating;
 
+  @nonVirtual
   Future<AsyncActionResult>? callCreating(TypedSegment newPath) => creating?.call(newPath as T);
+  @nonVirtual
   Future<AsyncActionResult>? callMerging(TypedSegment oldPath, TypedSegment newPath) => merging?.call(oldPath as T, newPath as T);
+  @nonVirtual
   Future<AsyncActionResult>? callDeactivating(TypedSegment oldPath) => deactivating?.call(oldPath as T);
 
   bool isRoute(TypedSegment segment) => segment is T;

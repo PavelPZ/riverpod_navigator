@@ -9,18 +9,18 @@ part 'navigator.freezed.dart';
 part 'navigator.g.dart';
 
 /// TypedPath = Typed url path, which consists of [TypedSegment]s
-typedef TypedPath = List<ExampleSegments>;
+typedef TypedPath = List<Segments>;
 
 /// From the following definition, [freezed package](https://github.com/rrousselGit/freezed) generates three typed segment classes:
 /// HomeSegment, BooksSegment and BookSegment.
 @freezed
-class ExampleSegments with _$ExampleSegments {
-  ExampleSegments._();
-  factory ExampleSegments.home() = HomeSegment;
-  factory ExampleSegments.books() = BooksSegment;
-  factory ExampleSegments.book({required int id}) = BookSegment;
+class Segments with _$Segments {
+  Segments._();
+  factory Segments.home() = HomeSegment;
+  factory Segments.books() = BooksSegment;
+  factory Segments.book({required int id}) = BookSegment;
 
-  factory ExampleSegments.fromJson(Map<String, dynamic> json) => _$ExampleSegmentsFromJson(json);
+  factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
 
   @override
   String toString() => jsonEncode(toJson());
@@ -45,8 +45,7 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 //   RiverpodNavigator
 // ********************************************
 
-/// Helper generic singleton class for manaing navigation state
-/// See [AppNavigator] for
+/// Helper generic singleton class for navigation state management
 class RiverpodNavigator {
   RiverpodNavigator(
     this.ref, {
@@ -55,8 +54,8 @@ class RiverpodNavigator {
   }) : routerDelegate = RiverpodRouterDelegate() {
     routerDelegate.navigator = this;
 
-    // 1. Listen to the riverpod providers. If any change, call _onNavigationStateChanged().
-    // 2. Add RemoveListener's to unlistens
+    // 1. Listen to riverpod providers. If any of them change, call _onNavigationStateChanged ()
+    // 2. Add ref.listen's removeListener's to unlistens
     // 3. Use unlistens in ref.onDispose
     final List<Function> unlistens = [];
     for (final depend in dependsOn) unlistens.add(ref.listen<dynamic>(depend, (previous, next) => _onNavigationStateChanged()));
@@ -64,14 +63,14 @@ class RiverpodNavigator {
     ref.onDispose(() => unlistens.forEach((f) => f()));
   }
 
-  /// Enter application navigation logic here (redirection, login, etc.).
-  /// It can be empty when no redirect or guard is required.
+  /// Enter application navigation logic here (redirection, login flow, etc.).
+  /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or no route guard is required)
   TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
 
   /// Flutter Navigation 2.0 RouterDelegate
   RiverpodRouterDelegate routerDelegate;
 
-  /// Note: [ongoingPathProvider] state may differ from [currentTypedPath] during navigation calculation.
+  /// Note: *[ongoingPathProvider] state may differ from [currentTypedPath] during navigation calculation.*
   TypedPath get currentTypedPath => routerDelegate.currentConfiguration;
 
   /// synchronize [ongoingPathProvider] with [RouterDelegate.currentConfiguration]
@@ -123,7 +122,7 @@ class AppNavigator extends RiverpodNavigator {
         );
 
   /// ... mark the segments that require login: book with odd id
-  bool needsLogin(ExampleSegments segment) => segment is BookSegment && segment.id.isOdd;
+  bool needsLogin(Segments segment) => segment is BookSegment && segment.id.isOdd;
 
   /// ensure redirection
   @override

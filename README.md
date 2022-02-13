@@ -7,12 +7,12 @@
 - **Better separation of concerns: UI x Model** (thanks to [riverpod](https://riverpod.dev/) :+1:):<br>
   Navigation logic can be developed and tested without typing a single flutter widget.
 - **Asynchronous navigation:**<br>
-  Before starting navigation, prepare all necessary asynchronous operations, e.g.
+  Before starting navigation, prepare all necessary asynchronous screen operations, e.g.
   - load data for the new screen
   - save data from the previous screen
 - **Dependence on external providers:**<br>
-  The navigation state may also depend on external providers, e.g. on login status
-- **Possibility to configure many navigation parameters**
+  The navigation state may also depend on external riverpod providers, e.g. on login status
+- **Nested navigation**
 
 ## The mission
 
@@ -25,18 +25,11 @@ Take a look at the following terms related to url path ```home/books/book;id=2``
 - **navigation-stack** of Flutter Navigator 2.0 is a stack of screens, parameterized by typed-segment:
   ```[HomeScreen(HomeSegment())), BooksScreen(BooksSegment()), BookScreen(BookSegment(id:2))]```
 
-The mission of navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
+The mission of the navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
 With the **typed-path** as the source of the truth.
 
 Note: *There is a one-to-one relationship between the given segment and the screen (HomeSegment - HomeScreen, BookSegment - BookScreen).
-In the following text, I sometimes confuse the two terms.*
-
-## Installation of examples
-
-After clonning repository, go to ```examples\doc``` subdirectory and execute:
-
-- ```flutter create .```
-- ```flutter pub get```
+In the following text, I sometimes confuse this two terms.*
 
 ## Simple example
 
@@ -153,6 +146,13 @@ The use of functional_widget is not mandatory*
 - [Nested navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/nested_navigation.md)
 
 ## See [What's under the hood](https://github.com/PavelPZ/riverpod_navigator/blob/main/under_the_hood.md) for riverpod_navigation principle
+
+## Installation of examples
+
+After clonning repository, go to ```examples\doc``` subdirectory and execute:
+
+- ```flutter create .```
+- ```flutter pub get```
 
 ## Comparison with go_router
 

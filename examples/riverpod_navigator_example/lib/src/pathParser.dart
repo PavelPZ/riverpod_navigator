@@ -30,7 +30,7 @@ class PathParser {
     if (path == null || path.isEmpty) return [];
     return [
       for (final s in path.split('/'))
-        if (s.isNotEmpty) ExampleSegments.fromJson(jsonDecode(Uri.decodeFull(s)))
+        if (s.isNotEmpty) Segments.fromJson(jsonDecode(Uri.decodeFull(s)))
     ];
   }
 }

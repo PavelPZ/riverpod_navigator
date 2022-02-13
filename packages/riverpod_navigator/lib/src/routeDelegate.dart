@@ -4,6 +4,13 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
   @override
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+  TypedPath get navigatorStack => currentConfiguration;
+
+  void set navigatorStack(TypedPath path) {
+    currentConfiguration = path;
+    notifyListeners();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (currentConfiguration.isEmpty) {
