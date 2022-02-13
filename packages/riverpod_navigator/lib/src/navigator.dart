@@ -115,8 +115,11 @@ class RiverpodNavigator {
 
     // Wait for async screen actions.
     await wait4AsyncScreenActions(navigationStack, ongoingPath);
-    // actualize flutter navigation stack and ongoingPathProvider
+
+    // checking _defer2NextTick!.runnerActive is not required
     _defer2NextTick!.runnerActive = false;
+
+    // actualize flutter navigation stack and ongoingPathProvider
     _routerDelegate.navigationStack = ongoingNotifier.state = ongoingPath;
   }
 
@@ -152,17 +155,15 @@ class RiverpodNavigator {
     for (var i = 0; i < minLen; i++) {
       final o = oldPath[i];
       final n = newPath[i];
-      final or = router.segment2Route(o);
-      final nr = router.segment2Route(n);
       // nothing to merge
       if (identical(o, n)) continue;
       if (o.runtimeType == n.runtimeType)
-        // old and new has the same route => merging
-        futures.add(Tuple2(or.callMerging(o, n), n));
+        // old and new has the same runtimeType => merging
+        futures.add(Tuple2(router.segment2Route(n).callMerging(o, n), n));
       else {
-        // old and new has different route => deactivanting old, creating new
-        futures.add(Tuple2(or.callDeactivating(o), o));
-        futures.add(Tuple2(nr.callCreating(n), n));
+        // old and new has different runtimeType => deactivanting old, creating new
+        futures.add(Tuple2(router.segment2Route(o).callDeactivating(o), o));
+        futures.add(Tuple2(router.segment2Route(n).callCreating(n), n));
       }
     }
     // deactivating the rest of old segments
@@ -178,6 +179,7 @@ class RiverpodNavigator {
     ];
     if (notEmptyFutures.isEmpty) return;
 
+    // wait for async actions
     final asyncResults = await Future.wait(notEmptyFutures.map((fs) => fs.item1 as Future));
     assert(asyncResults.length == notEmptyFutures.length);
 
@@ -219,7 +221,7 @@ class Defer2NextTick {
   /// called in every state change
   void start() {
     if (_completer != null) {
-      if (runnerActive) throw Exception('State changed during running Defer2NextTick.nextTickRunner');
+      if (runnerActive) _completer!.completeError('State changed during running Defer2NextTick.nextTickRunner');
       return;
     }
     _completer = Completer();
