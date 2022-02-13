@@ -11,19 +11,22 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
   RiverpodNavigator? navigator;
   RiverpodNavigator get _navigator => navigator as RiverpodNavigator;
 
-  // make [notifyListeners] public
-  void doNotifyListener() => notifyListeners();
-
   @override
   TypedPath currentConfiguration = [];
+
+  TypedPath get navigationStack => currentConfiguration;
+
+  void set navigationStack(TypedPath path) {
+    currentConfiguration = path;
+    notifyListeners();
+  }
 
   @override
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    final actPath = currentConfiguration;
-    if (actPath.isEmpty) return SizedBox();
+    if (navigationStack.isEmpty) return SizedBox();
 
     final screenBuilder = (Segments segment) => segment.map(
           home: (homeSegment) => HomeScreen(homeSegment),
@@ -32,7 +35,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
         );
     return Navigator(
         key: navigatorKey,
-        pages: actPath.map((segment) => MaterialPage(key: ValueKey(segment.toString), child: screenBuilder(segment))).toList(),
+        pages: navigationStack.map((segment) => MaterialPage(key: ValueKey(segment.toString), child: screenBuilder(segment))).toList(),
         onPopPage: (route, result) {
           if (!route.didPop(result)) return false;
           // remove last segment from path

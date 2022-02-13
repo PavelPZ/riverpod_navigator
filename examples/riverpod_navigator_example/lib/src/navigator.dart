@@ -35,7 +35,7 @@ final riverpodNavigatorProvider = Provider<AppNavigator>((ref) => AppNavigator(r
 
 /// [ongoingPathProvider] TypedPath provider, source of truth for flutter navigation
 ///
-/// Note: [ongoingPathProvider] may differ from [RouterDelegate.currentPath] during navigation calculation.
+/// Note: [ongoingPathProvider] may differ from [RouterDelegate.navigationStack] during navigation calculation.
 final ongoingPathProvider = StateProvider<TypedPath>((_) => []);
 
 /// the navigation state also depends on the following [userIsLoggedProvider]
@@ -71,7 +71,7 @@ class RiverpodNavigator {
   RiverpodRouterDelegate routerDelegate;
 
   /// Note: *[ongoingPathProvider] state may differ from [currentTypedPath] during navigation calculation.*
-  TypedPath get currentTypedPath => routerDelegate.currentConfiguration;
+  TypedPath get currentTypedPath => routerDelegate.navigationStack;
 
   /// synchronize [ongoingPathProvider] with [RouterDelegate.currentConfiguration]
   void _onNavigationStateChanged() {
@@ -82,9 +82,9 @@ class RiverpodNavigator {
     final newOngoingPath = appNavigationLogic(ongoingPathNotifier.state);
     // actualize a possibly changed ongoingPath
     ongoingPathNotifier.state = newOngoingPath;
-    // the next two lines will cause Flutter Navigator 2.0 to update the navigation stack according to the ongoingPathProvider state
-    routerDelegate.currentConfiguration = newOngoingPath;
-    routerDelegate.doNotifyListener();
+    // Flutter Navigator 2.0 to update the navigation stack according to the ongoingPathProvider state
+    // see: ```void set navigationStack(TypedPath path) { currentConfiguration = path; notifyListeners(); }```
+    routerDelegate.navigationStack = newOngoingPath;
     //=====> at this point, "ongoingPathProvider state" and  "RiverpodRouterDelegate" are in sync
   }
 

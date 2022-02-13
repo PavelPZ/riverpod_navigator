@@ -97,12 +97,12 @@ class AppNavigator extends RiverpodNavigator {
   // ******* actions used on the screens
 
   Future gotoNextBook() {
-    final actualBook = currentPath.last as BookSegment;
+    final actualBook = navigationStack.last as BookSegment;
     return replaceLast(BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
   }
 
   Future gotoNextAuthor() {
-    final actualBook = currentPath.last as AuthorSegment;
+    final actualBook = navigationStack.last as AuthorSegment;
     return replaceLast(AuthorSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
   }
 }

@@ -22,8 +22,8 @@ Redirect when:
     if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
       // loggedUrl: destination path after login
       final loggedUrl = pathParser.typedPath2Path(ongoingPath);
-      // canceledUrl: currentPath (current navigation stack)
-      var canceledUrl = currentPath.isEmpty || currentPath.last is LoginSegment ? '' : pathParser.typedPath2Path(currentPath);
+      // canceledUrl: navigationStack
+      var canceledUrl = navigationStack.isEmpty || navigationStack.last is LoginSegment ? '' : pathParser.typedPath2Path(navigationStack);
       if (loggedUrl == canceledUrl) canceledUrl = ''; // chance to exit login loop
       // redirect to login screen
       return [LoginSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];

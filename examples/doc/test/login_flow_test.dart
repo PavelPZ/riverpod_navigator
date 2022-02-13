@@ -23,7 +23,7 @@ void main() {
       await action();
       print('${DateTime.now().difference(start).inMilliseconds} msec ($expected)');
       await container.pump();
-      expect(navigator.debugCurrentPath2String, expected);
+      expect(navigator.debugNavigationStack2String, expected);
       // print(navigator.debugTypedPath2String());
     }
 

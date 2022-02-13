@@ -71,8 +71,8 @@ class AppNavigator extends RiverpodNavigator {
     if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
       // loggedUrl: destination path after login
       final loggedUrl = pathParser.typedPath2Path(ongoingPath);
-      // canceledUrl: currentPath (current navigation stack)
-      var canceledUrl = currentPath.isEmpty || currentPath.last is LoginSegment ? '' : pathParser.typedPath2Path(currentPath);
+      // canceledUrl: navigationStack
+      var canceledUrl = navigationStack.isEmpty || navigationStack.last is LoginSegment ? '' : pathParser.typedPath2Path(navigationStack);
       if (loggedUrl == canceledUrl) canceledUrl = ''; // chance to exit login loop
       // redirect to login screen
       return [LoginSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
@@ -87,7 +87,7 @@ class AppNavigator extends RiverpodNavigator {
   // ******* actions used on the screens
 
   Future gotoNextBook() {
-    final actualBook = currentPath.last as BookSegment;
+    final actualBook = navigationStack.last as BookSegment;
     return replaceLast(BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
   }
 
@@ -100,7 +100,7 @@ class AppNavigator extends RiverpodNavigator {
 
   Future globalLoginButton() {
     // current screen text-path
-    final actualStringPath = pathParser.typedPath2Path(currentPath);
+    final actualStringPath = pathParser.typedPath2Path(navigationStack);
     // redirect to login screen
     return navigate([LoginSegment(loggedUrl: actualStringPath, canceledUrl: actualStringPath)]);
   }
@@ -109,7 +109,7 @@ class AppNavigator extends RiverpodNavigator {
   Future okOnloginPage() => _loginPageButtons(false);
 
   Future _loginPageButtons(bool cancel) {
-    final loginHomeSegment = currentPath.last as LoginSegment;
+    final loginHomeSegment = navigationStack.last as LoginSegment;
 
     var newPath = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
     if (newPath.isEmpty) newPath = [HomeSegment()];

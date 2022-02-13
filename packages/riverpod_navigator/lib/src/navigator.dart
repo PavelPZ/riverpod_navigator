@@ -19,12 +19,12 @@ class RiverpodNavigator {
   })  : router = RRouter(groups),
         initPath = restorePath == null ? initPath : restorePath.getInitialPath(initPath),
         _routerDelegate = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate() {
-    ref.onDispose(() => restorePath?.onPathChanged(currentPath));
-
     _routerDelegate.navigator = this;
 
+    ref.onDispose(() => restorePath?.onPathChanged(navigationStack));
+
     // _runNavigation only once on the next tick
-    _defer2NextTickLow = Defer2NextTick(runNextTick: _runNavigation);
+    _defer2NextTick = Defer2NextTick(nextTickRunner: _runNavigation);
     this.dependsOn.add(ongoingPathProvider);
     if (dependsOn != null) this.dependsOn.addAll(dependsOn);
     assert(this.dependsOn.every((p) => p is Override));
@@ -33,7 +33,7 @@ class RiverpodNavigator {
     // 2. _defer2NextTick ensures that _runNavigation is called only once the next tick
     // 3. Add RemoveListener's to unlistens
     // 4. Use unlistens in ref.onDispose
-    final unlistens = this.dependsOn.map((depend) => ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick.start())).toList();
+    final unlistens = this.dependsOn.map((depend) => ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick!.start())).toList();
 
     // ignore: avoid_function_literals_in_foreach_calls
     ref.onDispose(() => unlistens.forEach((f) => f()));
@@ -44,15 +44,15 @@ class RiverpodNavigator {
 
   final RRouter router;
 
-  /// current path, corresponding to the current navigation stack
-  TypedPath get currentPath => _routerDelegate.currentConfiguration;
+  /// current navigationStack
+  TypedPath get navigationStack => _routerDelegate.navigationStack;
 
   /// Enter application navigation logic here (redirection, login, etc.).
   /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or route guard is needed)
   TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
 
   /// When changing navigation state: completed after Flutter navigation stack is actual
-  Future<void> get navigationCompleted => _defer2NextTick.future;
+  Future<void> get navigationCompleted => _defer2NextTick!.future;
 
   final NavigatorWidgetBuilder? navigatorWidgetBuilder;
   final SplashBuilder? splashBuilder;
@@ -84,14 +84,14 @@ class RiverpodNavigator {
     return navigationCompleted;
   }
 
-  String get debugCurrentPath2String => pathParser.typedPath2Path(currentPath);
+  String get debugNavigationStack2String => pathParser.typedPath2Path(navigationStack);
   String debugSegmentSubpath(TypedSegment s) => pathParser.typedPath2Path(segmentSubpath(s));
 
   TypedPath segmentSubpath(TypedSegment s) {
     final res = <TypedSegment>[];
-    for (var i = 0; i < currentPath.length; i++) {
-      res.add(currentPath[i]);
-      if (currentPath[i] == s) break;
+    for (var i = 0; i < navigationStack.length; i++) {
+      res.add(navigationStack[i]);
+      if (navigationStack[i] == s) break;
     }
     return res;
   }
@@ -105,27 +105,27 @@ class RiverpodNavigator {
   PathParser get pathParser => _pathParser ?? (_pathParser = pathParserCreator());
   PathParser? _pathParser;
 
-  Defer2NextTick get _defer2NextTick => _defer2NextTickLow as Defer2NextTick;
-  Defer2NextTick? _defer2NextTickLow;
+  Defer2NextTick? _defer2NextTick;
 
-  /// synchronize [ongoingPathProvider] with currentPath [RiverpodRouterDelegate.currentConfiguration]
+  /// synchronize [ongoingPathProvider] with [navigationStack]
   Future<void> _runNavigation() async {
-    var ongoingPath = appNavigationLogic(ref.read(ongoingPathProvider));
+    final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
+    var ongoingPath = appNavigationLogic(ongoingNotifier.state);
     // in ongoingPath, when ongoingPath[i] == currentTypedPath[i], set ongoingPath[i] = currentTypedPath[i]
-    ongoingPath = eq2Identical(currentPath, ongoingPath);
-    if (ongoingPath == currentPath) return;
+    ongoingPath = eq2Identical(navigationStack, ongoingPath);
+    if (ongoingPath == navigationStack) return;
 
     // Wait for async screen actions.
-    await wait4AsyncScreenActions(currentPath, ongoingPath);
-    // actualize flutter navigation stack
-    _routerDelegate.currentConfiguration = ongoingPath;
-    _routerDelegate.notifyListeners();
+    await wait4AsyncScreenActions(navigationStack, ongoingPath);
+    // actualize flutter navigation stack and ongoingPathProvider
+    _defer2NextTick!.runnerActive = false;
+    _routerDelegate.navigationStack = ongoingNotifier.state = ongoingPath;
   }
 
   /// for [Navigator.onPopPage] in [RiverpodRouterDelegate.build]
   @nonVirtual
   bool onPopRoute() {
-    final actPath = currentPath;
+    final actPath = navigationStack;
     if (actPath.length <= 1) return false;
     navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i]]);
     return true;
@@ -147,7 +147,7 @@ class RiverpodNavigator {
   /// Wait for the asynchronous screen actions. The action is waiting in parallel
   ///- rewrite, when other waiting strategies are needed.
   @protected
-  Future<void> wait4AsyncScreenActions(TypedPath oldPath, TypedPath newPath) async {
+  FutureOr<void> wait4AsyncScreenActions(TypedPath oldPath, TypedPath newPath) async {
     final minLen = min(oldPath.length, newPath.length);
     final futures = <Tuple2<Future?, TypedSegment>>[];
     // merge old and new
@@ -190,13 +190,14 @@ class RiverpodNavigator {
   // *** common navigation-agnostic app actions ***
 
   @nonVirtual
-  Future<void> pop() => currentPath.length <= 1 ? Future.value() : navigate([for (var i = 0; i < currentPath.length - 1; i++) currentPath[i]]);
+  Future<void> pop() =>
+      navigationStack.length <= 1 ? Future.value() : navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
 
   @nonVirtual
-  Future<void> push(TypedSegment segment) => navigate([...currentPath, segment]);
+  Future<void> push(TypedSegment segment) => navigate([...navigationStack, segment]);
 
   @nonVirtual
-  Future<void> replaceLast(TypedSegment segment) => navigate([for (var i = 0; i < currentPath.length - 1; i++) currentPath[i], segment]);
+  Future<void> replaceLast(TypedSegment segment) => navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i], segment]);
 }
 
 // ********************************************
@@ -206,31 +207,40 @@ class RiverpodNavigator {
 /// helper class that solves the problem where two providers (on which navigation depends) change in one tick
 ///
 /// eg. if after a successful login:
-///   1. change the login state
-///   2. change the ongoingPath state by redirect to a screen requiring a login
-/// in this case, without the Defer2NextTick class, [RouterDelegate.notifyListeners] is called twice
+///   1. change the login state to true
+///   2. change the ongoingPath state to a screen requiring a login
+/// in this case, without the Defer2NextTick class, [RouterDelegate.navigationStack] is changed twice
 class Defer2NextTick {
-  Defer2NextTick({required this.runNextTick});
+  Defer2NextTick({required this.nextTickRunner});
   // called once in the next tick
-  FutureOr<void> Function() runNextTick;
+  FutureOr<void> Function() nextTickRunner;
 
   Completer? _completer;
+  bool runnerActive = false;
 
   /// called in every state change
   void start() {
-    if (_completer != null) return;
+    if (_completer != null) {
+      if (runnerActive) throw Exception('State changed during running Defer2NextTick.nextTickRunner');
+      return;
+    }
     _completer = Completer();
     scheduleMicrotask(() async {
+      runnerActive = true;
       try {
-        final value = runNextTick();
-        if (value is Future) await value;
-        _completer?.complete();
-      } catch (e, s) {
-        _completer?.completeError(e, s);
+        try {
+          final value = nextTickRunner();
+          if (value is Future) await value;
+          _completer!.complete();
+        } catch (e, s) {
+          _completer!.completeError(e, s);
+        }
+      } finally {
+        runnerActive = false;
+        _completer = null;
       }
-      _completer = null;
     });
   }
 
-  Future<void> get future => _completer != null ? (_completer as Completer).future : Future.value();
+  Future<void> get future => _completer != null ? _completer!.future : Future.value();
 }

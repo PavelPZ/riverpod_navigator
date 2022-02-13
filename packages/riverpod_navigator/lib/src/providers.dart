@@ -15,5 +15,5 @@ final riverpodNavigatorProvider = Provider<RiverpodNavigator>((_) => throw Unimp
 
 /// ongoing TypedPath provider
 ///
-/// [ongoingTypedPath] may differ from [RiverpodNavigatorLow.currentPath] during navigation calculation
+/// [ongoingTypedPath] may differ from [RiverpodNavigatorLow.navigationStack] during navigation calculation
 final ongoingPathProvider = StateProvider<TypedPath>((_) => []);

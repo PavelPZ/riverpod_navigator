@@ -50,7 +50,7 @@ class AppNavigator extends RiverpodNavigator {
     final loginInfo = ref.read(loginInfoProvider.notifier);
 
     final loggedIn = loginInfo.state.isNotEmpty;
-    final loggingIn = currentPath.any((segment) => segment is LoginSegment);
+    final loggingIn = navigationStack.any((segment) => segment is LoginSegment);
     if (!loggedIn && !loggingIn) return [LoginSegment()];
     if (loggedIn && loggingIn) return [HomeSegment()];
     return ongoingPath;

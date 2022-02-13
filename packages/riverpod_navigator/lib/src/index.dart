@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:tuple/tuple.dart';
 
@@ -15,6 +15,10 @@ part 'routes.dart';
 part 'routeDelegate.dart';
 part 'screenWrappers.dart';
 
+// ********************************************
+// Basic types
+// ********************************************
+
 typedef JsonMap = Map<String, dynamic>;
 typedef Json2Segment = TypedSegment Function(JsonMap, String unionKey);
 typedef AsyncActionResult = dynamic;
@@ -24,6 +28,10 @@ typedef ScreenBuilder<T extends TypedSegment> = Widget Function(T);
 typedef SplashBuilder = Widget Function();
 typedef Screen2Page<T extends TypedSegment> = Page Function(T, ScreenBuilder<T>);
 typedef NavigatorDispose = void Function(RiverpodNavigator);
+
+// ********************************************
+// TypedSegment & TypedPath
+// ********************************************
 
 /// Abstract interface for typed variant of path's segment.
 ///
@@ -47,30 +55,28 @@ typedef TypedPath = List<TypedSegment>;
 // RouterDelegate abstraction
 // ********************************************
 
-// RouterDelegate interface for tests and app
+// RouterDelegate interface for both tests and flutter app
 abstract class IRouterDelegate {
-  TypedPath currentConfiguration = [];
-
-  void notifyListeners();
-
-  set navigator(RiverpodNavigator value) => _navigator = value;
-  RiverpodNavigator get navigator => _navigator as RiverpodNavigator;
-  RiverpodNavigator? _navigator;
+  RiverpodNavigator get navigator;
+  void set navigator(RiverpodNavigator value);
+  TypedPath get navigationStack;
+  void set navigationStack(TypedPath value);
 }
 
-// RouterDelegate for tests only
-class RouterDelegate4Dart with IRouterDelegate {
+// RouterDelegate interface for tests
+class RouterDelegate4Dart implements IRouterDelegate {
   @override
-  void notifyListeners() {}
+  late RiverpodNavigator navigator;
+  @override
+  TypedPath navigationStack = [];
 }
-
 // ********************************************
-// RouterDelegate abstraction
+// RestorePath
 // ********************************************
 
 class RestorePath {
   RestorePath();
   TypedPath? path;
-  void onPathChanged(TypedPath currentNavigatorPath) => path = currentNavigatorPath;
+  void onPathChanged(TypedPath navigationStack) => path = navigationStack;
   TypedPath getInitialPath(TypedPath initPath) => path ?? initPath;
 }
