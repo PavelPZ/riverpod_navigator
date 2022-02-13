@@ -28,8 +28,7 @@ Take a look at the following terms related to url path ```home/books/book;id=2``
 The mission of the navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
 With the **typed-path** as the source of the truth.
 
-Note: 
-- *There is a one-to-one relationship between the given segment and the screen (HomeSegment <-> HomeScreen, BookSegment <-> BookScreen, ...).
+Note: *There is a one-to-one relationship between the given segment and the screen (HomeSegment <-> HomeScreen, BookSegment <-> BookScreen, ...).
 In the following text, I sometimes confuse this two terms.*
 
 ## Simple example
@@ -105,6 +104,7 @@ class App extends ConsumerWidget {
 void main() => runApp(
       ProviderScope(
         overrides: [
+          // initialize riverpodNavigatorProvider state
           riverpodNavigatorProvider.overrideWithProvider(Provider(AppNavigator.new)),
         ],
         child: const App(),
@@ -119,7 +119,7 @@ Creating screen widgets is probably an understandable part of the example.
 Only the navigation to the new screen is interesting:
 
 ```dart
-//  create navigation stack [HomeScreen(HomeSegment()), PageScreen(PageSegment(title: 'Page title'))]
+//  create navigation stack [HomeScreen(HomeSegment()), PageScreen(PageSegment(title: 'Page'))]
 ref.read(riverpodNavigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]);
 ```
 

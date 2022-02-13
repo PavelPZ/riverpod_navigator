@@ -18,12 +18,10 @@ abstract class TypedSegment {}
 /// **typed-path**
 typedef TypedPath = List<TypedSegment>;
 
-/// ref.read(ongoingPathProvider.notifier).state = [HomeSegment(), PageSegment()] 
-/// causes a new navigation stack to be calculated
+/// assigning eg. ref.read(ongoingPathProvider.notifier).state = [HomeSegment(), PageSegment()] causes a new navigation stack to be calculated
 final ongoingPathProvider = StateProvider<TypedPath>((_) => []);
 
-/// ref.read(ongoingPathProvider.notifier).state==false causes a PageSegment to be checked in the navigation stack. 
-/// If so, navigate to [HomeSegment] (ref.read (ongoingPathProvider.notifier) .state = [HomeSegment ()] is performed..
+/// assigning eg. ref.read(ongoingPathProvider.notifier).state==false causes a new navigation stack to be calculated
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
 ...
 
@@ -47,13 +45,14 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath>...
   }
 
   ...
-  /// build screens from the currentConfiguration 
+  /// build screens from the navigationStack 
   @override
   Widget build(BuildContext context) => Navigator(
       pages: navigationStack.map((typedSegment) => <... create screen for given typedSegment ...>,
       ...
   )
 
+  // RouterDelegate requires currentConfiguration to process the Flutter for Web URL correctly
   @override
   TypedPath currentConfiguration = [];
 
@@ -63,7 +62,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath>...
 ## 3. And in the middle is RiverpodNavigator
 
 RiverpodNavigator reacts to changes of the input states (ongoingPathProvider, userIsLoggedProvider in this case) 
-and updates the output state (RiverpodRouterDelegate.navigation) accordingly.
+and updates the output state (RiverpodRouterDelegate.navigationStack) accordingly.
 
 How is it done?
 
@@ -98,7 +97,7 @@ class RiverpodNavigator {
 }
 ```
 
-## 4. Example of appNavigationLogic for Login flow
+## 4. Example of RiverpodNavigator.appNavigationLogic for Login flow
 
 ```dart
 @override 
