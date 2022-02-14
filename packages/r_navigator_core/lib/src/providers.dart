@@ -6,7 +6,7 @@ final riverpodNavigatorProvider = Provider<RNavigatorCore>((_) => throw Unimplem
 /// ongoing TypedPath provider
 ///
 /// [ongoingTypedPath] may differ from [navigationStackProvider] during navigation calculation
-final ongoingPathProvider = StateProvider<TypedPath>((_) => []);
+final ongoingPathProvider = StateProvider<TypedPath>((_) => throw UnimplementedError());
 
 /// navigationStackProvider
 ///

@@ -25,42 +25,54 @@ class Defer2NextTick {
   // called once in the next tick
   late RNavigatorCore navigator;
 
-  Completer? _completer;
+  CancelableCompleter<TypedPath>? _completer;
+  Completer? _futureCompleter;
   bool runnerActive = false;
 
   /// called in every state change
-  void start() {
+  void providerChanged() {
     if (_completer != null) {
-      // state changed during navigator.computeNavigation computing
-      if (runnerActive) {
-        _completer!.completeError(NavigationComputingException());
-        start();
-      }
+      // state changed during navigator.appNavigationLogicCore computing
+      if (runnerActive) _completer!.operation.cancel();
       return;
     }
-    _completer = Completer();
-    scheduleMicrotask(() async {
+    _completer = CancelableCompleter();
+    _futureCompleter = Completer();
+    scheduleMicrotask(() {
       runnerActive = true;
+      final ongoingNotifier = navigator.ref.read(ongoingPathProvider.notifier);
       try {
-        try {
-          final ongoingNotifier = navigator.ref.read(ongoingPathProvider.notifier);
-          final ongoingPath = await navigator.appNavigationLogicCore(ongoingNotifier.state);
-
-          await navigator.computeNavigation();
-          _completer!.complete();
-        } on NavigationComputingException {
-          // state changed during navigator.computeNavigation computing
-          _completer = null;
-          runnerActive = false;
-        } catch (e, s) {
-          _completer!.completeError(e, s);
-        }
-      } finally {
-        runnerActive = false;
-        _completer = null;
+        final futureOr = navigator.appNavigationLogicCore(ongoingNotifier.state, _completer!);
+        if (futureOr is Future)
+          futureOr.then((value) => _completer!.complete(value)).onError(_futureCompleter!.completeError);
+        else
+          _completer!.complete(futureOr);
+      } catch (e, s) {
+        if (!_completer!.isCanceled) _completer!.completeError(e, s);
       }
+      _completer!.operation.then(
+        (finalPath) {
+          ongoingNotifier.state = navigator.ref.read(navigationStackProvider.notifier).state = finalPath;
+          _futureCompleter!.complete();
+          _futureCompleter = null;
+          runnerActive = false;
+          _completer = null;
+        },
+        onError: (e, s) {
+          runnerActive = false;
+          _completer = null;
+          _futureCompleter!.completeError(e, s);
+          _futureCompleter = null;
+        },
+        onCancel: () {
+          runnerActive = false;
+          _completer = null;
+          // rerun appNavigationLogicCore for fresh (last) input providers
+          providerChanged();
+        },
+      );
     });
   }
 
-  Future<void> get future => _completer != null ? _completer!.future : Future.value();
+  Future<void> get future => _futureCompleter != null ? _futureCompleter!.future.whenComplete(() => null) : Future.value();
 }

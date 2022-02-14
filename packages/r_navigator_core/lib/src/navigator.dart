@@ -7,11 +7,10 @@ part of 'index.dart';
 /// Helper singleton class for navigating to [TypedPath]
 class RNavigatorCore {
   RNavigatorCore(
-    this.ref,
-    TypedPath initPath, {
+    this.ref, {
     List<AlwaysAliveProviderListenable>? dependsOn,
     this.restorePath,
-  }) : initPath = restorePath == null ? initPath : restorePath.getInitialPath(initPath) {
+  }) {
     ref.onDispose(() => restorePath?.onPathChanged(ref.read(navigationStackProvider)));
 
     // _runNavigation only once on the next tick
@@ -25,14 +24,14 @@ class RNavigatorCore {
     // 2. _defer2NextTick ensures that _runNavigation is called only once the next tick
     // 3. Add RemoveListener's to unlistens
     // 4. Use unlistens in ref.onDispose
-    final unlistens = this.dependsOn.map((depend) => ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick!.start())).toList();
+    final unlistens = this.dependsOn.map((depend) => ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick!.providerChanged())).toList();
 
     // ignore: avoid_function_literals_in_foreach_calls
     ref.onDispose(() => unlistens.forEach((f) => f()));
-  }
 
-  /// initial screen
-  final TypedPath initPath;
+    // load init path
+    _defer2NextTick!.providerChanged();
+  }
 
   /// When changing navigation state: completed after Flutter navigation stack is actual
   Future<void> get navigationCompleted => _defer2NextTick!.future;
@@ -43,6 +42,7 @@ class RNavigatorCore {
 
   @protected
   Ref ref;
+  Defer2NextTick? _defer2NextTick;
 
   /// Main [RNavigatorCore] method. Provides navigation to the new [TypedPath].
   Future<void> navigate(TypedPath newPath) async {
@@ -50,31 +50,34 @@ class RNavigatorCore {
     return navigationCompleted;
   }
 
-  Defer2NextTick? _defer2NextTick;
-
   /// Enter application navigation logic here (redirection, login, etc.).
   /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or route guard is needed)
-  CancelableOperation<TypedPath> appNavigationLogicCore(TypedPath ongoingPath) => ongoingPath;
+  FutureOr<TypedPath> appNavigationLogicCore(TypedPath ongoingPath, bool isCanceled()) => ongoingPath;
 
-  /// synchronize [ongoingPathProvider] with [navigationStackProvider]
-  Future<void> computeNavigation() async {
-    final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
-    final ongoingPath = await appNavigationLogicCore(ongoingNotifier.state);
+  static List<Override> initProviders(TypedPath initPath, RNavigatorCore navigator(Ref ref)) => [
+        ongoingPathProvider.overrideWithValue(StateController<TypedPath>(initPath)),
+        riverpodNavigatorProvider.overrideWithProvider(Provider(navigator)),
+      ];
 
-    // checking _defer2NextTick!.runnerActive is not required
-    _defer2NextTick!.runnerActive = false;
+  // /// synchronize [ongoingPathProvider] with [navigationStackProvider]
+  // Future<void> computeNavigation() async {
+  //   final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
+  //   final ongoingPath = await appNavigationLogicCore(ongoingNotifier.state);
 
-    // actualize navigationStackProvider and ongoingPathProvider
-    ongoingNotifier.state = ref.read(navigationStackProvider.notifier).state = ongoingNotifier.state = ongoingPath;
-  }
+  //   // checking _defer2NextTick!.runnerActive is not required
+  //   _defer2NextTick!.runnerActive = false;
 
-  @nonVirtual
-  Future<void> pop() =>
-      navigationStack.length <= 1 ? Future.value() : navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
+  //   // actualize navigationStackProvider and ongoingPathProvider
+  //   ongoingNotifier.state = ref.read(navigationStackProvider.notifier).state = ongoingNotifier.state = ongoingPath;
+  // }
 
-  @nonVirtual
-  Future<void> push(TypedSegment segment) => navigate([...navigationStack, segment]);
+  // @nonVirtual
+  // Future<void> pop() =>
+  //     navigationStack.length <= 1 ? Future.value() : navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
 
-  @nonVirtual
-  Future<void> replaceLast(TypedSegment segment) => navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i], segment]);
+  // @nonVirtual
+  // Future<void> push(TypedSegment segment) => navigate([...navigationStack, segment]);
+
+  // @nonVirtual
+  // Future<void> replaceLast(TypedSegment segment) => navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i], segment]);
 }
