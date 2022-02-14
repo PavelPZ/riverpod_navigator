@@ -52,7 +52,7 @@ class RNavigatorCore {
 
   /// Enter application navigation logic here (redirection, login, etc.).
   /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or route guard is needed)
-  FutureOr<TypedPath> appNavigationLogicCore(TypedPath ongoingPath, bool isCanceled()) => ongoingPath;
+  FutureOr<TypedPath> appNavigationLogicCore(TypedPath ongoingPath) => ongoingPath;
 
   static List<Override> initProviders(TypedPath initPath, RNavigatorCore navigator(Ref ref)) => [
         ongoingPathProvider.overrideWithValue(StateController<TypedPath>(initPath)),
