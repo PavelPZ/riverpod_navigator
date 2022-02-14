@@ -16,6 +16,9 @@
 		},
 		{
 			"path": "examples\\go_router"
+		},
+		{
+			"path": "packages\\r_navigator_core"
 		}
 	],
 	"settings": {
