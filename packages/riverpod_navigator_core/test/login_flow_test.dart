@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 import 'model.dart';
 
 class TestNavigator extends RNavigatorCore {
-  TestNavigator(Ref ref) : super(ref, dependsOn: [userIsLoggedProvider]);
+  TestNavigator(Ref ref) : super(ref);
 
   static List<Override> providerOverrides(TestNavigator navigator(Ref ref)) => [
         userIsLoggedProvider.overrideWithValue(StateController<bool>(false)),
@@ -34,7 +34,9 @@ class TestNavigator extends RNavigatorCore {
 
 void main() {
   test('test login flow', () async {
-    final container = ProviderContainer(overrides: TestNavigator.providerOverrides(TestNavigator.new));
+    final container = ProviderContainer(
+      overrides: RNavigatorCore.providerOverrides([HomeSegment()], TestNavigator.new),
+    );
     final navigator = container.read(riverpodNavigatorProvider);
 
     //*****************************

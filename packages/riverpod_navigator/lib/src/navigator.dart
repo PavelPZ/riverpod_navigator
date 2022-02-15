@@ -9,22 +9,20 @@ class RNavigator extends RNavigatorCore {
   RNavigator(
     Ref ref,
     List<RRoutes> groups, {
-    List<AlwaysAliveProviderListenable>? dependsOn,
+    // List<AlwaysAliveProviderListenable>? dependsOn,
     this.navigatorWidgetBuilder,
     this.splashBuilder,
     bool isDebugRouteDelegate = false,
     // RestorePath? restorePath,
   })  : router = RRouter(groups),
         _routerDelegate = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate(),
-        super(
-          ref,
-          dependsOn: dependsOn,
-          // restorePath: restorePath,
-        ) {
+        super(ref) {
     _routerDelegate.navigator = this;
 
     final callInDispose = ref.listen(navigationStackProvider, (previous, next) => _routerDelegate.notifyListeners());
     ref.onDispose(callInDispose);
+
+    RNavigatorCore.kIsWeb = kIsWeb;
   }
 
   /// Enter application navigation logic here (redirection, login, etc.).
@@ -49,7 +47,7 @@ class RNavigator extends RNavigatorCore {
       _routeInformationParser ?? (_routeInformationParser = RouteInformationParserImpl(pathParser));
   RouteInformationParserImpl? _routeInformationParser;
 
-  /// Main [RNavigator] method. Provides navigation to the new [TypedPath].
+  /// Main [RNavigator] method. Provides navigation to newPath.
   Future<void> navigate(TypedPath newPath) async {
     ref.read(ongoingPathProvider.notifier).state = newPath;
     return navigationCompleted;

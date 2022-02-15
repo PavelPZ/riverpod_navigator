@@ -6,29 +6,13 @@ part of 'index.dart';
 
 /// Helper singleton class for navigating to [TypedPath]
 class RNavigatorCore {
-  RNavigatorCore(
-    this.ref, {
-    List<AlwaysAliveProviderListenable>? dependsOn,
-    // this.restorePath,
-  }) {
+  RNavigatorCore(this.ref) {
     // see Defer2NextTick doc
     _defer2NextTick = Defer2NextTick()..navigator = this;
 
-    if (!this.dependsOn.contains(ongoingPathProvider)) this.dependsOn.add(ongoingPathProvider);
-    if (dependsOn != null) this.dependsOn.addAll(dependsOn);
-    assert(this.dependsOn.every((p) => p is Override));
-
-    // 1. Listen to the riverpod providers. If any change, call _defer2NextTick.start().
-    // 2. _defer2NextTick ensures that _runNavigation is called only once the next tick
-    // 3. Add RemoveListener's to unlistens
-    // 4. Use unlistens in ref.onDispose
-    final unlistens = this.dependsOn.map((depend) => ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick!.providerChanged())).toList();
-
     ref.onDispose(() {
-      // remember last state for restorePath
-      restorePath?.saveLastKnownStack(ref.read(navigationStackProvider));
       // ignore: avoid_function_literals_in_foreach_calls
-      unlistens.forEach((f) => f());
+      _unlistens.forEach((f) => f());
       //ref.onDispose(() => unlistens.forEach((f) => f()));
     });
 
@@ -46,10 +30,26 @@ class RNavigatorCore {
   TypedPath getNavigationStack() => ref.read(navigationStackProvider);
   TypedPath getOngoingPath() => ref.read(ongoingPathProvider);
 
-  final List<AlwaysAliveProviderListenable> dependsOn = [];
+  late TypedPath initPath;
 
-  /// for nested navigator: e.g. keep state of nested navigator in flutter tabs widget
-  RestorePath? restorePath;
+  void set dependsOn(List<AlwaysAliveProviderListenable> value) {
+    _dependsOn = [...value, if (!_dependsOn.contains(ongoingPathProvider)) ongoingPathProvider];
+    assert(_dependsOn.every((p) => p is Override));
+
+    // 1. Listen to the riverpod providers. If any change, call _defer2NextTick.start().
+    // 2. _defer2NextTick ensures that _runNavigation is called only once the next tick
+    // 3. Add RemoveListener's to unlistens
+    // 4. Use unlistens in ref.onDispose
+    _unlistens = _dependsOn.map((depend) => ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick!.providerChanged())).toList();
+  }
+
+  List<AlwaysAliveProviderListenable> _dependsOn = [];
+  List<Function> _unlistens = [];
+
+  /// for nested navigator: keep state of nested navigator in flutter tabs widget
+  RestorePath? _restorePath;
+
+  static bool kIsWeb = false;
 
   @protected
   Ref ref;
@@ -66,7 +66,8 @@ class RNavigatorCore {
         ongoingPathProvider.overrideWithValue(StateController<TypedPath>(restorePath == null ? initPath : restorePath.getInitialPath(initPath))),
         navigationStackProvider,
         riverpodNavigatorProvider.overrideWithProvider(Provider((ref) => navigator(ref)
-          ..restorePath = restorePath
-          ..dependsOn.addAll(dependsOn))),
+          .._restorePath = restorePath
+          ..initPath = initPath
+          ..dependsOn = dependsOn)),
       ];
 }

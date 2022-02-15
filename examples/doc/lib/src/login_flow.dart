@@ -12,10 +12,7 @@ part 'login_flow.freezed.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: [
-          userIsLoggedProvider,
-          ...RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
-        ],
+        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [userIsLoggedProvider]),
         child: const App(),
       ),
     );
@@ -60,7 +57,6 @@ class AppNavigator extends RNavigator {
               RRoute<LoginSegment>(LoginScreen.new),
             ])
           ],
-          dependsOn: [userIsLoggedProvider],
         );
 
   /// Quards and redirects for login flow

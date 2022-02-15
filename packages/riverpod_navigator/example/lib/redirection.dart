@@ -12,7 +12,7 @@ part 'redirection.g.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
+        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [loginInfoProvider]),
         child: const App(),
       ),
     );
@@ -40,16 +40,14 @@ class AppNavigator extends RNavigator {
               RRoute<PersonSegment>(PersonScreen.new),
             ])
           ],
-          dependsOn: [loginInfoProvider],
         );
 
   @override
   TypedPath appNavigationLogic(TypedPath ongoingPath, {CToken? cToken}) {
     final loginInfo = ref.read(loginInfoProvider.notifier);
-    final navigationStack = getNavigationStack();
 
     final loggedIn = loginInfo.state.isNotEmpty;
-    final loggingIn = navigationStack.any((segment) => segment is LoginSegment);
+    final loggingIn = ongoingPath.any((segment) => segment is LoginSegment);
     if (!loggedIn && !loggingIn) return [LoginSegment()];
     if (loggedIn && loggingIn) return [HomeSegment()];
     return ongoingPath;

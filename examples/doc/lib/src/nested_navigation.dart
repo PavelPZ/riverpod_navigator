@@ -44,7 +44,7 @@ class Segments with _$Segments, TypedSegment {
 
 class AppNavigator extends RNavigator {
   /// Constructor for book nested navigator.
-  AppNavigator.forBook(Ref ref, RestorePath restorePath)
+  AppNavigator.forBook(Ref ref)
       : super(
           ref,
           [
@@ -52,10 +52,6 @@ class AppNavigator extends RNavigator {
               RRoute<BookSegment>(BookScreen.new),
             ])
           ],
-
-          /// The RestorePath class preserves the last state of the navigator.
-          /// Used during the next navigator initialization.
-          restorePath: restorePath,
         );
 
   // ignore: sort_unnamed_constructors_first
@@ -73,7 +69,7 @@ class AppNavigator extends RNavigator {
         );
 
   /// constructor for author nested navigator
-  AppNavigator.forAuthor(Ref ref, RestorePath restorePath)
+  AppNavigator.forAuthor(Ref ref)
       : super(
           ref,
           [
@@ -81,7 +77,6 @@ class AppNavigator extends RNavigator {
               RRoute<AuthorSegment>(AuthorScreen.new),
             ])
           ],
-          restorePath: restorePath,
         );
 
   // ******* actions used on the screens
@@ -131,7 +126,6 @@ Widget bookScreen(WidgetRef ref, BookSegment book) => PageHelper<AppNavigator>(
         ElevatedButton(
           onPressed: navigator.gotoNextBook,
           child: const Text('Go to next book'),
-          //const Text('Go to next book'),
         ),
       ],
     );
@@ -169,22 +163,13 @@ Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment
       body: TabBarView(
         children: [
           ProviderScope(
-            overrides: RNavigatorCore.providerOverrides([BookSegment(id: 2)], (ref) => AppNavigator.forBook(ref, restoreBook)),
-
-            /// initialize the navigator using restoreBook
-            //   riverpodNavigatorProvider.overrideWithProvider(Provider((ref) => AppNavigator.forBook(ref, restoreBook))),
-
-            //   /// pass all navigator dependsOn to the nested ProviderScope
-            //   ...ref.navigator.dependsOn.map((e) => e as Override).toList(),
-            // ],
+            // The RestorePath class preserves the last state of the navigator.
+            // Used during the next navigator initialization.
+            overrides: RNavigatorCore.providerOverrides([BookSegment(id: 2)], AppNavigator.forBook, restorePath: restoreBook),
             child: BooksTab(),
           ),
           ProviderScope(
-            overrides: RNavigatorCore.providerOverrides([AuthorSegment(id: 2)], (ref) => AppNavigator.forAuthor(ref, restoreAuthor)),
-            // [
-            //   riverpodNavigatorProvider.overrideWithProvider(Provider((ref) => AppNavigator.forAuthor(ref, restoreAuthor))),
-            //   ...ref.navigator.dependsOn.map((e) => e as Override).toList(),
-            // ],
+            overrides: RNavigatorCore.providerOverrides([AuthorSegment(id: 2)], AppNavigator.forAuthor, restorePath: restoreAuthor),
             child: AuthorTab(),
           ),
         ],

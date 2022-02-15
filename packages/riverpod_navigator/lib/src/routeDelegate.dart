@@ -32,7 +32,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath>
 
   @override
   Future<void> setNewRoutePath(TypedPath configuration) {
-    if (configuration.isEmpty) configuration = navigator.getOngoingPath();
+    if (configuration.isEmpty) configuration = navigator.initPath;
     return navigator.navigate(configuration);
     // return SynchronousFuture(null);
   }

@@ -7,15 +7,10 @@ import 'package:test/test.dart';
 
 import 'model.dart';
 
-final loginProvider = StateProvider<bool>((_) => throw UnimplementedError());
+final loginProvider = StateProvider<bool>((_) => false);
 
 class TestNavigator extends RNavigatorCore {
-  TestNavigator(Ref ref, {this.delayMsec, this.isError = false}) : super(ref, dependsOn: [loginProvider]);
-
-  static List<Override> providerOverrides(TestNavigator navigator(Ref ref)) => [
-        loginProvider.overrideWithValue(StateController<bool>(false)),
-        ...RNavigatorCore.providerOverrides([HomeSegment()], navigator),
-      ];
+  TestNavigator(Ref ref, {this.delayMsec, this.isError = false}) : super(ref);
 
   final int? delayMsec;
   final bool isError;
@@ -42,7 +37,11 @@ class TestNavigator extends RNavigatorCore {
 
 void main() {
   test('sync', () async {
-    final container = ProviderContainer(overrides: TestNavigator.providerOverrides((ref) => TestNavigator(ref)));
+    final container = ProviderContainer(
+        overrides: RNavigatorCore.providerOverrides(
+      [HomeSegment()],
+      TestNavigator.new,
+    ));
     final navigator = container.read(riverpodNavigatorProvider);
 
     await container.pump();
@@ -59,7 +58,11 @@ void main() {
   });
 
   test('sync error', () async {
-    final container = ProviderContainer(overrides: TestNavigator.providerOverrides((ref) => TestNavigator(ref, isError: true)));
+    final container = ProviderContainer(
+        overrides: RNavigatorCore.providerOverrides(
+      [HomeSegment()],
+      (ref) => TestNavigator(ref, isError: true),
+    ));
     final navigator = container.read(riverpodNavigatorProvider);
 
     await container.pump();
@@ -76,7 +79,11 @@ void main() {
   });
 
   test('async', () async {
-    final container = ProviderContainer(overrides: TestNavigator.providerOverrides((ref) => TestNavigator(ref, delayMsec: 1000)));
+    final container = ProviderContainer(
+        overrides: RNavigatorCore.providerOverrides(
+      [HomeSegment()],
+      (ref) => TestNavigator(ref, delayMsec: 1000),
+    ));
     final navigator = container.read(riverpodNavigatorProvider);
 
     await container.pump();
@@ -93,7 +100,12 @@ void main() {
   });
 
   test('async, enother event', () async {
-    final container = ProviderContainer(overrides: TestNavigator.providerOverrides((ref) => TestNavigator(ref, delayMsec: 1000)));
+    final container = ProviderContainer(
+        overrides: RNavigatorCore.providerOverrides(
+      [HomeSegment()],
+      (ref) => TestNavigator(ref, delayMsec: 1000),
+      dependsOn: [loginProvider],
+    ));
     final navigator = container.read(riverpodNavigatorProvider);
 
     await container.pump();
@@ -120,7 +132,11 @@ void main() {
   });
 
   test('async error', () async {
-    final container = ProviderContainer(overrides: TestNavigator.providerOverrides((ref) => TestNavigator(ref, delayMsec: 1000, isError: true)));
+    final container = ProviderContainer(
+        overrides: RNavigatorCore.providerOverrides(
+      [HomeSegment()],
+      (ref) => TestNavigator(ref, delayMsec: 1000, isError: true),
+    ));
     final navigator = container.read(riverpodNavigatorProvider);
 
     await container.pump();
