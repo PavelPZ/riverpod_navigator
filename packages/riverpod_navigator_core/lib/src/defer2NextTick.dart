@@ -69,9 +69,7 @@ class Defer2NextTick {
           unawaited(futureOr.then((value) => compl.complete(value), onError: compl.completeError));
           // wait for value, error and CANCEL (futureOr cannot wait for cancel)
           final res = await compl.operation.valueOrCancellation(canceledPath);
-          // res==null for no redirection from appNavigationLogicCore
-          // assert(res != null);
-          if (res == null || res == canceledPath) {
+          if (res == canceledPath) {
             // canceled => no navigationStack change
             _cToken = null;
             _appLogicCompleter = null;
@@ -82,6 +80,16 @@ class Defer2NextTick {
           newPath = futureOr;
 
         _resultCompleter!.complete(newPath);
+
+        // res==null for path does not change
+        if (newPath == null) {
+          _cToken = null;
+          _appLogicCompleter = null;
+          // one navigation roundtrip finished => set null
+          _resultCompleter = null;
+          return;
+        }
+
         // synchronize ongoingPath with navigationStack
         ignoreNextStateChange = true;
         try {

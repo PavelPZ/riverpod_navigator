@@ -57,6 +57,7 @@ class RNavigatorCore {
 
   static List<Override> providerOverrides(TypedPath initPath, RNavigatorCore navigator(Ref ref), {RestorePath? restorePath}) => [
         ongoingPathProvider.overrideWithValue(StateController<TypedPath>(restorePath == null ? initPath : restorePath.getInitialPath(initPath))),
+        navigationStackProvider,
         riverpodNavigatorProvider.overrideWithProvider(Provider(navigator)),
       ];
 }
