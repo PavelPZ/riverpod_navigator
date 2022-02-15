@@ -5,10 +5,6 @@
 			"path": "."
 		},
 		{
-			"name": "riverpod_navigator",
-			"path": "packages\\riverpod_navigator"
-		},
-		{
 			"path": "examples\\doc"
 		},
 		{
@@ -18,7 +14,12 @@
 			"path": "examples\\go_router"
 		},
 		{
-			"path": "packages\\r_navigator_core"
+			"name": "riverpod_navigator",
+			"path": "packages\\riverpod_navigator"
+		},
+		{
+			"name": "riverpod_navigator_core",
+			"path": "packages\\riverpod_navigator_core"
 		}
 	],
 	"settings": {

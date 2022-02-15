@@ -27,6 +27,7 @@ class Defer2NextTick {
 
   // cancelable appNavigationLogicCore return value
   CancelableCompleter<TypedPath>? _appLogicCompleter;
+  CToken? _cToken;
   // exist till scheduleMicrotask finish without cancel (exists for one navigation roundtrip)
   Completer? _resultCompleter;
   // (last _resultCompleter).future. Needed because _resultCompleter is set to null at the end of navigation roundtrip
@@ -34,12 +35,19 @@ class Defer2NextTick {
   // only single enter to scheduleMicrotask
   bool waitForMicrotaskEnter = false;
 
+  bool ignoreNextStateChange = false;
+
   /// called in every state change
   void providerChanged() {
+    if (ignoreNextStateChange) return;
     // state changed during navigator.appNavigationLogicCore computing => cancel its CancelableCompleter
     if (_appLogicCompleter != null) {
+      assert(_cToken != null);
+      _cToken!.isCanceled = true;
       _appLogicCompleter!.operation.cancel();
+
       _appLogicCompleter = null;
+      _cToken = null;
     }
     if (waitForMicrotaskEnter) return;
 
@@ -53,7 +61,7 @@ class Defer2NextTick {
       final ongoingNotifier = navigator.ref.read(ongoingPathProvider.notifier);
       TypedPath newPath;
       try {
-        final futureOr = navigator.appNavigationLogicCore(ongoingNotifier.state);
+        final futureOr = navigator.appNavigationLogicCore(ongoingNotifier.state, cToken: _cToken = CToken());
 
         if (futureOr is Future<TypedPath>) {
           final compl = _appLogicCompleter = CancelableCompleter<TypedPath>();
@@ -64,6 +72,7 @@ class Defer2NextTick {
           assert(res != null);
           if (res == canceledPath) {
             // canceled => no navigationStack change
+            _cToken = null;
             _appLogicCompleter = null;
             return;
           }
@@ -72,11 +81,18 @@ class Defer2NextTick {
           newPath = futureOr;
 
         _resultCompleter!.complete(newPath);
-        ongoingNotifier.state = navigator.ref.read(navigationStackProvider.notifier).state = newPath;
+        // synchronize ongoingPath with navigationStack
+        ignoreNextStateChange = true;
+        try {
+          ongoingNotifier.state = navigator.ref.read(navigationStackProvider.notifier).state = newPath;
+        } finally {
+          ignoreNextStateChange = false;
+        }
       } catch (e, s) {
         // or sync exception or appNavigationLogicCore future error
         _resultCompleter!.completeError(e, s);
       }
+      _cToken = null;
       _appLogicCompleter = null;
       // one navigation roundtrip finished => set null
       _resultCompleter = null;
@@ -86,6 +102,6 @@ class Defer2NextTick {
   Future<void> get future => _resultFuture ?? Future.value();
 }
 
-class CanceledSegment implements TypedSegment {}
+class CanceledSegment with TypedSegment {}
 
 final TypedPath canceledPath = [CanceledSegment()];

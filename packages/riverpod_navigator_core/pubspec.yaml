@@ -1,4 +1,4 @@
-name: r_navigator_core
+name: riverpod_navigator_core
 description: 
 version: 0.1.0
 homepage: https://github.com/PavelPZ/riverpod_navigator
@@ -10,6 +10,7 @@ environment:
 
 dependencies:
   async:
+  json_annotation: ^4.4.0
   meta: ^1.7.0
   riverpod: ^1.0.0
   tuple: ^2.0.0

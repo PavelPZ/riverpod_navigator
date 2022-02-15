@@ -5,8 +5,8 @@ part of 'index.dart';
 // ********************************************
 
 /// Helper singleton class for navigating to [TypedPath]
-class RiverpodNavigator {
-  RiverpodNavigator(
+class RNavigator {
+  RNavigator(
     this.ref,
     TypedPath initPath,
     List<RRoutes> groups, {
@@ -76,7 +76,7 @@ class RiverpodNavigator {
   @protected
   Ref ref;
 
-  /// Main [RiverpodNavigator] method. Provides navigation to the new [TypedPath].
+  /// Main [RNavigator] method. Provides navigation to the new [TypedPath].
   Future<void> navigate(TypedPath newPath) async {
     ref.read(ongoingPathProvider.notifier).state = newPath;
     return navigationCompleted;

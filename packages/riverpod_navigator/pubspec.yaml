@@ -3,7 +3,7 @@ description: Simple but powerfull Flutter navigation with riverpod, freezed and 
 version: 0.18.0
 homepage: https://github.com/PavelPZ/riverpod_navigator
 repository: https://github.com/PavelPZ/riverpod_navigator
-# publish_to: 'none'
+publish_to: 'none'
 
 environment:
   sdk: ">=2.15.0 <3.0.0"
@@ -17,6 +17,8 @@ dependencies:
   json_annotation: ^4.4.0
   meta: ^1.7.0
   riverpod: ^1.0.0
+  riverpod_navigator_core:
+    path: ../riverpod_navigator_core
   tuple: ^2.0.0
 
 dev_dependencies: 
