@@ -27,9 +27,7 @@ class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          // which screen to run when the application starts
           [
-            // JSON serialization of HomeSegment and PageSegment
             RRoutes<SegmentGrp>(SegmentGrp.fromJson, [
               // build a screen from segment
               RRoute<HomeSegment>(HomeScreen.new),
@@ -67,7 +65,7 @@ class HomeScreen extends ConsumerWidget {
             children: [
               ElevatedButton(
                 // following navigation create navigation stack "HomeScreen(HomeSegment()) => PageScreen(PageSegment(title: 'Page title'))".
-                onPressed: () => ref.navigator.navigate([HomeSegment(), PageSegment(title: 'Page title')]),
+                onPressed: () => ref.navigator.navigate([HomeSegment(), PageSegment(title: 'Page')]),
                 child: const Text('Go to page'),
               ),
             ],

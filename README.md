@@ -49,7 +49,7 @@ class SegmentGrp with _$SegmentGrp, TypedSegment {
   factory SegmentGrp.home() = HomeSegment;
   factory SegmentGrp.page({required String title}) = PageSegment;
 
-  factory SegmentGrp.fromJson(Map<String, dynamic> json) => _$SimpleSegmentFromJson(json);
+  factory SegmentGrp.fromJson(Map<String, dynamic> json) => _$SegmentGrpFromJson(json);
 }
 ```
 
@@ -62,10 +62,7 @@ class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          // which screen to run when the application starts
-          [HomeSegment()],
           [
-            // JSON serialization of HomeSegment and PageSegment
             RRoutes<SegmentGrp>(SegmentGrp.fromJson, [
               // build a screen from segment
               RRoute<HomeSegment>(HomeScreen.new),
@@ -86,7 +83,6 @@ class App extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // for all widgets with riverpod support, the navigator is available via riverpodNavigatorProvider
     final navigator = ref.navigator;
     return MaterialApp.router(
       title: 'Riverpod Navigator Example',
@@ -95,7 +91,6 @@ class App extends ConsumerWidget {
     );
   }
 }
-
 ```
 
 ### Step4 - runApp
@@ -103,10 +98,7 @@ class App extends ConsumerWidget {
 ```dart
 void main() => runApp(
       ProviderScope(
-        overrides: [
-          // initialize riverpodNavigatorProvider state
-          riverpodNavigatorProvider.overrideWithProvider(Provider(AppNavigator.new)),
-        ],
+        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
     );

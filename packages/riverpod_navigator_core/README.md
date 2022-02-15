@@ -1,16 +1,11 @@
-# riverpod_navigator_core
+# Riverpod state management navigator
 
-A new Flutter project.
+Podívejme se na Flutter navigaci z pohledu dvou nových skutečností:
 
-## Getting Started
+- Riverpod state management, který přináší nový pohled na přístup k Flutter Navigaci.
+- Flutter for Web a Flutter for desktop, které přinášejí nové výzvy, které musí navigace řešit.
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Flutter Navigator 2.0 bývá často kritizován za svoji složitost a nesrozumitelnost.
+Nemyslím si, že je Navigator složitý, složité jsou nové výzvy, které musí řešit.
+Riverpod state management přináší nový pohled na přístup k Flutter Navigaci.

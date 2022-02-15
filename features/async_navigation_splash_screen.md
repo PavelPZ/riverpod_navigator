@@ -6,17 +6,15 @@ Navigation is delayed until the asynchronous actions are performed. These action
 - **merging** (before screen replacement with the same segment type in the navigation stack)
 
 ```dart
-// simulates an async action such as loading external data or saving to external storage
-Future<String> simulateAsyncResult(String actionName, int msec) async {
+Future<String> simulateAsyncResult(String asyncResult, int msec) async {
   await Future.delayed(Duration(milliseconds: msec));
-  return '$actionName: async result after $msec msec';
+  return '$asyncResult: async result after $msec msec';
 }
 
 class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          [HomeSegment()],
           [
             RRoutes<SegmentGrp>(SegmentGrp.fromJson, [
               RRoute<HomeSegment>(

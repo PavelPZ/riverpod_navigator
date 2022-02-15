@@ -10,31 +10,25 @@ The nested navigator has a "RestorePath restorePath" parameter: its purpose is t
 ```dart
 class AppNavigator extends RNavigator {
   /// Constructor for book nested navigator.
-  AppNavigator.forBook(Ref ref, RestorePath restorePath)
+  AppNavigator.forBook(Ref ref)
       : super(
           ref,
-          [BookSegment(id: 2)],
           [
             RRoutes<Segments>(Segments.fromJson, [
               RRoute<BookSegment>(BookScreen.new),
             ])
           ],
-
-          /// The RestorePath class preserves the last state of the nested navigator.
-          restorePath: restorePath,
         );
 
   /// constructor for author nested navigator
-  AppNavigator.forAuthor(Ref ref, RestorePath restorePath)
+  AppNavigator.forAuthor(Ref ref)
       : super(
           ref,
-          [AuthorSegment(id: 2)],
           [
             RRoutes<Segments>(Segments.fromJson, [
               RRoute<AuthorSegment>(AuthorScreen.new),
             ])
           ],
-          restorePath: restorePath,
         );
 ```
 
@@ -43,7 +37,7 @@ class AppNavigator extends RNavigator {
 @hcwidget
 Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment) {
   /// Remembering RestorePath throughout the widget's lifecycle
-  /// Note: *We use **flutter_hooks package** to keep RestorePath instance. 
+  /// Note: *We use **flutter_hooks package** to keep RestorePath instance.
   /// The use of flutter_hooks is not mandatory, it can be implemented using the StatefulWidget*.
   final restoreBook = useMemoized(() => RestorePath());
   final restoreAuthor = useMemoized(() => RestorePath());
@@ -62,19 +56,13 @@ Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment
       body: TabBarView(
         children: [
           ProviderScope(
-            overrides: [
-              /// initialize the navigator using restoreBook
-              riverpodNavigatorProvider.overrideWithProvider(Provider((ref) => AppNavigator.forBook(ref, restoreBook))),
-              /// pass all navigator dependsOn to the nested ProviderScope
-              ...ref.navigator.dependsOn.map((e) => e as Override).toList(),
-            ],
+            // The RestorePath class preserves the last state of the navigator.
+            // Used during the next navigator initialization.
+            overrides: RNavigatorCore.providerOverrides([BookSegment(id: 2)], AppNavigator.forBook, restorePath: restoreBook),
             child: BooksTab(),
           ),
           ProviderScope(
-            overrides: [
-              riverpodNavigatorProvider.overrideWithProvider(Provider((ref) => AppNavigator.forAuthor(ref, restoreAuthor))),
-              ...ref.navigator.dependsOn.map((e) => e as Override).toList(),
-            ],
+            overrides: RNavigatorCore.providerOverrides([AuthorSegment(id: 2)], AppNavigator.forAuthor, restorePath: restoreAuthor),
             child: AuthorTab(),
           ),
         ],

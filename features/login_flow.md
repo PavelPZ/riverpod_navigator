@@ -15,8 +15,9 @@ Redirect when:
 
 ```dart
   @override
-  TypedPath appNavigationLogic(TypedPath ongoingPath) {
+  TypedPath appNavigationLogic(TypedPath ongoingPath, {CToken? cToken}) {
     final userIsLogged = ref.read(userIsLoggedProvider);
+    final navigationStack = getNavigationStack();
 
     // if user is not logged-in and some of the screen in navigations stack needs login => redirect to LoginScreen
     if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
@@ -34,7 +35,6 @@ Redirect when:
     // no redirection is needed
     return ongoingPath;
   }
-
 ```
 
 #### Code of the example

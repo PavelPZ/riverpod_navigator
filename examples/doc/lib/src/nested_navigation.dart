@@ -54,6 +54,16 @@ class AppNavigator extends RNavigator {
           ],
         );
 
+  /// constructor for author nested navigator
+  AppNavigator.forAuthor(Ref ref)
+      : super(
+          ref,
+          [
+            RRoutes<Segments>(Segments.fromJson, [
+              RRoute<AuthorSegment>(AuthorScreen.new),
+            ])
+          ],
+        );
   // ignore: sort_unnamed_constructors_first
   AppNavigator(Ref ref)
       : super(
@@ -64,17 +74,6 @@ class AppNavigator extends RNavigator {
               RRoute<BookSegment>(BookScreen.new),
               RRoute<AuthorSegment>(AuthorScreen.new),
               RRoute<BooksAuthorsSegment>(BooksAuthorsScreen.new),
-            ])
-          ],
-        );
-
-  /// constructor for author nested navigator
-  AppNavigator.forAuthor(Ref ref)
-      : super(
-          ref,
-          [
-            RRoutes<Segments>(Segments.fromJson, [
-              RRoute<AuthorSegment>(AuthorScreen.new),
             ])
           ],
         );
@@ -146,6 +145,8 @@ Widget authorScreen(WidgetRef ref, AuthorSegment book) => PageHelper<AppNavigato
 @hcwidget
 Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment) {
   /// Remembering RestorePath throughout the widget's lifecycle
+  /// Note: *We use **flutter_hooks package** to keep RestorePath instance.
+  /// The use of flutter_hooks is not mandatory, it can be implemented using the StatefulWidget*.
   final restoreBook = useMemoized(() => RestorePath());
   final restoreAuthor = useMemoized(() => RestorePath());
   return DefaultTabController(
