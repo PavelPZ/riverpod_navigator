@@ -10,21 +10,12 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath>
   late RNavigator navigator;
 
   @override
-  TypedPath get navigationStack => currentConfiguration;
-
-  @override
-  void set navigationStack(TypedPath path) {
-    currentConfiguration = path;
-    notifyListeners();
-  }
-
-  @override
-  TypedPath currentConfiguration = [];
+  TypedPath get currentConfiguration => navigator.getNavigationStack();
 
   @override
   Widget build(BuildContext context) {
+    final navigationStack = currentConfiguration;
     if (navigationStack.isEmpty) {
-      scheduleMicrotask(() => navigator.navigate(navigator.initPath));
       return navigator.splashBuilder?.call() ?? SizedBox();
     }
     final navigatorWidget = Navigator(
@@ -40,17 +31,9 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath>
   }
 
   @override
-  Future<void> setNewRoutePath(TypedPath configuration) => navigator.navigate(configuration);
-}
-
-class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
-  RouteInformationParserImpl(this._pathParser);
-
-  final PathParser _pathParser;
-
-  @override
-  Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) => Future.value(_pathParser.path2TypedPath(routeInformation.location));
-
-  @override
-  RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: _pathParser.typedPath2Path(configuration));
+  Future<void> setNewRoutePath(TypedPath configuration) {
+    if (configuration.isEmpty) configuration = navigator.getOngoingPath();
+    return navigator.navigate(configuration);
+    // return SynchronousFuture(null);
+  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
+import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 
 import 'data.dart' as d;
 
@@ -11,9 +12,7 @@ part 'redirection.g.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: [
-          riverpodNavigatorProvider.overrideWithProvider(Provider(AppNavigator.new)),
-        ],
+        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
     );
@@ -33,7 +32,6 @@ class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          [HomeSegment()],
           [
             RRoutes<Segments>(Segments.fromJson, [
               RRoute<HomeSegment>(HomeScreen.new),
@@ -46,8 +44,9 @@ class AppNavigator extends RNavigator {
         );
 
   @override
-  TypedPath appNavigationLogic(TypedPath ongoingPath) {
+  TypedPath appNavigationLogic(TypedPath ongoingPath, {CToken? cToken}) {
     final loginInfo = ref.read(loginInfoProvider.notifier);
+    final navigationStack = getNavigationStack();
 
     final loggedIn = loginInfo.state.isNotEmpty;
     final loggingIn = navigationStack.any((segment) => segment is LoginSegment);
@@ -64,7 +63,7 @@ final familiesProvider = Provider<List<d.Family>>((_) => d.Families.data);
 
 @cwidget
 Widget app(WidgetRef ref) {
-  final navigator = ref.read(riverpodNavigatorProvider);
+  final navigator = ref.navigator;
   return MaterialApp.router(
     title: AppNavigator.title,
     routerDelegate: navigator.routerDelegate,
@@ -96,7 +95,7 @@ Widget loginScreen(WidgetRef ref, LoginSegment segment) {
 Widget homeScreen(WidgetRef ref, HomeSegment segment) {
   final info = ref.read(loginInfoProvider.notifier);
   final families = ref.read(familiesProvider);
-  final navigator = ref.read(riverpodNavigatorProvider);
+  final navigator = ref.navigator;
   return Scaffold(
     appBar: AppBar(
       title: const Text(AppNavigator.title),
@@ -123,7 +122,7 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) {
 @cwidget
 Widget familyScreen(WidgetRef ref, FamilySegment segment) {
   final family = d.Families.family(segment.fid);
-  final navigator = ref.read(riverpodNavigatorProvider);
+  final navigator = ref.navigator;
   return Scaffold(
     appBar: AppBar(title: Text(family.name)),
     body: ListView(

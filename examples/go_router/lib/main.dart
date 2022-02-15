@@ -3,15 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
+import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 
 part 'main.freezed.dart';
 part 'main.g.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: [
-          riverpodNavigatorProvider.overrideWithProvider(Provider(AppNavigator.new)),
-        ],
+        overrides: RNavigatorCore.providerOverrides([Page1Segment()], AppNavigator.new),
         child: const App(),
       ),
     );
@@ -29,7 +28,6 @@ class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          [Page1Segment()],
           [
             RRoutes<Segments>(Segments.fromJson, [
               RRoute<Page1Segment>(Page1Screen.new),
@@ -43,7 +41,7 @@ class AppNavigator extends RNavigator {
 
 @cwidget
 Widget app(WidgetRef ref) {
-  final navigator = ref.read(riverpodNavigatorProvider);
+  final navigator = ref.navigator;
   return MaterialApp.router(
     title: AppNavigator.title,
     routerDelegate: navigator.routerDelegate,
@@ -60,7 +58,7 @@ Widget page1Screen(WidgetRef ref, Page1Segment segment) => Scaffold(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () => ref.read(riverpodNavigatorProvider).navigate([Page2Segment()]),
+              onPressed: () => ref.navigator.navigate([Page2Segment()]),
               child: const Text('Go to page 2'),
             ),
           ],
@@ -76,7 +74,7 @@ Widget page2Screen(WidgetRef ref, Page2Segment segment) => Scaffold(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () => ref.read(riverpodNavigatorProvider).navigate([Page1Segment()]),
+              onPressed: () => ref.navigator.navigate([Page1Segment()]),
               child: const Text('Go to home page'),
             ),
           ],

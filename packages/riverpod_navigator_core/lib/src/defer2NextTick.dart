@@ -59,24 +59,25 @@ class Defer2NextTick {
       waitForMicrotaskEnter = false;
 
       final ongoingNotifier = navigator.ref.read(ongoingPathProvider.notifier);
-      TypedPath newPath;
+      TypedPath? newPath;
       try {
         final futureOr = navigator.appNavigationLogicCore(ongoingNotifier.state, cToken: _cToken = CToken());
 
-        if (futureOr is Future<TypedPath>) {
+        if (futureOr is Future<TypedPath?>) {
           final compl = _appLogicCompleter = CancelableCompleter<TypedPath>();
           // futureOr to CancelableCompleter
           unawaited(futureOr.then((value) => compl.complete(value), onError: compl.completeError));
           // wait for value, error and CANCEL (futureOr cannot wait for cancel)
           final res = await compl.operation.valueOrCancellation(canceledPath);
-          assert(res != null);
-          if (res == canceledPath) {
+          // res==null for no redirection from appNavigationLogicCore
+          // assert(res != null);
+          if (res == null || res == canceledPath) {
             // canceled => no navigationStack change
             _cToken = null;
             _appLogicCompleter = null;
             return;
           }
-          newPath = res!;
+          newPath = res;
         } else
           newPath = futureOr;
 
@@ -84,7 +85,7 @@ class Defer2NextTick {
         // synchronize ongoingPath with navigationStack
         ignoreNextStateChange = true;
         try {
-          ongoingNotifier.state = navigator.ref.read(navigationStackProvider.notifier).state = newPath;
+          ongoingNotifier.state = navigator.ref.read(navigationStackProvider.notifier).state = newPath!;
         } finally {
           ignoreNextStateChange = false;
         }

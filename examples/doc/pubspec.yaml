@@ -17,6 +17,8 @@ dependencies:
   path:
   riverpod_navigator: 
     path: ../../packages/riverpod_navigator
+  riverpod_navigator_core: 
+    path: ../../packages/riverpod_navigator_core
 
 dev_dependencies: 
   analyzer: ^3.0.0

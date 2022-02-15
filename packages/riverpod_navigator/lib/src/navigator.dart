@@ -5,56 +5,36 @@ part of 'index.dart';
 // ********************************************
 
 /// Helper singleton class for navigating to [TypedPath]
-class RNavigator {
+class RNavigator extends RNavigatorCore {
   RNavigator(
-    this.ref,
-    TypedPath initPath,
+    Ref ref,
     List<RRoutes> groups, {
     List<AlwaysAliveProviderListenable>? dependsOn,
     this.navigatorWidgetBuilder,
     this.splashBuilder,
     bool isDebugRouteDelegate = false,
-    this.restorePath,
+    RestorePath? restorePath,
   })  : router = RRouter(groups),
-        initPath = restorePath == null ? initPath : restorePath.getInitialPath(initPath),
-        _routerDelegate = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate() {
+        _routerDelegate = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate(),
+        super(
+          ref,
+          dependsOn: dependsOn,
+          restorePath: restorePath,
+        ) {
     _routerDelegate.navigator = this;
 
-    ref.onDispose(() => restorePath?.onPathChanged(navigationStack));
-
-    // _runNavigation only once on the next tick
-    _defer2NextTick = Defer2NextTick(nextTickRunner: _runNavigation);
-    this.dependsOn.add(ongoingPathProvider);
-    if (dependsOn != null) this.dependsOn.addAll(dependsOn);
-    assert(this.dependsOn.every((p) => p is Override));
-
-    // 1. Listen to the riverpod providers. If any change, call _defer2NextTick.start().
-    // 2. _defer2NextTick ensures that _runNavigation is called only once the next tick
-    // 3. Add RemoveListener's to unlistens
-    // 4. Use unlistens in ref.onDispose
-    final unlistens = this.dependsOn.map((depend) => ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick!.start())).toList();
-
-    // ignore: avoid_function_literals_in_foreach_calls
-    ref.onDispose(() => unlistens.forEach((f) => f()));
+    final callInDispose = ref.listen(navigationStackProvider, (previous, next) => _routerDelegate.notifyListeners());
+    ref.onDispose(callInDispose);
   }
 
-  /// initial screen
-  final TypedPath initPath;
-
-  final RRouter router;
-
-  /// current navigationStack
-  TypedPath get navigationStack => _routerDelegate.navigationStack;
-
   /// Enter application navigation logic here (redirection, login, etc.).
-  /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or route guard is needed)
-  TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
-
-  /// When changing navigation state: completed after Flutter navigation stack is actual
-  Future<void> get navigationCompleted => _defer2NextTick!.future;
+  /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or route guards are needed)
+  TypedPath appNavigationLogic(TypedPath ongoingPath, {CToken? cToken}) => ongoingPath;
 
   final NavigatorWidgetBuilder? navigatorWidgetBuilder;
   final SplashBuilder? splashBuilder;
+
+  final RRouter router;
 
   /// Overwrite for another [PathParser]
   PathParser pathParserCreator() => SimplePathParser(router.json2Segment);
@@ -69,23 +49,18 @@ class RNavigator {
       _routeInformationParser ?? (_routeInformationParser = RouteInformationParserImpl(pathParser));
   RouteInformationParserImpl? _routeInformationParser;
 
-  final List<AlwaysAliveProviderListenable> dependsOn = [];
-
-  final RestorePath? restorePath;
-
-  @protected
-  Ref ref;
-
   /// Main [RNavigator] method. Provides navigation to the new [TypedPath].
   Future<void> navigate(TypedPath newPath) async {
     ref.read(ongoingPathProvider.notifier).state = newPath;
     return navigationCompleted;
   }
 
-  String get debugNavigationStack2String => pathParser.typedPath2Path(navigationStack);
+  String get debugNavigationStack2String => pathParser.typedPath2Path(getNavigationStack());
   String debugSegmentSubpath(TypedSegment s) => pathParser.typedPath2Path(segmentSubpath(s));
 
   TypedPath segmentSubpath(TypedSegment s) {
+    final navigationStack = getNavigationStack();
+
     final res = <TypedSegment>[];
     for (var i = 0; i < navigationStack.length; i++) {
       res.add(navigationStack[i]);
@@ -103,32 +78,30 @@ class RNavigator {
   PathParser get pathParser => _pathParser ?? (_pathParser = pathParserCreator());
   PathParser? _pathParser;
 
-  Defer2NextTick? _defer2NextTick;
+  @override
+  FutureOr<TypedPath?> appNavigationLogicCore(TypedPath ongoingPath, {CToken? cToken}) {
+    var newOngoingPath = appNavigationLogic(ongoingPath, cToken: cToken);
 
-  /// synchronize [ongoingPathProvider] with [navigationStack]
-  Future<void> _runNavigation() async {
-    final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
-    var ongoingPath = appNavigationLogic(ongoingNotifier.state);
     // in ongoingPath, when ongoingPath[i] == currentTypedPath[i], set ongoingPath[i] = currentTypedPath[i]
-    ongoingPath = eq2Identical(navigationStack, ongoingPath);
-    if (ongoingPath == navigationStack) return;
+    final navigationStack = getNavigationStack();
+    newOngoingPath = eq2Identical(navigationStack, newOngoingPath);
+    if (newOngoingPath == navigationStack) return null;
 
-    // Wait for async screen actions.
-    await wait4AsyncScreenActions(navigationStack, ongoingPath);
-
-    // checking _defer2NextTick!.runnerActive is not required
-    _defer2NextTick!.runnerActive = false;
-
-    // actualize flutter navigation stack and ongoingPathProvider
-    _routerDelegate.navigationStack = ongoingNotifier.state = ongoingPath;
+    final asyncResult = wait4AsyncScreenActions(navigationStack, newOngoingPath);
+    if (asyncResult is Future)
+      return asyncResult.then((_) {
+        if (cToken?.isCanceled == true) return [];
+        return newOngoingPath;
+      });
+    return newOngoingPath;
   }
 
   /// for [Navigator.onPopPage] in [RiverpodRouterDelegate.build]
   @nonVirtual
   bool onPopRoute() {
-    final actPath = navigationStack;
-    if (actPath.length <= 1) return false;
-    navigate([for (var i = 0; i < actPath.length - 1; i++) actPath[i]]);
+    final navigationStack = getNavigationStack();
+    if (navigationStack.length <= 1) return false;
+    navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
     return true;
   }
 
@@ -146,9 +119,9 @@ class RNavigator {
   }
 
   /// Wait for the asynchronous screen actions. The action is waiting in parallel
-  ///- rewrite, when other waiting strategies are needed.
+  ///- rewrite, when other waiting strategy is needed.
   @protected
-  FutureOr<void> wait4AsyncScreenActions(TypedPath oldPath, TypedPath newPath) async {
+  FutureOr<void> wait4AsyncScreenActions(TypedPath oldPath, TypedPath newPath) {
     final minLen = min(oldPath.length, newPath.length);
     final futures = <Tuple2<Future?, TypedSegment>>[];
     // merge old and new
@@ -177,70 +150,36 @@ class RNavigator {
       for (final f in futures)
         if (f.item1 != null) f
     ];
-    if (notEmptyFutures.isEmpty) return;
+    if (notEmptyFutures.isEmpty) return null;
 
-    // wait for async actions
-    final asyncResults = await Future.wait(notEmptyFutures.map((fs) => fs.item1 as Future));
-    assert(asyncResults.length == notEmptyFutures.length);
+    return Future.wait(notEmptyFutures.map((fs) => fs.item1 as Future)).then((asyncResults) {
+      assert(asyncResults.length == notEmptyFutures.length);
+      // Save the result of the async action
+      for (var i = 0; i < asyncResults.length; i++) notEmptyFutures[i].item2.asyncActionResult = asyncResults[i];
+    });
 
-    // Save the result of the async action
-    for (var i = 0; i < asyncResults.length; i++) notEmptyFutures[i].item2.asyncActionResult = asyncResults[i];
+    // // wait for async actions
+    // final asyncResults = await Future.wait(notEmptyFutures.map((fs) => fs.item1 as Future));
+    // assert(asyncResults.length == notEmptyFutures.length);
+
+    // // Save the result of the async action
+    // for (var i = 0; i < asyncResults.length; i++) notEmptyFutures[i].item2.asyncActionResult = asyncResults[i];
   }
 
   // *** common navigation-agnostic app actions ***
 
   @nonVirtual
-  Future<void> pop() =>
-      navigationStack.length <= 1 ? Future.value() : navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
-
-  @nonVirtual
-  Future<void> push(TypedSegment segment) => navigate([...navigationStack, segment]);
-
-  @nonVirtual
-  Future<void> replaceLast(TypedSegment segment) => navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i], segment]);
-}
-
-// ********************************************
-//   Defer2NextTick
-// ********************************************
-
-/// helper class that solves the problem where two providers (on which navigation depends) change in one tick
-///
-/// eg. if after a successful login:
-///   1. change the login state to true
-///   2. change the ongoingPath state to a screen requiring a login
-/// in this case, without the Defer2NextTick class, [RouterDelegate.navigationStack] is changed twice
-class Defer2NextTick {
-  Defer2NextTick({required this.nextTickRunner});
-  // called once in the next tick
-  FutureOr<void> Function() nextTickRunner;
-
-  Completer? _completer;
-  bool runnerActive = false;
-
-  /// called in every state change
-  void start() {
-    if (_completer != null) {
-      if (runnerActive) _completer!.completeError('State changed during running Defer2NextTick.nextTickRunner');
-      return;
-    }
-    _completer = Completer();
-    scheduleMicrotask(() async {
-      runnerActive = true;
-      try {
-        try {
-          final value = nextTickRunner();
-          if (value is Future) await value;
-          _completer!.complete();
-        } catch (e, s) {
-          _completer!.completeError(e, s);
-        }
-      } finally {
-        runnerActive = false;
-        _completer = null;
-      }
-    });
+  Future<void> pop() {
+    final navigationStack = getNavigationStack();
+    return navigationStack.length <= 1 ? Future.value() : navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
   }
 
-  Future<void> get future => _completer != null ? _completer!.future : Future.value();
+  @nonVirtual
+  Future<void> push(TypedSegment segment) => navigate([...getNavigationStack(), segment]);
+
+  @nonVirtual
+  Future<void> replaceLast(TypedSegment segment) {
+    final navigationStack = getNavigationStack();
+    return navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i], segment]);
+  }
 }

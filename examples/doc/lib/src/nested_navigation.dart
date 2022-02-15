@@ -8,22 +8,21 @@ import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 //import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
+import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 
 part 'nested_navigation.freezed.dart';
 part 'nested_navigation.g.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: [
-          riverpodNavigatorProvider.overrideWithProvider(Provider(AppNavigator.new)),
-        ],
+        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
         child: App(),
       ),
     );
 
 @cwidget
 Widget app(WidgetRef ref) {
-  final navigator = ref.read(riverpodNavigatorProvider);
+  final navigator = ref.navigator;
   return MaterialApp.router(
     title: 'Riverpod Navigator Example',
     routerDelegate: navigator.routerDelegate,
@@ -48,7 +47,6 @@ class AppNavigator extends RNavigator {
   AppNavigator.forBook(Ref ref, RestorePath restorePath)
       : super(
           ref,
-          [BookSegment(id: 2)],
           [
             RRoutes<Segments>(Segments.fromJson, [
               RRoute<BookSegment>(BookScreen.new),
@@ -64,7 +62,6 @@ class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          [HomeSegment()],
           [
             RRoutes<Segments>(Segments.fromJson, [
               RRoute<HomeSegment>(HomeScreen.new),
@@ -79,7 +76,6 @@ class AppNavigator extends RNavigator {
   AppNavigator.forAuthor(Ref ref, RestorePath restorePath)
       : super(
           ref,
-          [AuthorSegment(id: 2)],
           [
             RRoutes<Segments>(Segments.fromJson, [
               RRoute<AuthorSegment>(AuthorScreen.new),
@@ -91,12 +87,12 @@ class AppNavigator extends RNavigator {
   // ******* actions used on the screens
 
   Future gotoNextBook() {
-    final actualBook = navigationStack.last as BookSegment;
+    final actualBook = getNavigationStack().last as BookSegment;
     return replaceLast(BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
   }
 
   Future gotoNextAuthor() {
-    final actualBook = navigationStack.last as AuthorSegment;
+    final actualBook = getNavigationStack().last as AuthorSegment;
     return replaceLast(AuthorSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
   }
 }
@@ -173,20 +169,22 @@ Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment
       body: TabBarView(
         children: [
           ProviderScope(
-            overrides: [
-              /// initialize the navigator using restoreBook
-              riverpodNavigatorProvider.overrideWithProvider(Provider((ref) => AppNavigator.forBook(ref, restoreBook))),
+            overrides: RNavigatorCore.providerOverrides([BookSegment(id: 2)], (ref) => AppNavigator.forBook(ref, restoreBook)),
 
-              /// pass all navigator dependsOn to the nested ProviderScope
-              ...ref.read(riverpodNavigatorProvider).dependsOn.map((e) => e as Override).toList(),
-            ],
+            /// initialize the navigator using restoreBook
+            //   riverpodNavigatorProvider.overrideWithProvider(Provider((ref) => AppNavigator.forBook(ref, restoreBook))),
+
+            //   /// pass all navigator dependsOn to the nested ProviderScope
+            //   ...ref.navigator.dependsOn.map((e) => e as Override).toList(),
+            // ],
             child: BooksTab(),
           ),
           ProviderScope(
-            overrides: [
-              riverpodNavigatorProvider.overrideWithProvider(Provider((ref) => AppNavigator.forAuthor(ref, restoreAuthor))),
-              ...ref.read(riverpodNavigatorProvider).dependsOn.map((e) => e as Override).toList(),
-            ],
+            overrides: RNavigatorCore.providerOverrides([AuthorSegment(id: 2)], (ref) => AppNavigator.forAuthor(ref, restoreAuthor)),
+            // [
+            //   riverpodNavigatorProvider.overrideWithProvider(Provider((ref) => AppNavigator.forAuthor(ref, restoreAuthor))),
+            //   ...ref.navigator.dependsOn.map((e) => e as Override).toList(),
+            // ],
             child: AuthorTab(),
           ),
         ],
@@ -197,10 +195,10 @@ Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment
 // https://gist.github.com/johnpryan/bbca91e23bbb4d39247fa922533be7c9
 
 @cwidget
-Widget booksTab(WidgetRef ref) => Router(routerDelegate: ref.read(riverpodNavigatorProvider).routerDelegate);
+Widget booksTab(WidgetRef ref) => Router(routerDelegate: ref.navigator.routerDelegate);
 
 @cwidget
-Widget authorTab(WidgetRef ref) => Router(routerDelegate: ref.read(riverpodNavigatorProvider).routerDelegate);
+Widget authorTab(WidgetRef ref) => Router(routerDelegate: ref.navigator.routerDelegate);
 
 @cwidget
 Widget pageHelper<N extends RNavigator>(
@@ -209,7 +207,7 @@ Widget pageHelper<N extends RNavigator>(
   required String title,
   required List<Widget> buildChildren(N navigator),
 }) {
-  final navigator = ref.read(riverpodNavigatorProvider) as N;
+  final navigator = ref.navigator as N;
   return Scaffold(
     appBar: AppBar(
       title: Text(title),

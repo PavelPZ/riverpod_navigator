@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
+import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 
 part 'simple.freezed.dart';
 part 'simple.g.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: [
-          riverpodNavigatorProvider.overrideWithProvider(Provider(AppNavigator.new)),
-        ],
+        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
     );
@@ -29,7 +28,6 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           // which screen to run when the application starts
-          [HomeSegment()],
           [
             // JSON serialization of HomeSegment and PageSegment
             RRoutes<SegmentGrp>(SegmentGrp.fromJson, [
@@ -46,7 +44,7 @@ class App extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final navigator = ref.read(riverpodNavigatorProvider);
+    final navigator = ref.navigator;
     return MaterialApp.router(
       title: 'Riverpod Navigator Example',
       routerDelegate: navigator.routerDelegate,
@@ -69,7 +67,7 @@ class HomeScreen extends ConsumerWidget {
             children: [
               ElevatedButton(
                 // following navigation create navigation stack "HomeScreen(HomeSegment()) => PageScreen(PageSegment(title: 'Page title'))".
-                onPressed: () => ref.read(riverpodNavigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page title')]),
+                onPressed: () => ref.navigator.navigate([HomeSegment(), PageSegment(title: 'Page title')]),
                 child: const Text('Go to page'),
               ),
             ],
@@ -92,7 +90,7 @@ class PageScreen extends ConsumerWidget {
             children: [
               ElevatedButton(
                 // following navigation create navigation stack "HomeScreen(HomeSegment())".
-                onPressed: () => ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]),
+                onPressed: () => ref.navigator.navigate([HomeSegment()]),
                 child: const Text('Go to home'),
               ),
             ],

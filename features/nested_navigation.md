@@ -66,14 +66,14 @@ Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment
               /// initialize the navigator using restoreBook
               riverpodNavigatorProvider.overrideWithProvider(Provider((ref) => AppNavigator.forBook(ref, restoreBook))),
               /// pass all navigator dependsOn to the nested ProviderScope
-              ...ref.read(riverpodNavigatorProvider).dependsOn.map((e) => e as Override).toList(),
+              ...ref.navigator.dependsOn.map((e) => e as Override).toList(),
             ],
             child: BooksTab(),
           ),
           ProviderScope(
             overrides: [
               riverpodNavigatorProvider.overrideWithProvider(Provider((ref) => AppNavigator.forAuthor(ref, restoreAuthor))),
-              ...ref.read(riverpodNavigatorProvider).dependsOn.map((e) => e as Override).toList(),
+              ...ref.navigator.dependsOn.map((e) => e as Override).toList(),
             ],
             child: AuthorTab(),
           ),

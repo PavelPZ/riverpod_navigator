@@ -3,15 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
+import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 
 part 'async.g.dart';
 part 'async.freezed.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: [
-          riverpodNavigatorProvider.overrideWithProvider(Provider(AppNavigator.new)),
-        ],
+        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
     );
@@ -27,7 +26,7 @@ class SegmentGrp with _$SegmentGrp, TypedSegment {
 
 @cwidget
 Widget app(WidgetRef ref) {
-  final navigator = ref.read(riverpodNavigatorProvider);
+  final navigator = ref.navigator;
   return MaterialApp.router(
     title: 'Riverpod Navigator Example',
     routerDelegate: navigator.routerDelegate,
@@ -46,7 +45,6 @@ class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          [HomeSegment()],
           [
             RRoutes<SegmentGrp>(SegmentGrp.fromJson, [
               RRoute<HomeSegment>(
@@ -96,7 +94,7 @@ Widget pageHelper<N extends RNavigator>(
   required String title,
   required List<Widget> buildChildren(N navigator),
 }) {
-  final navigator = ref.read(riverpodNavigatorProvider) as N;
+  final navigator = ref.navigator as N;
   return Scaffold(
     appBar: AppBar(
       title: Text(title),

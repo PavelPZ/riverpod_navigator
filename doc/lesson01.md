@@ -76,7 +76,7 @@ See generated "lesson0?.g.dart"" file for details.*
 ```dart
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
-  final navigator = ref.read(riverpodNavigatorProvider);
+  final navigator = ref.navigator;
   return MaterialApp.router(
     title: 'Books App',
     routerDelegate: navigator.routerDelegate,

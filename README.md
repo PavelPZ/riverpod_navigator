@@ -87,7 +87,7 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // for all widgets with riverpod support, the navigator is available via riverpodNavigatorProvider
-    final navigator = ref.read(riverpodNavigatorProvider);
+    final navigator = ref.navigator;
     return MaterialApp.router(
       title: 'Riverpod Navigator Example',
       routerDelegate: navigator.routerDelegate,
@@ -120,14 +120,14 @@ Only the navigation to the new screen is interesting:
 
 ```dart
 //  create navigation stack [HomeScreen(HomeSegment()), PageScreen(PageSegment(title: 'Page'))]
-ref.read(riverpodNavigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]);
+ref.navigator.navigate([HomeSegment(), PageSegment(title: 'Page')]);
 ```
 
 or 
 
 ```dart
 //  create navigation stack [HomeScreen(HomeSegment())]
-ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]);
+ref.navigator.navigate([HomeSegment()]);
 ```
 
 #### Code of the example

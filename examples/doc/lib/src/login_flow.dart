@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
+import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 
 part 'login_flow.g.dart';
 part 'login_flow.freezed.dart';
@@ -12,7 +13,8 @@ part 'login_flow.freezed.dart';
 void main() => runApp(
       ProviderScope(
         overrides: [
-          riverpodNavigatorProvider.overrideWithProvider(Provider(AppNavigator.new)),
+          userIsLoggedProvider,
+          ...RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
         ],
         child: const App(),
       ),
@@ -20,7 +22,7 @@ void main() => runApp(
 
 @cwidget
 Widget app(WidgetRef ref) {
-  final navigator = ref.read(riverpodNavigatorProvider);
+  final navigator = ref.navigator;
   return MaterialApp.router(
     title: 'Riverpod Navigator Example',
     routerDelegate: navigator.routerDelegate,
@@ -51,7 +53,6 @@ class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          [HomeSegment()],
           [
             RRoutes<SegmentGrp>(SegmentGrp.fromJson, [
               RRoute<HomeSegment>(HomeScreen.new),
@@ -64,8 +65,9 @@ class AppNavigator extends RNavigator {
 
   /// Quards and redirects for login flow
   @override
-  TypedPath appNavigationLogic(TypedPath ongoingPath) {
+  TypedPath appNavigationLogic(TypedPath ongoingPath, {CToken? cToken}) {
     final userIsLogged = ref.read(userIsLoggedProvider);
+    final navigationStack = getNavigationStack();
 
     // if user is not logged-in and some of the screen in navigations stack needs login => redirect to LoginScreen
     if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
@@ -87,6 +89,7 @@ class AppNavigator extends RNavigator {
   // ******* actions used on the screens
 
   Future gotoNextBook() {
+    final navigationStack = getNavigationStack();
     final actualBook = navigationStack.last as BookSegment;
     return replaceLast(BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
   }
@@ -99,6 +102,7 @@ class AppNavigator extends RNavigator {
   }
 
   Future globalLoginButton() {
+    final navigationStack = getNavigationStack();
     // current screen text-path
     final actualStringPath = pathParser.typedPath2Path(navigationStack);
     // redirect to login screen
@@ -109,6 +113,7 @@ class AppNavigator extends RNavigator {
   Future okOnloginPage() => _loginPageButtons(false);
 
   Future _loginPageButtons(bool cancel) {
+    final navigationStack = getNavigationStack();
     final loginHomeSegment = navigationStack.last as LoginSegment;
 
     var newPath = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
@@ -173,7 +178,7 @@ Widget pageHelper(
   required List<Widget> buildChildren(AppNavigator navigator),
   bool? isLoginPage,
 }) {
-  final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
+  final navigator = ref.navigator as AppNavigator;
   return Scaffold(
     appBar: AppBar(
       title: Text(title),

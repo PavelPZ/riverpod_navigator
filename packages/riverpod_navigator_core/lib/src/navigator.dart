@@ -28,7 +28,8 @@ class RNavigatorCore {
       // remember last state for restorePath
       restorePath?.saveLastKnownStack(ref.read(navigationStackProvider));
       // ignore: avoid_function_literals_in_foreach_calls
-      ref.onDispose(() => unlistens.forEach((f) => f()));
+      unlistens.forEach((f) => f());
+      //ref.onDispose(() => unlistens.forEach((f) => f()));
     });
 
     // load init path
@@ -37,10 +38,13 @@ class RNavigatorCore {
 
   /// Enter application navigation logic here (redirection, login, etc.).
   /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or route guard is needed)
-  FutureOr<TypedPath> appNavigationLogicCore(TypedPath ongoingPath, {CToken? cToken}) => ongoingPath;
+  FutureOr<TypedPath?> appNavigationLogicCore(TypedPath ongoingPath, {CToken? cToken}) => ongoingPath;
 
   /// When changing navigation state: completed after Flutter navigation stack is actual
   Future<void> get navigationCompleted => _defer2NextTick!.future;
+
+  TypedPath getNavigationStack() => ref.read(navigationStackProvider);
+  TypedPath getOngoingPath() => ref.read(ongoingPathProvider);
 
   final List<AlwaysAliveProviderListenable> dependsOn = [];
 

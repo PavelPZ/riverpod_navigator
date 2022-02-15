@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
+import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 
 part 'more_groups.g.dart';
 part 'more_groups.freezed.dart';
@@ -43,8 +44,6 @@ class ThirdGrp with _$ThirdGrp, TypedSegment {
 class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(ref, [
-          First1Segment()
-        ], [
           RRoutes<FirstGrp>(FirstGrp.fromJson, [
             RRoute<First1Segment>(First1Screen.new),
             RRoute<First2Segment>(First2Screen.new),

@@ -467,7 +467,7 @@ See generated "lesson0?.g.dart"" file for details.*
 '''), b('''
 @cwidget
 Widget booksExampleApp(WidgetRef ref) {
-  final navigator = ref.read(riverpodNavigatorProvider);
+  final navigator = ref.navigator;
   return MaterialApp.router(
     title: 'Books App',
     routerDelegate: navigator.routerDelegate,
@@ -619,7 +619,7 @@ Widget loginHomeScreen(LoginHomeSegment segment) => PageHelper(
 '''))) + filter(all, l35 + l4, docIgn(b('''
 @cwidget
 Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator), dynamic asyncActionResult}) {
-  final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
+  final navigator = ref.navigator as AppNavigator;
   return Scaffold(
     appBar: AppBar(
       title: Text(title),
@@ -647,7 +647,7 @@ Widget pageHelper(
   bool? isLoginPage,
   dynamic asyncActionResult,
 }) {
-  final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
+  final navigator = ref.navigator as AppNavigator;
   return Scaffold(
     appBar: AppBar(
       title: Text(title),
