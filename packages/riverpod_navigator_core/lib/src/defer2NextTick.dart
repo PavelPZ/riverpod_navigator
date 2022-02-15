@@ -93,7 +93,8 @@ class Defer2NextTick {
         // synchronize ongoingPath with navigationStack
         ignoreNextStateChange = true;
         try {
-          ongoingNotifier.state = navigator.ref.read(navigationStackProvider.notifier).state = newPath!;
+          assert(newPath.isNotEmpty);
+          ongoingNotifier.state = navigator.ref.read(navigationStackProvider.notifier).state = newPath;
         } finally {
           ignoreNextStateChange = false;
         }

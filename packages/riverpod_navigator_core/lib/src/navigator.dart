@@ -9,7 +9,7 @@ class RNavigatorCore {
   RNavigatorCore(
     this.ref, {
     List<AlwaysAliveProviderListenable>? dependsOn,
-    this.restorePath,
+    // this.restorePath,
   }) {
     // see Defer2NextTick doc
     _defer2NextTick = Defer2NextTick()..navigator = this;
@@ -49,15 +49,24 @@ class RNavigatorCore {
   final List<AlwaysAliveProviderListenable> dependsOn = [];
 
   /// for nested navigator: e.g. keep state of nested navigator in flutter tabs widget
-  final RestorePath? restorePath;
+  RestorePath? restorePath;
 
   @protected
   Ref ref;
   Defer2NextTick? _defer2NextTick;
 
-  static List<Override> providerOverrides(TypedPath initPath, RNavigatorCore navigator(Ref ref), {RestorePath? restorePath}) => [
+  static List<Override> providerOverrides(
+    TypedPath initPath,
+    RNavigatorCore navigator(Ref ref), {
+    RestorePath? restorePath,
+    List<AlwaysAliveProviderListenable> dependsOn = const [],
+  }) =>
+      [
+        ...dependsOn.map((e) => e as Override),
         ongoingPathProvider.overrideWithValue(StateController<TypedPath>(restorePath == null ? initPath : restorePath.getInitialPath(initPath))),
         navigationStackProvider,
-        riverpodNavigatorProvider.overrideWithProvider(Provider(navigator)),
+        riverpodNavigatorProvider.overrideWithProvider(Provider((ref) => navigator(ref)
+          ..restorePath = restorePath
+          ..dependsOn.addAll(dependsOn))),
       ];
 }

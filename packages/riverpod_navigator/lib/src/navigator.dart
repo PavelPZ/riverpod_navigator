@@ -13,13 +13,13 @@ class RNavigator extends RNavigatorCore {
     this.navigatorWidgetBuilder,
     this.splashBuilder,
     bool isDebugRouteDelegate = false,
-    RestorePath? restorePath,
+    // RestorePath? restorePath,
   })  : router = RRouter(groups),
         _routerDelegate = isDebugRouteDelegate ? RouterDelegate4Dart() : RiverpodRouterDelegate(),
         super(
           ref,
           dependsOn: dependsOn,
-          restorePath: restorePath,
+          // restorePath: restorePath,
         ) {
     _routerDelegate.navigator = this;
 
