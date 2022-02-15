@@ -29,7 +29,7 @@
 
 ## 0.11.0
 
-- new RiverpodNavigator.fromJson, alowing "fromJson: SimpleSegment.fromJson"
+- new RNavigator.fromJson, alowing "fromJson: SimpleSegment.fromJson"
 - example rework
 
 ## 0.10.0

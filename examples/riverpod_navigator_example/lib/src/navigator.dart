@@ -30,7 +30,7 @@ class Segments with _$Segments {
 // providers
 // ********************************************
 
-/// RiverpodNavigator
+/// RNavigator
 final riverpodNavigatorProvider = Provider<AppNavigator>((ref) => AppNavigator(ref));
 
 /// [ongoingPathProvider] TypedPath provider, source of truth for flutter navigation
@@ -42,12 +42,12 @@ final ongoingPathProvider = StateProvider<TypedPath>((_) => []);
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
 
 // ********************************************
-//   RiverpodNavigator
+//   RNavigator
 // ********************************************
 
 /// Helper generic singleton class for navigation state management
-class RiverpodNavigator {
-  RiverpodNavigator(
+class RNavigator {
+  RNavigator(
     this.ref, {
     // providers on which navigation state depends.
     required List<AlwaysAliveProviderListenable> dependsOn,
@@ -88,7 +88,7 @@ class RiverpodNavigator {
     //=====> at this point, "ongoingPathProvider state" and  "RiverpodRouterDelegate" are in sync
   }
 
-  /// Main [RiverpodNavigator] method. Provides navigation to the new [TypedPath].
+  /// Main [RNavigator] method. Provides navigation to the new [TypedPath].
   /// After changing [ongoingPathProvider] state, the navigation state is updated.
   @nonVirtual
   void navigate(TypedPath newPath) {
@@ -114,7 +114,7 @@ class RiverpodNavigator {
 /// navigator is available throw riverpodNavigatorProvider
 ///
 /// Navigator state depends on [ongoingPathProvider] and [userIsLoggedProvider] providers
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,

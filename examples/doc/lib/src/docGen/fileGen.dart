@@ -299,7 +299,7 @@ AppNavigator is a singleton class that does the following:
 - configures various navigation parameters 
 - contains actions related to navigation. The actions are then used in the screen widgets.
 '''), '\n\n') + filter2(l1, null, l1, t('2.1. Navigation parameters', h4: true), '', b('''
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
@@ -311,7 +311,7 @@ class AppNavigator extends RiverpodNavigator {
           screenBuilder: appSegmentsScreenBuilder,
         );
 ''')) + filter2(l2, 0, l2, t('2.1. Navigation parameters', h4: true), '', b('''
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
@@ -324,7 +324,7 @@ class AppNavigator extends RiverpodNavigator {
           splashBuilder: SplashScreen.new,
         );
 ''')) + filter2(l3, 0, l3, t('2.1. Navigation parameters', h4: true), '', b('''
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
@@ -342,7 +342,7 @@ class AppNavigator extends RiverpodNavigator {
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 ''')) + filter2(l5, 0, l5, t('2.1. Navigation parameters', h4: true), '', b('''
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
@@ -360,7 +360,7 @@ class AppNavigator extends RiverpodNavigator {
   /// mark screens which needs login: every 'id.isOdd' book needs it
   bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 ''')) + filter2(l4, 0, l4, t('2.1. Navigation parameters', h4: true), '', b('''
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,

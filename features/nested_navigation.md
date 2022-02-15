@@ -8,7 +8,7 @@ In the following example, the same navigator is used in three contexts:
 The nested navigator has a "RestorePath restorePath" parameter: its purpose is to remember the state of the navigator during Tab's switching.
 
 ```dart
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   /// Constructor for book nested navigator.
   AppNavigator.forBook(Ref ref, RestorePath restorePath)
       : super(

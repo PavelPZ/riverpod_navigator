@@ -43,7 +43,7 @@ class Segments with _$Segments, TypedSegment {
   factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
 }
 
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   /// Constructor for book nested navigator.
   AppNavigator.forBook(Ref ref, RestorePath restorePath)
       : super(
@@ -203,7 +203,7 @@ Widget booksTab(WidgetRef ref) => Router(routerDelegate: ref.read(riverpodNaviga
 Widget authorTab(WidgetRef ref) => Router(routerDelegate: ref.read(riverpodNavigatorProvider).routerDelegate);
 
 @cwidget
-Widget pageHelper<N extends RiverpodNavigator>(
+Widget pageHelper<N extends RNavigator>(
   WidgetRef ref, {
   required TypedSegment segment,
   required String title,

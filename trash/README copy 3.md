@@ -92,12 +92,12 @@ class ExampleSegments with _$ExampleSegments, TypedSegment {
 }
 ```
 
-### Use RiverpodNavigator for app navigation logic:
+### Use RNavigator for app navigation logic:
 
-All magic is contained in ```RiverpodNavigator.navigate``` method (explanation see bellow).
+All magic is contained in ```RNavigator.navigate``` method (explanation see bellow).
 
 ```dart
-class ExampleRiverpodNavigator extends RiverpodNavigator {
+class ExampleRiverpodNavigator extends RNavigator {
     // ...
     void toHome() => navigate([HomeSegment()]);
     void toBooks() => navigate([HomeSegment(), BooksSegment()]);
@@ -162,7 +162,7 @@ void main() {
 
 ```
 
-## How "RiverpodNavigator", "RiverpodRouterDelegate" and "RouteInformationParserImpl" works
+## How "RNavigator", "RiverpodRouterDelegate" and "RouteInformationParserImpl" works
 
 ### Dart part with no dependency on Flutter
 
@@ -177,8 +177,8 @@ final typedPathNotifierProvider =
 
 final typedPathNotifierProvider = StateNotifierProvider<TypedPathNotifier, TypedPath>((_) => TypedPathNotifier();
 
-class RiverpodNavigator {
-    RiverpodNavigator(this.ref);
+class RNavigator {
+    RNavigator(this.ref);
     final Ref ref;
 
     navigate(TypedPath newPath) => ref.read(typedPathNotifierProvider.notifier).state = newPath);

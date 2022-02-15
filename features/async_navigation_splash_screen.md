@@ -12,7 +12,7 @@ Future<String> simulateAsyncResult(String actionName, int msec) async {
   return '$actionName: async result after $msec msec';
 }
 
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,

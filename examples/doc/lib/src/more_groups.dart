@@ -40,7 +40,7 @@ class ThirdGrp with _$ThirdGrp, TypedSegment {
   static const String jsonNameSpace = '_third';
 }
 
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(ref, [
           First1Segment()

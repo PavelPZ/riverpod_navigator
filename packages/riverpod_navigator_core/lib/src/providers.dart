@@ -1,6 +1,6 @@
 part of 'index.dart';
 
-/// provider for app specific RiverpodNavigator
+/// provider for app specific RNavigator
 final riverpodNavigatorProvider = Provider<RNavigatorCore>((_) => throw UnimplementedError());
 
 /// ongoing TypedPath provider

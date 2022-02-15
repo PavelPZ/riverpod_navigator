@@ -59,16 +59,16 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath>...
 }
 ```
 
-## 3. And in the middle is RiverpodNavigator
+## 3. And in the middle is RNavigator
 
-RiverpodNavigator reacts to changes of the input states (ongoingPathProvider, userIsLoggedProvider in this case) 
+RNavigator reacts to changes of the input states (ongoingPathProvider, userIsLoggedProvider in this case) 
 and updates the output state (RiverpodRouterDelegate.navigationStack) accordingly.
 
 How is it done?
 
 ```dart
-class RiverpodNavigator {
-  RiverpodNavigator(Ref ref) {
+class RNavigator {
+  RNavigator(Ref ref) {
     ...
     /// Listen to the providers and call "onStateChanged" every time they change.
     [ongoingPathProvider,userIsLoggedProvider].foreach((provider) => ref.listen(provider, (_,__) => onStateChanged())));
@@ -88,7 +88,7 @@ class RiverpodNavigator {
     //=====> at this point, "ongoingPathProvider state" and  "RiverpodRouterDelegate.navigationStack" are in sync
   }
 
-  /// RiverpodRouterDelegate is tied to the RiverpodNavigator
+  /// RiverpodRouterDelegate is tied to the RNavigator
   final riverpodRouterDelegate = RiverpodRouterDelegate();
 
   /// Enter application navigation logic here (redirection, login flow, etc.). 
@@ -97,7 +97,7 @@ class RiverpodNavigator {
 }
 ```
 
-## 4. Example of RiverpodNavigator.appNavigationLogic for Login flow
+## 4. Example of RNavigator.appNavigationLogic for Login flow
 
 ```dart
 @override 

@@ -8,8 +8,8 @@ import 'widgets.dart';
 class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
   RiverpodRouterDelegate();
 
-  RiverpodNavigator? navigator;
-  RiverpodNavigator get _navigator => navigator as RiverpodNavigator;
+  RNavigator? navigator;
+  RNavigator get _navigator => navigator as RNavigator;
 
   @override
   TypedPath currentConfiguration = [];

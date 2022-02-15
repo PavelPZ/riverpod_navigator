@@ -55,10 +55,10 @@ class SegmentGrp with _$SegmentGrp, TypedSegment {
 
 ### Step2 - navigator parameterization
 
-Extends the RiverpodNavigator class as follows:
+Extends the RNavigator class as follows:
 
 ```dart
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
@@ -76,7 +76,7 @@ class AppNavigator extends RiverpodNavigator {
 }
 ```
 
-### Step3 - use the RiverpodNavigator in MaterialApp.router
+### Step3 - use the RNavigator in MaterialApp.router
 
 If you are familiar with the Flutter Navigator 2.0 and the riverpod, the following code is clear:
 

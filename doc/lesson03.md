@@ -23,7 +23,7 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 
 
 ```dart
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,

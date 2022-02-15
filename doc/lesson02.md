@@ -47,7 +47,7 @@ AsyncScreenActions? segment2AsyncScreenActions(TypedSegment segment) {
 
 
 ```dart
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,

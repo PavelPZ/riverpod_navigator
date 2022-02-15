@@ -24,7 +24,7 @@ class SegmentGrp with _$SegmentGrp, TypedSegment {
   factory SegmentGrp.fromJson(Map<String, dynamic> json) => _$SegmentGrpFromJson(json);
 }
 
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,

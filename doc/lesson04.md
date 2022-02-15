@@ -11,7 +11,7 @@ See [lesson04.dart source code](https://github.com/PavelPZ/riverpod_navigator/bl
 
 
 ```dart
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,

@@ -7,7 +7,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath>
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
-  late RiverpodNavigator navigator;
+  late RNavigator navigator;
 
   @override
   TypedPath get navigationStack => currentConfiguration;

@@ -47,7 +47,7 @@ typedef NeedsLogin<T extends TypedSegment> = bool Function(T segment);
 /// !!! only book screens with odd 'id' require a login
 bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,

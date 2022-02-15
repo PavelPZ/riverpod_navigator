@@ -22,12 +22,12 @@ part 'screenWrappers.dart';
 typedef JsonMap = Map<String, dynamic>;
 typedef Json2Segment = TypedSegment Function(JsonMap, String unionKey);
 typedef AsyncActionResult = dynamic;
-typedef RiverpodNavigatorCreator = RiverpodNavigator Function(Ref);
+typedef RiverpodNavigatorCreator = RNavigator Function(Ref);
 typedef NavigatorWidgetBuilder = Widget Function(BuildContext, Navigator);
 typedef ScreenBuilder<T extends TypedSegment> = Widget Function(T);
 typedef SplashBuilder = Widget Function();
 typedef Screen2Page<T extends TypedSegment> = Page Function(T, ScreenBuilder<T>);
-typedef NavigatorDispose = void Function(RiverpodNavigator);
+typedef NavigatorDispose = void Function(RNavigator);
 
 // ********************************************
 // TypedSegment & TypedPath
@@ -57,8 +57,8 @@ typedef TypedPath = List<TypedSegment>;
 
 // RouterDelegate interface for both tests and flutter app
 abstract class IRouterDelegate {
-  RiverpodNavigator get navigator;
-  void set navigator(RiverpodNavigator value);
+  RNavigator get navigator;
+  void set navigator(RNavigator value);
   TypedPath get navigationStack;
   void set navigationStack(TypedPath value);
 }
@@ -66,7 +66,7 @@ abstract class IRouterDelegate {
 // RouterDelegate interface for tests
 class RouterDelegate4Dart implements IRouterDelegate {
   @override
-  late RiverpodNavigator navigator;
+  late RNavigator navigator;
   @override
   TypedPath navigationStack = [];
 }

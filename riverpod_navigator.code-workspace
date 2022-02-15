@@ -23,6 +23,8 @@
 		}
 	],
 	"settings": {
-		"liveServer.settings.multiRootWorkspaceName": "riverpod_navigator"
+		"liveServer.settings.multiRootWorkspaceName": "riverpod_navigator",
+		"search.useGlobalIgnoreFiles": true,
+		"search.useIgnoreFiles": false
 	}
 }

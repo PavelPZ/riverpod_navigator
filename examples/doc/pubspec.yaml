@@ -35,3 +35,14 @@ flutter:
   uses-material-design: true
 
 # https://medium.com/p/c55b627da8a6/edit
+
+# dartdoc
+# cd doc\api
+# dhttpd
+# open http://localhost:8080/index.html
+
+# flutter pub run build_runner watch  --delete-conflicting-outputs
+
+# dart pub publish --dry-run
+# dart pub publish
+# dart pub publish --force 

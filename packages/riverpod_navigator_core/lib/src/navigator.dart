@@ -1,7 +1,7 @@
 part of 'index.dart';
 
 // ********************************************
-//   RiverpodNavigator
+//   RNavigator
 // ********************************************
 
 /// Helper singleton class for navigating to [TypedPath]

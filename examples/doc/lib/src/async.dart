@@ -42,7 +42,7 @@ Future<String> simulateAsyncResult(String asyncResult, int msec) async {
   return '$asyncResult: async result after $msec msec';
 }
 
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
@@ -90,7 +90,7 @@ Widget pageScreen(WidgetRef ref, PageSegment segment) => PageHelper<AppNavigator
     );
 
 @cwidget
-Widget pageHelper<N extends RiverpodNavigator>(
+Widget pageHelper<N extends RNavigator>(
   WidgetRef ref, {
   required TypedSegment segment,
   required String title,

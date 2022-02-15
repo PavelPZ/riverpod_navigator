@@ -10,7 +10,7 @@ See the source code of the test here: [lesson05_test.dart](/examples/doc/test/le
 
 
 ```dart
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,

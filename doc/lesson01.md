@@ -32,7 +32,7 @@ AppNavigator is a singleton class that does the following:
 
 
 ```dart
-class AppNavigator extends RiverpodNavigator {
+class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
