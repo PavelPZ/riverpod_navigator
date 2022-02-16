@@ -26,6 +26,8 @@ class Defer2NextTickNew {
   late RNavigatorCore navigator;
 
   void providerChanged() {
+    // synchronize navigation stack and ongoingPath
+    if (ignoreNextProviderChange) return;
     scheduleMicrotask(() {
       _needRefresh = true;
       if (!_running) _refreshStack();
@@ -36,6 +38,7 @@ class Defer2NextTickNew {
 
   var _needRefresh = false;
   var _running = false;
+  var ignoreNextProviderChange = false;
 
   // exist till _refreshStack is working
   Completer? _resultCompleter;
@@ -45,26 +48,39 @@ class Defer2NextTickNew {
   Future<void> get future => _resultFuture ?? Future.value();
 
   Future _refreshStack() async {
-    _resultCompleter = Completer();
-    _resultFuture = _resultCompleter!.future;
-    _running = true;
     try {
-      while (_needRefresh) {
-        _needRefresh = false;
-        final futureOr = navigator.appNavigationLogicCore(navigator.ref.read(ongoingPathProvider));
-        final newPath = futureOr is Future<TypedPath?> ? await futureOr : futureOr;
-        // appNavigationLogicCore recognize no change to navig stack
-        if (newPath == null) continue;
-        // change navigation stack
-        navigator.ref.read(navigationStackProvider.notifier).state = newPath;
-        // remember last navigation stack for restorePath
-        navigator._restorePath?.saveLastKnownStack(newPath);
+      try {
+        _running = true;
+        _resultCompleter = Completer();
+        _resultFuture = _resultCompleter!.future;
+        while (_needRefresh) {
+          _needRefresh = false;
+          final ongoingPathNotifier = navigator.ref.read(ongoingPathProvider.notifier);
+          final futureOr = navigator.appNavigationLogicCore(ongoingPathNotifier.state);
+          final newPath = futureOr is Future<TypedPath?> ? await futureOr : futureOr;
+          // during async appNavigationLogicCore state change come (in providerChanged)
+          // run another cycle (appNavigationLogicCore for fresh input navigation state)
+          if (_needRefresh) continue;
+          // appNavigationLogicCore recognize no change to navig stack
+          if (newPath == null) continue;
+          // synchronize navigation stack and ongoingPath
+          ignoreNextProviderChange = true;
+          try {
+            ongoingPathNotifier.state = navigator.ref.read(navigationStackProvider.notifier).state = newPath;
+          } finally {
+            ignoreNextProviderChange = false;
+          }
+          // remember last navigation stack for restorePath
+          navigator._restorePath?.saveLastKnownStack(newPath);
+        }
+        _resultCompleter!.complete(null);
+      } catch (e, s) {
+        // or sync exception or appNavigationLogicCore future error
+        _resultCompleter!.completeError(e, s);
       }
-      _resultCompleter!.complete(null);
     } finally {
       _running = false;
       _resultCompleter = null;
-      _resultFuture = null;
     }
   }
 }

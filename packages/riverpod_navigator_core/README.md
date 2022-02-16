@@ -22,7 +22,7 @@ a uloží se do dalšího provideru (like riverpod usually do), který nazývým
 Note: 
 - *book-screen může ke svému zobrazení potřebovat asynchronní akce (např. stažení dat z internetu)*
 - **Side effects**
-*tato stažená data mohou být třeba cachována v globální cache. Změna cache je tak vedlejší efekt vzniklý zobrazením book-screen*.
+*tato stažená data mohou být třeba cachována v globální cache. Změna cache je tak vedlejší-efekt vzniklý zobrazením book-screen*.
 
 
 #### Schéma
@@ -47,9 +47,16 @@ v reálnám světě navigace z jednoho screen na druhý může potřebovat async
 
 It is likely that the asynchronous actions of the new navigation stack will overlap with the old one.
 Například při rychlé změně požadavků na nový navigation stack opakovaným klikem na back-browser-button webového prohlížeče.
-Toto může být problém při udržení *side effects states* v konsistentním stavu.
+Toto může být problém při udržení *side-effects-states* v konsistentním stavu.
 
-Asynchronní akce je tedy potřeba koordinovat. 
+Asynchronní akce je tedy potřeba koordinovat.
+
+### riverpod_navigator_core řešení
+
+Riverpod_navigator_core:
+- povolí přechod na nový navigation state čeká, až předchozí navigační state ukončí všechny asynchronní akce. Zabrání se tak jejich překrývání.
+- čekající přechod na nový navigační stav může být pouze jeden. Pokud se objeví další, ten předchozí se zapomene.<br>
+Toto může nastat například při rychlém klikání na back-browser-button webového prohlížeče.
 
 ## Typed navigation mission
 
@@ -69,19 +76,23 @@ With the **typed-path** as the source of the truth.
 
 riverpod_navigator_core je dart library, without dependency on Flutter. 
 
-Máme tedy nyní navigationStackProvider, typed-segment, typed-path, asynchronní a cancelable navigaci ... ale kde je Flutter a jeho Navigator 2.0?
+Může tedy dojít k nedorozumnění. 
+Máme nyní navigationStackProvider, typed-segment, typed-path, asynchronní a cancelable navigaci ... ale kde je Flutter a jeho Navigator 2.0?
 
 Napojení všech těchto mechanismů na Navigator 2.0 již není problém, jak je ukázáno zde: [dartPad example](https://dartpad.dev/?id=970ba56347a19d86ccafeb551b013fd3).
 
-Tento jednoduchý příklad, který works for Flutter mobile and Flutter for web and desktop, obsahuje vše potřebné:
+Tento jednoduchý příklad, který works for Flutter mobile, Flutter for web and Flutter for desktop, obsahuje vše potřebné:
+
 - typed navigation (```TypedSegment, TypedPath, HomeSegment, BookSegment```)
 - ```navigationStackProvider```
 - screens (```HomeScreen(HomeSegment()), BookScreen(BookSegment(id:x))```)
 - Flutter Navigator 2.0 ```RouterDelegate```
-- Flutter for web ```RouteInformationParser``` (url string-path <==> typed-path)
+- Flutter for web ```RouteInformationParser``` (web-url <==> TypedPath konverter)
 
-Rozšířením riverpod_navigator_core je [riverpod_navigator package](https://pub.dev/packages/riverpod_navigator). 
-Obsahuje vše potřebné co usnadní použít výše zmíněné principy ve Flutter alikaci.
+## Testování
+
+
+
 
 ## Je vůbec asynchronní navigace potřeba?
 
@@ -102,6 +113,9 @@ Asynchronní akce při změně navigation stack ve spojení s rychlou změnou po
 
 
 
+
+Rozšířením riverpod_navigator_core je [riverpod_navigator package](https://pub.dev/packages/riverpod_navigator). 
+Obsahuje vše potřebné co usnadní použít výše zmíněné principy ve Flutter alikaci.
 
 
 

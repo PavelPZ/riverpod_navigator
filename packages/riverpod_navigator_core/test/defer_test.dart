@@ -113,21 +113,21 @@ void main() {
     final p1 = container.read(navigationStackProvider).toPath();
     expect(p1, '{"runtimeType":"HomeSegment"}');
 
-    for (var i = 0; i < 3; i++) {
-      container.read(ongoingPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 1)];
-      await container.pump();
+    // for (var i = 0; i < 3; i++) {
+    container.read(ongoingPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 1)];
+    await container.pump();
 
-      await Future.delayed(Duration(milliseconds: 300));
-      container.read(ongoingPathProvider.notifier).state = [HomeSegment()];
-      await Future.delayed(Duration(milliseconds: 300));
-      container.read(ongoingPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 2)];
-      container.read(loginProvider.notifier).update((s) => !s);
-      container.read(ongoingPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 3)];
+    await Future.delayed(Duration(milliseconds: 300));
+    container.read(ongoingPathProvider.notifier).state = [HomeSegment()];
+    await Future.delayed(Duration(milliseconds: 300));
+    container.read(ongoingPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 2)];
+    container.read(loginProvider.notifier).update((s) => !s);
+    container.read(ongoingPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 3)];
 
-      await navigator.navigationCompleted;
-      final p3 = container.read(navigationStackProvider).toPath();
-      expect(p3, '{"runtimeType":"HomeSegment"}/{"runtimeType":"BookSegment","id":3}');
-    }
+    await navigator.navigationCompleted;
+    final p3 = container.read(navigationStackProvider).toPath();
+    expect(p3, '{"runtimeType":"HomeSegment"}/{"runtimeType":"BookSegment","id":3}');
+    // }
     return;
   });
 

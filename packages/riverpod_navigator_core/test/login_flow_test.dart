@@ -7,15 +7,10 @@ import 'package:test/test.dart';
 
 import 'model.dart';
 
-final isLoggedProvider = StateProvider<bool>((_) => throw UnimplementedError());
+final isLoggedProvider = StateProvider<bool>((_) => false);
 
 class TestNavigator extends RNavigatorCore {
   TestNavigator(Ref ref) : super(ref);
-
-  static List<Override> providerOverrides(TestNavigator navigator(Ref ref)) => [
-        isLoggedProvider.overrideWithValue(StateController<bool>(false)),
-        ...RNavigatorCore.providerOverrides([HomeSegment()], navigator),
-      ];
 
   @override
   FutureOr<TypedPath> appNavigationLogicCore(TypedPath ongoingPath, {CToken? cToken}) {
@@ -37,7 +32,7 @@ class TestNavigator extends RNavigatorCore {
 void main() {
   test('test login flow', () async {
     final container = ProviderContainer(
-      overrides: RNavigatorCore.providerOverrides([HomeSegment()], TestNavigator.new),
+      overrides: RNavigatorCore.providerOverrides([HomeSegment()], TestNavigator.new, dependsOn: [isLoggedProvider]),
     );
     final navigator = container.read(riverpodNavigatorProvider);
 
