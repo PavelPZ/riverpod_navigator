@@ -22,7 +22,7 @@ a uloží se do dalšího provideru (like riverpod usually do), který nazývým
 #### Side effects
 
 Zobrazení book screen může vyžadovat asynchronní stažení dat. A tato data mohou být třeba cachována.
-Neboli toto zobrazení s sebou přináší další vedlejší efekty, ovlivňující stav aplikace.
+Neboli zobrazení book screen může přinést vedlejší efekty, ovlivňující stav aplikace.
 
 #### Schéma
 
@@ -50,11 +50,29 @@ Toto může způsobit problémy jak udržet *side effects states* zmíněné vý
 Vhodným přístupem je možné těmto problémům zabránit.
 
 ## Typed navigation mission
-...
+
+Take a look at the following terms related to url path ```home/book;id=2```
+
+- **string-path:** ```final stringPath = 'home/book;id=2';```
+- **string-segment** - the string-path consists of two string-segments: 'home'and 'book;id=2'
+- **typed-segment** - the typed-segment is immutable class that defines string-segment: HomeSegment() and BookSegment(id:2)
+- **typed-path**: typed-path can be understood as List<typed-segment>: ```final typedPath = [HomeSegment(), BooksSegment(), BookSegment(id:2)];```
+- **navigation-stack** of Flutter Navigator 2.0 is a stack of screens, parameterized by typed-segment:
+  ```[HomeScreen(HomeSegment())), BookScreen(BookSegment(id:2))]```
+
+The mission of the navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
+With the **typed-path** as the source of the truth.
 
 ## Kde je Flutter Navigator 2.0?
 
-Máme tedy navigationStackProvider, TypedSegment, TypedPath, asynchronní a cancelable navigaci ... ale kde je Flutter a jeho Navigator 2.0?
+Máme tedy navigationStackProvider, typed-segment, typed-path, asynchronní a cancelable navigaci ... ale kde je Flutter a jeho Navigator 2.0?
 
-Napojení všech těchto mechanismů na Navigator 2.0 již není problém, jak je ukázáno na dartPad příkladě: https://dartpad.dev/?id=970ba56347a19d86ccafeb551b013fd3.
+Napojení všech těchto mechanismů na Navigator 2.0 již není problém, jak je ukázáno v dartPad na příkladě: https://dartpad.dev/?id=970ba56347a19d86ccafeb551b013fd3.
+
+Tento jednoduchý příklad, který Works for Flutter mobile and Flutter for web and desktop, obsahuje vše potřebné:
+- typed navigation (```TypedSegmenbt, TypedPath, HomeSegment, BookSegment```)
+- ```navigationStackProvider```
+- screens (```HomeScreen(HomeSegment()), BookScreen(BookSegment(id:x))```)
+- Flutter Navigator 2.0 RouterDelegate
+- string-path <==> typed-path pro Flutter for web
 

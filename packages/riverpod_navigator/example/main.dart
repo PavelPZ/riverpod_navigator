@@ -41,6 +41,40 @@ class App extends ConsumerWidget {
 }
 
 //*********************************************
+// PROVIDERS
+//*********************************************
+
+final routeDelegateProvider = Provider<RiverpodRouterDelegate>((ref) => RiverpodRouterDelegate(ref, [HomeSegment()]));
+
+final navigationStackProvider = StateProvider<TypedPath>((_) => [HomeSegment()]);
+
+//*********************************************
+// MODEL
+//*********************************************
+
+typedef JsonMap = Map<String, dynamic>;
+
+abstract class TypedSegment {
+  factory TypedSegment.fromJson(JsonMap json) => json['runtimeType'] == 'BookSegment' ? BookSegment(id: json['id']) : HomeSegment();
+
+  JsonMap toJson() => <String, dynamic>{'runtimeType': runtimeType.toString()};
+  @override
+  String toString() => jsonEncode(toJson());
+}
+
+/// Typed variant of whole url path (which consists of [TypedSegment]s)
+typedef TypedPath = List<TypedSegment>;
+
+class HomeSegment with TypedSegment {}
+
+class BookSegment with TypedSegment {
+  BookSegment({required this.id});
+  final int id;
+  @override
+  JsonMap toJson() => super.toJson()..['id'] = id;
+}
+
+//*********************************************
 // RouterDelegate
 //*********************************************
 
@@ -90,40 +124,6 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
     ref.read(navigationStackProvider.notifier).state = configuration;
     return SynchronousFuture(null);
   }
-}
-
-//*********************************************
-// PROVIDERS
-//*********************************************
-
-final routeDelegateProvider = Provider<RiverpodRouterDelegate>((ref) => RiverpodRouterDelegate(ref, [HomeSegment()]));
-
-final navigationStackProvider = StateProvider<TypedPath>((_) => [HomeSegment()]);
-
-//*********************************************
-// MODEL
-//*********************************************
-
-typedef JsonMap = Map<String, dynamic>;
-
-abstract class TypedSegment {
-  factory TypedSegment.fromJson(JsonMap json) => json['runtimeType'] == 'BookSegment' ? BookSegment(id: json['id']) : HomeSegment();
-
-  JsonMap toJson() => <String, dynamic>{'runtimeType': runtimeType.toString()};
-  @override
-  String toString() => jsonEncode(toJson());
-}
-
-/// Typed variant of whole url path (which consists of [TypedSegment]s)
-typedef TypedPath = List<TypedSegment>;
-
-class HomeSegment with TypedSegment {}
-
-class BookSegment with TypedSegment {
-  BookSegment({required this.id});
-  final int id;
-  @override
-  JsonMap toJson() => super.toJson()..['id'] = id;
 }
 
 //*********************************************
