@@ -39,8 +39,9 @@ Podívejme se podrobněji, jaké výzvy z uvedeného příkladu plynou.
 
 ### 1. potřeba asynchronní navigace<br/>
 v reálnám světě navigace z jednoho screen na druhý může potřebovat asynchronní akci, jakou je např:
-    - starý screen ukládá výsledky do vzdáleného úložiště 
-    - nový screen stahuje potřebná data z internetu
+
+- starý screen ukládá výsledky do vzdáleného úložiště 
+- nový screen stahuje potřebná data z internetu
 
 ### 2. cancelable navigation
 
