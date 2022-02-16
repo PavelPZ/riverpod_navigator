@@ -37,15 +37,13 @@ Note:
 
 Podívejme se podrobněji, jaké výzvy z uvedeného příkladu plynou.
 
-### 1. potřeba asynchronní navigace<br/>
+### potřeba asynchronní navigace<br/>
 v reálnám světě navigace z jednoho screen na druhý může potřebovat asynchronní akci, jakou je např:
 
 - starý screen ukládá výsledky do vzdáleného úložiště 
 - nový screen stahuje potřebná data z internetu
 
-### 2. cancelable navigation
-
-#### Rychlá změna ongiongPathProvider stavu
+### Rychlá změna ongiongPathProvider stavu
 S příchodem Flutter for Web and Flutter for Desktop se zvyšuje potřeba umožnit cancel právě probíhající asynchronní navigace.
 Představme si, že uživatel ve vaší web aplikaci klikne 5x za sebou rychle na Back browser button. 
 To může stihnout za méně než jednu vteřinu.
@@ -53,13 +51,13 @@ Intervaly mezi kliky tak mohou být pod 200 msec.
 Je pak velice pravděpodobné, že některý klik právě probíhající asynchronní akci přeruší.
 Toto může způsobit problémy jak udržet zmíněné výše *side effects states* v konsistentním stavu.
 
-#### Kompletní změna ongiongPathProvider stavu
+### Kompletní změna ongiongPathProvider stavu
 Dalším důsledkem vývoje Flutter web aplikace je možná změna kompletního navigation stack. 
 V mobilní aplikaci se uživatel k určitému navigation state postupně prokliká.
 OngiongPathProvider tak udržuje postupně pomocí ```push``` resp. ```pop```. 
 Ve webovém světě si uložením a následným použitím webové url adresy vynutíme kompletní změnu ongiongPathProvider stavu.
 
-#### závěr
+### závěr
 
 
 Vhodným přístupem je možné těmto problémům zabránit.
