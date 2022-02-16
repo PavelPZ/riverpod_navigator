@@ -22,7 +22,7 @@ class TestNavigator extends RNavigatorCore {
       return ongoingPath;
     } else {
       return Future.delayed(Duration(milliseconds: delayMsec!)).then<TypedPath>((value) {
-        if (cToken?.isCanceled == true) return [];
+        if (cToken?.isCancelling == true) return [];
         if (isError) throw 'ASYNC ERROR';
         return ongoingPath;
       });

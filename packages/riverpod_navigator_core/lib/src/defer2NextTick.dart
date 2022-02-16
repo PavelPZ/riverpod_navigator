@@ -43,7 +43,7 @@ class Defer2NextTick {
     // state changed during navigator.appNavigationLogicCore computing => cancel its CancelableCompleter
     if (_appLogicCompleter != null) {
       assert(_cToken != null);
-      _cToken!.isCanceled = true;
+      _cToken!.isCancelling = true;
       _appLogicCompleter!.operation.cancel();
 
       _appLogicCompleter = null;

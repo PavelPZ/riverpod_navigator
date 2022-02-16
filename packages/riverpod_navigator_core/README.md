@@ -19,9 +19,12 @@ Když zalogován není (```ref.read(isLoggedProvider) == false```), tak místo n
 Výsledný stav kliku na link-button se tedy spočte ze stavu dvou providerů (ongiongPathProvider a isLoggedProvider) 
 a uloží se do dalšího provideru (like riverpod usually do), který nazývýme **navigationStackProvider**.
 
-Note: **Side effects**
+Note: 
+- *book-screen může ke svému zobrazení potřebovat asynchronní akce (stažení dat z internetu)*
+- **Side effects**
 *Zobrazení book screen může vyžadovat asynchronní stažení dat. A tato data mohou být třeba cachována.
 Neboli zobrazení book-screen může přinést vedlejší efekty, ovlivňující stav aplikace*.
+
 
 #### Schéma
 
@@ -33,18 +36,31 @@ Neboli zobrazení book-screen může přinést vedlejší efekty, ovlivňující
 
 ## Challenges to address
 
-1. asynchronní navigace
+Jaké výzvy z uvedenéo příkladu plynou? 
+Uvědomme si, že tyto výzvy 
+
+1. potřeba asynchronní navigace
 v reálnám světě přechod z jednoho screen obsahuje asynchronní akce, jakými jsou například:
 - uschování výsledků ze starého screenu do vzdáleného úložiště
 - stažení dat z internetu, potřebných k zobrazení nového screenu
 
 2. cancelable navigation
-s příchodem Flutter for Web and Flutter for Desktop se zvyšuje potřeba umožnit cancel právě probíhající asynchronní navigace.
+
+### rychlá změna ongiongPathProvider stavu
+S příchodem Flutter for Web and Flutter for Desktop se zvyšuje potřeba umožnit cancel právě probíhající asynchronní navigace.
 Představme si, že uživatel ve vaší web aplikaci klikne 5x za sebou rychle na Back browser button. 
-Intervaly mezi kliky mohou být pod 200 msec.
-A v browser historii jsou stránky, vyžadující asynchronní akce.
-Je pak velice pravděpodobné, že se některý klik právě probíhající asynchronní akce přeruší.
-Toto může způsobit problémy jak udržet *side effects states* zmíněné výše v konsistentním stavu.
+To může stihnout za méně než jednu vteřinu.
+Intervaly mezi kliky tak mohou být pod 200 msec.
+Je pak velice pravděpodobné, že se některý klik právě probíhající asynchronní akci přeruší.
+Toto může způsobit problémy jak udržet zmíněné výše *side effects states* v konsistentním stavu.
+
+### kompletní změna ongiongPathProvider stavu
+Dalším důsledkem vývoje Flutter web aplikace ja možná změna kompletního navigation stack. 
+V mobilní aplikaci se uživatel k určitému navigation state postupně prokliká.
+OngiongPathProvider tak udržuje postupně pomocí ```push``` resp. ```pop```. 
+Ve webovém světě si uložením a následným použitím webové url adresy vynutíme kompletní změnu ongiongPathProvider stavu.
+
+### závěr
 
 Vhodným přístupem je možné těmto problémům zabránit.
 
@@ -64,14 +80,25 @@ With the **typed-path** as the source of the truth.
 
 ## Kde je Flutter Navigator 2.0?
 
-Máme tedy navigationStackProvider, typed-segment, typed-path, asynchronní a cancelable navigaci ... ale kde je Flutter a jeho Navigator 2.0?
+riverpod_navigator_core je dart library, without dependency on Flutter. 
 
-Napojení všech těchto mechanismů na Navigator 2.0 již není problém, jak je ukázáno v dartPad na příkladě: https://dartpad.dev/?id=970ba56347a19d86ccafeb551b013fd3.
+Máme tedy nyní navigationStackProvider, typed-segment, typed-path, asynchronní a cancelable navigaci ... ale kde je Flutter a jeho Navigator 2.0?
 
-Tento jednoduchý příklad, který Works for Flutter mobile and Flutter for web and desktop, obsahuje vše potřebné:
+Napojení všech těchto mechanismů na Navigator 2.0 již není problém, jak je ukázáno zde: [dartPad example](https://dartpad.dev/?id=970ba56347a19d86ccafeb551b013fd3).
+
+Tento jednoduchý příklad, který works for Flutter mobile and Flutter for web and desktop, obsahuje vše potřebné:
 - typed navigation (```TypedSegment, TypedPath, HomeSegment, BookSegment```)
 - ```navigationStackProvider```
 - screens (```HomeScreen(HomeSegment()), BookScreen(BookSegment(id:x))```)
 - Flutter Navigator 2.0 ```RouterDelegate```
-- string-path <==> typed-path pro Flutter for web (```RouteInformationParser```)
+- Flutter for web ```RouteInformationParser``` (url string-path <==> typed-path)
+
+Rozšířením riverpod_navigator_core je [riverpod_navigator package](https://pub.dev/packages/riverpod_navigator). 
+Obsahuje vše potřebné co usnadní použít výše zmíněné principy ve Flutter alikaci.
+
+## Cancellation Token
+
+Můžete být štastný, když se vám podaří navrhnout vaší aplikaci tak, aby jste se důsledkům cancelable navigation vyhnuli.
+
+
 

@@ -88,7 +88,7 @@ class RNavigator extends RNavigatorCore {
     final asyncResult = wait4AsyncScreenActions(navigationStack, newOngoingPath);
     if (asyncResult is Future)
       return asyncResult.then((_) {
-        if (cToken?.isCanceled == true) return [];
+        if (cToken?.isCancelling == true) return [];
         return newOngoingPath;
       });
     return newOngoingPath;

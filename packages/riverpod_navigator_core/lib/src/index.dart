@@ -47,9 +47,10 @@ class RestorePath {
 }
 
 // ********************************************
-// CToken
+// Cancellation Token
 // ********************************************
 
+//
 class CToken {
-  bool isCanceled = false;
+  bool isCancelling = false;
 }
