@@ -40,25 +40,16 @@ Podívejme se podrobněji, jaké výzvy z uvedeného příkladu plynou.
 ### potřeba asynchronní navigace<br/>
 v reálnám světě navigace z jednoho screen na druhý může potřebovat asynchronní akci, např:
 
-- starý screen ukládá výsledky do vzdáleného úložiště 
-- nový screen stahuje potřebná data z internetu. Takovým daty mohou být:
-  - výsledky ze vzdáleného úložiště
-  - data v cache, pokud ještě nejsou načtena před  
+- starý screen ukládá data do vzdáleného úložiště
+- nový screen stahuje potřebná data ze vzdáleného úložiště
 
-### potřeba koordinovat akce asynchronní navigace
+### potřeba koordinovat asynchronní akce
 
-
-It is then very likely that the asynchronous actions of the new navigation stack will overlap with the old one.
-
-Při rychlé změna požadavků na nový navigation stack (například rychlým klikem na back-browser-button webového prohlížeče)
-
-It is then very likely that the asynchronous actions of the new navigation stack will overlap with the old one.
+It is likely that the asynchronous actions of the new navigation stack will overlap with the old one.
+Například při rychlé změně požadavků na nový navigation stack opakovaným klikem na back-browser-button webového prohlížeče.
 Toto může být problém při udržení *side effects states* v konsistentním stavu.
 
-### závěr
-
-Je dobré navrhnout aplikaci tak, aby se vás výše zmíněné výzvy netýkaly.
-Pokud se to ale nepodaří, vhodným přístupem je jim možné do určité míry zabránit.
+Asynchronní akce je tedy potřeba koordinovat. 
 
 ## Typed navigation mission
 
