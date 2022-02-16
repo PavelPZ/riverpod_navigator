@@ -8,7 +8,8 @@ part of 'index.dart';
 class RNavigatorCore {
   RNavigatorCore(this.ref) {
     // see Defer2NextTick doc
-    _defer2NextTick = Defer2NextTick()..navigator = this;
+    // _defer2NextTick = Defer2NextTick()..navigator = this;
+    _defer2NextTick = Defer2NextTickNew()..navigator = this;
 
     ref.onDispose(() {
       // ignore: avoid_function_literals_in_foreach_calls
@@ -53,7 +54,7 @@ class RNavigatorCore {
 
   @protected
   Ref ref;
-  Defer2NextTick? _defer2NextTick;
+  Defer2NextTickNew? _defer2NextTick;
 
   static List<Override> providerOverrides(
     TypedPath initPath,

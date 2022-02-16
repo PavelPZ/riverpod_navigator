@@ -22,7 +22,7 @@ a uloží se do dalšího provideru (like riverpod usually do), který nazývým
 Note: 
 - *book-screen může ke svému zobrazení potřebovat asynchronní akce (např. stažení dat z internetu)*
 - **Side effects**
-*tato stažená data mohou být třeba cachována v globální cache. Změna cache je tak vedlejší efekt zobrazení book-screen*.
+*tato stažená data mohou být třeba cachována v globální cache. Změna cache je tak vedlejší efekt vzniklý zobrazením book-screen*.
 
 
 #### Schéma
@@ -41,29 +41,24 @@ Podívejme se podrobněji, jaké výzvy z uvedeného příkladu plynou.
 v reálnám světě navigace z jednoho screen na druhý může potřebovat asynchronní akci, např:
 
 - starý screen ukládá výsledky do vzdáleného úložiště 
-- nový screen stahuje potřebná data z internetu
+- nový screen stahuje potřebná data z internetu. Takovým daty mohou být:
+  - výsledky ze vzdáleného úložiště
+  - 
 
-### Flutter for web: kompletní změna navigation stack
+### potřeba koordinovat akce asynchronní navigace
 
-V mobilní aplikaci se uživatel k určitému navigation state postupně dostane pomocí ```push```'s resp. ```pop```'s.
-Ve webovém světě si uložením a následným použitím webové url adresy vynutíme kompletní změnu navigation stack.
 
-Or more "asynchronous" new screens can replace several "asynchronous" old screens.
+It is then very likely that the asynchronous actions of the new navigation stack will overlap with the old one.
 
-### rychlá změna ongiongPathProvider stavu
+Při rychlé změna požadavků na nový navigation stack (například rychlým klikem na back-browser-button webového prohlížeče)
 
-S příchodem Flutter for Web and Flutter for Desktop se zvyšuje potřeba umožnit cancel právě probíhající asynchronní navigace.
-Představme si, že uživatel ve vaší web aplikaci klikne 5x za sebou rychle na back-browser-button. 
-To může stihnout za méně než jednu vteřinu. Intervaly mezi kliky tak mohou být pod 200 msec.
-
-Je pak velice pravděpodobné, že se některá právě probíhající stará asynchronní překryje spuštěním nové.
-Toto může způsobit problémy jak udržet *side effects states* v konsistentním stavu.
+It is then very likely that the asynchronous actions of the new navigation stack will overlap with the old one.
+Toto může být problém při udržení *side effects states* v konsistentním stavu.
 
 ### závěr
 
-Je dobré navrhnout aplikaci tak, aby se vás výše zmíněné výzvy netýkaly. 
+Je dobré navrhnout aplikaci tak, aby se vás výše zmíněné výzvy netýkaly.
 Pokud se to ale nepodaří, vhodným přístupem je jim možné do určité míry zabránit.
-Viz diskuze o Cancellation Token níže.
 
 ## Typed navigation mission
 
@@ -97,9 +92,32 @@ Tento jednoduchý příklad, který works for Flutter mobile and Flutter for web
 Rozšířením riverpod_navigator_core je [riverpod_navigator package](https://pub.dev/packages/riverpod_navigator). 
 Obsahuje vše potřebné co usnadní použít výše zmíněné principy ve Flutter alikaci.
 
+## Je vůbec asynchronní navigace potřeba?
+
+Flutter Navigator 2.0 je ve své podstatě synchronní. 
+Zavoláním RouterDelegate.notifyListeners okamžitě spustí vytvoření nové screen a transition staré screen v novou.
+
+Stará screen může při své deaktivaci asynchronně ukládat výsledky do vzdáleného úložiště.
+Nová screen se může ihned zobrazit v nedokončeném "waiting" stavu a po načtení potřebných dat se rebuildovat.
+
+Tento přístup má svá úskalí:
+- není moc hezký: po hezké transition jedné screen v druhou následuje další přechod mezi "waiting" a "dokončeným" stavem
+- je nekorektní, např. pokud nová stránka potřebuje ještě neuložená data té staré
+- bez obecného mechanismu asynchronní navigace se musí výše zmínené nekorektnosti řešit pro každý případ individuálně 
+
 ## Cancellation Token
 
-Můžete být štastný, když se vám podaří navrhnout vaší aplikaci tak, aby jste se důsledkům cancelable navigation vyhnuli.
+Asynchronní akce při změně navigation stack ve spojení s rychlou změnou požadavků na nový navigation stack.
 
 
+
+
+
+
+### Flutter for web: kompletní změna navigation stack
+
+V mobilní aplikaci se uživatel k určitému navigation state postupně dostane pomocí ```push```'s resp. ```pop```'s.
+Ve webovém světě si uložením a následným použitím url adresy vynutíme kompletní změnu navigation stack.
+
+In other words, more "asynchronous" new screens can replace several "asynchronous" old screens.
 
