@@ -33,6 +33,8 @@ Note:
 <img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" width="565" height="424" alt="riverpod_navigator_core" />
 </p>
 
+Neboli se stará o to, aby na základě vstupních provider states (ongiongPathProvider, isLoggedProvider, ...) korektně vytvořil výstupní provider state (navigationStackProvider).
+
 ## Challenges to address
 
 Podívejme se podrobněji, jaké výzvy z uvedeného příkladu plynou.
@@ -74,14 +76,15 @@ With the **typed-path** as the source of the truth.
 
 ## Kde je Flutter Navigator 2.0?
 
-riverpod_navigator_core je dart library, without dependency on Flutter. 
+Máme nyní navigationStackProvider, typed-segment, typed-path, asynchronní a cancelable navigaci ... ale kde je Flutter a jeho Navigator 2.0? 
+Riverpod_navigator_core je dart library, without dependency on Flutter. K vlastně slouží?
 
-Může tedy dojít k nedorozumnění. 
-Máme nyní navigationStackProvider, typed-segment, typed-path, asynchronní a cancelable navigaci ... ale kde je Flutter a jeho Navigator 2.0?
+Jsou dvě použití:
 
-Napojení všech těchto mechanismů na Navigator 2.0 již není problém, jak je ukázáno zde: [dartPad example](https://dartpad.dev/?id=970ba56347a19d86ccafeb551b013fd3).
+1. Máme na základě vstupních provider states (ongiongPathProvider, isLoggedProvider, ...) korektní výstupní provider state (navigationStackProvider).
+Napojení navigationStackProvider na Navigator 2.0 již není problém, jak je ukázáno zde: [dartPad example](https://dartpad.dev/?id=970ba56347a19d86ccafeb551b013fd3).
 
-Tento jednoduchý příklad, který works for Flutter mobile, Flutter for web and Flutter for desktop, obsahuje vše potřebné:
+Tento jednoduchý příklad, který works for Flutter mobile, Flutter for web and Flutter for desktop, obsahuje vše další:
 
 - typed navigation (```TypedSegment, TypedPath, HomeSegment, BookSegment```)
 - ```navigationStackProvider```
@@ -89,40 +92,8 @@ Tento jednoduchý příklad, který works for Flutter mobile, Flutter for web an
 - Flutter Navigator 2.0 ```RouterDelegate```
 - Flutter for web ```RouteInformationParser``` (web-url <==> TypedPath konverter)
 
+2. Rozšířením riverpod_navigator_core je [riverpod_navigator package](https://pub.dev/packages/riverpod_navigator). 
+Obsahuje vše co usnadní použít výše zmíněné principy ve Flutter alikaci.
+
 ## Testování
-
-
-
-
-## Je vůbec asynchronní navigace potřeba?
-
-Flutter Navigator 2.0 je ve své podstatě synchronní. 
-Zavoláním RouterDelegate.notifyListeners okamžitě spustí vytvoření nové screen a transition staré screen v novou.
-
-Stará screen může při své deaktivaci asynchronně ukládat výsledky do vzdáleného úložiště.
-Nová screen se může ihned zobrazit v nedokončeném "waiting" stavu a po načtení potřebných dat se rebuildovat.
-
-Tento přístup má svá úskalí:
-- není moc hezký: po hezké transition jedné screen v druhou následuje další přechod mezi "waiting" a "dokončeným" stavem
-- je nekorektní, např. pokud nová stránka potřebuje ještě neuložená data té staré
-- bez obecného mechanismu asynchronní navigace se musí výše zmínené nekorektnosti řešit pro každý případ individuálně 
-
-## Cancellation Token
-
-Asynchronní akce při změně navigation stack ve spojení s rychlou změnou požadavků na nový navigation stack.
-
-
-
-
-Rozšířením riverpod_navigator_core je [riverpod_navigator package](https://pub.dev/packages/riverpod_navigator). 
-Obsahuje vše potřebné co usnadní použít výše zmíněné principy ve Flutter alikaci.
-
-
-
-### Flutter for web: kompletní změna navigation stack
-
-V mobilní aplikaci se uživatel k určitému navigation state postupně dostane pomocí ```push```'s resp. ```pop```'s.
-Ve webovém světě si uložením a následným použitím url adresy vynutíme kompletní změnu navigation stack.
-
-In other words, more "asynchronous" new screens can replace several "asynchronous" old screens.
 

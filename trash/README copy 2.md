@@ -1,3 +1,39 @@
+
+
+
+## Je vůbec asynchronní navigace potřeba?
+
+Flutter Navigator 2.0 je ve své podstatě synchronní. 
+Zavoláním RouterDelegate.notifyListeners okamžitě spustí vytvoření nové screen a transition staré screen v novou.
+
+Stará screen může při své deaktivaci asynchronně ukládat výsledky do vzdáleného úložiště.
+Nová screen se může ihned zobrazit v nedokončeném "waiting" stavu a po načtení potřebných dat se rebuildovat.
+
+Tento přístup má svá úskalí:
+- není moc hezký: po hezké transition jedné screen v druhou následuje další přechod mezi "waiting" a "dokončeným" stavem
+- je nekorektní, např. pokud nová stránka potřebuje ještě neuložená data té staré
+- bez obecného mechanismu asynchronní navigace se musí výše zmínené nekorektnosti řešit pro každý případ individuálně 
+
+## Cancellation Token
+
+Asynchronní akce při změně navigation stack ve spojení s rychlou změnou požadavků na nový navigation stack.
+
+
+
+
+
+
+
+### Flutter for web: kompletní změna navigation stack
+
+V mobilní aplikaci se uživatel k určitému navigation state postupně dostane pomocí ```push```'s resp. ```pop```'s.
+Ve webovém světě si uložením a následným použitím url adresy vynutíme kompletní změnu navigation stack.
+
+In other words, more "asynchronous" new screens can replace several "asynchronous" old screens.
+
+
+
+
 # Riverpod, freezed and Navigator 2.0
 
 ... how to use [riverpod](https://riverpod.dev/) and [freezed](https://github.com/rrousselGit/freezed) 
