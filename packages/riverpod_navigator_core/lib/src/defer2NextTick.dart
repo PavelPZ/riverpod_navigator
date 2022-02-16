@@ -94,12 +94,13 @@ class Defer2NextTick {
         ignoreNextStateChange = true;
         try {
           assert(newPath.isNotEmpty);
-          ongoingNotifier.state = navigator.ref.read(navigationStackProvider.notifier).state = newPath;
+          //ongoingNotifier.state =
+          navigator.ref.read(navigationStackProvider.notifier).state = newPath;
           // remember last state for restorePath
           navigator._restorePath?.saveLastKnownStack(newPath);
 
-          // quick clicks on Back browser button raises Flutter navigation error
-          if (RNavigatorCore.kIsWeb) await Future.delayed(Duration(milliseconds: 300));
+          // a quick click on the browser's Back button causes a Flutter navigation error
+          // if (RNavigatorCore.kIsWeb) await Future.delayed(Duration(milliseconds: 300));
         } finally {
           ignoreNextStateChange = false;
         }

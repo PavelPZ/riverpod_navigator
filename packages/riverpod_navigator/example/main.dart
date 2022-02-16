@@ -5,6 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //*********************************************
+//*********************************************
+//
+//  How to easily connect riverpod provider (navigationStackProvider)
+//  with Flutter Navigator 2.0 RouterDelegate.
+//
+//  Works for Flutter mobile and Flutter web and desktop.
+//
+//  A similar principle is used in the
+//  [riverpod_navigator package](https://pub.dev/packages/riverpod_navigator) .
+//
+//*********************************************
+//*********************************************
+
+//*********************************************
 // APP entry point
 //*********************************************
 void main() => runApp(
@@ -82,9 +96,9 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
 // PROVIDERS
 //*********************************************
 
-final navigationStackProvider = StateProvider<TypedPath>((_) => [HomeSegment()]);
-
 final routeDelegateProvider = Provider<RiverpodRouterDelegate>((ref) => RiverpodRouterDelegate(ref, [HomeSegment()]));
+
+final navigationStackProvider = StateProvider<TypedPath>((_) => [HomeSegment()]);
 
 //*********************************************
 // MODEL
@@ -161,7 +175,7 @@ class HomeScreen extends ConsumerWidget {
                     if (i > 1) BookSegment(id: 10 + i),
                     if (i > 2) BookSegment(id: 100 + i),
                   ],
-                  child: Text('Go to Book $i'),
+                  child: Text('Go to Book: [$i${i > 1 ? ', 1$i' : ''}${i > 2 ? ', 10$i' : ''}]'),
                 ),
               ]
             ],
@@ -196,4 +210,4 @@ class BookScreen extends ConsumerWidget {
 }
 
 // https://gist.github.com/PavelPZ/970ba56347a19d86ccafeb551b013fd3
-// https://dartpad.dev/?970ba56347a19d86ccafeb551b013fd3
+// https://dartpad.dev/?id=970ba56347a19d86ccafeb551b013fd3

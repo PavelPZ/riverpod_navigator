@@ -76,16 +76,12 @@ class RNavigator {
 
   /// onStateChanged is called whenever providers change
   void onStateChanged() {
-    //=====> at this point, "ongoingPathProvider state" and "riverpodRouterDelegate.currentConfiguration" could differ
     // get ongoingPath notifier
     final ongoingPathNotifier = ref.read(ongoingPathProvider.notifier);
     // run app specific application navigation logic here (redirection, login, etc.).
     final newOngoingPath = appNavigationLogic(ongoingPathNotifier.state);
-    // update ongoingPathProvider
-    ongoingPathNotifier.state = newOngoingPath;
     // Flutter Navigator 2.0 to updates the navigation stack according to the ongoingPathProvider state
     riverpodRouterDelegate.navigationStack = newOngoingPath;
-    //=====> at this point, "ongoingPathProvider state" and  "RiverpodRouterDelegate.navigationStack" are in sync
   }
 
   /// RiverpodRouterDelegate is tied to the RNavigator

@@ -7,17 +7,19 @@ import 'package:test/test.dart';
 
 import 'model.dart';
 
+final isLoggedProvider = StateProvider<bool>((_) => throw UnimplementedError());
+
 class TestNavigator extends RNavigatorCore {
   TestNavigator(Ref ref) : super(ref);
 
   static List<Override> providerOverrides(TestNavigator navigator(Ref ref)) => [
-        userIsLoggedProvider.overrideWithValue(StateController<bool>(false)),
+        isLoggedProvider.overrideWithValue(StateController<bool>(false)),
         ...RNavigatorCore.providerOverrides([HomeSegment()], navigator),
       ];
 
   @override
   FutureOr<TypedPath> appNavigationLogicCore(TypedPath ongoingPath, {CToken? cToken}) {
-    final userIsLogged = ref.read(userIsLoggedProvider);
+    final userIsLogged = ref.read(isLoggedProvider);
 
     // if user is not logged-in and some of the ongoing screen needs login => redirect to LoginScreen
     if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) return [LoginSegment()];
@@ -68,14 +70,14 @@ void main() {
     // log in => book loaded
     await changeState(() {
       container.read(ongoingPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 1)];
-      container.read(userIsLoggedProvider.notifier).state = true;
+      container.read(isLoggedProvider.notifier).state = true;
     }, '{"runtimeType":"HomeSegment"}/{"runtimeType":"BookSegment","id":1}');
 
     // logoff => redirect to login
-    await changeState(() => container.read(userIsLoggedProvider.notifier).state = false, '{"runtimeType":"LoginSegment"}');
+    await changeState(() => container.read(isLoggedProvider.notifier).state = false, '{"runtimeType":"LoginSegment"}');
 
     // login screen visible. When set login state to true => redirect to home
-    await changeState(() => container.read(userIsLoggedProvider.notifier).state = true, '{"runtimeType":"HomeSegment"}');
+    await changeState(() => container.read(isLoggedProvider.notifier).state = true, '{"runtimeType":"HomeSegment"}');
 
     return;
   });

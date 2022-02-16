@@ -1,11 +1,62 @@
-# Riverpod state management navigator
+# State management for Flutter Navigator 2.0 using the riverpod
 
-Podívejme se na Flutter navigaci z pohledu dvou nových skutečností:
+... s podporou asynchronní a cancelable navigation
 
-- Riverpod state management, který přináší nový pohled na přístup k Flutter Navigaci.
-- Flutter for Web a Flutter for desktop, které přinášejí nové výzvy, které musí navigace řešit.
+#### Příklad
 
+Problémy, které riverpod_navigator_core řeší, si představme na příkladě.
 
-Flutter Navigator 2.0 bývá často kritizován za svoji složitost a nesrozumitelnost.
-Nemyslím si, že je Navigator složitý, složité jsou nové výzvy, které musí řešit.
-Riverpod state management přináší nový pohled na přístup k Flutter Navigaci.
+Na home screen je link button s odkazem na book screen, kde book screen je dostupná pouze po zalogování.
+
+V riverpod světě se realizace kliku na link button provede pomocí změny stavu riverpod provideru. 
+Tento provider nazýváme ongiongPathProvider. 
+Ongoing proto, že jeho stav určuje kam chci navigovat ale nikoliv to, kam se ve skutečnosti naviguje.
+
+Skutečná navigace totiž ještě závisí na jiném provideru, který nazýváme isLoggedProvider (typu StateProvider<bool>).
+Jeho stav obsahuje informaci zdali je uživatel zalogován. 
+Když zalogován není (ref.read(isLoggedProvider) == false), tak místo na book screen se skočí na login screen.
+
+Výsledný stav kliku na link button se tedy spočte ze stavu dvou providerů (ongiongPathProvider a isLoggedProvider) 
+a uloží se do dalšího provideru (like riverpod usually do), který nazývýme navigationStackProvider.
+
+#### Side effects
+
+Zobrazení book screen může vyžadovat asynchronní stažení dat. A tato data mohou být třeba cachována.
+Neboli toto zobrazení s sebou přináší další vedlejší efekty, ovlivňující stav aplikace.
+
+#### Schéma
+
+Úlohu riverpod_navigator_core v tomto provesu je pak možná znázornit následujícím schématem:
+
+[ongiongPathProvider], [... a další app specific providers jako je isLoggedProvider]
+
+[riverpod_navigator_core]
+
+[navigationStackProvider]  [app specific side effects states]
+
+## Challenges to address
+
+1. asynchronní navigace
+v reálnám světě přechod z jednoho screen obsahuje asynchronní akce, jakými jsou například:
+- uschování výsledků ze starého screenu do vzdáleného úložiště
+- stažení dat z internetu, potřebných k zobrazení nového screenu
+
+2. cancelable navigation
+s příchodem Flutter for Web and Flutter for Desktop se zvyšuje potřeba umožnit cancel právě probíhající asynchronní navigace.
+Představme si, že uživatel ve vaší web aplikaci klikne 5x za sebou rychle na Back browser button. 
+Intervaly mezi kliky mohou být pod 200 msec.
+A v browser historii jsou stránky, vyžadující asynchronní akce.
+Je pak velice pravděpodobné, že se některý klik právě probíhající asynchronní akce přeruší.
+Toto může způsobit problémy jak udržet *side effects states* zmíněné výše v konsistentním stavu.
+
+Vhodným přístupem je možné těmto problémům zabránit.
+
+## Typed navigation mission
+...
+
+## Kde je Flutter Navigator 2.0?
+
+Máme tedy navigationStackProvider, TypedSegment, TypedPath, asynchronní a cancelable navigaci ... ale kde je Flutter a jeho Navigator 2.0?
+
+Napojení všech těchto mechanismů na Navigator 2.0 již není problém, jak je ukázáno na dartPad příkladě: https://dartpad.dev/?id=970ba56347a19d86ccafeb551b013fd3.
+

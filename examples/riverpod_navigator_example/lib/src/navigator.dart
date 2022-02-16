@@ -70,7 +70,6 @@ class RNavigator {
   /// Flutter Navigation 2.0 RouterDelegate
   RiverpodRouterDelegate routerDelegate;
 
-  /// Note: *[ongoingPathProvider] state may differ from [currentTypedPath] during navigation calculation.*
   TypedPath get currentTypedPath => routerDelegate.navigationStack;
 
   /// synchronize [ongoingPathProvider] with [RouterDelegate.currentConfiguration]
