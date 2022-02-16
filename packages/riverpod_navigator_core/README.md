@@ -29,7 +29,7 @@ Neboli toto zobrazení s sebou přináší další vedlejší efekty, ovlivňuj�
 Úlohu riverpod_navigator_core v tomto provesu je pak možná znázornit následujícím schématem:
 
 <p align="center">
-<img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" width="100%" alt="Riverpod" />
+<img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" alt="riverpod_navigator_core" />
 </p>
 
 ## Challenges to address
