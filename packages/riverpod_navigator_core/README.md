@@ -28,11 +28,9 @@ Neboli toto zobrazení s sebou přináší další vedlejší efekty, ovlivňuj�
 
 Úlohu riverpod_navigator_core v tomto provesu je pak možná znázornit následujícím schématem:
 
-[ongiongPathProvider], [... a další app specific providers jako je isLoggedProvider]
-
-[riverpod_navigator_core]
-
-[navigationStackProvider]  [app specific side effects states]
+<p align="center">
+<img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" width="100%" alt="Riverpod" />
+</p>
 
 ## Challenges to address
 
