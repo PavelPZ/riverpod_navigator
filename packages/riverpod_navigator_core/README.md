@@ -2,27 +2,26 @@
 
 ... s podporou asynchronní a cancelable navigation
 
-#### Příklad
+## Příklad
 
 Problémy, které riverpod_navigator_core řeší, si představme na příkladě.
 
-Na home screen je link button s odkazem na book screen, kde book screen je dostupná pouze po zalogování.
+Na home-screen je link-button s odkazem na book-screen, kde book-screen je dostupná pouze po zalogování.
 
-V riverpod světě se realizace kliku na link button provede pomocí změny stavu riverpod provideru. 
+V riverpod světě se realizace kliku na link-button provede pomocí změny stavu riverpod provideru. 
 Tento provider nazýváme ongiongPathProvider. 
 Ongoing proto, že jeho stav určuje kam chci navigovat ale nikoliv to, kam se ve skutečnosti naviguje.
 
 Skutečná navigace totiž ještě závisí na jiném provideru, který nazýváme isLoggedProvider (typu StateProvider<bool>).
 Jeho stav obsahuje informaci zdali je uživatel zalogován. 
-Když zalogován není (ref.read(isLoggedProvider) == false), tak místo na book screen se skočí na login screen.
+Když zalogován není (ref.read(isLoggedProvider) == false), tak místo na book-screen se skočí na login-screen.
 
 Výsledný stav kliku na link button se tedy spočte ze stavu dvou providerů (ongiongPathProvider a isLoggedProvider) 
 a uloží se do dalšího provideru (like riverpod usually do), který nazývýme navigationStackProvider.
 
-#### Side effects
-
+Note: * **Side effects**
 Zobrazení book screen může vyžadovat asynchronní stažení dat. A tato data mohou být třeba cachována.
-Neboli zobrazení book screen může přinést vedlejší efekty, ovlivňující stav aplikace.
+Neboli zobrazení book screen může přinést vedlejší efekty, ovlivňující stav aplikace*.
 
 #### Schéma
 
