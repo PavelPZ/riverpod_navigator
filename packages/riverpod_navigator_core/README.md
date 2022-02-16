@@ -20,15 +20,14 @@ Výsledný stav kliku na link-button se tedy spočte ze stavu dvou providerů (o
 a uloží se do dalšího provideru (like riverpod usually do), který nazývýme **navigationStackProvider**.
 
 Note: 
-- *book-screen může ke svému zobrazení potřebovat asynchronní akce (stažení dat z internetu)*
+- *book-screen může ke svému zobrazení potřebovat asynchronní akce (např. stažení dat z internetu)*
 - **Side effects**
-*Zobrazení book screen může vyžadovat asynchronní stažení dat. A tato data mohou být třeba cachována.
-Neboli zobrazení book-screen může přinést vedlejší efekty, ovlivňující stav aplikace*.
+*tato stažená data mohou být třeba cachována v globální cache. Změna cache je tak vedlejší efekt zobrazení book-screen*.
 
 
 #### Schéma
 
-Úlohu riverpod_navigator_core v tomto procesu je pak možná znázornit následujícím schématem:
+Úlohu riverpod_navigator v tomto procesu je pak možná znázornit následujícím schématem:
 
 <p align="center">
 <img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" alt="riverpod_navigator_core" />
@@ -36,13 +35,14 @@ Neboli zobrazení book-screen může přinést vedlejší efekty, ovlivňující
 
 ## Challenges to address
 
-Jaké výzvy z uvedenéo příkladu plynou? 
-Uvědomme si, že tyto výzvy 
+Podívejme se podrobněji, jaké výzvy z uvedeného příkladu plynou.
 
 1. potřeba asynchronní navigace
-v reálnám světě přechod z jednoho screen obsahuje asynchronní akce, jakými jsou například:
-- uschování výsledků ze starého screenu do vzdáleného úložiště
-- stažení dat z internetu, potřebných k zobrazení nového screenu
+
+v reálnám světě navigace z jednoho screen na druhý může potřebovat asynchronní akci, jakou je např:
+
+  - starýho screen uloží výsledky do vzdáleného úložiště 
+  - nový screen stáhne potřebná data z internetu
 
 2. cancelable navigation
 
@@ -51,16 +51,17 @@ S příchodem Flutter for Web and Flutter for Desktop se zvyšuje potřeba umož
 Představme si, že uživatel ve vaší web aplikaci klikne 5x za sebou rychle na Back browser button. 
 To může stihnout za méně než jednu vteřinu.
 Intervaly mezi kliky tak mohou být pod 200 msec.
-Je pak velice pravděpodobné, že se některý klik právě probíhající asynchronní akci přeruší.
+Je pak velice pravděpodobné, že některý klik právě probíhající asynchronní akci přeruší.
 Toto může způsobit problémy jak udržet zmíněné výše *side effects states* v konsistentním stavu.
 
 ### kompletní změna ongiongPathProvider stavu
-Dalším důsledkem vývoje Flutter web aplikace ja možná změna kompletního navigation stack. 
+Dalším důsledkem vývoje Flutter web aplikace je možná změna kompletního navigation stack. 
 V mobilní aplikaci se uživatel k určitému navigation state postupně prokliká.
 OngiongPathProvider tak udržuje postupně pomocí ```push``` resp. ```pop```. 
 Ve webovém světě si uložením a následným použitím webové url adresy vynutíme kompletní změnu ongiongPathProvider stavu.
 
 ### závěr
+
 
 Vhodným přístupem je možné těmto problémům zabránit.
 
