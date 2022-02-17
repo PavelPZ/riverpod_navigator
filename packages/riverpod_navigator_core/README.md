@@ -37,8 +37,27 @@ Take a look at a simple [DartPad example](https://dartpad.dev/?id=970ba56347a19d
 which shows the following ideas:
 
 - use of the *typed navigation*
-- connection *navigationStackProvider* to *RouterDelegate*
+- how to connect *navigationStackProvider* to *RouterDelegate*
 
+## Motivation
+
+Edge use cases?
+
+- aktuální stránka při své deaktivaci (closing) asynchronně uschovává aktuální data do external storage. 
+Uprostřed této nedokončené async operace provede uživatel Android back button
+- uživatel velice rychle 5x klikne na back tlačítko ve web browser. 5x se tedy rychle vymění celý navigation stack.
+Jednotlivé stránky aplikace často používají při svém otevírání či deaktivaci asynchronní operace. 
+Tyto operace mohou při špatném internetovém připojení trvat dost dlouho.
+- aktuální stránka obsahuje tlačítko save, kterým se spustí asynchronní úschova data do external storage.
+Uprostřed této nedokončené async operace provede uživatel Android back button
+- ...
+
+If similar cases do not occur in your application, you may be fine.
+Otherwise, you should pay attention to how to keep consistent not only the state of the navigation, but also its "side effects" (from the diagram above).
+
+
+
+-----------------
 
 
 
