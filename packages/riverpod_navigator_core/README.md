@@ -1,6 +1,6 @@
-# Navigation state management using the riverpod...
+# Navigation state management using the riverpod
 
-### ... is a dart package that solves the following:
+### riverpod_navigator_core is a dart package that solves the following:
 
 - **asynchronous navigation**<br>
 is the case when changing the navigation state requires asynchronous actions (such as loading or saving data from the Internet)
