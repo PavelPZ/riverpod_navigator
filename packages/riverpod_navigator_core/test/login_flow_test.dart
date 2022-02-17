@@ -10,7 +10,7 @@ import 'model.dart';
 final isLoggedProvider = StateProvider<bool>((_) => false);
 
 class TestNavigator extends RNavigatorCore {
-  TestNavigator(Ref ref) : super(ref);
+  TestNavigator(Ref ref) : super(ref, []);
 
   @override
   FutureOr<TypedPath> appNavigationLogicCore(TypedPath ongoingPath, {CToken? cToken}) {

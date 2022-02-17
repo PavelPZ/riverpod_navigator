@@ -10,7 +10,7 @@ import 'model.dart';
 final loginProvider = StateProvider<bool>((_) => false);
 
 class TestNavigator extends RNavigatorCore {
-  TestNavigator(Ref ref, {this.delayMsec, this.isError = false}) : super(ref);
+  TestNavigator(Ref ref, {this.delayMsec, this.isError = false}) : super(ref, []);
 
   final int? delayMsec;
   final bool isError;

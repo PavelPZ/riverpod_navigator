@@ -117,15 +117,3 @@ class SimplePathParser extends PathParser {
 
   static bool _stringNeedsType(String s) => int.tryParse(s) != null || s == 'true' || s == 'false' || double.tryParse(s) != null;
 }
-
-class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
-  RouteInformationParserImpl(this._pathParser);
-
-  final PathParser _pathParser;
-
-  @override
-  Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) => Future.value(_pathParser.path2TypedPath(routeInformation.location));
-
-  @override
-  RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: _pathParser.typedPath2Path(configuration));
-}
