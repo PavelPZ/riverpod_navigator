@@ -43,7 +43,7 @@ class AppNavigator extends RNavigator {
         );
 
   @override
-  TypedPath appNavigationLogic(TypedPath ongoingPath, {CToken? cToken}) {
+  TypedPath appNavigationLogic(TypedPath ongoingPath) {
     final loginInfo = ref.read(loginInfoProvider.notifier);
 
     final loggedIn = loginInfo.state.isNotEmpty;

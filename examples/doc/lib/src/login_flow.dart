@@ -28,14 +28,14 @@ Widget app(WidgetRef ref) {
   );
 }
 
-@freezed
-class SegmentGrp with _$SegmentGrp, TypedSegment {
-  SegmentGrp._();
-  factory SegmentGrp.home() = HomeSegment;
-  factory SegmentGrp.book({required int id}) = BookSegment;
-  factory SegmentGrp.login({String? loggedUrl, String? canceledUrl}) = LoginSegment;
+@Freezed(maybeWhen: false, maybeMap: false)
+class Segments with _$Segments, TypedSegment {
+  Segments._();
+  factory Segments.home() = HomeSegment;
+  factory Segments.book({required int id}) = BookSegment;
+  factory Segments.login({String? loggedUrl, String? canceledUrl}) = LoginSegment;
 
-  factory SegmentGrp.fromJson(Map<String, dynamic> json) => _$SegmentGrpFromJson(json);
+  factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
 }
 
 /// !!! there is another provider on which the navigation status depends:
@@ -51,7 +51,7 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<SegmentGrp>(SegmentGrp.fromJson, [
+            RRoutes<Segments>(Segments.fromJson, [
               RRoute<HomeSegment>(HomeScreen.new),
               RRoute<BookSegment>(BookScreen.new),
               RRoute<LoginSegment>(LoginScreen.new),
@@ -61,7 +61,7 @@ class AppNavigator extends RNavigator {
 
   /// Quards and redirects for login flow
   @override
-  TypedPath appNavigationLogic(TypedPath ongoingPath, {CToken? cToken}) {
+  TypedPath appNavigationLogic(TypedPath ongoingPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
     final navigationStack = getNavigationStack();
 

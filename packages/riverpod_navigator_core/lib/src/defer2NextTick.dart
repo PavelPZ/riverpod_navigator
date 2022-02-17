@@ -1,6 +1,6 @@
 part of 'index.dart';
 
-class NavigationComputingException {}
+// wait for https://github.com/flutter/flutter/pull/97394 error fix
 
 // ********************************************
 //   Defer2NextTick
@@ -22,102 +22,74 @@ class NavigationComputingException {}
 /// are not synchronized
 class Defer2NextTick {
   Defer2NextTick();
-  // called once in the next tick
+
   late RNavigatorCore navigator;
 
-  // cancelable appNavigationLogicCore return value
-  CancelableCompleter<TypedPath>? _appLogicCompleter;
-  CToken? _cToken;
-  // exist till scheduleMicrotask finish without cancel (exists for one navigation roundtrip)
+  void providerChanged() {
+    // synchronize navigation stack and ongoingPath
+    if (ignoreNextProviderChange) return;
+    scheduleMicrotask(() {
+      _needRefresh = true;
+      if (!_running) _refreshStack();
+    });
+  }
+
+  void registerProtectedFuture(Future future) {
+    protectedFutures.add(future);
+    future.whenComplete(() => protectedFutures.remove(future));
+  }
+
+  final protectedFutures = <Future>[];
+
+  // *********************** private
+
+  var _needRefresh = false;
+  var _running = false;
+  var ignoreNextProviderChange = false;
+
+  // exist till _refreshStack is working
   Completer? _resultCompleter;
   // (last _resultCompleter).future. Needed because _resultCompleter is set to null at the end of navigation roundtrip
   Future? _resultFuture;
-  // only single enter to scheduleMicrotask
-  bool waitForMicrotaskEnter = false;
 
-  bool ignoreNextStateChange = false;
+  Future<void> get future => _resultFuture ?? Future.value();
 
-  /// called in every state change
-  void providerChanged() {
-    if (ignoreNextStateChange) return;
-    // state changed during navigator.appNavigationLogicCore computing => cancel its CancelableCompleter
-    if (_appLogicCompleter != null) {
-      assert(_cToken != null);
-      _cToken!.isCancelling = true;
-      _appLogicCompleter!.operation.cancel();
-
-      _appLogicCompleter = null;
-      _cToken = null;
-    }
-    if (waitForMicrotaskEnter) return;
-
-    _resultCompleter ??= Completer();
-    _resultFuture = _resultCompleter!.future;
-
-    waitForMicrotaskEnter = true;
-    scheduleMicrotask(() async {
-      waitForMicrotaskEnter = false;
-
-      final ongoingNotifier = navigator.ref.read(ongoingPathProvider.notifier);
-      TypedPath? newPath;
+  Future _refreshStack() async {
+    try {
       try {
-        final futureOr = navigator.appNavigationLogicCore(ongoingNotifier.state, cToken: _cToken = CToken());
-
-        if (futureOr is Future<TypedPath?>) {
-          final compl = _appLogicCompleter = CancelableCompleter<TypedPath>();
-          // futureOr to CancelableCompleter
-          unawaited(futureOr.then((value) => compl.complete(value), onError: compl.completeError));
-          // wait for value, error and CANCEL (futureOr cannot wait for cancel)
-          final res = await compl.operation.valueOrCancellation(canceledPath);
-          if (res == canceledPath) {
-            // canceled => no navigationStack change
-            _cToken = null;
-            _appLogicCompleter = null;
-            return;
+        _running = true;
+        _resultCompleter = Completer();
+        _resultFuture = _resultCompleter!.future;
+        while (_needRefresh) {
+          _needRefresh = false;
+          final ongoingPathNotifier = navigator.ref.read(ongoingPathProvider.notifier);
+          if (protectedFutures.isNotEmpty) await Future.wait(protectedFutures);
+          assert(protectedFutures.isEmpty);
+          final futureOr = navigator.appNavigationLogicCore(ongoingPathNotifier.state);
+          final newPath = futureOr is Future<TypedPath?> ? await futureOr : futureOr;
+          // during async appNavigationLogicCore state change come (in providerChanged)
+          // run another cycle (appNavigationLogicCore for fresh input navigation state)
+          if (_needRefresh) continue;
+          // appNavigationLogicCore recognize no change to navig stack
+          if (newPath == null) continue;
+          // synchronize navigation stack and ongoingPath
+          ignoreNextProviderChange = true;
+          try {
+            ongoingPathNotifier.state = navigator.ref.read(navigationStackProvider.notifier).state = newPath;
+          } finally {
+            ignoreNextProviderChange = false;
           }
-          newPath = res;
-        } else
-          newPath = futureOr;
-
-        _resultCompleter!.complete(newPath);
-
-        // res==null for path does not change
-        if (newPath == null) {
-          _cToken = null;
-          _appLogicCompleter = null;
-          // one navigation roundtrip finished => set null
-          _resultCompleter = null;
-          return;
-        }
-
-        // synchronize ongoingPath with navigationStack
-        ignoreNextStateChange = true;
-        try {
-          assert(newPath.isNotEmpty);
-          //ongoingNotifier.state =
-          navigator.ref.read(navigationStackProvider.notifier).state = newPath;
-          // remember last state for restorePath
+          // remember last navigation stack for restorePath
           navigator._restorePath?.saveLastKnownStack(newPath);
-
-          // a quick click on the browser's Back button causes a Flutter navigation error
-          // if (RNavigatorCore.kIsWeb) await Future.delayed(Duration(milliseconds: 300));
-        } finally {
-          ignoreNextStateChange = false;
         }
+        _resultCompleter!.complete(null);
       } catch (e, s) {
         // or sync exception or appNavigationLogicCore future error
         _resultCompleter!.completeError(e, s);
       }
-      _cToken = null;
-      _appLogicCompleter = null;
-      // one navigation roundtrip finished => set null
+    } finally {
+      _running = false;
       _resultCompleter = null;
-    });
+    }
   }
-
-  Future<void> get future => _resultFuture ?? Future.value();
 }
-
-class CanceledSegment with TypedSegment {}
-
-final TypedPath canceledPath = [CanceledSegment()];

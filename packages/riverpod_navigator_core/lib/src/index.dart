@@ -1,15 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
-import 'package:async/async.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:tuple/tuple.dart';
 
 part 'defer2NextTick.dart';
-part 'defer2NextTickNew.dart';
 part 'navigator.dart';
+part 'pathParser.dart';
 part 'providers.dart';
+part 'routes.dart';
 
 // ********************************************
 // Basic types
@@ -17,6 +19,7 @@ part 'providers.dart';
 
 typedef AsyncActionResult = dynamic;
 typedef JsonMap = Map<String, dynamic>;
+typedef Json2Segment = TypedSegment Function(JsonMap, String unionKey);
 
 /// Abstract interface for typed variant of path's segment.
 ///
@@ -47,11 +50,6 @@ class RestorePath {
   TypedPath getInitialPath(TypedPath initPath) => path ?? initPath;
 }
 
-// ********************************************
-// Cancellation Token
-// ********************************************
-
-//
-class CToken {
-  bool isCancelling = false;
+extension TypedPathEx on TypedPath {
+  String toPath() => map((s) => s.toString()).join('/');
 }

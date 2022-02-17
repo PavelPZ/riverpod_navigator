@@ -10,10 +10,10 @@ import 'model.dart';
 final isLoggedProvider = StateProvider<bool>((_) => false);
 
 class TestNavigator extends RNavigatorCore {
-  TestNavigator(Ref ref) : super(ref);
+  TestNavigator(Ref ref) : super(ref, []);
 
   @override
-  FutureOr<TypedPath> appNavigationLogicCore(TypedPath ongoingPath, {CToken? cToken}) {
+  FutureOr<TypedPath> appNavigationLogicCore(TypedPath ongoingPath) {
     final userIsLogged = ref.read(isLoggedProvider);
 
     // if user is not logged-in and some of the ongoing screen needs login => redirect to LoginScreen

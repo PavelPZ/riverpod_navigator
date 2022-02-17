@@ -141,9 +141,11 @@ class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
   @override
   RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: typedPath2Path(configuration));
 
-  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(jsonEncode(s.toJson()))).join('/');
+  static String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(jsonEncode(s.toJson()))).join('/');
 
-  TypedPath path2TypedPath(String? path) {
+  static String debugTypedPath2Path(TypedPath typedPath) => typedPath.map((s) => jsonEncode(s.toJson())).join('/');
+
+  static TypedPath path2TypedPath(String? path) {
     if (path == null || path.isEmpty) return [];
     return [
       for (final s in path.split('/'))

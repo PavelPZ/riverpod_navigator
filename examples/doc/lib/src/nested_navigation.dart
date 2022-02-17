@@ -31,7 +31,7 @@ Widget app(WidgetRef ref) {
   );
 }
 
-@freezed
+@Freezed(maybeWhen: false, maybeMap: false)
 class Segments with _$Segments, TypedSegment {
   Segments._();
   factory Segments.home() = HomeSegment;

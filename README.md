@@ -1,18 +1,18 @@
-# Navigator for Riverpod
+# Simple but powerfull Flutter navigation with [riverpod](https://riverpod.dev/), [freezed](https://github.com/rrousselGit/freezed) and Navigator 2.0...
 
-### Simple but powerfull navigation library (based on Flutter Navigator 2.0, [Riverpod](https://riverpod.dev/), and [Freezed](https://github.com/rrousselGit/freezed)) that solves the following problems:
+### ... that solves the following problems:
 
-- **Strictly typed navigation:** <br>You can use ```navigate([Home(),Book(id: 3)]);``` instead of ```navigate('home/book;id:3');``` in your code.
-- **Asynchronous navigation:**<br>
-  Before starting navigation, prepare all necessary asynchronous screen operations, e.g.
-  - save data from the previous screen
-  - load data for the new screen
-- **Nested navigation**
-- **Easier coding:** <br>The problem of navigation is reduced to manipulation an immutable collection.
-- **Better separation of concerns: UI x Model** (thanks to [riverpod](https://riverpod.dev/) :+1:):<br>
-  Navigation logic can be developed and tested without typing a single flutter widget.
-- **Dependence on external providers:**<br>
-  The navigation state may also depend on external riverpod providers, e.g. on login status
+- **strictly typed navigation:** <br>
+you can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code.
+- **asynchronous navigation**<br>
+is the case when changing the navigation state requires asynchronous actions (such as loading or saving data from the Internet)
+- **multiple providers**<br>
+this is the case when the navigation state depends on multiple providers, e.g. on the login state
+- **nested navigation**: 
+- **easier coding:** <br>T
+he problem of navigation is reduced to manipulation an immutable collection.
+- **better separation of concerns: UI x Model** (thanks to [riverpod](https://riverpod.dev/) :+1:):<br>
+navigation logic can be developed and tested without typing a single flutter widget.
 
 ## The mission
 

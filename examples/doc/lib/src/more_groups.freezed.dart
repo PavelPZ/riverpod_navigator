@@ -61,13 +61,7 @@ mixin _$FirstGrp {
     TResult Function()? first2,
   }) =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? first1,
-    TResult Function()? first2,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(First1Segment value) first1,
@@ -80,13 +74,7 @@ mixin _$FirstGrp {
     TResult Function(First2Segment value)? first2,
   }) =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(First1Segment value)? first1,
-    TResult Function(First2Segment value)? first2,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 }
 
@@ -165,19 +153,6 @@ class _$First1Segment extends First1Segment {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? first1,
-    TResult Function()? first2,
-    required TResult orElse(),
-  }) {
-    if (first1 != null) {
-      return first1();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(First1Segment value) first1,
     required TResult Function(First2Segment value) first2,
@@ -192,19 +167,6 @@ class _$First1Segment extends First1Segment {
     TResult Function(First2Segment value)? first2,
   }) {
     return first1?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(First1Segment value)? first1,
-    TResult Function(First2Segment value)? first2,
-    required TResult orElse(),
-  }) {
-    if (first1 != null) {
-      return first1(this);
-    }
-    return orElse();
   }
 
   @override
@@ -281,19 +243,6 @@ class _$First2Segment extends First2Segment {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? first1,
-    TResult Function()? first2,
-    required TResult orElse(),
-  }) {
-    if (first2 != null) {
-      return first2();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(First1Segment value) first1,
     required TResult Function(First2Segment value) first2,
@@ -308,19 +257,6 @@ class _$First2Segment extends First2Segment {
     TResult Function(First2Segment value)? first2,
   }) {
     return first2?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(First1Segment value)? first1,
-    TResult Function(First2Segment value)? first2,
-    required TResult orElse(),
-  }) {
-    if (first2 != null) {
-      return first2(this);
-    }
-    return orElse();
   }
 
   @override
@@ -384,13 +320,7 @@ mixin _$SecondGrp {
     TResult Function()? second2,
   }) =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? second1,
-    TResult Function()? second2,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(Second1Segment value) second1,
@@ -403,13 +333,7 @@ mixin _$SecondGrp {
     TResult Function(Second2Segment value)? second2,
   }) =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(Second1Segment value)? second1,
-    TResult Function(Second2Segment value)? second2,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 }
 
@@ -488,19 +412,6 @@ class _$Second1Segment extends Second1Segment {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? second1,
-    TResult Function()? second2,
-    required TResult orElse(),
-  }) {
-    if (second1 != null) {
-      return second1();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(Second1Segment value) second1,
     required TResult Function(Second2Segment value) second2,
@@ -515,19 +426,6 @@ class _$Second1Segment extends Second1Segment {
     TResult Function(Second2Segment value)? second2,
   }) {
     return second1?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(Second1Segment value)? second1,
-    TResult Function(Second2Segment value)? second2,
-    required TResult orElse(),
-  }) {
-    if (second1 != null) {
-      return second1(this);
-    }
-    return orElse();
   }
 
   @override
@@ -604,19 +502,6 @@ class _$Second2Segment extends Second2Segment {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? second1,
-    TResult Function()? second2,
-    required TResult orElse(),
-  }) {
-    if (second2 != null) {
-      return second2();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(Second1Segment value) second1,
     required TResult Function(Second2Segment value) second2,
@@ -631,19 +516,6 @@ class _$Second2Segment extends Second2Segment {
     TResult Function(Second2Segment value)? second2,
   }) {
     return second2?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(Second1Segment value)? second1,
-    TResult Function(Second2Segment value)? second2,
-    required TResult orElse(),
-  }) {
-    if (second2 != null) {
-      return second2(this);
-    }
-    return orElse();
   }
 
   @override
@@ -707,13 +579,7 @@ mixin _$ThirdGrp {
     TResult Function()? third2,
   }) =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? third1,
-    TResult Function()? third2,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(Third1Segment value) third1,
@@ -726,13 +592,7 @@ mixin _$ThirdGrp {
     TResult Function(Third2Segment value)? third2,
   }) =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(Third1Segment value)? third1,
-    TResult Function(Third2Segment value)? third2,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 }
 
@@ -811,19 +671,6 @@ class _$Third1Segment extends Third1Segment {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? third1,
-    TResult Function()? third2,
-    required TResult orElse(),
-  }) {
-    if (third1 != null) {
-      return third1();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(Third1Segment value) third1,
     required TResult Function(Third2Segment value) third2,
@@ -838,19 +685,6 @@ class _$Third1Segment extends Third1Segment {
     TResult Function(Third2Segment value)? third2,
   }) {
     return third1?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(Third1Segment value)? third1,
-    TResult Function(Third2Segment value)? third2,
-    required TResult orElse(),
-  }) {
-    if (third1 != null) {
-      return third1(this);
-    }
-    return orElse();
   }
 
   @override
@@ -927,19 +761,6 @@ class _$Third2Segment extends Third2Segment {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? third1,
-    TResult Function()? third2,
-    required TResult orElse(),
-  }) {
-    if (third2 != null) {
-      return third2();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(Third1Segment value) third1,
     required TResult Function(Third2Segment value) third2,
@@ -954,19 +775,6 @@ class _$Third2Segment extends Third2Segment {
     TResult Function(Third2Segment value)? third2,
   }) {
     return third2?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(Third1Segment value)? third1,
-    TResult Function(Third2Segment value)? third2,
-    required TResult orElse(),
-  }) {
-    if (third2 != null) {
-      return third2(this);
-    }
-    return orElse();
   }
 
   @override

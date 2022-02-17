@@ -12,7 +12,7 @@ part 'more_groups.freezed.dart';
 // more segment groups
 
 /// The first segment group does not need "unionKey".
-@freezed
+@Freezed(maybeWhen: false, maybeMap: false)
 class FirstGrp with _$FirstGrp, TypedSegment {
   FirstGrp._();
   factory FirstGrp.first1() = First1Segment;
@@ -21,7 +21,7 @@ class FirstGrp with _$FirstGrp, TypedSegment {
   factory FirstGrp.fromJson(Map<String, dynamic> json) => _$FirstGrpFromJson(json);
 }
 
-@Freezed(unionKey: SecondGrp.jsonNameSpace)
+@Freezed(unionKey: SecondGrp.jsonNameSpace, maybeWhen: false, maybeMap: false)
 class SecondGrp with _$SecondGrp, TypedSegment {
   SecondGrp._();
   factory SecondGrp.second1() = Second1Segment;
@@ -31,7 +31,7 @@ class SecondGrp with _$SecondGrp, TypedSegment {
   static const String jsonNameSpace = '_second';
 }
 
-@Freezed(unionKey: ThirdGrp.jsonNameSpace)
+@Freezed(unionKey: ThirdGrp.jsonNameSpace, maybeWhen: false, maybeMap: false)
 class ThirdGrp with _$ThirdGrp, TypedSegment {
   ThirdGrp._();
   factory ThirdGrp.third1() = Third1Segment;

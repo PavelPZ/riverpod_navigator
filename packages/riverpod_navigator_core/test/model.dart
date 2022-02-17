@@ -14,7 +14,3 @@ class BookSegment with TypedSegment {
 }
 
 class LoginSegment with TypedSegment {}
-
-extension TypedPathEx on TypedPath {
-  String toPath() => map((s) => s.toString()).join('/');
-}

@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
-SegmentGrp _$SegmentGrpFromJson(Map<String, dynamic> json) {
+Segments _$SegmentsFromJson(Map<String, dynamic> json) {
   switch (json['runtimeType']) {
     case 'home':
       return HomeSegment.fromJson(json);
@@ -22,14 +22,14 @@ SegmentGrp _$SegmentGrpFromJson(Map<String, dynamic> json) {
       return PageSegment.fromJson(json);
 
     default:
-      throw CheckedFromJsonException(json, 'runtimeType', 'SegmentGrp',
+      throw CheckedFromJsonException(json, 'runtimeType', 'Segments',
           'Invalid union type "${json['runtimeType']}"!');
   }
 }
 
 /// @nodoc
-class _$SegmentGrpTearOff {
-  const _$SegmentGrpTearOff();
+class _$SegmentsTearOff {
+  const _$SegmentsTearOff();
 
   HomeSegment home() {
     return HomeSegment();
@@ -41,16 +41,16 @@ class _$SegmentGrpTearOff {
     );
   }
 
-  SegmentGrp fromJson(Map<String, Object?> json) {
-    return SegmentGrp.fromJson(json);
+  Segments fromJson(Map<String, Object?> json) {
+    return Segments.fromJson(json);
   }
 }
 
 /// @nodoc
-const $SegmentGrp = _$SegmentGrpTearOff();
+const $Segments = _$SegmentsTearOff();
 
 /// @nodoc
-mixin _$SegmentGrp {
+mixin _$Segments {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() home,
@@ -63,13 +63,7 @@ mixin _$SegmentGrp {
     TResult Function(String title)? page,
   }) =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? home,
-    TResult Function(String title)? page,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(HomeSegment value) home,
@@ -82,30 +76,23 @@ mixin _$SegmentGrp {
     TResult Function(PageSegment value)? page,
   }) =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HomeSegment value)? home,
-    TResult Function(PageSegment value)? page,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $SegmentGrpCopyWith<$Res> {
-  factory $SegmentGrpCopyWith(
-          SegmentGrp value, $Res Function(SegmentGrp) then) =
-      _$SegmentGrpCopyWithImpl<$Res>;
+abstract class $SegmentsCopyWith<$Res> {
+  factory $SegmentsCopyWith(Segments value, $Res Function(Segments) then) =
+      _$SegmentsCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class _$SegmentGrpCopyWithImpl<$Res> implements $SegmentGrpCopyWith<$Res> {
-  _$SegmentGrpCopyWithImpl(this._value, this._then);
+class _$SegmentsCopyWithImpl<$Res> implements $SegmentsCopyWith<$Res> {
+  _$SegmentsCopyWithImpl(this._value, this._then);
 
-  final SegmentGrp _value;
+  final Segments _value;
   // ignore: unused_field
-  final $Res Function(SegmentGrp) _then;
+  final $Res Function(Segments) _then;
 }
 
 /// @nodoc
@@ -116,7 +103,7 @@ abstract class $HomeSegmentCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$HomeSegmentCopyWithImpl<$Res> extends _$SegmentGrpCopyWithImpl<$Res>
+class _$HomeSegmentCopyWithImpl<$Res> extends _$SegmentsCopyWithImpl<$Res>
     implements $HomeSegmentCopyWith<$Res> {
   _$HomeSegmentCopyWithImpl(
       HomeSegment _value, $Res Function(HomeSegment) _then)
@@ -168,19 +155,6 @@ class _$HomeSegment extends HomeSegment {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? home,
-    TResult Function(String title)? page,
-    required TResult orElse(),
-  }) {
-    if (home != null) {
-      return home();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(HomeSegment value) home,
     required TResult Function(PageSegment value) page,
@@ -198,25 +172,12 @@ class _$HomeSegment extends HomeSegment {
   }
 
   @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HomeSegment value)? home,
-    TResult Function(PageSegment value)? page,
-    required TResult orElse(),
-  }) {
-    if (home != null) {
-      return home(this);
-    }
-    return orElse();
-  }
-
-  @override
   Map<String, dynamic> toJson() {
     return _$$HomeSegmentToJson(this);
   }
 }
 
-abstract class HomeSegment extends SegmentGrp {
+abstract class HomeSegment extends Segments {
   factory HomeSegment() = _$HomeSegment;
   HomeSegment._() : super._();
 
@@ -233,7 +194,7 @@ abstract class $PageSegmentCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$PageSegmentCopyWithImpl<$Res> extends _$SegmentGrpCopyWithImpl<$Res>
+class _$PageSegmentCopyWithImpl<$Res> extends _$SegmentsCopyWithImpl<$Res>
     implements $PageSegmentCopyWith<$Res> {
   _$PageSegmentCopyWithImpl(
       PageSegment _value, $Res Function(PageSegment) _then)
@@ -308,19 +269,6 @@ class _$PageSegment extends PageSegment {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? home,
-    TResult Function(String title)? page,
-    required TResult orElse(),
-  }) {
-    if (page != null) {
-      return page(title);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(HomeSegment value) home,
     required TResult Function(PageSegment value) page,
@@ -338,25 +286,12 @@ class _$PageSegment extends PageSegment {
   }
 
   @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HomeSegment value)? home,
-    TResult Function(PageSegment value)? page,
-    required TResult orElse(),
-  }) {
-    if (page != null) {
-      return page(this);
-    }
-    return orElse();
-  }
-
-  @override
   Map<String, dynamic> toJson() {
     return _$$PageSegmentToJson(this);
   }
 }
 
-abstract class PageSegment extends SegmentGrp {
+abstract class PageSegment extends Segments {
   factory PageSegment({required String title}) = _$PageSegment;
   PageSegment._() : super._();
 

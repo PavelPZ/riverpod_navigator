@@ -1,12 +1,9 @@
 part of 'index.dart';
 
-class RiverpodRouterDelegate extends RouterDelegate<TypedPath>
-    with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath>
-    implements IRouterDelegate {
+class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
   @override
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-  @override
   late RNavigator navigator;
 
   @override
@@ -31,10 +28,22 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath>
   }
 
   @override
-  Future<void> setNewRoutePath(TypedPath configuration) async {
+  Future<void> setNewRoutePath(TypedPath configuration) {
     if (configuration.isEmpty) configuration = navigator.initPath;
-    await navigator.navigate(configuration);
-    return;
-    // return SynchronousFuture(null);
+    return navigator.navigate(configuration);
   }
+
+  void doNotifyListeners() => notifyListeners();
+}
+
+class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
+  RouteInformationParserImpl(this._pathParser);
+
+  final PathParser _pathParser;
+
+  @override
+  Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) => Future.value(_pathParser.path2TypedPath(routeInformation.location));
+
+  @override
+  RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: _pathParser.typedPath2Path(configuration));
 }
