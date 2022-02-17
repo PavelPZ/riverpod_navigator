@@ -15,13 +15,13 @@ void main() => runApp(
       ),
     );
 
-@freezed
-class SegmentGrp with _$SegmentGrp, TypedSegment {
-  SegmentGrp._();
-  factory SegmentGrp.home() = HomeSegment;
-  factory SegmentGrp.page({required String title}) = PageSegment;
+@Freezed(maybeWhen: false, maybeMap: false)
+class Segments with _$Segments, TypedSegment {
+  Segments._();
+  factory Segments.home() = HomeSegment;
+  factory Segments.page({required String title}) = PageSegment;
 
-  factory SegmentGrp.fromJson(Map<String, dynamic> json) => _$SegmentGrpFromJson(json);
+  factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
 }
 
 @cwidget
@@ -46,7 +46,7 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<SegmentGrp>(SegmentGrp.fromJson, [
+            RRoutes<Segments>(Segments.fromJson, [
               RRoute<HomeSegment>(
                 HomeScreen.new,
                 creating: (newSegment) => simulateAsyncResult('Home.creating', 2000),

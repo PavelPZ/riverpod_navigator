@@ -19,7 +19,8 @@ class HomeScreen extends ConsumerWidget {
   final HomeSegment segment;
 
   @override
-  Widget build(BuildContext _context, WidgetRef _ref) => homeScreen(_ref, segment);
+  Widget build(BuildContext _context, WidgetRef _ref) =>
+      homeScreen(_ref, segment);
 }
 
 class PageScreen extends ConsumerWidget {
@@ -28,11 +29,17 @@ class PageScreen extends ConsumerWidget {
   final PageSegment segment;
 
   @override
-  Widget build(BuildContext _context, WidgetRef _ref) => pageScreen(_ref, segment);
+  Widget build(BuildContext _context, WidgetRef _ref) =>
+      pageScreen(_ref, segment);
 }
 
 class PageHelper<N extends RNavigator> extends ConsumerWidget {
-  const PageHelper({Key? key, required this.segment, required this.title, required this.buildChildren}) : super(key: key);
+  const PageHelper(
+      {Key? key,
+      required this.segment,
+      required this.title,
+      required this.buildChildren})
+      : super(key: key);
 
   final TypedSegment segment;
 
@@ -41,7 +48,8 @@ class PageHelper<N extends RNavigator> extends ConsumerWidget {
   final List<Widget> Function(N) buildChildren;
 
   @override
-  Widget build(BuildContext _context, WidgetRef _ref) => pageHelper<N>(_ref, segment: segment, title: title, buildChildren: buildChildren);
+  Widget build(BuildContext _context, WidgetRef _ref) => pageHelper<N>(_ref,
+      segment: segment, title: title, buildChildren: buildChildren);
 }
 
 class SplashScreen extends StatelessWidget {
@@ -55,20 +63,24 @@ class SplashScreen extends StatelessWidget {
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$HomeSegment _$$HomeSegmentFromJson(Map<String, dynamic> json) => _$HomeSegment(
+_$HomeSegment _$$HomeSegmentFromJson(Map<String, dynamic> json) =>
+    _$HomeSegment(
       $type: json['runtimeType'] as String?,
     );
 
-Map<String, dynamic> _$$HomeSegmentToJson(_$HomeSegment instance) => <String, dynamic>{
+Map<String, dynamic> _$$HomeSegmentToJson(_$HomeSegment instance) =>
+    <String, dynamic>{
       'runtimeType': instance.$type,
     };
 
-_$PageSegment _$$PageSegmentFromJson(Map<String, dynamic> json) => _$PageSegment(
+_$PageSegment _$$PageSegmentFromJson(Map<String, dynamic> json) =>
+    _$PageSegment(
       title: json['title'] as String,
       $type: json['runtimeType'] as String?,
     );
 
-Map<String, dynamic> _$$PageSegmentToJson(_$PageSegment instance) => <String, dynamic>{
+Map<String, dynamic> _$$PageSegmentToJson(_$PageSegment instance) =>
+    <String, dynamic>{
       'title': instance.title,
       'runtimeType': instance.$type,
     };

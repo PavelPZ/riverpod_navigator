@@ -81,15 +81,7 @@ mixin _$Segments {
     TResult Function()? booksAuthors,
   }) =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? home,
-    TResult Function(int id)? book,
-    TResult Function(int id)? author,
-    TResult Function()? booksAuthors,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(HomeSegment value) home,
@@ -106,15 +98,7 @@ mixin _$Segments {
     TResult Function(BooksAuthorsSegment value)? booksAuthors,
   }) =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HomeSegment value)? home,
-    TResult Function(BookSegment value)? book,
-    TResult Function(AuthorSegment value)? author,
-    TResult Function(BooksAuthorsSegment value)? booksAuthors,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 }
 
@@ -197,21 +181,6 @@ class _$HomeSegment extends HomeSegment {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? home,
-    TResult Function(int id)? book,
-    TResult Function(int id)? author,
-    TResult Function()? booksAuthors,
-    required TResult orElse(),
-  }) {
-    if (home != null) {
-      return home();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(HomeSegment value) home,
     required TResult Function(BookSegment value) book,
@@ -230,21 +199,6 @@ class _$HomeSegment extends HomeSegment {
     TResult Function(BooksAuthorsSegment value)? booksAuthors,
   }) {
     return home?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HomeSegment value)? home,
-    TResult Function(BookSegment value)? book,
-    TResult Function(AuthorSegment value)? author,
-    TResult Function(BooksAuthorsSegment value)? booksAuthors,
-    required TResult orElse(),
-  }) {
-    if (home != null) {
-      return home(this);
-    }
-    return orElse();
   }
 
   @override
@@ -349,21 +303,6 @@ class _$BookSegment extends BookSegment {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? home,
-    TResult Function(int id)? book,
-    TResult Function(int id)? author,
-    TResult Function()? booksAuthors,
-    required TResult orElse(),
-  }) {
-    if (book != null) {
-      return book(id);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(HomeSegment value) home,
     required TResult Function(BookSegment value) book,
@@ -382,21 +321,6 @@ class _$BookSegment extends BookSegment {
     TResult Function(BooksAuthorsSegment value)? booksAuthors,
   }) {
     return book?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HomeSegment value)? home,
-    TResult Function(BookSegment value)? book,
-    TResult Function(AuthorSegment value)? author,
-    TResult Function(BooksAuthorsSegment value)? booksAuthors,
-    required TResult orElse(),
-  }) {
-    if (book != null) {
-      return book(this);
-    }
-    return orElse();
   }
 
   @override
@@ -506,21 +430,6 @@ class _$AuthorSegment extends AuthorSegment {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? home,
-    TResult Function(int id)? book,
-    TResult Function(int id)? author,
-    TResult Function()? booksAuthors,
-    required TResult orElse(),
-  }) {
-    if (author != null) {
-      return author(id);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(HomeSegment value) home,
     required TResult Function(BookSegment value) book,
@@ -539,21 +448,6 @@ class _$AuthorSegment extends AuthorSegment {
     TResult Function(BooksAuthorsSegment value)? booksAuthors,
   }) {
     return author?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HomeSegment value)? home,
-    TResult Function(BookSegment value)? book,
-    TResult Function(AuthorSegment value)? author,
-    TResult Function(BooksAuthorsSegment value)? booksAuthors,
-    required TResult orElse(),
-  }) {
-    if (author != null) {
-      return author(this);
-    }
-    return orElse();
   }
 
   @override
@@ -640,21 +534,6 @@ class _$BooksAuthorsSegment extends BooksAuthorsSegment {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? home,
-    TResult Function(int id)? book,
-    TResult Function(int id)? author,
-    TResult Function()? booksAuthors,
-    required TResult orElse(),
-  }) {
-    if (booksAuthors != null) {
-      return booksAuthors();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(HomeSegment value) home,
     required TResult Function(BookSegment value) book,
@@ -673,21 +552,6 @@ class _$BooksAuthorsSegment extends BooksAuthorsSegment {
     TResult Function(BooksAuthorsSegment value)? booksAuthors,
   }) {
     return booksAuthors?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HomeSegment value)? home,
-    TResult Function(BookSegment value)? book,
-    TResult Function(AuthorSegment value)? author,
-    TResult Function(BooksAuthorsSegment value)? booksAuthors,
-    required TResult orElse(),
-  }) {
-    if (booksAuthors != null) {
-      return booksAuthors(this);
-    }
-    return orElse();
   }
 
   @override
