@@ -12,12 +12,13 @@
 <img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" alt="riverpod_navigator_core" />
 </p>
 
+As you can see, changing the **Input state** starts the async calculation.
+Výsledkem výpočtů je navigationStackProvider jako **Output state** a possibly app specific **Side effects**.
+
 Note: **What's going on?** We can read *"Dart (not flutter) package"*, *"asynchronous navigation"*, *"navigation state"*, *"navigationStackProvider"*, ... but where is Flutter an its Navigator 2.0?
 
 The beauty of *riverpod* is that it doesn't depend on Flutter. This allows most app logic to be developed and tested without typing a single widget.
-
-Changing the "Input state" starts the async calculation.
-It is then possible to debug the application logic and check the correctness of the Output-state (navigationStackProvider).
+It's the same in this case.
 
 #### See the following test code:
 
@@ -36,7 +37,7 @@ void main() {
       container.read(isLoggedProvider.notifier).update((isLogged) => !isLogged);
       await container.pump();
       // wait for "Async app logic" to finish. 
-      // Guards, redirects, async data loading and saving etc. All this code now runs during "Async Calculation"..
+      // Guards, redirects, async data loading and saving etc.
       await ... 
       // check Output-state
       final navigationStack = container.read(navigationStackProvider);
