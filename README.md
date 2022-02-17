@@ -2,7 +2,7 @@
 
 ### Simple but powerfull navigation library (based on Flutter Navigator 2.0, [Riverpod](https://riverpod.dev/), and [Freezed](https://github.com/rrousselGit/freezed)) that solves the following problems:
 
-- **Strictly typed navigation:** <br>You can use ```navigate([Home(),Book(id: bookId)]);``` instead of ```navigate('home/book;id:3');``` in your code.
+- **Strictly typed navigation:** <br>You can use ```navigate([Home(),Book(id: 3)]);``` instead of ```navigate('home/book;id:3');``` in your code.
 - **Asynchronous navigation:**<br>
   Before starting navigation, prepare all necessary asynchronous screen operations, e.g.
   - save data from the previous screen
