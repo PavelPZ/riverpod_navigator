@@ -16,13 +16,12 @@ class TestNavigator extends RNavigatorCore {
   final bool isError;
 
   @override
-  FutureOr<TypedPath> appNavigationLogicCore(TypedPath ongoingPath, {CToken? cToken}) {
+  FutureOr<TypedPath> appNavigationLogicCore(TypedPath ongoingPath) {
     if (delayMsec == null) {
       if (isError) throw 'SYNC ERROR';
       return ongoingPath;
     } else {
       return Future.delayed(Duration(milliseconds: delayMsec!)).then<TypedPath>((value) {
-        if (cToken?.isCancelling == true) return [];
         if (isError) throw 'ASYNC ERROR';
         return ongoingPath;
       });

@@ -1,10 +1,10 @@
 # Navigation state management using the riverpod
 
-### Tiny dart (not flutter) package that solves the following:
+### Dart (not flutter) package that solves the following:
 
-- **asynchronous navigation** (when changing the navigation state requires asynchronous actions)
-- the navigation state depends on **multiple providers**
-- **Strictly typed navigation:** <br>You can use ```navigate([Home(),Book(id: ě)]);``` instead of ```navigate('home/book;id:ě');``` in your code.
+- **asynchronous navigation**: changing the navigation state requires asynchronous actions, such as retrieving or saving data from the Internet
+- the navigation state depends on **multiple providers** (as a isLoggedProvider)
+- **Strictly typed navigation:** <br>You can use ```navigate([Home(),Book(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code.
 
 ### See the following diagram:
 
@@ -27,28 +27,33 @@ The mission of the typed navigation is to keep *string-path* <= **typed-path** =
 
 With the **typed-path** as the source of the truth.
 
-## What the package does not address
-
-- connection to Flutter Navigator 2.0, specifically the dependency of RouterDelegate on navigationStackProvider
-
 ## Example
 
 Take a look at a simple [DartPad example](https://dartpad.dev/?id=970ba56347a19d86ccafeb551b013fd3),
 which shows the following ideas:
 
-- use of the *typed navigation*
 - how to connect *navigationStackProvider* to *RouterDelegate*
+- what is *navigation-stack*: array of screens where the last of them is visible (and others are available pomocí Back button)
+- what is the meaning of *typed-segment* aka **TypedSegment** class, *typed-path* aka **TypedPath** list and how to use them for navigation: <br>
+```ref.read(navigationStackProvider.notifier).state = [HomeSegment(), BookSegment(id: 2)];```
+- how easy *navigationStackProvider* connects to RouterDelegate to become "the source of the truth"
 
 ## Motivation
 
+Představme si aplikaci s mnoha různými screens. Tyto screens asynchronně ukládají nebo načítají data z externí storage.
+
+
+
+
 Edge use cases?
 
-- aktuální stránka při své deaktivaci (closing) asynchronně uschovává aktuální data do external storage. 
-Uprostřed této nedokončené async operace provede uživatel Android back button
-- uživatel velice rychle 5x klikne na back tlačítko ve web browser. 5x se tedy rychle vymění celý navigation stack.
-Jednotlivé stránky aplikace často používají při svém otevírání či deaktivaci asynchronní operace. 
-Tyto operace mohou při špatném internetovém připojení trvat dost dlouho.
-- aktuální stránka obsahuje tlačítko save, kterým se spustí asynchronní úschova data do external storage.
+
+
+- When closing, the screen asynchronously stores its data in external storage.
+In the middle of this unfinished async operation, the Android user performs a back button action.
+- The user click the back button in the web browser 5 times very quickly. Therefore, the entire navigation stack is replaced quickly 5 times.
+The pages of each navigation stack may require an asynchronous action (such as saving or retrieving from external storage) when activating or deactivating it.
+- Aktuální stránka obsahuje tlačítko save, kterým se spustí asynchronní úschova data do external storage.
 Uprostřed této nedokončené async operace provede uživatel Android back button
 - ...
 
@@ -155,4 +160,9 @@ Tento jednoduchý příklad, který works for Flutter mobile, Flutter for web an
 Obsahuje vše co usnadní použít výše zmíněné principy ve Flutter alikaci.
 
 ## Testování
+
+
+## What the package does not address
+
+- connection to Flutter Navigator 2.0, specifically the dependency of RouterDelegate on navigationStackProvider
 

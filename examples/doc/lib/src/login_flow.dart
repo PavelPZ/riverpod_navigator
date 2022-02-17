@@ -61,7 +61,7 @@ class AppNavigator extends RNavigator {
 
   /// Quards and redirects for login flow
   @override
-  TypedPath appNavigationLogic(TypedPath ongoingPath, {CToken? cToken}) {
+  TypedPath appNavigationLogic(TypedPath ongoingPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
     final navigationStack = getNavigationStack();
 

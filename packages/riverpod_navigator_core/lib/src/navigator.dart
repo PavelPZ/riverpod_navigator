@@ -43,6 +43,8 @@ class RNavigatorCore {
     return newOngoingPath;
   }
 
+  void registerProtectedFuture(Future future) => _defer2NextTick.registerProtectedFuture(future);
+
   late TypedPath initPath;
   final RRouter router;
 
@@ -116,7 +118,7 @@ class RNavigatorCore {
   TypedPath getNavigationStack() => ref.read(navigationStackProvider);
 
   void _setdependsOn(List<AlwaysAliveProviderListenable> value) {
-    _dependsOn = [...value, if (!_dependsOn.contains(ongoingPathProvider)) ongoingPathProvider];
+    _dependsOn = [...value, if (!value.contains(ongoingPathProvider)) ongoingPathProvider];
     assert(_dependsOn.every((p) => p is Override));
 
     // 1. Listen to the riverpod providers. If any change, call _defer2NextTick.start().

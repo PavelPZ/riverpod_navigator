@@ -50,11 +50,6 @@ class RestorePath {
   TypedPath getInitialPath(TypedPath initPath) => path ?? initPath;
 }
 
-// ********************************************
-// Cancellation Token
-// ********************************************
-
-//
-class CToken {
-  bool isCancelling = false;
+extension TypedPathEx on TypedPath {
+  String toPath() => map((s) => s.toString()).join('/');
 }

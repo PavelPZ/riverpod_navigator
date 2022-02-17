@@ -34,6 +34,13 @@ class Defer2NextTick {
     });
   }
 
+  void registerProtectedFuture(Future future) {
+    protectedFutures.add(future);
+    future.whenComplete(() => protectedFutures.remove(future));
+  }
+
+  final protectedFutures = <Future>[];
+
   // *********************** private
 
   var _needRefresh = false;
@@ -56,6 +63,8 @@ class Defer2NextTick {
         while (_needRefresh) {
           _needRefresh = false;
           final ongoingPathNotifier = navigator.ref.read(ongoingPathProvider.notifier);
+          if (protectedFutures.isNotEmpty) await Future.wait(protectedFutures);
+          assert(protectedFutures.isEmpty);
           final futureOr = navigator.appNavigationLogicCore(ongoingPathNotifier.state);
           final newPath = futureOr is Future<TypedPath?> ? await futureOr : futureOr;
           // during async appNavigationLogicCore state change come (in providerChanged)
