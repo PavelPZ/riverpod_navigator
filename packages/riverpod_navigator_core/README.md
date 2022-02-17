@@ -13,12 +13,15 @@
 </p>
 
 As you can see, changing the **Input state** starts the async calculation.
-Výsledkem výpočtů je navigationStackProvider jako **Output state** a possibly app specific **Side effects**.
+The result of the calculations is **Output state** in navigationStackProvider and possibly app specific **Side effects**.
 
-Note: **What's going on?** We can read *"Dart (not flutter) package"*, *"asynchronous navigation"*, *"navigation state"*, *"navigationStackProvider"*, ... but where is Flutter an its Navigator 2.0?
+#### Where is the Flutter
+
+**What's going on?** So far, we can read terms like *"Dart (not flutter) package"*, *"asynchronous navigation"*, *"navigation state"*, *"navigationStackProvider"*, ... but where is the Flutter and its Navigator 2.0?
 
 The beauty of *riverpod* is that it doesn't depend on Flutter. This allows most app logic to be developed and tested without typing a single widget.
-It's the same in this case.
+It's the same in this case. 
+The missing connection of navigationStackProvider to Flutter Navigator 2.0 to RouterDelegate is already easy.
 
 #### See the following test code:
 
