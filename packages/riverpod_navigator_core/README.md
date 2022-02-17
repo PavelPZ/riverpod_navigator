@@ -4,13 +4,17 @@
 
 - **asynchronous navigation**: changing the navigation state requires asynchronous actions, such as retrieving or saving data from the Internet
 - the navigation state depends on **multiple providers** (as a isLoggedProvider)
-- **Strictly typed navigation:** <br>You can use ```navigate([Home(),Book(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code.
+- **Strictly typed navigation:** <br>You can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code.
 
 ### See the following diagram:
 
 <p align="center">
 <img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" alt="riverpod_navigator_core" />
 </p>
+
+*Dart (not flutter) package*, *asynchronous navigation*, *navigation state*, *navigationStackProvider*, ... but where is Flutter an its Navigator 2.0?
+
+
 
 ## Typed navigation mission
 
