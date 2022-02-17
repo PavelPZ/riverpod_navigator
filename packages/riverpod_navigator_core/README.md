@@ -2,12 +2,12 @@
 
 ### riverpod_navigator_core is a dart package that solves the following:
 
+- **Strictly typed navigation:** <br>
+You can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code.
 - **asynchronous navigation**<br>
 is the case when changing the navigation state requires asynchronous actions (such as loading or saving data from the Internet)
 - **multiple providers**<br>
 is the case when the navigation state depends on multipple providers (as a isLoggedProvider)
-- **Strictly typed navigation:** <br>
-You can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code.
 
 ### Riverpod Data Flow Diagram:
 
