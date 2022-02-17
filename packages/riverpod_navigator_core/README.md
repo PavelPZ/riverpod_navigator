@@ -33,7 +33,7 @@ Note:
 Úlohu riverpod_navigator v tomto procesu je pak možná znázornit následujícím schématem:
 
 <p align="center">
-<img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/READMEx.png" width="565" height="424" alt="riverpod_navigator_core" />
+<img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" width="565" height="424" alt="riverpod_navigator_core" />
 </p>
 
 Neboli se stará o to, aby na základě vstupních provider states (ongiongPathProvider, isLoggedProvider, ...) korektně vytvořil výstupní provider state (navigationStackProvider).
