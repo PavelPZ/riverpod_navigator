@@ -12,9 +12,33 @@
 <img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" alt="riverpod_navigator_core" />
 </p>
 
-*Dart (not flutter) package*, *asynchronous navigation*, *navigation state*, *navigationStackProvider*, ... but where is Flutter an its Navigator 2.0?
+What's going on? *"Dart (not flutter) package"*, *"asynchronous navigation"*, *"navigation state"*, *"navigationStackProvider"*, ... but where is Flutter an its Navigator 2.0?
 
+The beauty of *riverpod* is that it doesn't depend on Flutter. This allows most app logic to be developed and tested without typing a single widget.
 
+Changing the "Input state" (see the diagram) starts the async calculation.
+It is then possible to debug the application logic and check the correctness of the navigationStackProvider status.
+
+Viz následující test
+
+```dart
+import 'package:test/test.dart'; // not package:flutter_test/flutter_test.dart
+...
+
+void main() {
+  test('test login flow', () async {
+    final container = ProviderContainer()
+      // change Input-state
+      container.read(ongoingPathProvider.notifier).state = ...;
+      container.read(isLoggedProvider.notifier).update((isLogged) => !isLogged);
+      await container.pump();
+      // check Output-state
+      final navigationStack = container.read(navigationStackProvider);
+      ...check that id the navigationStack is correct
+  });
+}
+
+```
 
 ## Typed navigation mission
 
