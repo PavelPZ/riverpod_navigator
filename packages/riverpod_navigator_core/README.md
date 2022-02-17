@@ -6,13 +6,13 @@
 - the navigation state depends on **multiple providers** (as a isLoggedProvider)
 - **Strictly typed navigation:** <br>You can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code.
 
-### See the following diagram:
+### Riverpod Data Flow Diagram:
 
 <p align="center">
 <img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" alt="riverpod_navigator_core" />
 </p>
 
-**What's going on?** We can read *"Dart (not flutter) package"*, *"asynchronous navigation"*, *"navigation state"*, *"navigationStackProvider"*, ... but where is Flutter an its Navigator 2.0?
+Note: **What's going on?** We can read *"Dart (not flutter) package"*, *"asynchronous navigation"*, *"navigation state"*, *"navigationStackProvider"*, ... but where is Flutter an its Navigator 2.0?
 
 The beauty of *riverpod* is that it doesn't depend on Flutter. This allows most app logic to be developed and tested without typing a single widget.
 
@@ -80,6 +80,10 @@ However, it does not meet the **async navigation** condition.
 What problems does async-navigation bring? Read on...
 
 ## Problems with async
+
+
+
+1. It is likely that the asynchronous actions of the new navigation stack will overlap with the old one.
 
 Představme si aplikaci s mnoha různými screens. Tyto screens asynchronně ukládají nebo načítají data z externí storage.
 
