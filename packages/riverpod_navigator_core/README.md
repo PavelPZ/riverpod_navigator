@@ -35,15 +35,19 @@ void main() {
       container.read(ongoingPathProvider.notifier).state = ...;
       container.read(isLoggedProvider.notifier).update((isLogged) => !isLogged);
       await container.pump();
+      // wait for "Async app logic" to finish. 
+      // Guards, redirects, async data loading and saving etc. All this code now runs during "Async Calculation"..
+      await ... 
       // check Output-state
       final navigationStack = container.read(navigationStackProvider);
       ...check that id the navigationStack is correct
   });
 }
-
 ```
 
-Let's explain other terms so we can show what ```TypedPath``` means (in the definition of both providers above).
+Is the example clear? 
+
+To get further, we will explain other terms so that we can show what ```StateProvider<TypedPath>``` means.
 
 ## Typed navigation mission
 
