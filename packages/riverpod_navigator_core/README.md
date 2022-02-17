@@ -1,10 +1,13 @@
 # Navigation state management using the riverpod...
 
-### ... Dart package that solves the following:
+### ... is a dart package that solves the following:
 
-- use **asynchronous navigation** or when changing the navigation status requires asynchronous actions (such as retrieving or saving data from the Internet)
-- the navigation state depends on **multiple providers** (as a isLoggedProvider is)
-- **Strictly typed navigation:** <br>You can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code.
+- **asynchronous navigation**<br>
+is the case when changing the navigation state requires asynchronous actions (such as loading or saving data from the Internet)
+- **multiple providers**<br>
+is the case when the navigation state depends on multipple providers (as a isLoggedProvider)
+- **Strictly typed navigation:** <br>
+You can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code.
 
 ### Riverpod Data Flow Diagram:
 
