@@ -1,12 +1,12 @@
-# State management for navigation using the riverpod
+# Navigation state management using the riverpod
 
 ### Tiny dart (not flutter) package that solves the following:
 
-- **asynchronous navigation** (when changing the navigation status requires asynchronous actions)
-- the navigation state depends on **multiple providers** (as a isLoggedProvider)
-- **Strictly typed navigation:** <br>You can use ```navigate([Home(),Book(id: 3)]);``` instead of ```navigate('home/book;id:3');``` in your code.
+- **asynchronous navigation** (when changing the navigation state requires asynchronous actions)
+- the navigation state depends on **multiple providers**
+- **Strictly typed navigation:** <br>You can use ```navigate([Home(),Book(id: ě)]);``` instead of ```navigate('home/book;id:ě');``` in your code.
 
-See the following diagram:
+### See the following diagram:
 
 <p align="center">
 <img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" alt="riverpod_navigator_core" />
@@ -23,19 +23,20 @@ Take a look at the following terms related to url path ```home/book;id=2```
 - **navigation-stack** of Flutter Navigator 2.0 is a stack of screens, parameterized by typed-segment:
   ```[HomeScreen(HomeSegment())), BookScreen(BookSegment(id:2))]```
 
-The mission of the tzped navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
+The mission of the typed navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
+
 With the **typed-path** as the source of the truth.
 
 ## What the package does not address
 
-- connection to Flutter Navigator 2.0, specifically the dependency RouterDelegate on navigationStackProvider
+- connection to Flutter Navigator 2.0, specifically the dependency of RouterDelegate on navigationStackProvider
 
 ## Example
 
 Take a look at a simple [DartPad example](https://dartpad.dev/?id=970ba56347a19d86ccafeb551b013fd3),
-which shows the following ideas used in the riverpod_navigator_core package:
+which shows the following ideas:
 
-- use of the typed navigation
+- use of the *typed navigation*
 - connection *navigationStackProvider* to *RouterDelegate*
 
 
