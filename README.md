@@ -2,28 +2,28 @@
 
 ### Simple but powerfull navigation library (based on Flutter Navigator 2.0, [Riverpod](https://riverpod.dev/), and [Freezed](https://github.com/rrousselGit/freezed)) that solves the following problems:
 
-- **Strictly typed navigation:** <br>You can use ```navigate([Home(), Books(), Book(id: bookId)]);``` instead of ```navigate('home/books/$bookId');``` in your code.
+- **Strictly typed navigation:** <br>You can use ```navigate([Home(),Book(id: bookId)]);``` instead of ```navigate('home/book;id:3');``` in your code.
+- **Asynchronous navigation:**<br>
+  Before starting navigation, prepare all necessary asynchronous screen operations, e.g.
+  - save data from the previous screen
+  - load data for the new screen
+- **Nested navigation**
 - **Easier coding:** <br>The problem of navigation is reduced to manipulation an immutable collection.
 - **Better separation of concerns: UI x Model** (thanks to [riverpod](https://riverpod.dev/) :+1:):<br>
   Navigation logic can be developed and tested without typing a single flutter widget.
-- **Asynchronous navigation:**<br>
-  Before starting navigation, prepare all necessary asynchronous screen operations, e.g.
-  - load data for the new screen
-  - save data from the previous screen
 - **Dependence on external providers:**<br>
   The navigation state may also depend on external riverpod providers, e.g. on login status
-- **Nested navigation**
 
 ## The mission
 
-Take a look at the following terms related to url path ```home/books/book;id=2```
+Take a look at the following terms related to url path ```home/book;id=2```
 
-- **string-path:** ```final stringPath = 'home/books/book;id=2';```
-- **string-segment** - the string-path consists of three string-segments: 'home', 'books' and 'book;id=2'
-- **typed-segment** - the typed-segment is immutable class that defines string-segment: HomeSegment(), BooksSegment() and BookSegment(id:2)
-- **typed-path**: typed-path can be understood as List<typed-segment>: ```final typedPath = [HomeSegment(), BooksSegment(), BookSegment(id:2)];```
+- **string-path:** ```final stringPath = 'home/book;id=2';```
+- **string-segment** - the string-path consists of two string-segments: 'home'and 'book;id=2'
+- **typed-segment** - the typed-segment is immutable class that defines string-segment: HomeSegment() and BookSegment(id:2) in this case
+- **typed-path**: typed-path can be understood as List<typed-segment>: ```final typedPath = [HomeSegment(), BookSegment(id:2)];```
 - **navigation-stack** of Flutter Navigator 2.0 is a stack of screens, parameterized by typed-segment:
-  ```[HomeScreen(HomeSegment())), BooksScreen(BooksSegment()), BookScreen(BookSegment(id:2))]```
+  ```[HomeScreen(HomeSegment())), BookScreen(BookSegment(id:2))]```
 
 The mission of the navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
 With the **typed-path** as the source of the truth.

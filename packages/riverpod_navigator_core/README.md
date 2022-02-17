@@ -1,6 +1,8 @@
-# State management for Flutter Navigator 2.0 using the riverpod
+# State management for navigation using the riverpod
 
-... s podporou asynchronní a cancelable navigation
+### Tiny dart library that solves the following problems:
+
+... s podporou asynchronní navigation
 
 ## Příklad
 
