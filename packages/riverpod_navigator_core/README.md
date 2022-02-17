@@ -19,7 +19,7 @@ The beauty of *riverpod* is that it doesn't depend on Flutter. This allows most 
 Changing the "Input state" starts the async calculation.
 It is then possible to debug the application logic and check the correctness of the Output-state (navigationStackProvider).
 
-See the following test code:
+#### See the following test code:
 
 ```dart
 import 'package:test/test.dart'; // not package:flutter_test/flutter_test.dart
@@ -70,12 +70,16 @@ Take a look at a simple [DartPad example](https://dartpad.dev/?id=970ba56347a19d
 which shows the following ideas:
 
 - how to connect *navigationStackProvider* to *RouterDelegate*
-- what is *navigation-stack*: array of screens where the last of them is visible (and others are available pomocí Back button)
+- what is *navigation-stack*: array of screens where the last of them is visible (and others are available via the Back button)
 - what is the meaning of *typed-segment* aka **TypedSegment** class, *typed-path* aka **TypedPath** list and how to use them for navigation: <br>
 ```ref.read(navigationStackProvider.notifier).state = [HomeSegment(), BookSegment(id: 2)];```
-- how easy *navigationStackProvider* connects to RouterDelegate to become "the source of the truth"
+- how easy *navigationStackProvider* connects to RouterDelegate to become **"the source of the truth"**
 
-## Motivation
+The example may look like a solution to Flutter Navigation 2.0 using the riverpod package.
+However, it does not meet the **async navigation** condition.
+What problems does async-navigation bring? Read on...
+
+## Problems with async
 
 Představme si aplikaci s mnoha různými screens. Tyto screens asynchronně ukládají nebo načítají data z externí storage.
 
@@ -86,9 +90,10 @@ Edge use cases?
 
 
 
-- When closing, the screen asynchronously stores its data in external storage.
-In the middle of this unfinished async operation, the Android user performs a back button action.
-- The user click the back button in the web browser 5 times very quickly. Therefore, the entire navigation stack is replaced quickly 5 times.
+- When closing, the screen asynchronously stores its data to the external storage.
+In the middle of this unfinished async closing, the Android user performs the Android Back button to the page that needs the same data from the external storage.
+- The user click the back button in the web browser 5 times very quickly. Therefore, the entire navigation stack is replaced 5 times.
+
 The pages of each navigation stack may require an asynchronous action (such as saving or retrieving from external storage) when activating or deactivating it.
 - Aktuální stránka obsahuje tlačítko save, kterým se spustí asynchronní úschova data do external storage.
 Uprostřed této nedokončené async operace provede uživatel Android back button
