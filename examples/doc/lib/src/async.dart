@@ -41,6 +41,16 @@ Future<String> simulateAsyncResult(String asyncResult, int msec) async {
   return '$asyncResult: async result after $msec msec';
 }
 
+/// helper extension for screens
+extension WidgetRefApp on WidgetRef {
+  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+}
+
+/// helper extension for test
+extension RefApp on Ref {
+  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+}
+
 class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(

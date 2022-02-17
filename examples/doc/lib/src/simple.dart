@@ -23,6 +23,16 @@ class Segments with _$Segments, TypedSegment {
   factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
 }
 
+/// helper extension for screens
+extension WidgetRefApp on WidgetRef {
+  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+}
+
+/// helper extension for test
+extension RefApp on Ref {
+  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+}
+
 class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -34,6 +44,14 @@ class AppNavigator extends RNavigator {
             ])
           ],
         );
+
+  //******* screen actions
+
+  /// navigate to page
+  Future toPage(String title) => navigate([HomeSegment(), PageSegment(title: title)]);
+
+  /// navigate to home
+  Future toHome() => navigate([HomeSegment()]);
 }
 
 class App extends ConsumerWidget {
@@ -63,8 +81,8 @@ class HomeScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                // following navigation create navigation stack "HomeScreen(HomeSegment()) => PageScreen(PageSegment(title: 'Page title'))".
-                onPressed: () => ref.navigator.navigate([HomeSegment(), PageSegment(title: 'Page')]),
+                // following navigation create navigation stack [HomeScreen(HomeSegment()) => PageScreen(PageSegment(title: 'Page title'))].
+                onPressed: () => ref.navigator.toPage('Page'),
                 child: const Text('Go to page'),
               ),
             ],
@@ -87,7 +105,7 @@ class PageScreen extends ConsumerWidget {
             children: [
               ElevatedButton(
                 // following navigation create navigation stack "HomeScreen(HomeSegment())".
-                onPressed: () => ref.navigator.navigate([HomeSegment()]),
+                onPressed: () => ref.navigator.toHome(),
                 child: const Text('Go to home'),
               ),
             ],

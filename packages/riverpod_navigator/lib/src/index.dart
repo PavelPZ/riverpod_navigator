@@ -24,6 +24,6 @@ extension RefEx on Ref {
   RNavigator get navigator => read(riverpodNavigatorProvider) as RNavigator;
 }
 
-extension WidgetRefEx on WidgetRef {
-  RNavigator get navigator => read(riverpodNavigatorProvider) as RNavigator;
-}
+// extension WidgetRefEx on WidgetRef {
+//   RNavigator get navigator => read(riverpodNavigatorProvider) as RNavigator;
+// }

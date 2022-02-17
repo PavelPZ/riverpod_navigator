@@ -9,8 +9,8 @@ is the case when changing the navigation state requires asynchronous actions (su
 - **multiple providers**<br>
 this is the case when the navigation state depends on multiple providers, e.g. on the login state
 - **nested navigation**: 
-- **easier coding:** <br>T
-he problem of navigation is reduced to manipulation an immutable collection.
+- **easier coding:** <br>
+The problem of navigation is reduced to manipulation an immutable collection.
 - **better separation of concerns: UI x Model** (thanks to [riverpod](https://riverpod.dev/) :+1:):<br>
 navigation logic can be developed and tested without typing a single flutter widget.
 
@@ -43,19 +43,18 @@ From the following SegmentGrp class declaration, the freezed package
 generates two classes: *HomeSegment* and *PageSegment*.
 
 ```dart
-@freezed
-class SegmentGrp with _$SegmentGrp, TypedSegment {
-  SegmentGrp._();
-  factory SegmentGrp.home() = HomeSegment;
-  factory SegmentGrp.page({required String title}) = PageSegment;
+@Freezed(maybeWhen: false, maybeMap: false)
+class Segments with _$Segments, TypedSegment {
+  Segments._();
+  factory Segments.home() = HomeSegment;
+  factory Segments.page({required String title}) = PageSegment;
 
-  factory SegmentGrp.fromJson(Map<String, dynamic> json) => _$SegmentGrpFromJson(json);
-}
-```
+  factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
+}```
 
 ### Step2 - navigator parameterization
 
-Extends the RNavigator class as follows:
+Extends the RNavigator class as follows.
 
 ```dart
 class AppNavigator extends RNavigator {
@@ -63,13 +62,30 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<SegmentGrp>(SegmentGrp.fromJson, [
-              // build a screen from segment
-              RRoute<HomeSegment>(HomeScreen.new),
+            RRoutes<Segments>(Segments.fromJson, [
+              RRoute<HomeSegment>(HomeScreen.new), // build a screen from segment
               RRoute<PageSegment>(PageScreen.new),
             ])
           ],
         );
+
+  //******* screen actions
+
+  /// navigate to page
+  Future toPage(String title) => navigate([HomeSegment(), PageSegment(title: title)]);
+
+  /// navigate to home
+  Future toHome() => navigate([HomeSegment()]);
+}
+
+/// helper extension for screens
+extension WidgetRefApp on WidgetRef {
+  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+}
+
+/// helper extension for test
+extension RefApp on Ref {
+  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
 }
 ```
 
@@ -106,20 +122,52 @@ void main() => runApp(
 
 ### Step5 - widgets for screens
 
-Creating screen widgets is probably an understandable part of the example.
+```dart 
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen(this.segment, {Key? key}) : super(key: key);
 
-Only the navigation to the new screen is interesting:
+  final HomeSegment segment;
 
-```dart
-//  create navigation stack [HomeScreen(HomeSegment()), PageScreen(PageSegment(title: 'Page'))]
-ref.navigator.navigate([HomeSegment(), PageSegment(title: 'Page')]);
-```
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
+        appBar: AppBar(title: const Text('Home')),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                // following navigation create navigation stack [HomeScreen(HomeSegment()) => PageScreen(PageSegment(title: 'Page title'))].
+                onPressed: () => ref.navigator.toPage('Page'),
+                child: const Text('Go to page'),
+              ),
+            ],
+          ),
+        ),
+      );
+}
 
-or 
+class PageScreen extends ConsumerWidget {
+  const PageScreen(this.segment, {Key? key}) : super(key: key);
 
-```dart
-//  create navigation stack [HomeScreen(HomeSegment())]
-ref.navigator.navigate([HomeSegment()]);
+  final PageSegment segment;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
+        appBar: AppBar(title: Text(segment.title)),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                // following navigation create navigation stack "HomeScreen(HomeSegment())".
+                onPressed: () => ref.navigator.toHome(),
+                child: const Text('Go to home'),
+              ),
+            ],
+          ),
+        ),
+      );
+}
 ```
 
 #### Code of the example
