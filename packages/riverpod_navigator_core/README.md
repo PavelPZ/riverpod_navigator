@@ -15,43 +15,13 @@
 As you can see, changing the **Input state** starts the async calculation.
 The result of the calculations is **Output state** in navigationStackProvider and possibly app specific **Side effects**.
 
-#### Where is the Flutter
+#### Where is the Flutter?
 
 **What's going on?** So far, we can read terms like *"Dart (not flutter) package"*, *"asynchronous navigation"*, *"navigation state"*, *"navigationStackProvider"*, ... but where is the Flutter and its Navigator 2.0?
 
 The beauty of *riverpod* is that it doesn't depend on Flutter. This allows most app logic to be developed and tested without typing a single widget.
 It's the same in this case. 
 The missing connection of navigationStackProvider to Flutter Navigator 2.0 to RouterDelegate is already easy.
-
-#### See the following test code:
-
-```dart
-import 'package:test/test.dart'; // not package:flutter_test/flutter_test.dart
-...
-
-final ongoingPathProvider StateProvider<TypedPath>(...);
-final navigationStackProvider StateProvider<TypedPath>(...);
-
-void main() {
-  test('test login flow', () async {
-    final container = ProviderContainer()
-      // change Input-state
-      container.read(ongoingPathProvider.notifier).state = ...;
-      container.read(isLoggedProvider.notifier).update((isLogged) => !isLogged);
-      await container.pump();
-      // wait for "Async app logic" to finish. 
-      // Guards, redirects, async data loading and saving etc.
-      await ... 
-      // check Output-state
-      final navigationStack = container.read(navigationStackProvider);
-      ...check that id the navigationStack is correct
-  });
-}
-```
-
-Is the example clear? 
-
-To get further, we will explain other terms so that we can show what ```StateProvider<TypedPath>``` means.
 
 ## Typed navigation mission
 
@@ -82,6 +52,37 @@ which shows the following ideas:
 The example may look like a solution to Flutter Navigation 2.0 using the riverpod package.
 However, it does not meet the **async navigation** condition.
 What problems does async-navigation bring? Read on...
+
+## The idea of flutter development and testing...
+
+... is shown on the dart-test example pseudocode:
+
+```dart
+import 'package:test/test.dart'; // not package:flutter_test/flutter_test.dart
+...
+
+void main() {
+  test('test', () async {
+    final container = ProviderContainer()
+      // change Input-state
+      container.read(ongoingPathProvider.notifier).state = [HomeSegment(), BookSegment(id:2)];
+      await container.pump();
+      // wait for "Async app logic" to finish. 
+      // Debug guards, redirects, async data loading and saving etc.
+      await ... 
+      // check Output-state
+      final navigationStack = container.read(navigationStackProvider);
+      final url = RouteInformationParserImpl.debugTypedPath2Path(navigationStack);
+      expect(url,'{"runtimeType":"home"}/{"id":2,"runtimeType":"book"}')');
+  });
+}
+```
+
+Is the idea clear? 
+
+To get further, we will explain the other terms so that we can show what ```StateProvider <TypedPath>``` means in the test example.
+
+
 
 ## Problems with async
 
