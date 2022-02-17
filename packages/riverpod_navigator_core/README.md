@@ -12,18 +12,21 @@
 <img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" alt="riverpod_navigator_core" />
 </p>
 
-What's going on? *"Dart (not flutter) package"*, *"asynchronous navigation"*, *"navigation state"*, *"navigationStackProvider"*, ... but where is Flutter an its Navigator 2.0?
+**What's going on?** We can read *"Dart (not flutter) package"*, *"asynchronous navigation"*, *"navigation state"*, *"navigationStackProvider"*, ... but where is Flutter an its Navigator 2.0?
 
 The beauty of *riverpod* is that it doesn't depend on Flutter. This allows most app logic to be developed and tested without typing a single widget.
 
-Changing the "Input state" (see the diagram) starts the async calculation.
-It is then possible to debug the application logic and check the correctness of the navigationStackProvider status.
+Changing the "Input state" starts the async calculation.
+It is then possible to debug the application logic and check the correctness of the Output-state (navigationStackProvider).
 
-Viz následující test
+See the following test code:
 
 ```dart
 import 'package:test/test.dart'; // not package:flutter_test/flutter_test.dart
 ...
+
+final ongoingPathProvider StateProvider<TypedPath>(...);
+final navigationStackProvider StateProvider<TypedPath>(...);
 
 void main() {
   test('test login flow', () async {
@@ -40,14 +43,16 @@ void main() {
 
 ```
 
+Let's explain other terms so we can show what ```TypedPath``` means (in the definition of both providers above).
+
 ## Typed navigation mission
 
 Take a look at the following terms related to url path ```home/book;id=2```
 
 - **string-path:** ```final stringPath = 'home/book;id=2';```
 - **string-segment** - the string-path consists of two string-segments: 'home'and 'book;id=2'
-- **typed-segment** - the typed-segment is immutable class that defines string-segment: HomeSegment() and BookSegment(id:2) in this case
-- **typed-path**: typed-path can be understood as List<typed-segment>: ```final typedPath = [HomeSegment(), BookSegment(id:2)];```
+- **typed-segment** - the typed-segment (aka ```TypedSegment``` class) is immutable class that defines string-segment: HomeSegment() and BookSegment(id:2) in this case
+- **typed-path**: typed-path (aka ```TypedPath``` list)  can be understood as List<TypedSegment>: ```final typedPath = [HomeSegment(), BookSegment(id:2)];```
 - **navigation-stack** of Flutter Navigator 2.0 is a stack of screens, parameterized by typed-segment:
   ```[HomeScreen(HomeSegment())), BookScreen(BookSegment(id:2))]```
 
