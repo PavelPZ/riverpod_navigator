@@ -8,7 +8,8 @@
 
 Problémy, které riverpod_navigator_core řeší, si představme na příkladě.
 
-Na home-screen je link-button s odkazem na book-screen, kde book-screen je dostupná pouze po zalogování.
+Na home-screen je link-button s odkazem na book-screen. 
+Book-screen je dostupná pouze po zalogování.
 
 V riverpod světě se realizace kliku na link-button provede pomocí změny stavu riverpod provideru. 
 Tento provider nazýváme **ongiongPathProvider**. 
@@ -32,7 +33,7 @@ Note:
 Úlohu riverpod_navigator v tomto procesu je pak možná znázornit následujícím schématem:
 
 <p align="center">
-<img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" width="565" height="424" alt="riverpod_navigator_core" />
+<img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/READMEx.png" width="565" height="424" alt="riverpod_navigator_core" />
 </p>
 
 Neboli se stará o to, aby na základě vstupních provider states (ongiongPathProvider, isLoggedProvider, ...) korektně vytvořil výstupní provider state (navigationStackProvider).
