@@ -18,11 +18,10 @@ class RNavigatorCore {
     ref.onDispose(() {
       // ignore: avoid_function_literals_in_foreach_calls
       _unlistens.forEach((f) => f());
-      //ref.onDispose(() => unlistens.forEach((f) => f()));
     });
 
-    // load init path
-    _defer2NextTick!.providerChanged();
+    // start navigation
+    _defer2NextTick.providerChanged();
   }
 
   /// Enter application navigation logic here (redirection, login, etc.).
@@ -46,7 +45,10 @@ class RNavigatorCore {
 
   late TypedPath initPath;
   final RRouter router;
+
   final PathParser Function(Json2Segment json2Segment) pathParserCreator;
+  PathParser get pathParser => _pathParser ?? (_pathParser = pathParserCreator(router.json2Segment));
+  PathParser? _pathParser;
 
   /// Main [RNavigator] method. Provides navigation to newPath.
   Future<void> navigate(TypedPath newPath) async {
@@ -55,7 +57,7 @@ class RNavigatorCore {
   }
 
   /// When changing navigation state: completed after navigationStackProvider is actual
-  Future<void> get navigationCompleted => _defer2NextTick!.future;
+  Future<void> get navigationCompleted => _defer2NextTick.future;
 
   TypedPath segmentSubpath(TypedSegment s) {
     final navigationStack = getNavigationStack();
@@ -113,29 +115,26 @@ class RNavigatorCore {
 
   TypedPath getNavigationStack() => ref.read(navigationStackProvider);
 
-  PathParser get pathParser => _pathParser ?? (_pathParser = pathParserCreator(router.json2Segment));
-  PathParser? _pathParser;
-
-  void set dependsOn(List<AlwaysAliveProviderListenable> value) {
+  void _setdependsOn(List<AlwaysAliveProviderListenable> value) {
     _dependsOn = [...value, if (!_dependsOn.contains(ongoingPathProvider)) ongoingPathProvider];
     assert(_dependsOn.every((p) => p is Override));
 
     // 1. Listen to the riverpod providers. If any change, call _defer2NextTick.start().
-    // 2. _defer2NextTick ensures that _runNavigation is called only once the next tick
+    // 2. [providerChanged] ensures that _runNavigation is called only once the next tick
     // 3. Add RemoveListener's to unlistens
     // 4. Use unlistens in ref.onDispose
-    _unlistens = _dependsOn.map((depend) => ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick!.providerChanged())).toList();
+    _unlistens = _dependsOn.map((depend) => ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick.providerChanged())).toList();
   }
 
-  List<AlwaysAliveProviderListenable> _dependsOn = [];
-  List<Function> _unlistens = [];
+  late List<AlwaysAliveProviderListenable> _dependsOn;
+  late List<Function> _unlistens;
 
   /// for nested navigator: keep state of nested navigator in flutter tabs widget
-  RestorePath? _restorePath;
+  late RestorePath? _restorePath;
 
   @protected
-  Ref ref;
-  Defer2NextTick? _defer2NextTick;
+  final Ref ref;
+  late Defer2NextTick _defer2NextTick;
 
   /// replaces "eq" segments with "identical" ones
   @protected
@@ -180,6 +179,6 @@ class RNavigatorCore {
         riverpodNavigatorProvider.overrideWithProvider(Provider((ref) => navigator(ref)
           .._restorePath = restorePath
           ..initPath = initPath
-          ..dependsOn = dependsOn)),
+          .._setdependsOn(dependsOn))),
       ];
 }

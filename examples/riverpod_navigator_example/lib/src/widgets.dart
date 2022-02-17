@@ -80,3 +80,14 @@ Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> b
     ),
   );
 }
+
+class A {
+  A(this.x);
+  final Object? x;
+}
+
+class B extends A {
+  B(B x) : super(x);
+  @override
+  B? get x => super.x as B;
+}
