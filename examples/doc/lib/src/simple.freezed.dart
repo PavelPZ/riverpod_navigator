@@ -22,7 +22,8 @@ Segments _$SegmentsFromJson(Map<String, dynamic> json) {
       return PageSegment.fromJson(json);
 
     default:
-      throw CheckedFromJsonException(json, 'runtimeType', 'Segments', 'Invalid union type "${json['runtimeType']}"!');
+      throw CheckedFromJsonException(json, 'runtimeType', 'Segments',
+          'Invalid union type "${json['runtimeType']}"!');
   }
 }
 
@@ -81,7 +82,8 @@ mixin _$Segments {
 
 /// @nodoc
 abstract class $SegmentsCopyWith<$Res> {
-  factory $SegmentsCopyWith(Segments value, $Res Function(Segments) then) = _$SegmentsCopyWithImpl<$Res>;
+  factory $SegmentsCopyWith(Segments value, $Res Function(Segments) then) =
+      _$SegmentsCopyWithImpl<$Res>;
 }
 
 /// @nodoc
@@ -95,12 +97,17 @@ class _$SegmentsCopyWithImpl<$Res> implements $SegmentsCopyWith<$Res> {
 
 /// @nodoc
 abstract class $HomeSegmentCopyWith<$Res> {
-  factory $HomeSegmentCopyWith(HomeSegment value, $Res Function(HomeSegment) then) = _$HomeSegmentCopyWithImpl<$Res>;
+  factory $HomeSegmentCopyWith(
+          HomeSegment value, $Res Function(HomeSegment) then) =
+      _$HomeSegmentCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class _$HomeSegmentCopyWithImpl<$Res> extends _$SegmentsCopyWithImpl<$Res> implements $HomeSegmentCopyWith<$Res> {
-  _$HomeSegmentCopyWithImpl(HomeSegment _value, $Res Function(HomeSegment) _then) : super(_value, (v) => _then(v as HomeSegment));
+class _$HomeSegmentCopyWithImpl<$Res> extends _$SegmentsCopyWithImpl<$Res>
+    implements $HomeSegmentCopyWith<$Res> {
+  _$HomeSegmentCopyWithImpl(
+      HomeSegment _value, $Res Function(HomeSegment) _then)
+      : super(_value, (v) => _then(v as HomeSegment));
 
   @override
   HomeSegment get _value => super._value as HomeSegment;
@@ -113,14 +120,16 @@ class _$HomeSegment extends HomeSegment {
       : $type = $type ?? 'home',
         super._();
 
-  factory _$HomeSegment.fromJson(Map<String, dynamic> json) => _$$HomeSegmentFromJson(json);
+  factory _$HomeSegment.fromJson(Map<String, dynamic> json) =>
+      _$$HomeSegmentFromJson(json);
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other.runtimeType == runtimeType && other is HomeSegment);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is HomeSegment);
   }
 
   @override
@@ -172,18 +181,24 @@ abstract class HomeSegment extends Segments {
   factory HomeSegment() = _$HomeSegment;
   HomeSegment._() : super._();
 
-  factory HomeSegment.fromJson(Map<String, dynamic> json) = _$HomeSegment.fromJson;
+  factory HomeSegment.fromJson(Map<String, dynamic> json) =
+      _$HomeSegment.fromJson;
 }
 
 /// @nodoc
 abstract class $PageSegmentCopyWith<$Res> {
-  factory $PageSegmentCopyWith(PageSegment value, $Res Function(PageSegment) then) = _$PageSegmentCopyWithImpl<$Res>;
+  factory $PageSegmentCopyWith(
+          PageSegment value, $Res Function(PageSegment) then) =
+      _$PageSegmentCopyWithImpl<$Res>;
   $Res call({String title});
 }
 
 /// @nodoc
-class _$PageSegmentCopyWithImpl<$Res> extends _$SegmentsCopyWithImpl<$Res> implements $PageSegmentCopyWith<$Res> {
-  _$PageSegmentCopyWithImpl(PageSegment _value, $Res Function(PageSegment) _then) : super(_value, (v) => _then(v as PageSegment));
+class _$PageSegmentCopyWithImpl<$Res> extends _$SegmentsCopyWithImpl<$Res>
+    implements $PageSegmentCopyWith<$Res> {
+  _$PageSegmentCopyWithImpl(
+      PageSegment _value, $Res Function(PageSegment) _then)
+      : super(_value, (v) => _then(v as PageSegment));
 
   @override
   PageSegment get _value => super._value as PageSegment;
@@ -208,7 +223,8 @@ class _$PageSegment extends PageSegment {
       : $type = $type ?? 'page',
         super._();
 
-  factory _$PageSegment.fromJson(Map<String, dynamic> json) => _$$PageSegmentFromJson(json);
+  factory _$PageSegment.fromJson(Map<String, dynamic> json) =>
+      _$$PageSegmentFromJson(json);
 
   @override
   final String title;
@@ -219,15 +235,19 @@ class _$PageSegment extends PageSegment {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is PageSegment && const DeepCollectionEquality().equals(other.title, title));
+        (other.runtimeType == runtimeType &&
+            other is PageSegment &&
+            const DeepCollectionEquality().equals(other.title, title));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, const DeepCollectionEquality().hash(title));
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(title));
 
   @JsonKey(ignore: true)
   @override
-  $PageSegmentCopyWith<PageSegment> get copyWith => _$PageSegmentCopyWithImpl<PageSegment>(this, _$identity);
+  $PageSegmentCopyWith<PageSegment> get copyWith =>
+      _$PageSegmentCopyWithImpl<PageSegment>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -275,9 +295,11 @@ abstract class PageSegment extends Segments {
   factory PageSegment({required String title}) = _$PageSegment;
   PageSegment._() : super._();
 
-  factory PageSegment.fromJson(Map<String, dynamic> json) = _$PageSegment.fromJson;
+  factory PageSegment.fromJson(Map<String, dynamic> json) =
+      _$PageSegment.fromJson;
 
   String get title;
   @JsonKey(ignore: true)
-  $PageSegmentCopyWith<PageSegment> get copyWith => throw _privateConstructorUsedError;
+  $PageSegmentCopyWith<PageSegment> get copyWith =>
+      throw _privateConstructorUsedError;
 }
