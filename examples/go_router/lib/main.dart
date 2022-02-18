@@ -24,6 +24,16 @@ class Segments with _$Segments, TypedSegment {
   factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
 }
 
+/// helper extension for screens
+extension WidgetRefApp on WidgetRef {
+  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+}
+
+/// helper extension for test
+extension RefApp on Ref {
+  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+}
+
 class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(

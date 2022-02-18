@@ -9,6 +9,17 @@ is the case when changing the navigation state requires asynchronous actions (su
 - **multiple providers**<br>
 is the case when the navigation state depends on multipple providers (as a isLoggedProvider)
 
+### Terminology used
+
+Take a look at the following terms related to url path ```home/book;id=2```
+
+- **string-path:** ```final stringPath = 'home/book;id=2';```
+- **string-segment** - the string-path consists of two slash delimited string-segments: 'home' and 'book;id=2'
+- **typed-segment** - the typed-segment (aka ```class TypedSegment {}``` ) defines string-segment: HomeSegment() and BookSegment(id:2) in this case
+- **typed-path**: typed-path (aka ```typedef TypedPath = List<TypedSegment>```) : ```final typedPath = [HomeSegment(), BookSegment(id:2)];```
+- Flutter Navigator 2.0 **navigation-stack** is specified by TypedPath, where each TypedSegment instance corresponds to a flutter screen and page instance<br>
+  ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:2)))]```.
+
 ### Riverpod Data Flow Diagram:
 
 <p align="center">
@@ -25,21 +36,6 @@ The result of the calculations is **Output state** in navigationStackProvider an
 The beauty of *riverpod* is that it doesn't depend on Flutter. This allows most app logic to be developed and tested without typing a single widget.
 It's the same in this case. 
 The missing *navigationStackProvider* connection to Flutter Navigator 2.0 to *RouterDelegate* for development and testing purposes is not relevant now.
-
-## Typed navigation mission
-
-Take a look at the following terms related to url path ```home/book;id=2```
-
-- **string-path:** ```final stringPath = 'home/book;id=2';```
-- **string-segment** - the string-path consists of two string-segments: 'home'and 'book;id=2'
-- **typed-segment** - the typed-segment (aka ```TypedSegment``` class) is immutable class that defines string-segment: HomeSegment() and BookSegment(id:2) in this case
-- **typed-path**: typed-path (aka ```TypedPath``` list)  can be understood as List<TypedSegment>: ```final typedPath = [HomeSegment(), BookSegment(id:2)];```
-- **navigation-stack** of Flutter Navigator 2.0 is a stack of screens, parameterized by typed-segment:
-  ```[HomeScreen(HomeSegment())), BookScreen(BookSegment(id:2))]```
-
-The mission of the typed navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
-
-With the **typed-path** as the source of the truth.
 
 ## Example
 

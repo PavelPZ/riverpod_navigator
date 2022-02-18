@@ -1,9 +1,7 @@
+import 'package:doc/login_flow.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 import 'package:test/test.dart';
-
-// ignore: avoid_relative_lib_imports
-import '../lib/src/login_flow.dart';
 
 ProviderContainer createContainer() {
   final res = ProviderContainer(overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new));

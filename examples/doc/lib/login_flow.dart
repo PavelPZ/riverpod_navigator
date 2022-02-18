@@ -184,7 +184,7 @@ Widget pageHelper(
   required List<Widget> buildChildren(AppNavigator navigator),
   bool? isLoginPage,
 }) {
-  final navigator = ref.navigator as AppNavigator;
+  final navigator = ref.navigator;
   return Scaffold(
     appBar: AppBar(
       title: Text(title),

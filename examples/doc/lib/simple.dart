@@ -81,7 +81,6 @@ class HomeScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                // following navigation create navigation stack [HomeScreen(HomeSegment()) => PageScreen(PageSegment(title: 'Page title'))].
                 onPressed: () => ref.navigator.toPage('Page'),
                 child: const Text('Go to page'),
               ),
@@ -104,7 +103,6 @@ class PageScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                // following navigation create navigation stack "HomeScreen(HomeSegment())".
                 onPressed: () => ref.navigator.toHome(),
                 child: const Text('Go to home'),
               ),
