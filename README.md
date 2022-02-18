@@ -119,10 +119,10 @@ void main() => runApp(
 
 ### And that's all
 
-HomeScreen and PageScreen widgets are visible in the source code:
+HomeScreen and PageScreen widgets and test are in the source code:
 
-[simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart),
-[simple_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
+- [simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart)
+- [simple_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
 
 ### Testing
 
