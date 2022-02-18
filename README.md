@@ -39,28 +39,26 @@ Take a look at the following terms related to url path ```home/book;id=2```
 
 As you can see, changing the **Input state** starts the async calculation.
 The result of the calculations is **Output state** in navigationStackProvider and possibly app specific **Side effects**.
+Connecting *navigationStackProvider* to Flutter Navigator 2.0 is then easy.
 
-The signature of the appLogic procedure is as follows:
+The appLogic procedure returns the future with the new navigationStack and its signature is as follows:
 
+```dart
+FutureOr<TypedPath> appNavigationLogic(TypedPath oldNavigationStack, TypedPath ongoingPath)
 ```
-
-```
-
-Connecting to Flutter Navigator 2.0 is then easy.
 
 ## Simple example
 
 ### Step1 - imutable classes for typed-segment
 
-We use [freezed-package](https://github.com/rrousselGit/freezed) for generation immutable clasess (that defines typed-segment's).
+We use [freezed-package](https://github.com/rrousselGit/freezed) to generate immutable TypedSegment descendant classes.
 
 It's a good idea to be familiar with the freezed-package (including support for JSON serialization).
 
-From the following SegmentGrp class declaration, the freezed package 
-generates two classes: *HomeSegment* and *PageSegment*.
+From the following SegmentGrp class declaration, the freezed generates two classes: *HomeSegment* and *PageSegment*.
 
 ```dart
-@Freezed(maybeWhen: false, maybeMap: false)
+@freezed
 class Segments with _$Segments, TypedSegment {
   Segments._();
   factory Segments.home() = HomeSegment;
@@ -79,14 +77,16 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<Segments>(Segments.fromJson, [
-              RRoute<HomeSegment>(HomeScreen.new), // build a screen from segment
-              RRoute<PageSegment>(PageScreen.new),
+            RRoutes<Segments>(Segments.fromJson, [ // json deserialize HomeSegment or PageSegment
+              RRoute<HomeSegment>(HomeScreen.new), // build a HomeScreen for HomeSegment
+              RRoute<PageSegment>(PageScreen.new), // build a PageScreen for PageSegment
             ])
           ],
         );
 
-  //******* screen actions
+  //******* app specific actions, used:
+  // - in screen e.g. in button onClick
+  // - in dart test during development or testing
 
   /// navigate to page
   Future toPage(String title) => navigate([HomeSegment(), PageSegment(title: title)]);
@@ -94,16 +94,45 @@ class AppNavigator extends RNavigator {
   /// navigate to home
   Future toHome() => navigate([HomeSegment()]);
 }
+```
 
-/// helper extension for screens
+### useful extension for screen code
+
+```dart
 extension WidgetRefApp on WidgetRef {
   AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
 }
+```
 
-/// helper extension for test
-extension RefApp on Ref {
+use:
+
+```dart
+class HomeScreen extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+...
+    ElevatedButton(onPressed: () => ref.navigator.toPage('Page title')
+```
+
+### useful extension for testing 
+
+```dart 
+extension WidgetRefApp on WidgetRef {
   AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
 }
+```
+
+use:
+
+```dart
+void main() {
+  test('navigation test', () async {
+    final container = ProviderContainer();
+    await container.navigator.toPage('Page');
+    await container.pump();
+    // dump navigationStackProvider state
+    expect(container.navigator.debugNavigationStack2String, 'home/page;title=Page');
+...
 ```
 
 ### Step3 - use the RNavigator in MaterialApp.router

@@ -14,7 +14,7 @@ void main() => runApp(
       ),
     );
 
-@Freezed(maybeWhen: false, maybeMap: false)
+@freezed
 class Segments with _$Segments, TypedSegment {
   Segments._();
   factory Segments.home() = HomeSegment;
@@ -24,12 +24,30 @@ class Segments with _$Segments, TypedSegment {
 }
 
 /// helper extension for screens
+///
+/// ```dart
+/// class HomeScreen extends ConsumerWidget {
+///   @override
+///   Widget build(BuildContext context, WidgetRef ref) {
+/// ...
+///     ElevatedButton(onPressed: () => ref.navigator.toPage('Page title')
+/// ```
 extension WidgetRefApp on WidgetRef {
   AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
 }
 
-/// helper extension for test
-extension RefApp on Ref {
+/// helper extension for testing
+///
+/// ```dart
+/// void main() {
+///   test('navigation test', () async {
+///     final container = ProviderContainer();
+///     await container.navigator.toPage('Page');
+///     await container.pump();
+///     expect(container.navigator.debugNavigationStack2String, 'home/page;title=Page');
+/// ...
+/// ```
+extension RefApp on ProviderContainer {
   AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
 }
 
@@ -38,9 +56,10 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
+            // json deserialize HomeSegment or PageSegment
             RRoutes<Segments>(Segments.fromJson, [
-              RRoute<HomeSegment>(HomeScreen.new), // build a screen from segment
-              RRoute<PageSegment>(PageScreen.new),
+              RRoute<HomeSegment>(HomeScreen.new), // build a HomeScreen for HomeSegment
+              RRoute<PageSegment>(PageScreen.new), // build a PageScreen for PageSegment
             ])
           ],
         );
