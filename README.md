@@ -19,8 +19,8 @@ just use the nested riverpod ```ProviderScope()```
 
 Use [riverpod_navigator package](https://pub.dev/packages/riverpod_navigator) to develop in Flutter.
 
-Note: Most of the code is in the *[riverpod_navigator_core package](https://pub.dev/packages/riverpod_navigator_core)* dart library independent of Flutter.
-*[riverpod_navigator package](https://pub.dev/packages/riverpod_navigator)* addresses the connection to Flutter Navigator 2.0.
+Note: Most of the code is in the *[riverpod_navigator_core](https://pub.dev/packages/riverpod_navigator_core)* dart library thai is independent of Flutter.
+*[riverpod_navigator](https://pub.dev/packages/riverpod_navigator)* addresses the connection to Flutter Navigator 2.0.
 
 ## Terminology used
 
