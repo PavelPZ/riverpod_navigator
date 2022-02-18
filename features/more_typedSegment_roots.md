@@ -9,4 +9,4 @@ Use the unique "unionKey" for the second and next segment group.
 
 #### Code of the example
 
-See [more_groups.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/more_groups.dart).
+See [more_groups.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/more_groups.dart).

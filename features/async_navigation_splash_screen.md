@@ -36,4 +36,4 @@ class AppNavigator extends RNavigator {
 
 #### Code of the example
 
-See [async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/async.dart)
+See [async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/async.dart)

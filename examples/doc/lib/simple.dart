@@ -47,7 +47,7 @@ extension WidgetRefApp on WidgetRef {
 ///     expect(container.navigator.debugNavigationStack2String, 'home/page;title=Page');
 /// ...
 /// ```
-extension RefApp on ProviderContainer {
+extension ProviderContainerApp on ProviderContainer {
   AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
 }
 
@@ -77,14 +77,11 @@ class App extends ConsumerWidget {
   const App({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final navigator = ref.navigator;
-    return MaterialApp.router(
-      title: 'Riverpod Navigator Example',
-      routerDelegate: navigator.routerDelegate,
-      routeInformationParser: navigator.routeInformationParser,
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
+        title: 'Riverpod Navigator Example',
+        routerDelegate: ref.navigator.routerDelegate,
+        routeInformationParser: ref.navigator.routeInformationParser,
+      );
 }
 
 class HomeScreen extends ConsumerWidget {

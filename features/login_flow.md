@@ -39,4 +39,4 @@ Redirect when:
 
 #### Code of the example
 
-See [login_flow.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/login_flow.dart).
+See [login_flow.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/login_flow.dart).

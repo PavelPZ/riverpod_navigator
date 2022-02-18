@@ -97,7 +97,7 @@ class AppNavigator extends RNavigator {
 }
 ```
 
-### useful extension for screen code
+#### useful extension for screen code
 
 ```dart
 extension WidgetRefApp on WidgetRef {
@@ -115,10 +115,10 @@ class HomeScreen extends ConsumerWidget {
     ElevatedButton(onPressed: () => ref.navigator.toPage('Page title')
 ```
 
-### useful extension for testing 
+#### useful extension for testing 
 
 ```dart 
-extension WidgetRefApp on WidgetRef {
+extension ProviderContainerApp on ProviderContainer {
   AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
 }
 ```
@@ -136,7 +136,7 @@ void main() {
 ...
 ```
 
-### Step3 - use the RNavigator in MaterialApp.router
+### Step3 - use the AppNavigator in MaterialApp.router
 
 If you are familiar with the Flutter Navigator 2.0 and the riverpod, the following code is clear:
 
@@ -145,14 +145,11 @@ class App extends ConsumerWidget {
   const App({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final navigator = ref.navigator;
-    return MaterialApp.router(
-      title: 'Riverpod Navigator Example',
-      routerDelegate: navigator.routerDelegate,
-      routeInformationParser: navigator.routeInformationParser,
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
+        title: 'Riverpod Navigator Example',
+        routerDelegate: ref.navigator.routerDelegate,
+        routeInformationParser: ref.navigator.routeInformationParser,
+      );
 }
 ```
 
@@ -183,7 +180,6 @@ class HomeScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                // following navigation create navigation stack [HomeScreen(HomeSegment()) => PageScreen(PageSegment(title: 'Page title'))].
                 onPressed: () => ref.navigator.toPage('Page'),
                 child: const Text('Go to page'),
               ),
@@ -206,7 +202,6 @@ class PageScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                // following navigation create navigation stack "HomeScreen(HomeSegment())".
                 onPressed: () => ref.navigator.toHome(),
                 child: const Text('Go to home'),
               ),
@@ -217,10 +212,13 @@ class PageScreen extends ConsumerWidget {
 }
 ```
 
-#### Code of the example
+#### Code of the example and test
 
-The full code is available here:
-[simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/src/simple.dart).
+The full code of example is available here:
+[simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart).
+
+The full code of test is available here:
+[simple_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple.dart).
 
 ## Other features doc and samples 
 
