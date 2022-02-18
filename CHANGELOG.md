@@ -1,3 +1,7 @@
+## 0.23.0
+
+- doc fix
+
 ## 0.22.0
 
 - simplier example on home

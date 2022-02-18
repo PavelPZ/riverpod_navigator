@@ -123,10 +123,12 @@ Navigation to a specific screen is performed as follows:
 
 ```dart
 // navigation to PageScreen
-ElevatedButton(onPressed: () => ref.read(riverpodNavigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]),...
+ElevatedButton(
+  onPressed: () => ref.read(riverpodNavigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]),
 
 // navigation to HomeScreen
-ElevatedButton(onPressed: () => ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]),...
+ElevatedButton(
+  onPressed: () => ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]),
 ```
 
 Whole source code and test see:
