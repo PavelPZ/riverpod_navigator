@@ -84,7 +84,8 @@ class App extends ConsumerWidget {
 
 class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
   RiverpodRouterDelegate(this.ref, this.homePath) {
-    ref.listen(navigationStackProvider, (_, __) => notifyListeners());
+    final unlisten = ref.listen(navigationStackProvider, (_, __) => notifyListeners());
+    ref.onDispose(unlisten);
   }
 
   final Ref ref;

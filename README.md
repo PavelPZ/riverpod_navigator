@@ -79,15 +79,15 @@ class AppNavigator extends RNavigator {
           ref,
           [
             RRoutes<Segments>(Segments.fromJson, [ // json deserialize HomeSegment or PageSegment
-              RRoute<HomeSegment>(HomeScreen.new), // build a HomeScreen for HomeSegment
-              RRoute<PageSegment>(PageScreen.new), // build a PageScreen for PageSegment
+              RRoute<HomeSegment>(HomeScreen.new), // assign HomeScreen builder for HomeSegment
+              RRoute<PageSegment>(PageScreen.new), // assign PageScreen builder for PageSegment
             ])
           ],
         );
 
-  //******* app specific actions, used:
-  // - in screen e.g. in button onClick
-  // - in dart test during development or testing
+  //******* application-specific actions used in:
+  // - screen e.g. in button onClick
+  // - dart test during development or testing
 
   /// navigate to page
   Future toPage(String title) => navigate([HomeSegment(), PageSegment(title: title)]);
@@ -108,14 +108,10 @@ extension WidgetRefApp on WidgetRef {
 use:
 
 ```dart
-class HomeScreen extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-...
-    ElevatedButton(onPressed: () => ref.navigator.toPage('Page title')
+   ElevatedButton(onPressed: () => ref.navigator.toPage('Page title')
 ```
 
-#### useful extension for testing 
+#### useful extension for test code
 
 ```dart 
 extension ProviderContainerApp on ProviderContainer {
@@ -126,14 +122,8 @@ extension ProviderContainerApp on ProviderContainer {
 use:
 
 ```dart
-void main() {
-  test('navigation test', () async {
-    final container = ProviderContainer();
-    await container.navigator.toPage('Page');
-    await container.pump();
-    // dump navigationStackProvider state
-    expect(container.navigator.debugNavigationStack2String, 'home/page;title=Page');
-...
+  final container = ProviderContainer();
+  await container.navigator.toPage('Page title');
 ```
 
 ### Step3 - use the AppNavigator in MaterialApp.router
@@ -248,13 +238,10 @@ void main() {
 }
 ```
 
-#### Code of the example and test
+#### Full source code:
 
-The full code of example is available here:
-[simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart).
-
-The full code of test is available here:
-[simple_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple.dart).
+[simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart),
+[simple_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple.dart)
 
 ## Other features doc and samples 
 
