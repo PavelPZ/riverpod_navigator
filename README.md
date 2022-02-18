@@ -174,12 +174,12 @@ The use of functional_widget is optional.*
 
 ## Installation of examples
 
-After clonning repository, go to ```examples\doc``` subdirectory and execute:
+After clonning repository, go to ```examples/doc``` subdirectory and execute:
 
 - ```flutter create .```
 - ```flutter pub get```
 
-You can then run the examples in the */lib* subdirectory of project.
+See the */lib* subdirectory for examples.
 
 ## Roadmap
 
