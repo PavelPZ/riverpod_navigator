@@ -17,8 +17,10 @@ just use the nested riverpod ```ProviderScope()```
 
 #### Two packages
 
-Most of the code is in the *[riverpod_navigator_core](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator_core)* dart library independent of Flutter.
-*[riverpod_navigator](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator)* addresses the connection to Flutter Navigator 2.0.
+Use [riverpod_navigator package](https://pub.dev/packages/riverpod_navigator) to develop in Flutter.
+
+Note: Most of the code is in the *[riverpod_navigator_core package](https://pub.dev/packages/riverpod_navigator_core)* dart library independent of Flutter.
+*[riverpod_navigator package](https://pub.dev/packages/riverpod_navigator)* addresses the connection to Flutter Navigator 2.0.
 
 ## Terminology used
 
@@ -85,10 +87,6 @@ class AppNavigator extends RNavigator {
           ],
         );
 
-  //******* application-specific actions used in:
-  // - screen e.g. in button onClick
-  // - dart test during development or testing
-
   /// navigate to page
   Future toPage(String title) => navigate([HomeSegment(), PageSegment(title: title)]);
 
@@ -105,10 +103,10 @@ extension WidgetRefApp on WidgetRef {
 }
 ```
 
-use:
+Use in your application:
 
 ```dart
-   ElevatedButton(onPressed: () => ref.navigator.toPage('Page title')
+   ElevatedButton(onPressed: () => ref.navigator.toPage('Page title'), ...
 ```
 
 #### useful extension for test code
@@ -119,7 +117,7 @@ extension ProviderContainerApp on ProviderContainer {
 }
 ```
 
-use:
+Use in your application:
 
 ```dart
   final container = ProviderContainer();
@@ -143,7 +141,7 @@ class App extends ConsumerWidget {
 }
 ```
 
-### Step4 - runApp
+### Step4 - main entry point
 
 ```dart
 void main() => runApp(
@@ -214,13 +212,13 @@ ProviderContainer createContainer() {
 void main() {
   test('navigation test', () async {
     final container = createContainer();
+    final start = DateTime.now();
 
     Future navigTest(Future action(), String expected) async {
-      final start = DateTime.now();
       await action();
       print('${DateTime.now().difference(start).inMilliseconds} msec ($expected)');
       await container.pump();
-      expect(container.navigator.debugNavigationStack2String, expected);
+      expect(container.navigator.navigationStack2Url, expected);
     }
 
     await navigTest(() => container.navigator.toHome(), 'home');

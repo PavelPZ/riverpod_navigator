@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
-import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 
 part 'simple.freezed.dart';
 part 'simple.g.dart';
@@ -48,7 +47,7 @@ extension WidgetRefApp on WidgetRef {
 ///     final container = ProviderContainer();
 ///     await container.navigator.toPage('Page');
 ///     await container.pump();
-///     expect(container.navigator.debugNavigationStack2String, 'home/page;title=Page');
+///     expect(container.navigator.navigationStack2Url, 'home/page;title=Page');
 /// ...
 /// ```
 extension ProviderContainerApp on ProviderContainer {

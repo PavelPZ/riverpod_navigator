@@ -1,3 +1,7 @@
+## 0.20.0
+
+- small fix
+
 ## 0.19.0
 
 - **Breaking**: exclusion of riverpod_navigator_core from the main riverpod_navigator

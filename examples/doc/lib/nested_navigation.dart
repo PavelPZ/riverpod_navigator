@@ -8,7 +8,6 @@ import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 //import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
-import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 
 part 'nested_navigation.freezed.dart';
 part 'nested_navigation.g.dart';

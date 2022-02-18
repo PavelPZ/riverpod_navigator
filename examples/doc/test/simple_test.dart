@@ -18,7 +18,7 @@ void main() {
       await action();
       print('${DateTime.now().difference(start).inMilliseconds} msec ($expected)');
       await container.pump();
-      expect(container.navigator.debugNavigationStack2String, expected);
+      expect(container.navigator.navigationStack2Url, expected);
     }
 
     await navigTest(() => container.navigator.toHome(), 'home');

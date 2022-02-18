@@ -72,7 +72,7 @@ class RNavigatorCore {
     return res;
   }
 
-  String get debugNavigationStack2String => pathParser.typedPath2Path(getNavigationStack());
+  String get navigationStack2Url => pathParser.typedPath2Path(getNavigationStack());
   String debugSegmentSubpath(TypedSegment s) => pathParser.typedPath2Path(segmentSubpath(s));
 
   /// Wait for the asynchronous screen actions. The action is waiting in parallel
