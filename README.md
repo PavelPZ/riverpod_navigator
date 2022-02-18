@@ -241,7 +241,7 @@ void main() {
 #### Full source code:
 
 [simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart),
-[simple_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple.dart)
+[simple_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
 
 ## Other features doc and samples 
 
