@@ -82,6 +82,7 @@ class App extends ConsumerWidget {
         title: 'Riverpod Navigator Example',
         routerDelegate: ref.navigator.routerDelegate,
         routeInformationParser: ref.navigator.routeInformationParser,
+        debugShowCheckedModeBanner: false,
       );
 }
 

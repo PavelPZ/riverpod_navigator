@@ -29,7 +29,7 @@ void main() {
 
     await navigTest(() => container.navigator.push(PageSegment(title: 'Page2')), 'home/page;title=Page2');
 
-    await navigTest(() => container.navigator.replaceLast<PageSegment, PageSegment>((_) => PageSegment(title: 'Page3')), 'home/page;title=Page3');
+    await navigTest(() => container.navigator.replaceLast((_) => PageSegment(title: 'Page3')), 'home/page;title=Page3');
 
     return;
   });

@@ -56,7 +56,7 @@ class AppNavigator extends RNavigator {
   Future toPage({required int id}) => navigate([HomeSegment(), PageSegment(id: id)]);
 
   /// navigate to next page
-  Future toNextPage() => replaceLast<PageSegment, PageSegment>((old) => PageSegment(id: old.id + 1));
+  Future toNextPage() => replaceLast<PageSegment>((old) => PageSegment(id: old.id + 1));
 
   /// navigate to home
   Future toHome() => navigate([HomeSegment()]);

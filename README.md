@@ -200,7 +200,9 @@ class PageScreen extends ConsumerWidget {
 }
 ```
 
-### Step6 - test
+### Step6 - 
+
+Before developing a GUI, it's a good idea to develop and test an invisible application core.
 
 ```dart 
 ProviderContainer createContainer() {
@@ -229,7 +231,7 @@ void main() {
 
     await navigTest(() => container.navigator.push(PageSegment(title: 'Page2')), 'home/page;title=Page2');
 
-    await navigTest(() => container.navigator.replaceLast(PageSegment(title: 'Page3')), 'home/page;title=Page3');
+    await navigTest(() => container.navigator.replaceLast((_) => PageSegment(title: 'Page3')), 'home/page;title=Page3');
 
     return;
   });

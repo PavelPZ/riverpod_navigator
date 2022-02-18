@@ -20,15 +20,12 @@ void main() => runApp(
     );
 
 @cwidget
-Widget app(WidgetRef ref) {
-  final navigator = ref.navigator;
-  return MaterialApp.router(
-    title: 'Riverpod Navigator Example',
-    routerDelegate: navigator.routerDelegate,
-    routeInformationParser: navigator.routeInformationParser,
-    debugShowCheckedModeBanner: false,
-  );
-}
+Widget app(WidgetRef ref) => MaterialApp.router(
+      title: 'Riverpod Navigator Example',
+      routerDelegate: ref.navigator.routerDelegate,
+      routeInformationParser: ref.navigator.routeInformationParser,
+      debugShowCheckedModeBanner: false,
+    );
 
 @Freezed(maybeWhen: false, maybeMap: false)
 class Segments with _$Segments, TypedSegment {
@@ -89,10 +86,9 @@ class AppNavigator extends RNavigator {
 
   // ******* actions used on the screens
 
-  Future gotoNextBook() => replaceLast<BookSegment, BookSegment>((actualBook) => BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
+  Future gotoNextBook() => replaceLast<BookSegment>((actualBook) => BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
 
-  Future gotoNextAuthor() =>
-      replaceLast<AuthorSegment, AuthorSegment>((actualAuthor) => AuthorSegment(id: actualAuthor.id == 5 ? 1 : actualAuthor.id + 1));
+  Future gotoNextAuthor() => replaceLast<AuthorSegment>((actualAuthor) => AuthorSegment(id: actualAuthor.id == 5 ? 1 : actualAuthor.id + 1));
 }
 
 @cwidget

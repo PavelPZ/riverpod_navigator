@@ -163,9 +163,9 @@ class RNavigatorCore {
   Future<void> push(TypedSegment segment) => navigate([...getNavigationStack(), segment]);
 
   @nonVirtual
-  Future<void> replaceLast<TOld extends TypedSegment, TNew extends TypedSegment>(TNew replace(TOld old)) {
+  Future<void> replaceLast<T extends TypedSegment>(T replace(T old)) {
     final navigationStack = getNavigationStack();
-    return navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i], replace(navigationStack.last as TOld)]);
+    return navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i], replace(navigationStack.last as T)]);
   }
 
   static List<Override> providerOverrides(
