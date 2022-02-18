@@ -14,8 +14,8 @@ dependencies:
 
   flutter_riverpod: ^1.0.0
   meta: ^1.7.0
-  riverpod_navigator_core:
-    path: ../riverpod_navigator_core
+  riverpod_navigator_core: 0.19.0
+    # path: ../riverpod_navigator_core
 
 dev_dependencies: 
   flutter_test:

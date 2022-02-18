@@ -34,7 +34,7 @@ Take a look at the following terms related to url path ```home/book;id=2```
 ## Navigator Data Flow Diagram:
 
 <p align="center">
-<img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" alt="riverpod_navigator_core" />
+<img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/README.png" alt="riverpod_navigator_core" />
 </p>
 
 As you can see, changing the **Input state** starts the async calculation.
