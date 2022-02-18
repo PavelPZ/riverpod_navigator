@@ -13,7 +13,7 @@ class TestNavigator extends RNavigatorCore {
   TestNavigator(Ref ref) : super(ref, []);
 
   @override
-  FutureOr<TypedPath> appNavigationLogicCore(TypedPath ongoingPath) async {
+  FutureOr<TypedPath> appNavigationLogicCore(TypedPath oldNavigationStack, TypedPath ongoingPath) async {
     await Future.delayed(Duration(milliseconds: 1000));
     doPrint('after appNavigationLogicCore');
     return [];

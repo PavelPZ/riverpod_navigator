@@ -30,7 +30,7 @@ class RNavigatorCore {
 
   /// Enter application navigation logic here (redirection, login, etc.).
   /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or route guard is needed)
-  FutureOr<TypedPath?> appNavigationLogicCore(TypedPath ongoingPath) {
+  FutureOr<TypedPath?> appNavigationLogicCore(TypedPath oldNavigationStack, TypedPath ongoingPath) {
     var newOngoingPath = appNavigationLogic(ongoingPath);
 
     // in ongoingPath, when ongoingPath[i] == currentTypedPath[i], set ongoingPath[i] = currentTypedPath[i]

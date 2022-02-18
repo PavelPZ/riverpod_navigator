@@ -16,7 +16,7 @@ class TestNavigator extends RNavigatorCore {
   final bool isError;
 
   @override
-  FutureOr<TypedPath> appNavigationLogicCore(TypedPath ongoingPath) {
+  FutureOr<TypedPath> appNavigationLogicCore(TypedPath oldNavigationStack, TypedPath ongoingPath) {
     if (delayMsec == null) {
       if (isError) throw 'SYNC ERROR';
       return ongoingPath;

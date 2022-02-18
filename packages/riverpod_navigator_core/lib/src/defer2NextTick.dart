@@ -62,10 +62,11 @@ class Defer2NextTick {
         _resultFuture = _resultCompleter!.future;
         while (_needRefresh) {
           _needRefresh = false;
+          final navigationStackNotifier = navigator.ref.read(navigationStackProvider.notifier);
           final ongoingPathNotifier = navigator.ref.read(ongoingPathProvider.notifier);
           if (protectedFutures.isNotEmpty) await Future.wait(protectedFutures);
           assert(protectedFutures.isEmpty);
-          final futureOr = navigator.appNavigationLogicCore(ongoingPathNotifier.state);
+          final futureOr = navigator.appNavigationLogicCore(navigationStackNotifier.state, ongoingPathNotifier.state);
           final newPath = futureOr is Future<TypedPath?> ? await futureOr : futureOr;
           // during async appNavigationLogicCore state change come (in providerChanged)
           // run another cycle (appNavigationLogicCore for fresh input navigation state)
@@ -75,7 +76,7 @@ class Defer2NextTick {
           // synchronize navigation stack and ongoingPath
           ignoreNextProviderChange = true;
           try {
-            ongoingPathNotifier.state = navigator.ref.read(navigationStackProvider.notifier).state = newPath;
+            ongoingPathNotifier.state = navigationStackNotifier.state = newPath;
           } finally {
             ignoreNextProviderChange = false;
           }

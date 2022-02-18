@@ -3,15 +3,23 @@
 ### ... that solves the following:
 
 - **Strictly typed navigation:** <br>
-You can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code.
+you can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code.
 - **asynchronous navigation**<br>
 is the case when changing the navigation state requires asynchronous actions (such as loading or saving data from the Internet)
 - **multiple providers**<br>
 is the case when the navigation state depends on multiple providers
 - **easier coding:** <br>
-The problem of navigation is reduced to manipulation an immutable collection.
+the problem of navigation is reduced to manipulation an immutable collection.
 - **better separation of concerns: UI x Model** (thanks to [riverpod](https://riverpod.dev/) :+1:):<br>
 navigation logic can be developed and tested without typing a single flutter widget.
+- **nested navigation**<br>
+just use the nested riverpod ```ProviderScope()```
+
+## Used in [riverpod_navigator package](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator)
+
+This "riverpod_navigator_core" package is a dart library independent of Flutter.
+On the other hand, "riverpod_navigator" is a slim flutter extensions of this package.
+
 
 ## Terminology used
 
@@ -24,7 +32,7 @@ Take a look at the following terms related to url path ```home/book;id=2```
 - Flutter Navigator 2.0 **navigation-stack** is specified by TypedPath, where each TypedPath's TypedSegment instance corresponds to a screen and page instance<br>
   ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:2)))]```.
 
-## Riverpod Data Flow Diagram:
+## Navigator Data Flow Diagram:
 
 <p align="center">
 <img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" alt="riverpod_navigator_core" />
@@ -45,12 +53,7 @@ It's the same in this case.
 The missing *navigationStackProvider* connection to Flutter Navigator 2.0 to *RouterDelegate* is quite simple, 
 as shown in the [DartPad example](https://dartpad.dev/?id=970ba56347a19d86ccafeb551b013fd3).
 
-## Used in [riverpod_navigator package](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator)
-
-This package is a dart library independent of Flutter.
-"riverpod_navigator" is a slim flutter extensions of this package.
-
-## Used in [riverpod_navigator package](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator)...
+## [riverpod_navigator package](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator)...
 
 ... is slim flutter extensions of this package
 

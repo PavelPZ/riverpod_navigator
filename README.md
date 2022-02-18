@@ -1,35 +1,52 @@
 # Riverpod navigation
 
-### Simple but powerfull Flutter navigation with [riverpod](https://riverpod.dev/), [freezed](https://github.com/rrousselGit/freezed) and Navigator 2.0 that solves the following problems:
+### Simple but powerfull Flutter navigation with [riverpod](https://riverpod.dev/), [freezed](https://github.com/rrousselGit/freezed) and Navigator 2.0 that solves the following:
 
-- **strictly typed navigation:** <br>
+- **Strictly typed navigation:** <br>
 you can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code.
 - **asynchronous navigation**<br>
 is the case when changing the navigation state requires asynchronous actions (such as loading or saving data from the Internet)
 - **multiple providers**<br>
-this is the case when the navigation state depends on multiple providers, e.g. on the login state
-- **nested navigation**: 
+is the case when the navigation state depends on multiple providers
 - **easier coding:** <br>
-The problem of navigation is reduced to manipulation an immutable collection.
+the problem of navigation is reduced to manipulation an immutable collection.
 - **better separation of concerns: UI x Model** (thanks to [riverpod](https://riverpod.dev/) :+1:):<br>
 navigation logic can be developed and tested without typing a single flutter widget.
+- **nested navigation**<br>
+just use the nested riverpod ```ProviderScope()```
 
-## The mission
+#### Packages
+
+Most of the code is in the *[riverpod_navigator_core](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator_core)* dart library independent of Flutter.
+*[riverpod_navigator](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator)* addresses the connection to Flutter Navigator 2.0.
+
+## Terminology used
 
 Take a look at the following terms related to url path ```home/book;id=2```
 
 - **string-path:** ```final stringPath = 'home/book;id=2';```
-- **string-segment** - the string-path consists of two string-segments: 'home'and 'book;id=2'
-- **typed-segment** - the typed-segment is immutable class that defines string-segment: HomeSegment() and BookSegment(id:2) in this case
-- **typed-path**: typed-path can be understood as List<typed-segment>: ```final typedPath = [HomeSegment(), BookSegment(id:2)];```
-- **navigation-stack** of Flutter Navigator 2.0 is a stack of screens, parameterized by typed-segment:
-  ```[HomeScreen(HomeSegment())), BookScreen(BookSegment(id:2))]```
+- **string-segment** - the string-path consists of two slash-delimited string-segments: ```home``` and ```book;id=2```
+- **typed-segment** - the typed-segment (aka ```class TypedSegment {}``` ) defines string-segment: ```HomeSegment()``` and ```BookSegment(id:2)``` in this case
+- **typed-path**: typed-path (aka ```typedef TypedPath = List<TypedSegment>```) : ```[HomeSegment(), BookSegment(id:2)];```
+- Flutter Navigator 2.0 **navigation-stack** is specified by TypedPath, where each TypedPath's TypedSegment instance corresponds to a screen and page instance<br>
+  ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:2)))]```.
 
-The mission of the navigation is to keep *string-path* <= **typed-path** => *navigation-stack* always in sync.
-With the **typed-path** as the source of the truth.
+## Navigator Data Flow Diagram:
 
-Note: *There is a one-to-one relationship between the given segment and the screen (HomeSegment <-> HomeScreen, BookSegment <-> BookScreen, ...).
-In the following text, I sometimes confuse this two terms.*
+<p align="center">
+<img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/README.png" alt="riverpod_navigator_core" />
+</p>
+
+As you can see, changing the **Input state** starts the async calculation.
+The result of the calculations is **Output state** in navigationStackProvider and possibly app specific **Side effects**.
+
+The signature of the appLogic procedure is as follows:
+
+```
+
+```
+
+Connecting to Flutter Navigator 2.0 is then easy.
 
 ## Simple example
 
