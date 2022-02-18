@@ -119,7 +119,7 @@ void main() => runApp(
 
 ### And that's all
 
-HomeScreen and PageScreen widgets and test are in the source code:
+HomeScreen and PageScreen widgets and test source code:
 
 - [simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart)
 - [simple_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
@@ -151,12 +151,7 @@ Before developing a GUI, it's a good idea to develop and test an invisible appli
   });
 ```
 
-#### Full source code:
-
-[simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart),
-[simple_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
-
-## Other features doc and samples 
+## Other features and samples 
 
 Note: *The following examples are prepared using a **functional_widget package** that simplifies writing widgets.
 The use of functional_widget is optional.*

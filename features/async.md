@@ -5,6 +5,11 @@ Navigation is delayed until the asynchronous actions are performed. These action
 - **closing** (before closin the old screen)
 - **merging** (before screen replacement with the same segment type in the navigation stack)
 
+It is good practice to prepare a code for all navigation specific events.
+They can then be used not only for writing screen widgets but also for testing.
+See ```toPage```, ```toNextPage``` and ```toHome``` bellow.
+
+
 ```dart
 Future<String> simulateAsyncResult(String asyncResult, int msec) async {
   await Future.delayed(Duration(milliseconds: msec));
@@ -76,8 +81,8 @@ Use in your test:
   await container.navigator.toNextPage();
 ```
 
-#### Full source code:
+#### Full source code and test:
 
-[async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/async.dart),
-[async_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/async_test.dart)
+- [async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/async.dart)
+- [async_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/async_test.dart)
 

@@ -7,6 +7,6 @@ Use the unique "unionKey" for the second and next segment group.
 
 !!!! There must be at least two factory constructors in one class !!!!
 
-#### Code of the example
+#### Full source code:
 
-See [more_groups.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/more_groups.dart).
+- [more_groups.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/more_groups.dart)

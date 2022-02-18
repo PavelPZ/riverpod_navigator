@@ -1,3 +1,7 @@
+## 0.22.0
+
+- simplier example on home
+
 ## 0.21.0
 
 - diagram picture fix
