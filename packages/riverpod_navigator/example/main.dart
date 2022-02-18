@@ -29,7 +29,7 @@ void main() => runApp(
 // PROVIDERS
 //*********************************************
 
-final routeDelegateProvider = Provider<RiverpodRouterDelegate>((ref) => RiverpodRouterDelegate(ref, [HomeSegment()]));
+final routerDelegateProvider = Provider<RiverpodRouterDelegate>((ref) => RiverpodRouterDelegate(ref, [HomeSegment()]));
 
 final navigationStackProvider = StateProvider<TypedPath>((_) => [HomeSegment()]);
 
@@ -72,7 +72,7 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext _, WidgetRef ref) => MaterialApp.router(
         title: 'Riverpod Navigator Example',
-        routerDelegate: ref.read(routeDelegateProvider),
+        routerDelegate: ref.read(routerDelegateProvider),
         routeInformationParser: RouteInformationParserImpl(),
         debugShowCheckedModeBanner: false,
       );
