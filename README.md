@@ -65,7 +65,8 @@ class Segments with _$Segments, TypedSegment {
   factory Segments.page({required String title}) = PageSegment;
 
   factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
-}```
+}
+```
 
 ### Step2 - navigator parameterization
 
