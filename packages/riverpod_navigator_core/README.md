@@ -14,10 +14,10 @@ is the case when the navigation state depends on multipple providers (as a isLog
 Take a look at the following terms related to url path ```home/book;id=2```
 
 - **string-path:** ```final stringPath = 'home/book;id=2';```
-- **string-segment** - the string-path consists of two slash delimited string-segments: 'home' and 'book;id=2'
-- **typed-segment** - the typed-segment (aka ```class TypedSegment {}``` ) defines string-segment: HomeSegment() and BookSegment(id:2) in this case
-- **typed-path**: typed-path (aka ```typedef TypedPath = List<TypedSegment>```) : ```final typedPath = [HomeSegment(), BookSegment(id:2)];```
-- Flutter Navigator 2.0 **navigation-stack** is specified by TypedPath, where each TypedSegment instance corresponds to a flutter screen and page instance<br>
+- **string-segment** - the string-path consists of two slash-delimited string-segments: ```home``` and ```book;id=2`
+- **typed-segment** - the typed-segment (aka ```class TypedSegment {}``` ) defines string-segment: ```HomeSegment()``` and ```BookSegment(id:2)``` in this case
+- **typed-path**: typed-path (aka ```typedef TypedPath = List<TypedSegment>```) : ```[HomeSegment(), BookSegment(id:2)];```
+- Flutter Navigator 2.0 **navigation-stack** is specified by TypedPath, where each TypedPath's TypedSegment instance corresponds to a flutter screen and page instance<br>
   ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:2)))]```.
 
 ### Riverpod Data Flow Diagram:
