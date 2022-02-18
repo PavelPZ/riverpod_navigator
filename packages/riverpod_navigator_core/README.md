@@ -1,4 +1,4 @@
-# Navigation state management using the riverpod ...
+# Navigation state management using riverpod ...
 
 ### ... that solves the following:
 
@@ -13,7 +13,9 @@ The problem of navigation is reduced to manipulation an immutable collection.
 - **better separation of concerns: UI x Model** (thanks to [riverpod](https://riverpod.dev/) :+1:):<br>
 navigation logic can be developed and tested without typing a single flutter widget.
 
-## 
+## Part [riverpod_navigator package](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator)
+
+This package is dart library with no dependency on Flutter.
 
 ## Terminology used
 
