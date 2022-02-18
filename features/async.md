@@ -32,12 +32,48 @@ class AppNavigator extends RNavigator {
           splashBuilder: () => SplashScreen(),
         );
 
+  //*** It is good practice to prepare a code for all navigation specific events. 
+  //    They can then be used not only for writing screen widgets but also for testing.
+
   /// navigate to page
-  Future toPage(String title) => navigate([HomeSegment(), PageSegment(title: title)]);
+  Future toPage({required int id}) => navigate([HomeSegment(), PageSegment(id: id)]);
+
+  /// navigate to next page
+  Future toNextPage() => replaceLast<PageSegment>((old) => PageSegment(id: old.id + 1));
 
   /// navigate to home
   Future toHome() => navigate([HomeSegment()]);
 }
+```
+
+#### useful extension for screen code
+
+```dart
+extension WidgetRefApp on WidgetRef {
+  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+}
+```
+
+Use in your application:
+
+```dart
+   ElevatedButton(onPressed: () => ref.navigator.toPage(id: 1), ...
+```
+
+#### useful extension for test code
+
+```dart 
+extension ProviderContainerApp on ProviderContainer {
+  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+}
+```
+
+Use in your test:
+
+```dart
+  final container = ProviderContainer();
+  await container.navigator.toPage(id: 1);
+  await container.navigator.toNextPage();
 ```
 
 #### Full source code:

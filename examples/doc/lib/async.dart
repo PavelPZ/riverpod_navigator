@@ -23,9 +23,30 @@ class Segments with _$Segments, TypedSegment {
   factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
 }
 
+/// helper extension for screens
+///
+/// ```dart
+/// class HomeScreen extends ConsumerWidget {
+///   @override
+///   Widget build(BuildContext context, WidgetRef ref) {
+/// ...
+///     ElevatedButton(onPressed: () => ref.navigator.toPage('Page title')
+/// ```
 extension WidgetRefApp on WidgetRef {
   AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
 }
+
+/// helper extension for testing
+///
+/// ```dart
+/// void main() {
+///   test('navigation test', () async {
+///     final container = ProviderContainer();
+///     await container.navigator.toPage('Page');
+///     await container.pump();
+///     expect(container.navigator.navigationStack2Url, 'home/page;title=Page');
+/// ...
+/// ```
 
 extension ProviderContainerApp on ProviderContainer {
   AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
@@ -51,6 +72,9 @@ class AppNavigator extends RNavigator {
           ],
           splashBuilder: () => SplashScreen(),
         );
+
+  //*** It is good practice to prepare a code for all navigation specific events.
+  //    They can then be used not only for writing screen widgets but also for testing.
 
   /// navigate to page
   Future toPage({required int id}) => navigate([HomeSegment(), PageSegment(id: id)]);

@@ -26,34 +26,6 @@ class Segments with _$Segments, TypedSegment {
   factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
 }
 
-/// helper extension for screens
-///
-/// ```dart
-/// class HomeScreen extends ConsumerWidget {
-///   @override
-///   Widget build(BuildContext context, WidgetRef ref) {
-/// ...
-///     ElevatedButton(onPressed: () => ref.navigator.toPage('Page title')
-/// ```
-extension WidgetRefApp on WidgetRef {
-  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
-}
-
-/// helper extension for testing
-///
-/// ```dart
-/// void main() {
-///   test('navigation test', () async {
-///     final container = ProviderContainer();
-///     await container.navigator.toPage('Page');
-///     await container.pump();
-///     expect(container.navigator.navigationStack2Url, 'home/page;title=Page');
-/// ...
-/// ```
-extension ProviderContainerApp on ProviderContainer {
-  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
-}
-
 class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
@@ -78,12 +50,15 @@ class App extends ConsumerWidget {
   const App({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
-        title: 'Riverpod Navigator Example',
-        routerDelegate: ref.navigator.routerDelegate,
-        routeInformationParser: ref.navigator.routeInformationParser,
-        debugShowCheckedModeBanner: false,
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
+    return MaterialApp.router(
+      title: 'Riverpod Navigator Example',
+      routerDelegate: navigator.routerDelegate,
+      routeInformationParser: navigator.routeInformationParser,
+      debugShowCheckedModeBanner: false,
+    );
+  }
 }
 
 class HomeScreen extends ConsumerWidget {
@@ -99,7 +74,7 @@ class HomeScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () => ref.navigator.toPage('Page'),
+                onPressed: () => ref.read(riverpodNavigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]),
                 child: const Text('Go to page'),
               ),
             ],
@@ -121,7 +96,7 @@ class PageScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () => ref.navigator.toHome(),
+                onPressed: () => ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]),
                 child: const Text('Go to home'),
               ),
             ],

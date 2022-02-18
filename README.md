@@ -86,42 +86,7 @@ class AppNavigator extends RNavigator {
             ])
           ],
         );
-
-  /// navigate to page
-  Future toPage(String title) => navigate([HomeSegment(), PageSegment(title: title)]);
-
-  /// navigate to home
-  Future toHome() => navigate([HomeSegment()]);
 }
-```
-
-#### useful extension for screen code
-
-```dart
-extension WidgetRefApp on WidgetRef {
-  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
-}
-```
-
-Use in your application:
-
-```dart
-   ElevatedButton(onPressed: () => ref.navigator.toPage('Page title'), ...
-```
-
-#### useful extension for test code
-
-```dart 
-extension ProviderContainerApp on ProviderContainer {
-  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
-}
-```
-
-Use in your test:
-
-```dart
-  final container = ProviderContainer();
-  await container.navigator.toPage('Page title');
 ```
 
 ### Step3 - the AppNavigator in MaterialApp.router
@@ -152,90 +117,40 @@ void main() => runApp(
     );
 ```
 
-### Step5 - widgets for screens
+### And that's all
 
-```dart 
-class HomeScreen extends ConsumerWidget {
-  const HomeScreen(this.segment, {Key? key}) : super(key: key);
+HomeScreen and PageScreen widgets are visible in the source code:
 
-  final HomeSegment segment;
+[simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart),
+[simple_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-        appBar: AppBar(title: const Text('Home')),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () => ref.navigator.toPage('Page'),
-                child: const Text('Go to page'),
-              ),
-            ],
-          ),
-        ),
-      );
-}
-
-class PageScreen extends ConsumerWidget {
-  const PageScreen(this.segment, {Key? key}) : super(key: key);
-
-  final PageSegment segment;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-        appBar: AppBar(title: Text(segment.title)),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () => ref.navigator.toHome(),
-                child: const Text('Go to home'),
-              ),
-            ],
-          ),
-        ),
-      );
-}
-```
-
-### Step6 - 
+### Testing
 
 Before developing a GUI, it's a good idea to develop and test an invisible application core.
 
 ```dart 
-ProviderContainer createContainer() {
-  final res = ProviderContainer(overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new));
-  addTearDown(res.dispose);
-  return res;
-}
-
-void main() {
   test('navigation test', () async {
     final container = createContainer();
+    final navigator = container.read(riverpodNavigatorProvider);
     final start = DateTime.now();
 
     Future navigTest(Future action(), String expected) async {
       await action();
       print('${DateTime.now().difference(start).inMilliseconds} msec ($expected)');
       await container.pump();
-      expect(container.navigator.navigationStack2Url, expected);
+      expect(navigator.navigationStack2Url, expected);
     }
 
-    await navigTest(() => container.navigator.toHome(), 'home');
+    await navigTest(() => navigator.navigate([HomeSegment()]), 'home');
 
-    await navigTest(() => container.navigator.toPage('Page'), 'home/page;title=Page');
+    await navigTest(() => navigator.navigate([HomeSegment(), PageSegment(title: 'Page')]), 'home/page;title=Page');
 
-    await navigTest(() => container.navigator.pop(), 'home');
+    await navigTest(() => navigator.pop(), 'home');
 
-    await navigTest(() => container.navigator.push(PageSegment(title: 'Page2')), 'home/page;title=Page2');
+    await navigTest(() => navigator.push(PageSegment(title: 'Page2')), 'home/page;title=Page2');
 
-    await navigTest(() => container.navigator.replaceLast((_) => PageSegment(title: 'Page3')), 'home/page;title=Page3');
-
-    return;
+    await navigTest(() => navigator.replaceLast((_) => PageSegment(title: 'Page3')), 'home/page;title=Page3');
   });
-}
 ```
 
 #### Full source code:

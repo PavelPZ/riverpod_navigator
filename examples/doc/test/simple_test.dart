@@ -12,24 +12,25 @@ ProviderContainer createContainer() {
 void main() {
   test('navigation test', () async {
     final container = createContainer();
+    final navigator = container.read(riverpodNavigatorProvider);
     final start = DateTime.now();
 
     Future navigTest(Future action(), String expected) async {
       await action();
       print('${DateTime.now().difference(start).inMilliseconds} msec ($expected)');
       await container.pump();
-      expect(container.navigator.navigationStack2Url, expected);
+      expect(navigator.navigationStack2Url, expected);
     }
 
-    await navigTest(() => container.navigator.toHome(), 'home');
+    await navigTest(() => navigator.navigate([HomeSegment()]), 'home');
 
-    await navigTest(() => container.navigator.toPage('Page'), 'home/page;title=Page');
+    await navigTest(() => navigator.navigate([HomeSegment(), PageSegment(title: 'Page')]), 'home/page;title=Page');
 
-    await navigTest(() => container.navigator.pop(), 'home');
+    await navigTest(() => navigator.pop(), 'home');
 
-    await navigTest(() => container.navigator.push(PageSegment(title: 'Page2')), 'home/page;title=Page2');
+    await navigTest(() => navigator.push(PageSegment(title: 'Page2')), 'home/page;title=Page2');
 
-    await navigTest(() => container.navigator.replaceLast((_) => PageSegment(title: 'Page3')), 'home/page;title=Page3');
+    await navigTest(() => navigator.replaceLast((_) => PageSegment(title: 'Page3')), 'home/page;title=Page3');
 
     return;
   });
