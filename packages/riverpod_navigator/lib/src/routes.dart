@@ -4,10 +4,10 @@ class RRoute<T extends TypedSegment> extends RRoute4Dart<T> {
   RRoute(
     this.screenBuilder, {
     this.screen2Page,
-    Opening<T>? creating,
-    Replacing<T>? merging,
-    Closing<T>? deactivating,
-  }) : super(opening: creating, replacing: merging, closing: deactivating);
+    Opening<T>? opening,
+    Replacing<T>? replacing,
+    Closing<T>? closing,
+  }) : super(opening: opening, replacing: replacing, closing: closing);
   ScreenBuilder<T> screenBuilder;
   Screen2Page<T>? screen2Page;
   Widget buildScreen(TypedSegment segment) => screenBuilder(segment as T);

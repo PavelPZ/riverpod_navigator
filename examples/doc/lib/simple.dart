@@ -17,7 +17,11 @@ void main() => runApp(
 @freezed
 class Segments with _$Segments, TypedSegment {
   Segments._();
+
+  /// here Segments.home means that the string 'home' appears in the web URL '/home'
   factory Segments.home() = HomeSegment;
+
+  /// here, the Segments.page means that 'home' string appeares in web url '/page;title=Page'
   factory Segments.page({required String title}) = PageSegment;
 
   factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
@@ -63,8 +67,6 @@ class AppNavigator extends RNavigator {
             ])
           ],
         );
-
-  //******* screen actions
 
   /// navigate to page
   Future toPage(String title) => navigate([HomeSegment(), PageSegment(title: title)]);

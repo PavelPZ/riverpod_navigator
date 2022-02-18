@@ -94,7 +94,7 @@ class SimplePathParser extends PathParser {
       else if ((nv = int.tryParse(v)) != null) {
       } else if ((nv = double.tryParse(v)) != null) {
       } else
-        nv = Uri.decodeFull(v);
+        nv = Uri.decodeComponent(v);
     }
     res[n] = nv;
   }
@@ -110,7 +110,7 @@ class SimplePathParser extends PathParser {
     else {
       assert(nv.value is String);
       if (_stringNeedsType(nv.value)) name += ':';
-      value = Uri.encodeFull(nv.value);
+      value = Uri.encodeComponent(nv.value);
     }
     return '$name=$value';
   }

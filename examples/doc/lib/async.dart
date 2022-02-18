@@ -19,35 +19,16 @@ void main() => runApp(
 class Segments with _$Segments, TypedSegment {
   Segments._();
   factory Segments.home() = HomeSegment;
-  factory Segments.page({required String title}) = PageSegment;
+  factory Segments.page({required int id}) = PageSegment;
 
   factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
 }
 
-@cwidget
-Widget app(WidgetRef ref) {
-  final navigator = ref.navigator;
-  return MaterialApp.router(
-    title: 'Riverpod Navigator Example',
-    routerDelegate: navigator.routerDelegate,
-    routeInformationParser: navigator.routeInformationParser,
-    debugShowCheckedModeBanner: false,
-  );
-}
-
-// simulates an action such as loading external data or saving to external storage
-Future<String> simulateAsyncResult(String asyncResult, int msec) async {
-  await Future.delayed(Duration(milliseconds: msec));
-  return '$asyncResult: async result after $msec msec';
-}
-
-/// helper extension for screens
 extension WidgetRefApp on WidgetRef {
   AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
 }
 
-/// helper extension for test
-extension RefApp on Ref {
+extension ProviderContainerApp on ProviderContainer {
   AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
 }
 
@@ -59,18 +40,41 @@ class AppNavigator extends RNavigator {
             RRoutes<Segments>(Segments.fromJson, [
               RRoute<HomeSegment>(
                 HomeScreen.new,
-                creating: (newSegment) => simulateAsyncResult('Home.creating', 2000),
+                opening: (newSegment) => simulateAsyncResult('Home.creating', 2000),
               ),
               RRoute<PageSegment>(
                 PageScreen.new,
-                creating: (newSegment) => simulateAsyncResult('Page.creating', 400),
-                merging: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
-                deactivating: null,
+                opening: (newSegment) => simulateAsyncResult('Page.creating', 400),
+                replacing: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
+                closing: null,
               ),
             ])
           ],
           splashBuilder: () => SplashScreen(),
         );
+
+  /// navigate to page
+  Future toPage({required int id}) => navigate([HomeSegment(), PageSegment(id: id)]);
+
+  /// navigate to next page
+  Future toNextPage() => replaceLast<PageSegment, PageSegment>((old) => PageSegment(id: old.id + 1));
+
+  /// navigate to home
+  Future toHome() => navigate([HomeSegment()]);
+}
+
+@cwidget
+Widget app(WidgetRef ref) => MaterialApp.router(
+      title: 'Riverpod Navigator Example',
+      routerDelegate: ref.navigator.routerDelegate,
+      routeInformationParser: ref.navigator.routeInformationParser,
+      debugShowCheckedModeBanner: false,
+    );
+
+// simulates an action such as loading external data or saving to external storage
+Future<String> simulateAsyncResult(String asyncResult, int msec) async {
+  await Future.delayed(Duration(milliseconds: msec));
+  return '$asyncResult: async result after $msec msec';
 }
 
 @cwidget
@@ -79,7 +83,7 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper<AppNavigator
       title: 'Home',
       buildChildren: (navigator) => [
         ElevatedButton(
-          onPressed: () => navigator.navigate([HomeSegment(), PageSegment(title: 'Page')]),
+          onPressed: () => navigator.navigate([HomeSegment(), PageSegment(id: 1)]),
           child: const Text('Go to page'),
         ),
       ],
@@ -88,7 +92,7 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper<AppNavigator
 @cwidget
 Widget pageScreen(WidgetRef ref, PageSegment segment) => PageHelper<AppNavigator>(
       segment: segment,
-      title: segment.title,
+      title: 'Page ${segment.id}',
       buildChildren: (navigator) => [
         ElevatedButton(
           onPressed: () => navigator.navigate([HomeSegment()]),

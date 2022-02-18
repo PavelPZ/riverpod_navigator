@@ -35,9 +35,9 @@ class _$SegmentsTearOff {
     return HomeSegment();
   }
 
-  PageSegment page({required String title}) {
+  PageSegment page({required int id}) {
     return PageSegment(
-      title: title,
+      id: id,
     );
   }
 
@@ -54,13 +54,13 @@ mixin _$Segments {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() home,
-    required TResult Function(String title) page,
+    required TResult Function(int id) page,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function()? home,
-    TResult Function(String title)? page,
+    TResult Function(int id)? page,
   }) =>
       throw _privateConstructorUsedError;
 
@@ -139,7 +139,7 @@ class _$HomeSegment extends HomeSegment {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() home,
-    required TResult Function(String title) page,
+    required TResult Function(int id) page,
   }) {
     return home();
   }
@@ -148,7 +148,7 @@ class _$HomeSegment extends HomeSegment {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function()? home,
-    TResult Function(String title)? page,
+    TResult Function(int id)? page,
   }) {
     return home?.call();
   }
@@ -190,7 +190,7 @@ abstract class $PageSegmentCopyWith<$Res> {
   factory $PageSegmentCopyWith(
           PageSegment value, $Res Function(PageSegment) then) =
       _$PageSegmentCopyWithImpl<$Res>;
-  $Res call({String title});
+  $Res call({int id});
 }
 
 /// @nodoc
@@ -205,13 +205,13 @@ class _$PageSegmentCopyWithImpl<$Res> extends _$SegmentsCopyWithImpl<$Res>
 
   @override
   $Res call({
-    Object? title = freezed,
+    Object? id = freezed,
   }) {
     return _then(PageSegment(
-      title: title == freezed
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
+      id: id == freezed
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -219,7 +219,7 @@ class _$PageSegmentCopyWithImpl<$Res> extends _$SegmentsCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$PageSegment extends PageSegment {
-  _$PageSegment({required this.title, String? $type})
+  _$PageSegment({required this.id, String? $type})
       : $type = $type ?? 'page',
         super._();
 
@@ -227,7 +227,7 @@ class _$PageSegment extends PageSegment {
       _$$PageSegmentFromJson(json);
 
   @override
-  final String title;
+  final int id;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
@@ -237,12 +237,12 @@ class _$PageSegment extends PageSegment {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is PageSegment &&
-            const DeepCollectionEquality().equals(other.title, title));
+            const DeepCollectionEquality().equals(other.id, id));
   }
 
   @override
   int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(title));
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(id));
 
   @JsonKey(ignore: true)
   @override
@@ -253,18 +253,18 @@ class _$PageSegment extends PageSegment {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() home,
-    required TResult Function(String title) page,
+    required TResult Function(int id) page,
   }) {
-    return page(title);
+    return page(id);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function()? home,
-    TResult Function(String title)? page,
+    TResult Function(int id)? page,
   }) {
-    return page?.call(title);
+    return page?.call(id);
   }
 
   @override
@@ -292,13 +292,13 @@ class _$PageSegment extends PageSegment {
 }
 
 abstract class PageSegment extends Segments {
-  factory PageSegment({required String title}) = _$PageSegment;
+  factory PageSegment({required int id}) = _$PageSegment;
   PageSegment._() : super._();
 
   factory PageSegment.fromJson(Map<String, dynamic> json) =
       _$PageSegment.fromJson;
 
-  String get title;
+  int get id;
   @JsonKey(ignore: true)
   $PageSegmentCopyWith<PageSegment> get copyWith =>
       throw _privateConstructorUsedError;

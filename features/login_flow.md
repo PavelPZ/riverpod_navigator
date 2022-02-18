@@ -37,6 +37,7 @@ Redirect when:
   }
 ```
 
-#### Code of the example
+#### Full source code:
 
-See [login_flow.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/login_flow.dart).
+[login_flow.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/login_flow.dart), 
+[login_flow_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/login_flow_test.dart)

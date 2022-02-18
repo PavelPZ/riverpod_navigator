@@ -75,12 +75,12 @@ Map<String, dynamic> _$$HomeSegmentToJson(_$HomeSegment instance) =>
 
 _$PageSegment _$$PageSegmentFromJson(Map<String, dynamic> json) =>
     _$PageSegment(
-      title: json['title'] as String,
+      id: json['id'] as int,
       $type: json['runtimeType'] as String?,
     );
 
 Map<String, dynamic> _$$PageSegmentToJson(_$PageSegment instance) =>
     <String, dynamic>{
-      'title': instance.title,
+      'id': instance.id,
       'runtimeType': instance.$type,
     };

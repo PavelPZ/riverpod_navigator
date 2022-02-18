@@ -36,9 +36,9 @@ class AppNavigator extends RNavigator {
 /// TabBarView screen
 @hcwidget
 Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment) {
-  /// Remembering RestorePath throughout the widget's lifecycle
+  /// Remembering RestorePath throughout the BooksAuthorsScreen's lifecycle
   /// Note: *We use **flutter_hooks package** to keep RestorePath instance.
-  /// The use of flutter_hooks is not mandatory, it can be implemented using the StatefulWidget*.
+  /// The use of flutter_hooks is optional, you can save restoreBook and restoreAuthor using the StatefulWidget.*
   final restoreBook = useMemoized(() => RestorePath());
   final restoreAuthor = useMemoized(() => RestorePath());
   return DefaultTabController(
@@ -72,6 +72,6 @@ Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment
 }
 ```
 
-#### Code of the example
+#### Full source code:
 
-See [nested_navigation.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/nested_navigation.dart)
+[nested_navigation.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/nested_navigation.dart)

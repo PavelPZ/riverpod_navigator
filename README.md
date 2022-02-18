@@ -246,15 +246,12 @@ void main() {
 ## Other features doc and samples 
 
 Note: *The following examples are prepared using a **functional_widget package** that simplifies writing widgets.
-The use of functional_widget is not mandatory*
+The use of functional_widget is optional.*
 
-- [Async navigation and splash screen](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async_navigation_splash_screen.md)
+- [Async navigation and splash screen](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async.md)
 - [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
-- [Testing](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/testing.md)
-- [More TypedSegment roots](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/more_typedSegment_roots.md)
+- [More TypedSegment roots](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/more_groups.md)
 - [Nested navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/nested_navigation.md)
-
-## See [What's under the hood](https://github.com/PavelPZ/riverpod_navigator/blob/main/under_the_hood.md) for riverpod_navigation principle
 
 ## Installation of examples
 
@@ -263,16 +260,7 @@ After clonning repository, go to ```examples\doc``` subdirectory and execute:
 - ```flutter create .```
 - ```flutter pub get```
 
-## Comparison with go_router
-
-This chapter is inspired by this riverpod issue: [Examples of go_router using riverpod](https://github.com/rrousselGit/river_pod/issues/1122).
-
-| example | go_router | code lines | riverpod_navigator | code lines |
-| --- | --- | --- | --- | --- |
-| main | [source code](https://github.com/csells/go_router/blob/main/go_router/example/lib/main.dart) | 70 | [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/go_router/lib/main.dart) | 84  |
-| redirection | [source code](https://github.com/csells/go_router/blob/main/go_router/example/lib/redirection.dart) | 167 | [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/go_router/lib/redirection.dart) | 149 |
-
-If you are interested in preparing another go_router example, I will try to do it.
+You can then run the examples in the *\lib* project subdirectory.
 
 ## Roadmap
 
@@ -280,4 +268,4 @@ I prepared this package for my new project. Its further development depends on w
 
 - proofreading because my English is not good. Community help is warmly welcomed.
 - BlockGUI widget (block the GUI while asynchronous navigation is waiting to complete)
-- parameterization allowing  cupertino
+- parameterization allowing cupertino

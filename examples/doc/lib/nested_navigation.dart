@@ -90,15 +90,10 @@ class AppNavigator extends RNavigator {
 
   // ******* actions used on the screens
 
-  Future gotoNextBook() {
-    final actualBook = getNavigationStack().last as BookSegment;
-    return replaceLast(BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
-  }
+  Future gotoNextBook() => replaceLast<BookSegment, BookSegment>((actualBook) => BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
 
-  Future gotoNextAuthor() {
-    final actualBook = getNavigationStack().last as AuthorSegment;
-    return replaceLast(AuthorSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
-  }
+  Future gotoNextAuthor() =>
+      replaceLast<AuthorSegment, AuthorSegment>((actualAuthor) => AuthorSegment(id: actualAuthor.id == 5 ? 1 : actualAuthor.id + 1));
 }
 
 @cwidget

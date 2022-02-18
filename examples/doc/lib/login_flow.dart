@@ -52,7 +52,7 @@ extension WidgetRefApp on WidgetRef {
 }
 
 /// helper extension for test
-extension RefApp on Ref {
+extension ProviderContainerApp on ProviderContainer {
   AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
 }
 
@@ -94,11 +94,7 @@ class AppNavigator extends RNavigator {
 
   // ******* actions used on the screens
 
-  Future gotoNextBook() {
-    final navigationStack = getNavigationStack();
-    final actualBook = navigationStack.last as BookSegment;
-    return replaceLast(BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
-  }
+  Future gotoNextBook() => replaceLast<BookSegment, BookSegment>((actualBook) => BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
 
   Future globalLogoutButton() {
     // actualize login state
