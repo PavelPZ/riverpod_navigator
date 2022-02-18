@@ -3,21 +3,13 @@ import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 import 'package:test/test.dart';
 
-ProviderContainer createContainer() {
-  final res = ProviderContainer(overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new));
-  addTearDown(res.dispose);
-  return res;
-}
-
 void main() {
   test('navigation test', () async {
-    final container = createContainer();
+    final container = ProviderContainer(overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new));
     final navigator = container.read(riverpodNavigatorProvider);
-    final start = DateTime.now();
 
     Future navigTest(Future action(), String expected) async {
       await action();
-      print('${DateTime.now().difference(start).inMilliseconds} msec ($expected)');
       await container.pump();
       expect(navigator.navigationStack2Url, expected);
     }

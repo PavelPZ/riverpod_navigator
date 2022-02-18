@@ -130,13 +130,11 @@ Before developing a GUI, it's a good idea to develop and test an invisible appli
 
 ```dart 
   test('navigation test', () async {
-    final container = createContainer();
+    final container = ProviderContainer(overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new));
     final navigator = container.read(riverpodNavigatorProvider);
-    final start = DateTime.now();
 
     Future navigTest(Future action(), String expected) async {
       await action();
-      print('${DateTime.now().difference(start).inMilliseconds} msec ($expected)');
       await container.pump();
       expect(navigator.navigationStack2Url, expected);
     }
