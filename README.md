@@ -119,14 +119,25 @@ void main() => runApp(
 
 ### And that's all
 
-HomeScreen and PageScreen widgets and test source code:
+Navigation to a specific screen is performed as follows:
+
+```dart
+// navigation to PageScreen
+ElevatedButton(onPressed: () => ref.read(riverpodNavigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]),...
+
+// navigation to HomeScreen
+ElevatedButton(onPressed: () => ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]),...
+```
+
+Whole source code and test see:
 
 - [simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart)
 - [simple_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
 
 ### Testing
 
-Before developing a GUI, it's a good idea to develop and test an invisible application core.
+Before developing a GUI, it is good practice to develop and test the invisible part of the application. 
+To do this, it is advantageous to use dart tests, see:
 
 ```dart 
   test('navigation test', () async {
