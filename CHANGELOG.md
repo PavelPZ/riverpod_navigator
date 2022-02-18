@@ -1,3 +1,7 @@
+## 0.21.0
+
+- diagram picture fix
+
 ## 0.20.0
 
 - small fix
