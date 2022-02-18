@@ -13,10 +13,6 @@ The problem of navigation is reduced to manipulation an immutable collection.
 - **better separation of concerns: UI x Model** (thanks to [riverpod](https://riverpod.dev/) :+1:):<br>
 navigation logic can be developed and tested without typing a single flutter widget.
 
-## Part [riverpod_navigator package](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator)
-
-This package is a dart library independent of Flutter.
-
 ## Terminology used
 
 Take a look at the following terms related to url path ```home/book;id=2```
@@ -49,7 +45,12 @@ It's the same in this case.
 The missing *navigationStackProvider* connection to Flutter Navigator 2.0 to *RouterDelegate* is quite simple, 
 as shown in the [DartPad example](https://dartpad.dev/?id=970ba56347a19d86ccafeb551b013fd3).
 
-## [riverpod_navigator package](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator)...
+## Used in [riverpod_navigator package](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator)
+
+This package is a dart library independent of Flutter.
+"riverpod_navigator" is a slim flutter extensions of this package.
+
+## Used in [riverpod_navigator package](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator)...
 
 ... is slim flutter extensions of this package
 
