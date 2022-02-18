@@ -36,7 +36,7 @@ Take a look at the following terms related to url path ```home/book;id=2```
 ## Navigator Data Flow Diagram:
 
 <p align="center">
-<img src="https://github.com/PavelPZ/riverpod_navigator/blob/main/README.png" alt="riverpod_navigator_core" />
+<img src="https://raw.githubusercontent.com/PavelPZ/riverpod_navigator/master/README.png" alt="riverpod_navigator" />
 </p>
 
 As you can see, changing the **Input state** starts the async calculation.
@@ -80,7 +80,7 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<Segments>(Segments.fromJson, [ // json deserialize HomeSegment or PageSegment
+            RRoutes<Segments>(Segments.fromJson, [ // json deserialize to HomeSegment or PageSegment
               RRoute<HomeSegment>(HomeScreen.new), // assign HomeScreen builder for HomeSegment
               RRoute<PageSegment>(PageScreen.new), // assign PageScreen builder for PageSegment
             ])
@@ -117,14 +117,14 @@ extension ProviderContainerApp on ProviderContainer {
 }
 ```
 
-Use in your application:
+Use in your test:
 
 ```dart
   final container = ProviderContainer();
   await container.navigator.toPage('Page title');
 ```
 
-### Step3 - use the AppNavigator in MaterialApp.router
+### Step3 - the AppNavigator in MaterialApp.router
 
 If you are familiar with the Flutter Navigator 2.0 and the riverpod, the following code is clear:
 
@@ -258,7 +258,7 @@ After clonning repository, go to ```examples\doc``` subdirectory and execute:
 - ```flutter create .```
 - ```flutter pub get```
 
-You can then run the examples in the *\lib* project subdirectory.
+You can then run the examples in the */lib* subdirectory of project.
 
 ## Roadmap
 
