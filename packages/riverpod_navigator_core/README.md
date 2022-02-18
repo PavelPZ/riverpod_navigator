@@ -15,7 +15,7 @@ navigation logic can be developed and tested without typing a single flutter wid
 
 ## Part [riverpod_navigator package](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator)
 
-This package is dart library with no dependency on Flutter.
+This package is a dart library independent of Flutter.
 
 ## Terminology used
 
