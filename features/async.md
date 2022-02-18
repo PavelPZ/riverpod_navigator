@@ -43,5 +43,5 @@ class AppNavigator extends RNavigator {
 #### Full source code:
 
 [async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/async.dart),
-[login_flow_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/async_test.dart)
+[async_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/async_test.dart)
 

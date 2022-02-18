@@ -15,7 +15,7 @@ navigation logic can be developed and tested without typing a single flutter wid
 - **nested navigation**<br>
 just use the nested riverpod ```ProviderScope()```
 
-#### Packages
+#### Two packages
 
 Most of the code is in the *[riverpod_navigator_core](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator_core)* dart library independent of Flutter.
 *[riverpod_navigator](https://github.com/PavelPZ/riverpod_navigator/tree/main/packages/riverpod_navigator)* addresses the connection to Flutter Navigator 2.0.
