@@ -3,17 +3,17 @@
 ### Simple but powerfull Flutter navigation with [riverpod](https://riverpod.dev/), [freezed](https://github.com/rrousselGit/freezed) and Navigator 2.0 that solves the following:
 
 - **Strictly typed navigation:** <br>
-you can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code.
+you can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code
 - **asynchronous navigation**<br>
 is the case when changing the navigation state requires asynchronous actions (such as loading or saving data from the Internet)
 - **multiple providers**<br>
-is the case when the navigation state depends on multiple providers
+is the case when the navigation state depends on multiple riverpod providers
 - **easier coding:** <br>
-the problem of navigation is reduced to manipulation an immutable collection.
+the problem of navigation is reduced to manipulation an immutable collection
 - **better separation of concerns: UI x Model** (thanks to [riverpod](https://riverpod.dev/) :+1:):<br>
-navigation logic can be developed and tested without typing a single flutter widget.
+navigation logic can be developed and tested without typing a single flutter widget
 - **nested navigation**<br>
-just use the nested riverpod ```ProviderScope()```
+just use the nested riverpod ```ProviderScope()``` and Flutter ```Router``` widget
 
 ## Terminology used
 
@@ -21,7 +21,7 @@ Take a look at the following terms related to url path ```home/book;id=2```
 
 - **string-path:** ```final stringPath = 'home/book;id=2';```
 - **string-segment:** the string-path consists of two slash-delimited string-segments (```home``` and ```book;id=2```)
-- **typed-segment:** (```class TypedSegment {}``` descendant) describes coresponding string-segment's (```HomeSegment()``` and ```BookSegment(id:2)```)
+- **typed-segment:** (```class TypedSegment {}```'s descendant) describes coresponding string-segment's (```HomeSegment()``` and ```BookSegment(id:2)```)
 - **typed-path**: (```typedef TypedPath = List<TypedSegment>```) describes coresponding string-path (```[HomeSegment(), BookSegment(id:2)];```)
 - Flutter Navigator 2.0 **navigation-stack** is uniquely determined by the TypedPath (where each TypedSegment instance corresponds to a screen and page instance)<br>
 ```dart

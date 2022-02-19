@@ -1,6 +1,7 @@
 # More TypedSegment roots
 
-In a real application with many dozens of screens, it would not be practical to define typed-segments using one class (as SegmentGrp is).
+In a real application with many dozens of screens, it would not be practical to define typed-segments using one class (as *Segments* is).
+
 Use the unique "unionKey" for the second and next segment group.
 
 !!!! jsonNameSpace for ```@Freezed(unionKey: SecondGrp.jsonNameSpace)``` must start with an underscore. !!!!
