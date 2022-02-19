@@ -15,13 +15,6 @@ navigation logic can be developed and tested without typing a single flutter wid
 - **nested navigation**<br>
 just use the nested riverpod ```ProviderScope()```
 
-#### Two packages
-
-Use [riverpod_navigator package](https://pub.dev/packages/riverpod_navigator) to develop in Flutter.
-
-Note: Most of the code is in the *[riverpod_navigator_core](https://pub.dev/packages/riverpod_navigator_core)* dart library thai is independent of Flutter.
-*[riverpod_navigator](https://pub.dev/packages/riverpod_navigator)* addresses the connection to Flutter Navigator 2.0.
-
 ## Terminology used
 
 Take a look at the following terms related to url path ```home/book;id=2```
@@ -31,7 +24,9 @@ Take a look at the following terms related to url path ```home/book;id=2```
 - **typed-segment** - the typed-segment (aka ```class TypedSegment {}``` ) defines string-segment: ```HomeSegment()``` and ```BookSegment(id:2)``` in this case
 - **typed-path**: typed-path (aka ```typedef TypedPath = List<TypedSegment>```) : ```[HomeSegment(), BookSegment(id:2)];```
 - Flutter Navigator 2.0 **navigation-stack** is specified by TypedPath, where each TypedPath's TypedSegment instance corresponds to a screen and page instance<br>
-  ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:2)))]```.
+```dart
+  [MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:2)))]
+```.
 
 ## Navigator Data Flow Diagram:
 
