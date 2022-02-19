@@ -20,9 +20,9 @@ just use the nested riverpod ```ProviderScope()```
 Take a look at the following terms related to url path ```home/book;id=2```
 
 - **string-path:** ```final stringPath = 'home/book;id=2';```
-- **string-segment:** the string-path consists of two slash-delimited string-segments: ```home``` and ```book;id=2```
-- **typed-segment:** (```class TypedSegment {}``` ) describes coresponding string-segment's ```HomeSegment()``` and ```BookSegment(id:2)```
-- **typed-path**: (```typedef TypedPath = List<TypedSegment>```) describes coresponding string-path ```[HomeSegment(), BookSegment(id:2)];```
+- **string-segment:** the string-path consists of two slash-delimited string-segments (```home``` and ```book;id=2```)
+- **typed-segment:** (```class TypedSegment {}``` descendant) describes coresponding string-segment's (```HomeSegment()``` and ```BookSegment(id:2)```)
+- **typed-path**: (```typedef TypedPath = List<TypedSegment>```) describes coresponding string-path (```[HomeSegment(), BookSegment(id:2)];```)
 - Flutter Navigator 2.0 **navigation-stack** is uniquely determined by the TypedPath (where each TypedSegment instance corresponds to a screen and page instance)<br>
 ```dart
   [MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:2)))]
@@ -35,14 +35,8 @@ Take a look at the following terms related to url path ```home/book;id=2```
 </p>
 
 As you can see, changing the **Input state** starts the async calculation.
-The result of the calculations is **Output state** in navigationStackProvider and possibly app specific **Side effects**.
+The result of the calculations is **Output state** and possibly app specific **Side effects**.
 Connecting *navigationStackProvider* to Flutter Navigator 2.0 is then easy.
-
-The appLogic procedure returns the future with the new navigationStack and its signature is as follows:
-
-```dart
-FutureOr<TypedPath> appNavigationLogic(TypedPath oldNavigationStack, TypedPath ongoingPath)
-```
 
 ## Simple example
 
