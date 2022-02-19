@@ -20,10 +20,10 @@ just use the nested riverpod ```ProviderScope()```
 Take a look at the following terms related to url path ```home/book;id=2```
 
 - **string-path:** ```final stringPath = 'home/book;id=2';```
-- **string-segment** - the string-path consists of two slash-delimited string-segments: ```home``` and ```book;id=2```
-- **typed-segment** - the typed-segment (aka ```class TypedSegment {}``` ) defines string-segment: ```HomeSegment()``` and ```BookSegment(id:2)``` in this case
+- **string-segment:** the string-path consists of two slash-delimited string-segments: ```home``` and ```book;id=2```
+- **typed-segment:** the typed-segment (aka ```class TypedSegment {}``` ) defines string-segment: ```HomeSegment()``` and ```BookSegment(id:2)``` in this case
 - **typed-path**: typed-path (aka ```typedef TypedPath = List<TypedSegment>```) : ```[HomeSegment(), BookSegment(id:2)];```
-- Flutter Navigator 2.0 **navigation-stack** is specified by TypedPath, where each TypedPath's TypedSegment instance corresponds to a screen and page instance<br>
+- Flutter Navigator 2.0 **navigation-stack** is uniquely determined by the TypedPath (where each TypedSegment instance corresponds to a screen and page instance)<br>
 ```dart
   [MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:2)))]
 ```
