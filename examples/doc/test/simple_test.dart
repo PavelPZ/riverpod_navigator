@@ -22,7 +22,7 @@ void main() {
 
     await navigTest(() => navigator.push(PageSegment(title: 'Page2')), 'home/page;title=Page2');
 
-    await navigTest(() => navigator.replaceLast((_) => PageSegment(title: 'Page3')), 'home/page;title=Page3');
+    await navigTest(() => navigator.replaceLast<PageSegment>((old) => PageSegment(title: 'X${old.title}')), 'home/page;title=XPage2');
 
     return;
   });

@@ -136,8 +136,8 @@ Whole source code and test see:
 
 ### Testing
 
-Before developing a GUI, it is good practice to develop and test the invisible part of the application. 
-To do this, it is advantageous to use dart tests, see:
+Before developing a GUI, it is good practice to develop and test the invisible part of the application (app model and state).
+It is advantageous to use a dart test environment, see:
 
 ```dart 
   test('navigation test', () async {
@@ -158,7 +158,7 @@ To do this, it is advantageous to use dart tests, see:
 
     await navigTest(() => navigator.push(PageSegment(title: 'Page2')), 'home/page;title=Page2');
 
-    await navigTest(() => navigator.replaceLast((_) => PageSegment(title: 'Page3')), 'home/page;title=Page3');
+    await navigTest(() => navigator.replaceLast<PageSegment>((old) => PageSegment(title: 'X${old.title}')), 'home/page;title=XPage2');
   });
 ```
 
