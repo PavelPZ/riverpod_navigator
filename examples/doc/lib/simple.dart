@@ -8,6 +8,7 @@ part 'simple.g.dart';
 
 void main() => runApp(
       ProviderScope(
+        // home=path and navigator constructor are required
         overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
@@ -38,12 +39,6 @@ class AppNavigator extends RNavigator {
             ])
           ],
         );
-
-  /// navigate to page
-  Future toPage(String title) => navigate([HomeSegment(), PageSegment(title: title)]);
-
-  /// navigate to home
-  Future toHome() => navigate([HomeSegment()]);
 }
 
 class App extends ConsumerWidget {

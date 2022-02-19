@@ -40,7 +40,9 @@ Connecting *navigationStackProvider* to Flutter Navigator 2.0 is then easy.
 
 ## Simple example
 
-### Step1 - imutable classes for typed-segment
+Create an application using these simple steps.
+
+### Step1 - define imutable classes for the typed-segment
 
 We use [freezed-package](https://github.com/rrousselGit/freezed) to generate immutable TypedSegment descendant classes.
 
@@ -59,9 +61,9 @@ class Segments with _$Segments, TypedSegment {
 }
 ```
 
-### Step2 - navigator parameterization
+### Step2 - extends the RNavigator class
 
-Extends the RNavigator class as follows.
+Configure *RNavigator*:
 
 ```dart
 class AppNavigator extends RNavigator {
@@ -69,7 +71,7 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<Segments>(Segments.fromJson, [ // json deserialize to HomeSegment or PageSegment
+            RRoutes<Segments>(Segments.fromJson, [ // deserialize HomeSegment or PageSegment
               RRoute<HomeSegment>(HomeScreen.new), // assign HomeScreen builder for HomeSegment
               RRoute<PageSegment>(PageScreen.new), // assign PageScreen builder for PageSegment
             ])
@@ -78,7 +80,7 @@ class AppNavigator extends RNavigator {
 }
 ```
 
-### Step3 - the AppNavigator in MaterialApp.router
+### Step3 - use the AppNavigator in MaterialApp.router
 
 If you are familiar with the Flutter Navigator 2.0 and the riverpod, the following code is clear:
 
@@ -87,19 +89,26 @@ class App extends ConsumerWidget {
   const App({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
-        title: 'Riverpod Navigator Example',
-        routerDelegate: ref.navigator.routerDelegate,
-        routeInformationParser: ref.navigator.routeInformationParser,
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
+    return MaterialApp.router(
+      title: 'Riverpod Navigator Example',
+      routerDelegate: navigator.routerDelegate,
+      routeInformationParser: navigator.routeInformationParser,
+      debugShowCheckedModeBanner: false,
+    );
+  }
 }
 ```
 
 ### Step4 - main entry point
 
+Place and configure ProviderScope to app root:
+
 ```dart
 void main() => runApp(
       ProviderScope(
+        // home=path and navigator constructor are required
         overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
