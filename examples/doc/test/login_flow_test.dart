@@ -28,7 +28,7 @@ void main() {
     await navigTest(() => container.navigator.navigate([HomeSegment(), BookSegment(id: 3)]), 'login;loggedUrl=home%2Fbook%3Bid%3D3;canceledUrl=home');
 
     // confirm login => redirect to book 3
-    await navigTest(() => container.navigator.okOnloginPage(), 'home/book;id=3');
+    await navigTest(() => container.navigator.okOnLoginScreen(), 'home/book;id=3');
 
     // to next book 4
     await navigTest(() => container.navigator.gotoNextBook(), 'home/book;id=4');
@@ -40,7 +40,7 @@ void main() {
     await navigTest(() => container.navigator.globalLogoutButton(), 'login;loggedUrl=home%2Fbook%3Bid%3D5;canceledUrl=');
 
     // cancel login => redirect to home
-    await navigTest(() => container.navigator.cancelOnloginPage(), 'home');
+    await navigTest(() => container.navigator.cancelOnLoginScreen(), 'home');
 
     return;
   });

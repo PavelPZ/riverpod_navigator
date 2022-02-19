@@ -73,11 +73,11 @@ class AppNavigator extends RNavigator {
 
     // if user is not logged-in and some of the screen in navigations stack needs login => redirect to LoginScreen
     if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
-      // loggedUrl: destination path after login
+      // prepare URLs for confirmation or cancel cases on the login screen
       final loggedUrl = pathParser.typedPath2Path(ongoingPath);
-      // canceledUrl: navigationStack
       var canceledUrl = navigationStack.isEmpty || navigationStack.last is LoginSegment ? '' : pathParser.typedPath2Path(navigationStack);
       if (loggedUrl == canceledUrl) canceledUrl = ''; // chance to exit login loop
+
       // redirect to login screen
       return [LoginSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
     } else {
@@ -92,33 +92,33 @@ class AppNavigator extends RNavigator {
 
   Future gotoNextBook() => replaceLast<BookSegment>((actualBook) => BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
 
-  Future globalLogoutButton() {
+  Future onLogout() {
     // actualize login state
     ref.read(userIsLoggedProvider.notifier).state = false;
     // wait for the navigation to complete
     return navigationCompleted;
   }
 
-  Future globalLoginButton() {
-    final navigationStack = getNavigationStack();
-    // current screen text-path
-    final actualStringPath = pathParser.typedPath2Path(navigationStack);
+  Future onLogin() {
+    // current navigation stack as string
+    final navigStackAsString = pathParser.typedPath2Path(getNavigationStack());
     // redirect to login screen
-    return navigate([LoginSegment(loggedUrl: actualStringPath, canceledUrl: actualStringPath)]);
+    return navigate([LoginSegment(loggedUrl: navigStackAsString, canceledUrl: navigStackAsString)]);
   }
 
-  Future cancelOnloginPage() => _loginPageButtons(true);
-  Future okOnloginPage() => _loginPageButtons(false);
+  Future loginScreenCancel() => _loginScreenActions(true);
+  Future loginScreenOK() => _loginScreenActions(false);
 
-  Future _loginPageButtons(bool cancel) {
+  Future _loginScreenActions(bool cancel) {
     final navigationStack = getNavigationStack();
+
+    // get return path
     final loginHomeSegment = navigationStack.last as LoginSegment;
+    var returnPath = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
+    if (returnPath.isEmpty) returnPath = [HomeSegment()];
 
-    var newPath = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
-    if (newPath.isEmpty) newPath = [HomeSegment()];
-
-    // start navigating to a new path
-    ref.read(ongoingPathProvider.notifier).state = newPath;
+    // start navigating to a return path
+    ref.read(ongoingPathProvider.notifier).state = returnPath;
 
     // actualize login state
     if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true;
@@ -164,7 +164,7 @@ Widget loginScreen(LoginSegment segment) => PageHelper(
       title: 'Login Page',
       isLoginPage: true,
       buildChildren: (navigator) => [
-        ElevatedButton(onPressed: navigator.okOnloginPage, child: Text('Login')),
+        ElevatedButton(onPressed: navigator.loginScreenOK, child: Text('Login')),
       ],
     );
 
@@ -182,7 +182,7 @@ Widget pageHelper(
       title: Text(title),
       leading: isLoginPage == true
           ? IconButton(
-              onPressed: navigator.cancelOnloginPage,
+              onPressed: navigator.loginScreenCancel,
               icon: Icon(Icons.cancel),
             )
           : null,
@@ -191,7 +191,7 @@ Widget pageHelper(
           Consumer(builder: (_, ref, __) {
             final isLogged = ref.watch(userIsLoggedProvider);
             return ElevatedButton(
-              onPressed: () => isLogged ? navigator.globalLogoutButton() : navigator.globalLoginButton(),
+              onPressed: () => isLogged ? navigator.onLogout() : navigator.onLogin(),
               child: Text(isLogged ? 'Logout' : 'Login'),
             );
           }),

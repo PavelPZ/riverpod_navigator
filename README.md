@@ -54,7 +54,9 @@ From the following *Segments* class declaration, the freezed generates two class
 @freezed
 class Segments with _$Segments, TypedSegment {
   Segments._();
+  /// Segments.home() means that the string 'home' appears in the web URL, e.g. '/home'
   factory Segments.home() = HomeSegment;
+  /// the Segments.page() means that the string 'page' appeares in web url, e.g. '/page;title=title'
   factory Segments.page({required String title}) = PageSegment;
 
   factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);

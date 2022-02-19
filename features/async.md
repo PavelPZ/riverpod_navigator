@@ -1,14 +1,14 @@
 # Async navigation and splash screen
 
-Navigation is delayed until the asynchronous actions are performed. These actions are:
+Navigation is delayed until the asynchronous actions are performed. These actions for each screen are:
 - **opening** (before opening a new screen)
 - **closing** (before closin the old screen)
-- **merging** (before screen replacement with the same segment type in the navigation stack)
+- **merging** (before replacing the screen with the same segment type)
 
-It is good practice to prepare a code for all navigation specific events.
-They can then be used not only for writing screen widgets but also for testing.
+It is good practice to place the code for all events specific to navigation in AppNavigator.
+These can then be used not only for writing screen widgets, but also for testing.
+
 See ```toPage```, ```toNextPage``` and ```toHome``` bellow.
-
 
 ```dart
 Future<String> simulateAsyncResult(String asyncResult, int msec) async {
@@ -37,8 +37,8 @@ class AppNavigator extends RNavigator {
           splashBuilder: () => SplashScreen(),
         );
 
-  //*** It is good practice to prepare a code for all navigation specific events. 
-  //    They can then be used not only for writing screen widgets but also for testing.
+  // It is good practice to place the code for all events specific to navigation in AppNavigator.
+  // These can then be used not only for writing screen widgets, but also for testing.
 
   /// navigate to page
   Future toPage({required int id}) => navigate([HomeSegment(), PageSegment(id: id)]);
@@ -52,6 +52,8 @@ class AppNavigator extends RNavigator {
 ```
 
 #### useful extension for screen code
+
+These extensions will make it easier for you to write and understand the code.
 
 ```dart
 extension WidgetRefApp on WidgetRef {
