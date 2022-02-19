@@ -26,7 +26,7 @@ Take a look at the following terms related to url path ```home/book;id=2```
 - Flutter Navigator 2.0 **navigation-stack** is specified by TypedPath, where each TypedPath's TypedSegment instance corresponds to a screen and page instance<br>
 ```dart
   [MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:2)))]
-```.
+```
 
 ## Navigator Data Flow Diagram:
 
