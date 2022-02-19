@@ -46,7 +46,7 @@ We use [freezed-package](https://github.com/rrousselGit/freezed) to generate imm
 
 It's a good idea to be familiar with the freezed-package (including support for JSON serialization).
 
-From the following SegmentGrp class declaration, the freezed generates two classes: *HomeSegment* and *PageSegment*.
+From the following *Segments* class declaration, the freezed generates two classes: *HomeSegment* and *PageSegment*.
 
 ```dart
 @freezed
