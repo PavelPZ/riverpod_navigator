@@ -32,7 +32,7 @@ class Segments with _$Segments, TypedSegment {
 /// ...
 ///     ElevatedButton(onPressed: () => ref.navigator.toPage('Page title')
 /// ```
-extension WidgetRefApp on WidgetRef {
+extension WidgetRefEx on WidgetRef {
   AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
 }
 
@@ -47,8 +47,7 @@ extension WidgetRefApp on WidgetRef {
 ///     expect(container.navigator.navigationStack2Url, 'home/page;title=Page');
 /// ...
 /// ```
-
-extension ProviderContainerApp on ProviderContainer {
+extension ProviderContainerEx on ProviderContainer {
   AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
 }
 

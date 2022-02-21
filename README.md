@@ -174,7 +174,7 @@ It is advantageous to use a dart test environment, see:
 - [More TypedSegment roots](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/more_groups.md)
 - [Nested navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/nested_navigation.md)
 
-Note: *The examples are prepared using a **functional_widget package** that simplifies writing widgets.
+Note: *The examples are prepared using a **[functional_widget package](https://pub.dev/packages/functional_widget)** that simplifies writing widgets.
 The use of functional_widget is optional.*
 
 ## Installation of examples

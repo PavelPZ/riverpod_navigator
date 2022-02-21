@@ -1,6 +1,7 @@
 part of 'index.dart';
 
-class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
+class RiverpodRouterDelegate extends RouterDelegate<TypedPath>
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
   @override
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -18,13 +19,17 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
     final navigatorWidget = Navigator(
         key: navigatorKey,
         // segment => Page(child:screen)
-        pages: navigationStack.map((segment) => navigator.screen2Page(segment)).toList(),
+        pages: navigationStack
+            .map((segment) => navigator.screen2Page(segment))
+            .toList(),
         onPopPage: (route, result) {
           if (!route.didPop(result)) return false;
           return navigator.onPopRoute();
         });
 
-    return navigator.navigatorWidgetBuilder == null ? navigatorWidget : navigator.navigatorWidgetBuilder!(context, navigatorWidget);
+    return navigator.navigatorWidgetBuilder == null
+        ? navigatorWidget
+        : navigator.navigatorWidgetBuilder!(context, navigatorWidget);
   }
 
   @override
@@ -42,8 +47,10 @@ class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
   final PathParser _pathParser;
 
   @override
-  Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) => Future.value(_pathParser.path2TypedPath(routeInformation.location));
+  Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
+      Future.value(_pathParser.path2TypedPath(routeInformation.location));
 
   @override
-  RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: _pathParser.typedPath2Path(configuration));
+  RouteInformation restoreRouteInformation(TypedPath configuration) =>
+      RouteInformation(location: _pathParser.typedPath2Path(configuration));
 }

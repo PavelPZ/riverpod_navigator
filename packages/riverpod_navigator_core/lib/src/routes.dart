@@ -1,4 +1,4 @@
-part of 'index.dart';
+part of 'riverpod_navigator_core.dart';
 
 typedef Opening<T extends TypedSegment> = Future<AsyncActionResult> Function(T newPath);
 typedef Replacing<T extends TypedSegment> = Future<AsyncActionResult> Function(T oldPath, T newPath);

@@ -16,7 +16,8 @@ class RNavigator extends RNavigatorCore {
         super(ref, groups, pathParserCreator: pathParserCreator) {
     routerDelegate.navigator = this;
 
-    final callInDispose = ref.listen(navigationStackProvider, (previous, next) => routerDelegate.doNotifyListeners());
+    final callInDispose = ref.listen(navigationStackProvider,
+        (previous, next) => routerDelegate.doNotifyListeners());
     ref.onDispose(callInDispose);
   }
 
@@ -26,7 +27,8 @@ class RNavigator extends RNavigatorCore {
   final RiverpodRouterDelegate routerDelegate;
 
   RouteInformationParserImpl get routeInformationParser =>
-      _routeInformationParser ?? (_routeInformationParser = RouteInformationParserImpl(pathParser));
+      _routeInformationParser ??
+      (_routeInformationParser = RouteInformationParserImpl(pathParser));
   RouteInformationParserImpl? _routeInformationParser;
 
   Page screen2Page(TypedSegment segment) {
@@ -40,7 +42,9 @@ class RNavigator extends RNavigatorCore {
   bool onPopRoute() {
     final navigationStack = getNavigationStack();
     if (navigationStack.length <= 1) return false;
-    navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
+    navigate([
+      for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]
+    ]);
     return true;
   }
 }

@@ -1,4 +1,4 @@
-part of 'index.dart';
+part of 'riverpod_navigator_core.dart';
 
 // wait for https://github.com/flutter/flutter/pull/97394 error fix
 

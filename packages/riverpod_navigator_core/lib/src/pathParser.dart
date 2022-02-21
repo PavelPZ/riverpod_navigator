@@ -1,11 +1,11 @@
-part of 'index.dart';
+part of 'riverpod_navigator_core.dart';
 
 // ********************************************
 //   PathParser
 // ********************************************
 
 /// Path parser interface
-abstract class PathParser {
+class PathParser {
   PathParser(this.json2Segment);
 
   @protected
@@ -14,10 +14,16 @@ abstract class PathParser {
   static const String defaultJsonUnionKey = 'runtimeType';
 
   /// String path => TypedPath
-  String typedPath2Path(TypedPath typedPath);
+  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(jsonEncode(s.toJson()))).join('/');
 
   /// TypedPath => String path, suitable for browser
-  TypedPath path2TypedPath(String? path);
+  TypedPath path2TypedPath(String? path) {
+    if (path == null || path.isEmpty) return [];
+    return [
+      for (final s in path.split('/'))
+        if (s.isNotEmpty) json2Segment(jsonDecode(Uri.decodeFull(s)) as JsonMap, PathParser.defaultJsonUnionKey)
+    ];
+  }
 }
 
 /// Simple url path parser

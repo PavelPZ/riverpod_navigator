@@ -1,1 +1,1 @@
-export 'src/index.dart';
+export 'src/riverpod_navigator_core.dart';

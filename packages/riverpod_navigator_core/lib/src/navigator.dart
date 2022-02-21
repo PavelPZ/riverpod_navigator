@@ -1,4 +1,4 @@
-part of 'index.dart';
+part of 'riverpod_navigator_core.dart';
 
 // ********************************************
 //   RNavigator
