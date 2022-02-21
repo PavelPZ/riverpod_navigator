@@ -11,7 +11,7 @@ part 'login_flow.freezed.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [userIsLoggedProvider]),
+        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [isLoggedProvider]),
         child: const App(),
       ),
     );
@@ -35,7 +35,7 @@ class Segments with _$Segments, TypedSegment {
 }
 
 /// !!! there is another provider on which the navigation status depends:
-final userIsLoggedProvider = StateProvider<bool>((_) => false);
+final isLoggedProvider = StateProvider<bool>((_) => false);
 
 typedef NeedsLogin<T extends TypedSegment> = bool Function(T segment);
 
@@ -68,7 +68,7 @@ class AppNavigator extends RNavigator {
   /// Quards and redirects for login flow
   @override
   TypedPath appNavigationLogic(TypedPath ongoingPath) {
-    final userIsLogged = ref.read(userIsLoggedProvider);
+    final userIsLogged = ref.read(isLoggedProvider);
     final navigationStack = getNavigationStack();
 
     // if user is not logged-in and some of the screen in navigations stack needs login => redirect to LoginScreen
@@ -94,7 +94,7 @@ class AppNavigator extends RNavigator {
 
   Future onLogout() {
     // actualize login state
-    ref.read(userIsLoggedProvider.notifier).state = false;
+    ref.read(isLoggedProvider.notifier).state = false;
     // wait for the navigation to complete
     return navigationCompleted;
   }
@@ -121,7 +121,7 @@ class AppNavigator extends RNavigator {
     ref.read(ongoingPathProvider.notifier).state = returnPath;
 
     // actualize login state
-    if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true;
+    if (!cancel) ref.read(isLoggedProvider.notifier).state = true;
 
     // wait for the navigation to complete
     return navigationCompleted;
@@ -133,7 +133,7 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
       title: 'Home',
       segment: segment,
       buildChildren: (navigator) {
-        final bool isLogged = ref.watch(userIsLoggedProvider);
+        final bool isLogged = ref.watch(isLoggedProvider);
         return [
           for (var i = 1; i <= bookCount; i++)
             ElevatedButton(
@@ -189,12 +189,12 @@ Widget pageHelper(
       actions: [
         if (isLoginPage != true)
           Consumer(builder: (_, ref, __) {
-            final isLogged = ref.watch(userIsLoggedProvider);
+            final isLoggedNotifier = ref.watch(isLoggedProvider.notifier);
             return ElevatedButton(
-              onPressed: () => isLogged ? navigator.onLogout() : navigator.onLogin(),
-              child: Text(isLogged ? 'Logout' : 'Login'),
+              onPressed: () => isLoggedNotifier.update((s) => !s),
+              child: Text(isLoggedNotifier.state ? 'Logout' : 'Login'),
             );
-          }),
+          })
       ],
     ),
     body: Center(

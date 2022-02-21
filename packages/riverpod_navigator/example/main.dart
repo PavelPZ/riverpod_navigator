@@ -129,6 +129,8 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifi
     ref.read(navigationStackProvider.notifier).state = configuration;
     return SynchronousFuture(null);
   }
+
+  void navigate(TypedPath newPath) => ref.read(navigationStackProvider.notifier).state = newPath;
 }
 
 //*********************************************
@@ -176,12 +178,12 @@ class HomeScreen extends ConsumerWidget {
               for (var i = 1; i < 4; i++) ...[
                 const SizedBox(height: 30),
                 ElevatedButton(
-                  onPressed: () => ref.read(navigationStackProvider.notifier).state = [
+                  onPressed: () => ref.read(routerDelegateProvider).navigate([
                     HomeSegment(),
                     BookSegment(id: i),
                     if (i > 1) BookSegment(id: 10 + i),
                     if (i > 2) BookSegment(id: 100 + i),
-                  ],
+                  ]),
                   child: Text('Go to Book: [$i${i > 1 ? ', 1$i' : ''}${i > 2 ? ', 10$i' : ''}]'),
                 ),
               ]
@@ -207,7 +209,7 @@ class BookScreen extends ConsumerWidget {
             children: [
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () => ref.read(navigationStackProvider.notifier).state = [HomeSegment()],
+                onPressed: () => ref.read(routerDelegateProvider).navigate([HomeSegment()]),
                 child: const Text('Go to home'),
               ),
             ],

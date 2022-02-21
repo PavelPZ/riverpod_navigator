@@ -1,6 +1,6 @@
 # Riverpod navigation
 
-### Simple but powerfull Flutter navigation with [riverpod](https://riverpod.dev/), [freezed](https://github.com/rrousselGit/freezed) and Navigator 2.0 that solves the following:
+### Simple but powerful Flutter navigation with [riverpod](https://riverpod.dev/), [freezed](https://github.com/rrousselGit/freezed) and Navigator 2.0 that solves the following:
 
 - **Strictly typed navigation:** <br>
 you can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code
@@ -17,7 +17,7 @@ just use the nested riverpod ```ProviderScope()``` and Flutter ```Router``` widg
 
 ## Terminology used
 
-Take a look at the following terms related to url path ```home/book;id=2```
+Take a look at the following terms related to URL path ```home/book;id=2```
 
 - **string-path:** ```final stringPath = 'home/book;id=2';```
 - **string-segment:** the string-path consists of two slash-delimited string-segments (```home``` and ```book;id=2```)
@@ -35,7 +35,7 @@ Take a look at the following terms related to url path ```home/book;id=2```
 </p>
 
 As you can see, changing the **Input state** starts the async calculation.
-The result of the calculations is **Output state** and possibly app specific **Side effects**.
+The result of the calculations is **Output state** and possibly app-specific **Side effects**.
 Connecting *navigationStackProvider* to Flutter Navigator 2.0 is then easy.
 
 ## Simple example
@@ -166,17 +166,17 @@ It is advantageous to use a dart test environment, see:
 
 ## Other features and samples 
 
-Note: *The following examples are prepared using a **functional_widget package** that simplifies writing widgets.
-The use of functional_widget is optional.*
-
 - [Async navigation and splash screen](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async.md)
 - [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
 - [More TypedSegment roots](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/more_groups.md)
 - [Nested navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/nested_navigation.md)
 
+Note: *The examples are prepared using a **functional_widget package** that simplifies writing widgets.
+The use of functional_widget is optional.*
+
 ## Installation of examples
 
-After clonning repository, go to ```examples/doc``` subdirectory and execute:
+After cloning the repository, go to ```examples/doc``` subdirectory and execute:
 
 - ```flutter create .```
 - ```flutter pub get```
@@ -185,8 +185,7 @@ See the */lib* subdirectory for examples.
 
 ## Roadmap
 
-I prepared this package for my new project. Its further development depends on whether it will be used by the community.
+I prepared this package for my new project. Its further development depends on whether the community will use it.
 
 - proofreading because my English is not good. Community help is warmly welcomed.
-- BlockGUI widget (block the GUI while asynchronous navigation is waiting to complete)
-- parameterization allowing cupertino
+- parameterization allowing Cupertino

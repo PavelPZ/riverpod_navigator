@@ -31,9 +31,9 @@ class Defer2NextTick {
     assert(_p('providerChanged start'));
     _resultCompleter ??= Completer();
     _resultFuture = _resultCompleter!.future;
-    _requestDuringRefreshStackRunning = true;
-    if (_refreshStackIsRunning) return;
-    _refreshStackIsRunning = true;
+    _ignoreNext = true;
+    if (_isRunning) return;
+    _isRunning = true;
     scheduleMicrotask(() {
       _refreshStack();
       // if (!_running) {
@@ -54,10 +54,10 @@ class Defer2NextTick {
   // *********************** private
 
   // during _refreshStack running, another providerChanged() raises
-  var _requestDuringRefreshStackRunning = false;
+  var _ignoreNext = false;
 
   // _refreshStack is running
-  var _refreshStackIsRunning = false;
+  var _isRunning = false;
 
   var ignoreNextProviderChange = false;
 
@@ -71,8 +71,8 @@ class Defer2NextTick {
   Future _refreshStack() async {
     try {
       try {
-        while (_requestDuringRefreshStackRunning) {
-          _requestDuringRefreshStackRunning = false;
+        while (_ignoreNext) {
+          _ignoreNext = false;
           final navigationStackNotifier = navigator.ref.read(navigationStackProvider.notifier);
           final ongoingPathNotifier = navigator.ref.read(ongoingPathProvider.notifier);
           if (protectedFutures.isNotEmpty) await Future.wait(protectedFutures);
@@ -82,7 +82,7 @@ class Defer2NextTick {
           final newPath = futureOr is Future<TypedPath?> ? await futureOr : futureOr;
           // during async appNavigationLogicCore state change come (in providerChanged)
           // run another cycle (appNavigationLogicCore for fresh input navigation state)
-          if (_requestDuringRefreshStackRunning) {
+          if (_ignoreNext) {
             assert(_p('_needRefresh'));
             continue;
           }
@@ -108,7 +108,7 @@ class Defer2NextTick {
         _resultCompleter!.completeError(e, s);
       }
     } finally {
-      _refreshStackIsRunning = false;
+      _isRunning = false;
       _resultCompleter = null;
     }
   }
