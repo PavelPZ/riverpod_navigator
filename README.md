@@ -25,7 +25,10 @@ Take a look at the following terms related to URL path ```home/book;id=2```
 - **typed-path**: (```typedef TypedPath = List<TypedSegment>```) describes coresponding string-path (```[HomeSegment(), BookSegment(id:2)];```)
 - Flutter Navigator 2.0 **navigation-stack** is uniquely determined by the TypedPath (where each TypedSegment instance corresponds to a screen and page instance)<br>
 ```dart
-  [MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:2)))]
+[
+  MaterialPage (child: HomeScreen(HomeSegment())), 
+  MaterialPage (child: BookScreen(BookSegment(id:2))),
+]
 ```
 
 ## Navigator Data Flow Diagram:
@@ -35,7 +38,7 @@ Take a look at the following terms related to URL path ```home/book;id=2```
 </p>
 
 As you can see, changing the **Input state** starts the async calculation.
-The result of the calculations is **Output state** and possibly app-specific **Side effects**.
+The result of the calculations is **Output state** which can have app-specific **Side effects**.
 Connecting *navigationStackProvider* to Flutter Navigator 2.0 is then easy.
 
 ## Simple example
@@ -63,7 +66,7 @@ class Segments with _$Segments, TypedSegment {
 }
 ```
 
-### Step2 - extends the RNavigator class
+### Step2 - extend the RNavigator class
 
 Configure *RNavigator*:
 
@@ -105,7 +108,7 @@ class App extends ConsumerWidget {
 
 ### Step4 - main entry point
 
-Place and configure ProviderScope to app root:
+Place and configure ProviderScope:
 
 ```dart
 void main() => runApp(
@@ -164,7 +167,7 @@ It is advantageous to use a dart test environment, see:
   });
 ```
 
-## Other features and samples 
+## Other features and examples 
 
 - [Async navigation and splash screen](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async.md)
 - [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
@@ -176,7 +179,7 @@ The use of functional_widget is optional.*
 
 ## Installation of examples
 
-After cloning the repository, go to ```examples/doc``` subdirectory and execute:
+After cloning the [riverpod_navigator repository](https://github.com/PavelPZ/riverpod_navigator), go to ```examples/doc``` subdirectory and execute:
 
 - ```flutter create .```
 - ```flutter pub get```
