@@ -38,7 +38,7 @@ Navigator 2.0 RouterDelegate is then synchronized with *navigationStackProvider*
 
 ## Simple example
 
-Create an application using these simple steps.
+Create an application using these simple steps:
 
 ### Step1 - define imutable classes for the typed-segment
 
@@ -61,9 +61,9 @@ class Segments with _$Segments, TypedSegment {
 }
 ```
 
-### Step2 - extend the RNavigator class
+### Step2 - Configure AppNavigator...
 
-Configure *RNavigator*:
+by extending the RNavigator class:
 
 ```dart
 class AppNavigator extends RNavigator {
@@ -101,9 +101,9 @@ class App extends ConsumerWidget {
 }
 ```
 
-### Step4 - main entry point
+### Step4 - Place and configure ProviderScope ...
 
-Place and configure ProviderScope:
+... in main entry point
 
 ```dart
 void main() => runApp(
