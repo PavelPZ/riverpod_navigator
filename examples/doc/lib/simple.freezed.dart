@@ -63,13 +63,7 @@ mixin _$Segments {
     TResult Function(String title)? page,
   }) =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? home,
-    TResult Function(String title)? page,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(HomeSegment value) home,
@@ -82,13 +76,7 @@ mixin _$Segments {
     TResult Function(PageSegment value)? page,
   }) =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HomeSegment value)? home,
-    TResult Function(PageSegment value)? page,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 }
 
@@ -167,19 +155,6 @@ class _$HomeSegment extends HomeSegment {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? home,
-    TResult Function(String title)? page,
-    required TResult orElse(),
-  }) {
-    if (home != null) {
-      return home();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(HomeSegment value) home,
     required TResult Function(PageSegment value) page,
@@ -194,19 +169,6 @@ class _$HomeSegment extends HomeSegment {
     TResult Function(PageSegment value)? page,
   }) {
     return home?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HomeSegment value)? home,
-    TResult Function(PageSegment value)? page,
-    required TResult orElse(),
-  }) {
-    if (home != null) {
-      return home(this);
-    }
-    return orElse();
   }
 
   @override
@@ -307,19 +269,6 @@ class _$PageSegment extends PageSegment {
 
   @override
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? home,
-    TResult Function(String title)? page,
-    required TResult orElse(),
-  }) {
-    if (page != null) {
-      return page(title);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(HomeSegment value) home,
     required TResult Function(PageSegment value) page,
@@ -334,19 +283,6 @@ class _$PageSegment extends PageSegment {
     TResult Function(PageSegment value)? page,
   }) {
     return page?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HomeSegment value)? home,
-    TResult Function(PageSegment value)? page,
-    required TResult orElse(),
-  }) {
-    if (page != null) {
-      return page(this);
-    }
-    return orElse();
   }
 
   @override

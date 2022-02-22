@@ -14,7 +14,7 @@ void main() => runApp(
       ),
     );
 
-@Freezed(maybeWhen: false, maybeMap: false)
+@freezed
 class Segments with _$Segments, TypedSegment {
   Segments._();
   factory Segments.home() = HomeSegment;

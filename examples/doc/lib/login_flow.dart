@@ -24,7 +24,7 @@ Widget app(WidgetRef ref) => MaterialApp.router(
       debugShowCheckedModeBanner: false,
     );
 
-@Freezed(maybeWhen: false, maybeMap: false)
+@freezed
 class Segments with _$Segments, TypedSegment {
   Segments._();
   factory Segments.home() = HomeSegment;
