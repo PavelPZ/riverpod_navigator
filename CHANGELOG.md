@@ -1,3 +1,7 @@
+## 0.27.0
+
+- examples are running on Github pages
+
 ## 0.26.0
 
 - **Breaking**: riverpodNavigatorProvider renamed to navigatorProvider
