@@ -28,7 +28,7 @@ void main() {
     final container = ProviderContainer(
       overrides: RNavigatorCore.providerOverrides([], TestNavigator.new),
     );
-    final navigator = container.read(riverpodNavigatorProvider);
+    final navigator = container.read(navigatorProvider);
     await container.pump();
     doPrint('start');
 

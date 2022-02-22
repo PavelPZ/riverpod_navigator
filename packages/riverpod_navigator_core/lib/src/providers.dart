@@ -3,7 +3,7 @@ part of 'riverpod_navigator_core.dart';
 /// provider for app specific RNavigatorCore
 ///
 /// initializes in [ProviderScope] or [ProviderContainer] overrides
-final riverpodNavigatorProvider = Provider<RNavigatorCore>((_) => throw UnimplementedError());
+final navigatorProvider = Provider<RNavigatorCore>((_) => throw UnimplementedError());
 
 /// ongoing TypedPath provider
 ///

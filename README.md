@@ -90,7 +90,7 @@ class App extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
+    final navigator = ref.read(navigatorProvider) as AppNavigator;
     return MaterialApp.router(
       title: 'Riverpod Navigator Example',
       routerDelegate: navigator.routerDelegate,
@@ -122,11 +122,11 @@ Navigation to a specific screen is performed as follows:
 ```dart
 // navigation to PageScreen
 ElevatedButton(
-  onPressed: () => ref.read(riverpodNavigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]),
+  onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]),
 
 // navigation to HomeScreen
 ElevatedButton(
-  onPressed: () => ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]),
+  onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment()]),
 ```
 
 Whole source code and test see:
@@ -142,7 +142,7 @@ It is advantageous to use a dart test environment, see:
 ```dart 
   test('navigation test', () async {
     final container = ProviderContainer(overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new));
-    final navigator = container.read(riverpodNavigatorProvider);
+    final navigator = container.read(navigatorProvider);
 
     Future navigTest(Future action(), String expected) async {
       await action();

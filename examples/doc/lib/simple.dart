@@ -46,7 +46,7 @@ class App extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final navigator = ref.read(riverpodNavigatorProvider) as AppNavigator;
+    final navigator = ref.read(navigatorProvider) as AppNavigator;
     return MaterialApp.router(
       title: 'Riverpod Navigator Example',
       routerDelegate: navigator.routerDelegate,
@@ -69,7 +69,7 @@ class HomeScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () => ref.read(riverpodNavigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]),
+                onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]),
                 child: const Text('Go to page'),
               ),
             ],
@@ -91,7 +91,7 @@ class PageScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () => ref.read(riverpodNavigatorProvider).navigate([HomeSegment()]),
+                onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment()]),
                 child: const Text('Go to home'),
               ),
             ],

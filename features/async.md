@@ -52,7 +52,7 @@ These extensions will make it easier for you to write and understand the code.
 
 ```dart
 extension WidgetRefApp on WidgetRef {
-  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+  AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
 }
 ```
 
@@ -66,7 +66,7 @@ Use in your application:
 
 ```dart 
 extension ProviderContainerApp on ProviderContainer {
-  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+  AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
 }
 ```
 

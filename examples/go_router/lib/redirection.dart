@@ -29,12 +29,12 @@ class Segments with _$Segments, TypedSegment {
 
 /// helper extension for screens
 extension WidgetRefApp on WidgetRef {
-  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+  AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
 }
 
 /// helper extension for test
 extension RefApp on Ref {
-  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+  AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
 }
 
 class AppNavigator extends RNavigator {

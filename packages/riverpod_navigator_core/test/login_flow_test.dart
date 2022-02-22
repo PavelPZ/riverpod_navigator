@@ -34,7 +34,7 @@ void main() {
     final container = ProviderContainer(
       overrides: RNavigatorCore.providerOverrides([HomeSegment()], TestNavigator.new, dependsOn: [isLoggedProvider]),
     );
-    final navigator = container.read(riverpodNavigatorProvider);
+    final navigator = container.read(navigatorProvider);
 
     //*****************************
     // Helpers

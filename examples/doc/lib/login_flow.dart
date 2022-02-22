@@ -44,12 +44,12 @@ bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.is
 
 /// helper extension for screens
 extension WidgetRefApp on WidgetRef {
-  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+  AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
 }
 
 /// helper extension for test
 extension ProviderContainerApp on ProviderContainer {
-  AppNavigator get navigator => read(riverpodNavigatorProvider) as AppNavigator;
+  AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
 }
 
 class AppNavigator extends RNavigator {

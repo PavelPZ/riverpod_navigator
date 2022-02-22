@@ -178,7 +178,7 @@ class RNavigatorCore {
         ...dependsOn.map((e) => e as Override),
         ongoingPathProvider.overrideWithValue(StateController<TypedPath>(restorePath == null ? initPath : restorePath.getInitialPath(initPath))),
         navigationStackProvider,
-        riverpodNavigatorProvider.overrideWithProvider(Provider((ref) => navigator(ref)
+        navigatorProvider.overrideWithProvider(Provider((ref) => navigator(ref)
           .._restorePath = restorePath
           ..initPath = initPath
           .._setdependsOn(dependsOn))),

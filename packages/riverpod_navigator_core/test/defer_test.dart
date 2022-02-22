@@ -41,7 +41,7 @@ void main() {
       [HomeSegment()],
       TestNavigator.new,
     ));
-    final navigator = container.read(riverpodNavigatorProvider);
+    final navigator = container.read(navigatorProvider);
 
     await container.pump();
     await navigator.navigationCompleted;
@@ -62,7 +62,7 @@ void main() {
       [HomeSegment()],
       (ref) => TestNavigator(ref, isError: true),
     ));
-    final navigator = container.read(riverpodNavigatorProvider);
+    final navigator = container.read(navigatorProvider);
 
     await container.pump();
 
@@ -83,7 +83,7 @@ void main() {
       [HomeSegment()],
       (ref) => TestNavigator(ref, delayMsec: 1000),
     ));
-    final navigator = container.read(riverpodNavigatorProvider);
+    final navigator = container.read(navigatorProvider);
 
     await container.pump();
     await navigator.navigationCompleted;
@@ -105,7 +105,7 @@ void main() {
       (ref) => TestNavigator(ref, delayMsec: 1000),
       dependsOn: [loginProvider],
     ));
-    final navigator = container.read(riverpodNavigatorProvider);
+    final navigator = container.read(navigatorProvider);
 
     await container.pump();
     await navigator.navigationCompleted;
@@ -136,7 +136,7 @@ void main() {
       [HomeSegment()],
       (ref) => TestNavigator(ref, delayMsec: 1000, isError: true),
     ));
-    final navigator = container.read(riverpodNavigatorProvider);
+    final navigator = container.read(navigatorProvider);
 
     await container.pump();
     try {

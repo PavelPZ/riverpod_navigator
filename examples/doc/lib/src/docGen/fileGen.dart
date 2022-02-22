@@ -483,7 +483,7 @@ app entry point with ProviderScope.overrides
 void runMain() => runApp(
     ProviderScope(
       overrides: [
-          riverpodNavigatorProvider.overrideWithProvider(Provider(AppNavigator.new)),
+          navigatorProvider.overrideWithProvider(Provider(AppNavigator.new)),
       ],
       child: const BooksExampleApp(),
     ),

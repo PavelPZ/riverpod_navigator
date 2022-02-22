@@ -31,7 +31,7 @@ class Segments with _$Segments {
 // ********************************************
 
 /// RNavigator
-final riverpodNavigatorProvider = Provider<AppNavigator>((ref) => AppNavigator(ref));
+final navigatorProvider = Provider<AppNavigator>((ref) => AppNavigator(ref));
 
 /// [ongoingPathProvider] TypedPath provider, source of truth for flutter navigation
 ///
@@ -110,7 +110,7 @@ class RNavigator {
 //   AppNavigator
 // ********************************************
 
-/// navigator is available throw riverpodNavigatorProvider
+/// navigator is available throw navigatorProvider
 ///
 /// Navigator state depends on [ongoingPathProvider] and [userIsLoggedProvider] providers
 class AppNavigator extends RNavigator {

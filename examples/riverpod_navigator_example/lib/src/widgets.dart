@@ -15,7 +15,7 @@ part 'widgets.g.dart';
 @hcwidget
 Widget appRoot(WidgetRef ref) => MaterialApp.router(
       title: 'Riverpod, freezed and Navigator 2.0 example',
-      routerDelegate: ref.watch(riverpodNavigatorProvider).routerDelegate,
+      routerDelegate: ref.watch(navigatorProvider).routerDelegate,
       routeInformationParser: RouteInformationParserImpl(),
       debugShowCheckedModeBanner: false,
     );
@@ -58,7 +58,7 @@ Widget linkHelper({required String title, VoidCallback? onPressed}) => ElevatedB
 
 @cwidget
 Widget pageHelper(WidgetRef ref, {required String title, required List<Widget> buildChildren(AppNavigator navigator)}) {
-  final navigator = ref.read(riverpodNavigatorProvider);
+  final navigator = ref.read(navigatorProvider);
   return Scaffold(
     appBar: AppBar(
       title: Text(title),
