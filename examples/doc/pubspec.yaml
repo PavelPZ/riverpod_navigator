@@ -48,3 +48,5 @@ flutter:
 # dart pub publish --dry-run
 # dart pub publish
 # dart pub publish --force 
+
+# flutter build web --web-renderer html -t lib\async.dart

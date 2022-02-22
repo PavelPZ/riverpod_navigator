@@ -131,8 +131,9 @@ ElevatedButton(
 
 Whole source code and test see:
 
-- [simple.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart)
-- [simple_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
+- [running example](https://pavelpz.github.io/doc_simple/)
+- [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart)
+- [test code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
 
 ### Testing
 

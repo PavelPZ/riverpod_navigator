@@ -82,5 +82,6 @@ Redirect when:
 
 #### Full source code and test:
 
-- [login_flow.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/login_flow.dart)
-- [login_flow_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/login_flow_test.dart)
+- [running example](https://pavelpz.github.io/doc_login_flow/)
+- [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/login_flow.dart)
+- [test code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/login_flow_test.dart)

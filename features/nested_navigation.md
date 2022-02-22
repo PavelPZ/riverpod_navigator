@@ -74,4 +74,5 @@ Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment
 
 #### Full source code:
 
-- [nested_navigation.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/nested_navigation.dart)
+- [running example](https://pavelpz.github.io/doc_nested_navigation/)
+- [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/nested_navigation.dart)

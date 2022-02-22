@@ -8,9 +8,6 @@
 			"path": "examples\\doc"
 		},
 		{
-			"path": "examples\\riverpod_navigator_example"
-		},
-		{
 			"path": "examples\\go_router"
 		},
 		{
@@ -20,6 +17,12 @@
 		{
 			"name": "riverpod_navigator_core",
 			"path": "packages\\riverpod_navigator_core"
+		},
+		{
+			"path": "..\\pavelpz.github.io"
+		},
+		{
+			"path": "examples\\riverpod_navigator_example"
 		}
 	],
 	"settings": {

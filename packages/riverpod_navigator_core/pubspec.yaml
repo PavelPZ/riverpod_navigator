@@ -28,6 +28,8 @@ flutter:
 
 # flutter pub run build_runner watch  --delete-conflicting-outputs
 
+# flutter format .
+
 # dart pub publish --dry-run
 # dart pub publish
 # dart pub publish --force 

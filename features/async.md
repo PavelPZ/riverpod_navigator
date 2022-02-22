@@ -80,6 +80,7 @@ Use in your test:
 
 #### Full source code and test:
 
-- [async.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/async.dart)
-- [async_test.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/async_test.dart)
+- [running example](https://pavelpz.github.io/doc_async/)
+- [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/async.dart)
+- [test code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/async_test.dart)
 
