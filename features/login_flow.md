@@ -80,7 +80,7 @@ Redirect when:
   }
 ```
 
-#### Full source code and test:
+#### Running applications, source code and test, see:
 
 - [running example](https://pavelpz.github.io/doc_login_flow/)
 - [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/login_flow.dart)

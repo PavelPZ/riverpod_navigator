@@ -129,7 +129,7 @@ ElevatedButton(
   onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment()]),
 ```
 
-Whole source code and test see:
+#### Running applications, source code and test, see:
 
 - [running example](https://pavelpz.github.io/doc_simple/)
 - [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart)
