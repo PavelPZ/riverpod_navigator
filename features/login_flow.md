@@ -3,7 +3,7 @@
 A slightly more complicated example, implementing a login flow as follows:
 
 1. there is a home screen, five book screens (with id = 1...5), and a login screen
-2. each screen (except login one) has a Login x Logout button
+2. each screen (except login one) has a Login x Logout button on AppBar
 3. the book screen with odd 'id' is not accessible without login (for such screens, if the user is not logged in, the application is redirected to the login page)
 4. after logging in, the application redirects to the page that requires a login
 
@@ -15,13 +15,13 @@ Redirect when:
 
 ```dart
   @override
-  TypedPath appNavigationLogic(TypedPath ongoingPath, {CToken? cToken}) {
+  TypedPath appNavigationLogic(TypedPath ongoingPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
-    final navigationStack = getNavigationStack();
 
     // if user is not logged-in and some of the screen in navigations stack needs login => redirect to LoginScreen
     if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
       // prepare URLs for confirmation or cancel cases on the login screen
+      final navigationStack = getNavigationStack();
       final loggedUrl = pathParser.typedPath2Path(ongoingPath);
       var canceledUrl = navigationStack.isEmpty || navigationStack.last is LoginSegment ? '' : pathParser.typedPath2Path(navigationStack);
       if (loggedUrl == canceledUrl) canceledUrl = ''; // chance to exit login loop

@@ -5,11 +5,6 @@ Navigation is delayed until the asynchronous actions are performed. These action
 - **closing** (before closing the old screen)
 - **merging** (before replacing the screen with the same segment type)
 
-It is good practice to place the code for all events specific to navigation in AppNavigator.
-These can then be used not only for writing screen widgets but also for testing.
-
-See ```toPage```, ```toNextPage``` and ```toHome``` bellow.
-
 ```dart
 Future<String> simulateAsyncResult(String asyncResult, int msec) async {
   await Future.delayed(Duration(milliseconds: msec));
