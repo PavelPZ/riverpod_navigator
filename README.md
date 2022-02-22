@@ -108,7 +108,7 @@ Place and configure ProviderScope:
 ```dart
 void main() => runApp(
       ProviderScope(
-        // home=path and navigator constructor are required
+        // home-path and navigator constructor are required
         overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),

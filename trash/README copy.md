@@ -79,7 +79,7 @@ Annotated examples [can be found here](/examples.md).
 
 
 ...
-class RiverpodRouterDelegate extends RouterDelegate ... {
+class RRouterDelegate extends RouterDelegate ... {
   @override
   Widget build(BuildContext context) => Navigator(pages: flutterNavigation(currentConfiguration));
   ...

@@ -138,7 +138,7 @@ void main() {
 
 ## Books example, flutter part
 
-All magic is contained in ```RiverpodRouterDelegate extends RouterDelegate``` and ```RouteInformationParserImpl```, explanation see bellow.
+All magic is contained in ```RRouterDelegate extends RouterDelegate``` and ```RouteInformationParserImpl```, explanation see bellow.
 
 ```dart
 class AppRoot extends ConsumerWidget {
@@ -146,7 +146,7 @@ class AppRoot extends ConsumerWidget {
     @override
     Widget build(BuildContext context, WidgetRef ref) {
         final navigator = ref.read(appNavigatorProvider);
-        final delegate = RiverpodRouterDelegate(navigator, initPath: [HomeSegment()]);
+        final delegate = RRouterDelegate(navigator, initPath: [HomeSegment()]);
         ref.listen(typedPathNotifierProvider, (_, __) => delegate.notifyListeners());
         return MaterialApp.router(
             title: 'Books App',
@@ -162,7 +162,7 @@ void main() {
 
 ```
 
-## How "RNavigator", "RiverpodRouterDelegate" and "RouteInformationParserImpl" works
+## How "RNavigator", "RRouterDelegate" and "RouteInformationParserImpl" works
 
 ### Dart part with no dependency on Flutter
 

@@ -51,7 +51,7 @@ class RNavigator {
     this.ref, {
     // providers on which navigation state depends.
     required List<AlwaysAliveProviderListenable> dependsOn,
-  }) : routerDelegate = RiverpodRouterDelegate() {
+  }) : routerDelegate = RRouterDelegate() {
     routerDelegate.navigator = this;
 
     // 1. Listen to riverpod providers. If any of them change, call _onNavigationStateChanged ()
@@ -68,7 +68,7 @@ class RNavigator {
   TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
 
   /// Flutter Navigation 2.0 RouterDelegate
-  RiverpodRouterDelegate routerDelegate;
+  RRouterDelegate routerDelegate;
 
   TypedPath get currentTypedPath => routerDelegate.navigationStack;
 
@@ -84,7 +84,7 @@ class RNavigator {
     // Flutter Navigator 2.0 to update the navigation stack according to the ongoingPathProvider state
     // see: ```void set navigationStack(TypedPath path) { currentConfiguration = path; notifyListeners(); }```
     routerDelegate.navigationStack = newOngoingPath;
-    //=====> at this point, "ongoingPathProvider state" and  "RiverpodRouterDelegate" are in sync
+    //=====> at this point, "ongoingPathProvider state" and  "RRouterDelegate" are in sync
   }
 
   /// Main [RNavigator] method. Provides navigation to the new [TypedPath].
@@ -97,7 +97,7 @@ class RNavigator {
   @protected
   Ref ref;
 
-  /// for [Navigator.onPopRoute] in [RiverpodRouterDelegate.build]
+  /// for [Navigator.onPopRoute] in [RRouterDelegate.build]
   bool onPopRoute() {
     final actPath = currentTypedPath;
     if (actPath.length <= 1) return false;

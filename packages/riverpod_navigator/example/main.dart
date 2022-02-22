@@ -29,11 +29,9 @@ void main() => runApp(
 // PROVIDERS
 //*********************************************
 
-final routerDelegateProvider = Provider<RiverpodRouterDelegate>(
-    (ref) => RiverpodRouterDelegate(ref, [HomeSegment()]));
+final routerDelegateProvider = Provider<RRouterDelegate>((ref) => RRouterDelegate(ref, [HomeSegment()]));
 
-final navigationStackProvider =
-    StateProvider<TypedPath>((_) => [HomeSegment()]);
+final navigationStackProvider = StateProvider<TypedPath>((_) => [HomeSegment()]);
 
 //*********************************************
 // MODEL
@@ -44,10 +42,7 @@ typedef JsonMap = Map<String, dynamic>;
 
 /// Common TypedSegment's ancestor
 abstract class TypedSegment {
-  factory TypedSegment.fromJson(JsonMap json) =>
-      json['runtimeType'] == 'BookSegment'
-          ? BookSegment(id: json['id'])
-          : HomeSegment();
+  factory TypedSegment.fromJson(JsonMap json) => json['runtimeType'] == 'BookSegment' ? BookSegment(id: json['id']) : HomeSegment();
 
   JsonMap toJson() => <String, dynamic>{'runtimeType': runtimeType.toString()};
   @override
@@ -87,11 +82,9 @@ class App extends ConsumerWidget {
 // RouterDelegate
 //*********************************************
 
-class RiverpodRouterDelegate extends RouterDelegate<TypedPath>
-    with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
-  RiverpodRouterDelegate(this.ref, this.homePath) {
-    final unlisten =
-        ref.listen(navigationStackProvider, (_, __) => notifyListeners());
+class RRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
+  RRouterDelegate(this.ref, this.homePath) {
+    final unlisten = ref.listen(navigationStackProvider, (_, __) => notifyListeners());
     ref.onDispose(unlisten);
   }
 
@@ -119,18 +112,13 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath>
         key: navigatorKey,
         pages: ref
             .read(navigationStackProvider)
-            .map((segment) => MaterialPage(
-                key: ValueKey(segment.toString()),
-                child: screenBuilder(segment)))
+            .map((segment) => MaterialPage(key: ValueKey(segment.toString()), child: screenBuilder(segment)))
             .toList(),
         onPopPage: (route, result) {
           if (!route.didPop(result)) return false;
           final notifier = ref.read(navigationStackProvider.notifier);
           if (notifier.state.length <= 1) return false;
-          notifier.state = [
-            for (var i = 0; i < notifier.state.length - 1; i++)
-              notifier.state[i]
-          ];
+          notifier.state = [for (var i = 0; i < notifier.state.length - 1; i++) notifier.state[i]];
           return true;
         });
   }
@@ -142,8 +130,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath>
     return SynchronousFuture(null);
   }
 
-  void navigate(TypedPath newPath) =>
-      ref.read(navigationStackProvider.notifier).state = newPath;
+  void navigate(TypedPath newPath) => ref.read(navigationStackProvider.notifier).state = newPath;
 }
 
 //*********************************************
@@ -152,19 +139,14 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath>
 
 class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
   @override
-  Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
-      Future.value(path2TypedPath(routeInformation.location));
+  Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) => Future.value(path2TypedPath(routeInformation.location));
 
   @override
-  RouteInformation restoreRouteInformation(TypedPath configuration) =>
-      RouteInformation(location: typedPath2Path(configuration));
+  RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: typedPath2Path(configuration));
 
-  static String typedPath2Path(TypedPath typedPath) => typedPath
-      .map((s) => Uri.encodeComponent(jsonEncode(s.toJson())))
-      .join('/');
+  static String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(jsonEncode(s.toJson()))).join('/');
 
-  static String debugTypedPath2Path(TypedPath typedPath) =>
-      typedPath.map((s) => jsonEncode(s.toJson())).join('/');
+  static String debugTypedPath2Path(TypedPath typedPath) => typedPath.map((s) => jsonEncode(s.toJson())).join('/');
 
   static TypedPath path2TypedPath(String? path) {
     if (path == null || path.isEmpty) return [];
@@ -202,8 +184,7 @@ class HomeScreen extends ConsumerWidget {
                     if (i > 1) BookSegment(id: 10 + i),
                     if (i > 2) BookSegment(id: 100 + i),
                   ]),
-                  child: Text(
-                      'Go to Book: [$i${i > 1 ? ', 1$i' : ''}${i > 2 ? ', 10$i' : ''}]'),
+                  child: Text('Go to Book: [$i${i > 1 ? ', 1$i' : ''}${i > 2 ? ', 10$i' : ''}]'),
                 ),
               ]
             ],
@@ -228,8 +209,7 @@ class BookScreen extends ConsumerWidget {
             children: [
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () =>
-                    ref.read(routerDelegateProvider).navigate([HomeSegment()]),
+                onPressed: () => ref.read(routerDelegateProvider).navigate([HomeSegment()]),
                 child: const Text('Go to home'),
               ),
             ],

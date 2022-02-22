@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'navigator.dart';
 import 'widgets.dart';
 
-class RiverpodRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
-  RiverpodRouterDelegate();
+class RRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
+  RRouterDelegate();
 
   RNavigator? navigator;
   RNavigator get _navigator => navigator as RNavigator;

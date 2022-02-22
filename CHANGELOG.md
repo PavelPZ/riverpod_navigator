@@ -62,7 +62,7 @@
 
 ## 0.10.0
 
-- **Breaking**: navigator.routerDelegate is RiverpodRouterDelegate instead of IRouterDelegate. If you need IRouterDelegate, use navigator.routerDelegate4Dart
+- **Breaking**: navigator.routerDelegate is RRouterDelegate instead of IRouterDelegate. If you need IRouterDelegate, use navigator.routerDelegate4Dart
 
 ## 0.9.0
 

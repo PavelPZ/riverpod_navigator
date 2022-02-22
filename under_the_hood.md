@@ -33,7 +33,7 @@ final userIsLoggedProvider = StateProvider<bool>((_) => false);
 ## 2. At the end is the navigation stack, implemented by Flutter Navigator 2.0 RouterDelegate
 
 ```dart
-class RiverpodRouterDelegate extends RouterDelegate<TypedPath>...
+class RRouterDelegate extends RouterDelegate<TypedPath>...
   ...
   //***************************************************
   // Helper property: "navigationStack" getter x setter
@@ -62,7 +62,7 @@ class RiverpodRouterDelegate extends RouterDelegate<TypedPath>...
 ## 3. And in the middle is RNavigator
 
 RNavigator reacts to changes of the input states (ongoingPathProvider, userIsLoggedProvider in this case) 
-and updates the output state (RiverpodRouterDelegate.navigationStack) accordingly.
+and updates the output state (RRouterDelegate.navigationStack) accordingly.
 
 How is it done?
 
@@ -84,8 +84,8 @@ class RNavigator {
     riverpodRouterDelegate.navigationStack = newOngoingPath;
   }
 
-  /// RiverpodRouterDelegate is tied to the RNavigator
-  final riverpodRouterDelegate = RiverpodRouterDelegate();
+  /// RRouterDelegate is tied to the RNavigator
+  final riverpodRouterDelegate = RRouterDelegate();
 
   /// Enter application navigation logic here (redirection, login flow, etc.). 
   /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or no route guard is required)

@@ -12,23 +12,21 @@ class RNavigator extends RNavigatorCore {
     PathParser pathParserCreator(Json2Segment json2Segment)?,
     this.navigatorWidgetBuilder,
     this.splashBuilder,
-  })  : routerDelegate = RiverpodRouterDelegate(),
+  })  : routerDelegate = RRouterDelegate(),
         super(ref, groups, pathParserCreator: pathParserCreator) {
     routerDelegate.navigator = this;
 
-    final callInDispose = ref.listen(navigationStackProvider,
-        (previous, next) => routerDelegate.doNotifyListeners());
+    final callInDispose = ref.listen(navigationStackProvider, (previous, next) => routerDelegate.doNotifyListeners());
     ref.onDispose(callInDispose);
   }
 
   final NavigatorWidgetBuilder? navigatorWidgetBuilder;
   final SplashBuilder? splashBuilder;
 
-  final RiverpodRouterDelegate routerDelegate;
+  final RRouterDelegate routerDelegate;
 
   RouteInformationParserImpl get routeInformationParser =>
-      _routeInformationParser ??
-      (_routeInformationParser = RouteInformationParserImpl(pathParser));
+      _routeInformationParser ?? (_routeInformationParser = RouteInformationParserImpl(pathParser));
   RouteInformationParserImpl? _routeInformationParser;
 
   Page screen2Page(TypedSegment segment) {
@@ -37,14 +35,12 @@ class RNavigator extends RNavigatorCore {
     return screen2Page(segment, (segment) => route.buildScreen(segment));
   }
 
-  /// for [Navigator.onPopPage] in [RiverpodRouterDelegate.build]
+  /// for [Navigator.onPopPage] in [RRouterDelegate.build]
   @nonVirtual
   bool onPopRoute() {
     final navigationStack = getNavigationStack();
     if (navigationStack.length <= 1) return false;
-    navigate([
-      for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]
-    ]);
+    navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
     return true;
   }
 }
