@@ -1,3 +1,7 @@
+## 0.26.0
+
+- **Breaking**: riverpodNavigatorProvider renamed to navigatorProvider
+
 ## 0.25.0
 
 - doc fix
