@@ -351,3 +351,6 @@ class LoginScreen extends ConsumerWidget {
         ),
       );
 }
+
+// https://gist.github.com/PavelPZ/a1df9d6b18e5e76b08d919b29fba6239
+// https://dartpad.dev/?id=a1df9d6b18e5e76b08d919b29fba6239
