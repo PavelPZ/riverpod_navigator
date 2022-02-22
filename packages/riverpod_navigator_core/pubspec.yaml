@@ -1,6 +1,6 @@
 name: riverpod_navigator_core
-description: Navigation state management using the riverpod
-version: 0.24.0
+description: Simple but powerfull Flutter navigation with riverpod, freezed and Navigator 2.0.
+version: 0.25.0
 homepage: https://github.com/PavelPZ/riverpod_navigator
 repository: https://github.com/PavelPZ/riverpod_navigator
 publish_to: 'none'
@@ -15,6 +15,7 @@ dependencies:
   tuple: ^2.0.0
 
 dev_dependencies: 
+  lints: ^1.0.1
   test:
 
 flutter:
