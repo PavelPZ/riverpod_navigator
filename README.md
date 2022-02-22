@@ -26,16 +26,6 @@ Take a look at the following terms related to URL path ```home/book;id=2```
 - Flutter Navigator 2.0 **navigation-stack** is uniquely determined by the TypedPath (where each TypedSegment instance corresponds to a screen and page instance):<br>
   ```[MaterialPage (child: HomeScreen(HomeSegment())),  MaterialPage (child: BookScreen(BookSegment(id:2)))]```
 
-## Navigator Data Flow Diagram:
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/PavelPZ/riverpod_navigator/master/README.png" alt="riverpod_navigator" />
-</p>
-
-As you can see, changing the **Input state** starts the async calculation.
-The result of the calculations is **Output state** which can have app-specific **Side effects**.
-Navigator 2.0 RouterDelegate is then synchronized with *navigationStackProvider*
-
 ## Simple example
 
 Create an application using these simple steps:
@@ -181,6 +171,16 @@ After cloning the [riverpod_navigator repository](https://github.com/PavelPZ/riv
 - ```flutter pub get```
 
 See the */lib* subdirectory for examples.
+
+## Navigator Data Flow Diagram:
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/PavelPZ/riverpod_navigator/master/README.png" alt="riverpod_navigator" />
+</p>
+
+As you can see, changing the **Input state** starts the async calculation.
+The result of the calculations is **Output state** which can have app-specific **Side effects**.
+Navigator 2.0 RouterDelegate is then synchronized with *navigationStackProvider*
 
 ## Roadmap
 
