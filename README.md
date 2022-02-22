@@ -101,7 +101,7 @@ class App extends ConsumerWidget {
 }
 ```
 
-### Step4 - Place and configure ProviderScope ...
+### Step4 - Place and configure riverpod ProviderScope ...
 
 ... in main entry point
 
