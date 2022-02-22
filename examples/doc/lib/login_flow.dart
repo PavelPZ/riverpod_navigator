@@ -11,7 +11,9 @@ part 'login_flow.freezed.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [isLoggedProvider]),
+        overrides: RNavigatorCore.providerOverrides(
+            [HomeSegment()], AppNavigator.new,
+            dependsOn: [isLoggedProvider]),
         child: const App(),
       ),
     );
@@ -29,9 +31,11 @@ class Segments with _$Segments, TypedSegment {
   Segments._();
   factory Segments.home() = HomeSegment;
   factory Segments.book({required int id}) = BookSegment;
-  factory Segments.login({String? loggedUrl, String? canceledUrl}) = LoginSegment;
+  factory Segments.login({String? loggedUrl, String? canceledUrl}) =
+      LoginSegment;
 
-  factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
+  factory Segments.fromJson(Map<String, dynamic> json) =>
+      _$SegmentsFromJson(json);
 }
 
 /// !!! there is another provider on which the navigation status depends:
@@ -40,7 +44,8 @@ final isLoggedProvider = StateProvider<bool>((_) => false);
 typedef NeedsLogin<T extends TypedSegment> = bool Function(T segment);
 
 /// !!! only book screens with odd 'id' require a login
-bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
+bool needsLogin(TypedSegment segment) =>
+    segment is BookSegment && segment.id.isOdd;
 
 /// helper extension for screens
 extension WidgetRefApp on WidgetRef {
@@ -75,14 +80,20 @@ class AppNavigator extends RNavigator {
     if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
       // prepare URLs for confirmation or cancel cases on the login screen
       final loggedUrl = pathParser.typedPath2Path(ongoingPath);
-      var canceledUrl = navigationStack.isEmpty || navigationStack.last is LoginSegment ? '' : pathParser.typedPath2Path(navigationStack);
-      if (loggedUrl == canceledUrl) canceledUrl = ''; // chance to exit login loop
+      var canceledUrl =
+          navigationStack.isEmpty || navigationStack.last is LoginSegment
+              ? ''
+              : pathParser.typedPath2Path(navigationStack);
+      if (loggedUrl == canceledUrl)
+        canceledUrl = ''; // chance to exit login loop
 
       // redirect to login screen
       return [LoginSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
     } else {
       // user is logged and LogginScreen is going to display => redirect to HomeScreen
-      if (userIsLogged && (ongoingPath.isEmpty || ongoingPath.last is LoginSegment)) return [HomeSegment()];
+      if (userIsLogged &&
+          (ongoingPath.isEmpty || ongoingPath.last is LoginSegment))
+        return [HomeSegment()];
     }
     // no redirection is needed
     return ongoingPath;
@@ -90,7 +101,8 @@ class AppNavigator extends RNavigator {
 
   // ******* actions used on the screens
 
-  Future gotoNextBook() => replaceLast<BookSegment>((actualBook) => BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
+  Future gotoNextBook() => replaceLast<BookSegment>((actualBook) =>
+      BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
 
   Future onLogout() {
     // actualize login state
@@ -103,7 +115,10 @@ class AppNavigator extends RNavigator {
     // current navigation stack as string
     final navigStackAsString = pathParser.typedPath2Path(getNavigationStack());
     // redirect to login screen
-    return navigate([LoginSegment(loggedUrl: navigStackAsString, canceledUrl: navigStackAsString)]);
+    return navigate([
+      LoginSegment(
+          loggedUrl: navigStackAsString, canceledUrl: navigStackAsString)
+    ]);
   }
 
   Future loginScreenCancel() => _loginScreenActions(true);
@@ -114,7 +129,8 @@ class AppNavigator extends RNavigator {
 
     // get return path
     final loginHomeSegment = navigationStack.last as LoginSegment;
-    var returnPath = pathParser.path2TypedPath(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
+    var returnPath = pathParser.path2TypedPath(
+        cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
     if (returnPath.isEmpty) returnPath = [HomeSegment()];
 
     // start navigating to a return path
@@ -137,8 +153,10 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper(
         return [
           for (var i = 1; i <= bookCount; i++)
             ElevatedButton(
-              onPressed: () => navigator.navigate([HomeSegment(), BookSegment(id: i)]),
-              child: Text('Book $i${!isLogged && i.isOdd ? '(log in first)' : ''}'),
+              onPressed: () =>
+                  navigator.navigate([HomeSegment(), BookSegment(id: i)]),
+              child: Text(
+                  'Book $i${!isLogged && i.isOdd ? '(log in first)' : ''}'),
             ) // normal page
         ];
       },
@@ -164,7 +182,8 @@ Widget loginScreen(LoginSegment segment) => PageHelper(
       title: 'Login Page',
       isLoginPage: true,
       buildChildren: (navigator) => [
-        ElevatedButton(onPressed: navigator.loginScreenOK, child: Text('Login')),
+        ElevatedButton(
+            onPressed: navigator.loginScreenOK, child: Text('Login')),
       ],
     );
 
@@ -202,8 +221,12 @@ Widget pageHelper(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: (() {
           final res = <Widget>[SizedBox(height: 20)];
-          for (final w in buildChildren(navigator)) res.addAll([w, SizedBox(height: 20)]);
-          res.addAll([Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
+          for (final w in buildChildren(navigator))
+            res.addAll([w, SizedBox(height: 20)]);
+          res.addAll([
+            Text(
+                'Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')
+          ]);
           return res;
         })(),
       ),

@@ -9,7 +9,8 @@ part 'simple.g.dart';
 void main() => runApp(
       ProviderScope(
         // home=path and navigator constructor are required
-        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
+        overrides:
+            RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
     );
@@ -24,7 +25,8 @@ class Segments with _$Segments, TypedSegment {
   /// here, the Segments.page means that 'home' string appeares in web url '/page;title=Page'
   factory Segments.page({required String title}) = PageSegment;
 
-  factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
+  factory Segments.fromJson(Map<String, dynamic> json) =>
+      _$SegmentsFromJson(json);
 }
 
 class AppNavigator extends RNavigator {
@@ -34,8 +36,10 @@ class AppNavigator extends RNavigator {
           [
             // json deserialize HomeSegment or PageSegment
             RRoutes<Segments>(Segments.fromJson, [
-              RRoute<HomeSegment>(HomeScreen.new), // build a HomeScreen for HomeSegment
-              RRoute<PageSegment>(PageScreen.new), // build a PageScreen for PageSegment
+              RRoute<HomeSegment>(
+                  HomeScreen.new), // build a HomeScreen for HomeSegment
+              RRoute<PageSegment>(
+                  PageScreen.new), // build a PageScreen for PageSegment
             ])
           ],
         );
@@ -69,7 +73,9 @@ class HomeScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]),
+                onPressed: () => ref
+                    .read(navigatorProvider)
+                    .navigate([HomeSegment(), PageSegment(title: 'Page')]),
                 child: const Text('Go to page'),
               ),
             ],
@@ -91,7 +97,8 @@ class PageScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment()]),
+                onPressed: () =>
+                    ref.read(navigatorProvider).navigate([HomeSegment()]),
                 child: const Text('Go to home'),
               ),
             ],

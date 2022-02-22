@@ -108,7 +108,7 @@ class App extends ConsumerWidget {
   const App({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext _, WidgetRef ref) => MaterialApp.router(
+  Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
         title: 'Riverpod Navigator Example',
         routerDelegate: ref.read(routerDelegateProvider),
         routeInformationParser: RouteInformationParserImpl(),
@@ -268,7 +268,7 @@ class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
 
 class LoginButton extends StatelessWidget {
   @override
-  Widget build(BuildContext _) => Consumer(builder: (_, ref, __) {
+  Widget build(BuildContext context) => Consumer(builder: (_, ref, __) {
         final isLogged = ref.watch(isLoggedProvider);
         return ElevatedButton(
           onPressed: () {
@@ -290,7 +290,7 @@ class HomeScreen extends ConsumerWidget {
   final HomeSegment segment;
 
   @override
-  Widget build(BuildContext _, WidgetRef ref) => Scaffold(
+  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
         appBar: AppBar(
           title: const Text('Riverpod App Home'),
           actions: [LoginButton()],
@@ -325,7 +325,7 @@ class BookScreen extends ConsumerWidget {
   final BookSegment segment;
 
   @override
-  Widget build(BuildContext _, WidgetRef ref) => Scaffold(
+  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
         appBar: AppBar(
           title: Text('Book ${segment.id}'),
           actions: [LoginButton()],
@@ -360,7 +360,7 @@ class LoginScreen extends ConsumerWidget {
   final LoginSegment segment;
 
   @override
-  Widget build(BuildContext _, WidgetRef ref) => Scaffold(
+  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
         appBar: AppBar(
           title: const Text('Login Screen'),
           leading: IconButton(
@@ -388,3 +388,6 @@ class LoginScreen extends ConsumerWidget {
         ),
       );
 }
+
+// https://gist.github.com/PavelPZ/a1df9d6b18e5e76b08d919b29fba6239
+// https://dartpad.dev/?id=a1df9d6b18e5e76b08d919b29fba6239

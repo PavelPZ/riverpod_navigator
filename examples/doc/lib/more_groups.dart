@@ -17,7 +17,8 @@ class FirstGrp with _$FirstGrp, TypedSegment {
   factory FirstGrp.first1() = First1Segment;
   factory FirstGrp.first2() = First2Segment;
 
-  factory FirstGrp.fromJson(Map<String, dynamic> json) => _$FirstGrpFromJson(json);
+  factory FirstGrp.fromJson(Map<String, dynamic> json) =>
+      _$FirstGrpFromJson(json);
 }
 
 @Freezed(unionKey: SecondGrp.jsonNameSpace)
@@ -26,7 +27,8 @@ class SecondGrp with _$SecondGrp, TypedSegment {
   factory SecondGrp.second1() = Second1Segment;
   factory SecondGrp.second2() = Second2Segment;
 
-  factory SecondGrp.fromJson(Map<String, dynamic> json) => _$SecondGrpFromJson(json);
+  factory SecondGrp.fromJson(Map<String, dynamic> json) =>
+      _$SecondGrpFromJson(json);
   static const String jsonNameSpace = '_second';
 }
 
@@ -36,7 +38,8 @@ class ThirdGrp with _$ThirdGrp, TypedSegment {
   factory ThirdGrp.third1() = Third1Segment;
   factory ThirdGrp.third2() = Third2Segment;
 
-  factory ThirdGrp.fromJson(Map<String, dynamic> json) => _$ThirdGrpFromJson(json);
+  factory ThirdGrp.fromJson(Map<String, dynamic> json) =>
+      _$ThirdGrpFromJson(json);
   static const String jsonNameSpace = '_third';
 }
 
