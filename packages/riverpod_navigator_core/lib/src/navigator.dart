@@ -8,10 +8,10 @@ part of 'riverpod_navigator_core.dart';
 class RNavigatorCore {
   RNavigatorCore(
     this.ref,
-    List<RRoutes> groups, {
-    PathParser pathParserCreator(Json2Segment json2Segment)?,
-  })  : router = RRouter(groups),
-        pathParserCreator = pathParserCreator ?? ((json2Segment) => SimplePathParser(json2Segment)) {
+    List<RRoute4Dart> routes,
+  ) : router = RRouter(routes) {
+    pathParser = PathParser(router.json2Segment);
+
     // see Defer2NextTick doc
     _defer2NextTick = Defer2NextTick()..navigator = this;
 
@@ -48,9 +48,7 @@ class RNavigatorCore {
   late TypedPath initPath;
   final RRouter router;
 
-  final PathParser Function(Json2Segment json2Segment) pathParserCreator;
-  PathParser get pathParser => _pathParser ?? (_pathParser = pathParserCreator(router.json2Segment));
-  PathParser? _pathParser;
+  late PathParser pathParser;
 
   /// Main [RNavigator] method. Provides navigation to newPath.
   Future<void> navigate(TypedPath newPath) async {
@@ -117,9 +115,10 @@ class RNavigatorCore {
     return Future.wait(notEmptyFutures.map((fs) => fs.item1 as Future)).then((asyncResults) {
       assert(asyncResults.length == notEmptyFutures.length);
       // Save the result of the async action
-      for (var i = 0; i < asyncResults.length; i++) {
-        notEmptyFutures[i].item2.asyncActionResult = asyncResults[i];
-      }
+      // TODO(pz): xx
+      // for (var i = 0; i < asyncResults.length; i++) {
+      //   notEmptyFutures[i].item2.asyncActionResult = asyncResults[i];
+      // }
     });
   }
 

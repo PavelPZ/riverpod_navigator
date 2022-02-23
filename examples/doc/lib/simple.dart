@@ -1,32 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-part 'simple.freezed.dart';
 part 'simple.g.dart';
 
 void main() => runApp(
       ProviderScope(
         // home=path and navigator constructor are required
-        overrides:
-            RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
+        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
     );
 
-@freezed
-class Segments with _$Segments, TypedSegment {
-  Segments._();
+class HomeSegment extends TypedSegment {
+  static HomeSegment fromSegmentMap(SegmentMap map) => HomeSegment();
+}
 
-  /// here Segments.home means that the string 'home' appears in the web URL '/home'
-  factory Segments.home() = HomeSegment;
+class PageSegment extends TypedSegment {
+  PageSegment({required this.title});
+  final String title;
 
-  /// here, the Segments.page means that 'home' string appeares in web url '/page;title=Page'
-  factory Segments.page({required String title}) = PageSegment;
-
-  factory Segments.fromJson(Map<String, dynamic> json) =>
-      _$SegmentsFromJson(json);
+  @override
+  void toSegmentMap(SegmentMap map) => map.setString('title', title);
+  static PageSegment fromSegmentMap(SegmentMap map) => PageSegment(title: map.getString('title') as String);
 }
 
 class AppNavigator extends RNavigator {
@@ -34,13 +30,8 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            // json deserialize HomeSegment or PageSegment
-            RRoutes<Segments>(Segments.fromJson, [
-              RRoute<HomeSegment>(
-                  HomeScreen.new), // build a HomeScreen for HomeSegment
-              RRoute<PageSegment>(
-                  PageScreen.new), // build a PageScreen for PageSegment
-            ])
+            RRoute<HomeSegment>(HomeSegment.fromSegmentMap, HomeScreen.new), // build a HomeScreen for HomeSegment
+            RRoute<PageSegment>(PageSegment.fromSegmentMap, PageScreen.new), // build a PageScreen for PageSegment
           ],
         );
 }
@@ -73,9 +64,7 @@ class HomeScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () => ref
-                    .read(navigatorProvider)
-                    .navigate([HomeSegment(), PageSegment(title: 'Page')]),
+                onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]),
                 child: const Text('Go to page'),
               ),
             ],
@@ -97,8 +86,7 @@ class PageScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () =>
-                    ref.read(navigatorProvider).navigate([HomeSegment()]),
+                onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment()]),
                 child: const Text('Go to home'),
               ),
             ],

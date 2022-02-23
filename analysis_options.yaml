@@ -3,7 +3,7 @@ analyzer:
     - '**/*.g.dart'
     - "**/*.freezed.dart"
   errors:
-    todo: ignore
+    # todo: ignore
     unused_catch_clause: ignore
     avoid_return_types_on_setters: ignore
     invalid_annotation_target: ignore

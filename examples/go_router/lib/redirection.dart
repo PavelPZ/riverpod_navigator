@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 import 'data.dart' as d;
 
-part 'redirection.freezed.dart';
 part 'redirection.g.dart';
 
 void main() => runApp(
@@ -16,15 +14,31 @@ void main() => runApp(
       ),
     );
 
-@freezed
-class Segments with _$Segments, TypedSegment {
-  Segments._();
-  factory Segments.login() = LoginSegment;
-  factory Segments.home() = HomeSegment;
-  factory Segments.family({required String fid}) = FamilySegment;
-  factory Segments.person({required String fid, required String pid}) = PersonSegment;
+class HomeSegment extends TypedSegment {
+  static HomeSegment fromSegmentMap(SegmentMap map) => HomeSegment();
+}
 
-  factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
+class LoginSegment extends TypedSegment {
+  static LoginSegment fromSegmentMap(SegmentMap map) => LoginSegment();
+}
+
+class FamilySegment extends TypedSegment {
+  FamilySegment({required this.fid});
+  final String fid;
+
+  @override
+  void toSegmentMap(SegmentMap map) => map.setString('fid', fid);
+  static FamilySegment fromSegmentMap(SegmentMap map) => FamilySegment(fid: map.getString('fid') as String);
+}
+
+class PersonSegment extends TypedSegment {
+  PersonSegment({required this.fid, required this.pid});
+  final String fid;
+  final String pid;
+
+  @override
+  void toSegmentMap(SegmentMap map) => map.setString('fid', fid)..setString('pid', pid);
+  static PersonSegment fromSegmentMap(SegmentMap map) => PersonSegment(fid: map.getString('fid') as String, pid: map.getString('pid') as String);
 }
 
 /// helper extension for screens
@@ -42,12 +56,10 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<Segments>(Segments.fromJson, [
-              RRoute<HomeSegment>(HomeScreen.new),
-              RRoute<LoginSegment>(LoginScreen.new),
-              RRoute<FamilySegment>(FamilyScreen.new),
-              RRoute<PersonSegment>(PersonScreen.new),
-            ])
+            RRoute<HomeSegment>(HomeSegment.fromSegmentMap, HomeScreen.new),
+            RRoute<LoginSegment>(LoginSegment.fromSegmentMap, LoginScreen.new),
+            RRoute<FamilySegment>(FamilySegment.fromSegmentMap, FamilyScreen.new),
+            RRoute<PersonSegment>(PersonSegment.fromSegmentMap, PersonScreen.new),
           ],
         );
 

@@ -1,22 +1,23 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 
-class HomeSegment with TypedSegment {}
+class HomeSegment extends TypedSegment {
+  static HomeSegment fromSegmentMap(SegmentMap map) => HomeSegment();
+}
 
-class BookSegment with TypedSegment {
+@immutable
+class BookSegment extends TypedSegment {
   BookSegment({required this.id});
   final int id;
   @override
-  JsonMap toJson() {
-    final res = super.toJson();
-    res['id'] = id;
-    return res;
-  }
+  void toSegmentMap(SegmentMap map) => map.setInt('id', id);
+  static BookSegment fromSegmentMap(SegmentMap map) => BookSegment(id: map.getInt('id'));
 }
 
-class LoginSegment with TypedSegment {}
+class LoginSegment extends TypedSegment {}
 
 final loginProvider = StateProvider<bool>((_) => false);
 

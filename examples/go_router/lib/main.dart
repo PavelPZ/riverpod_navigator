@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-part 'main.freezed.dart';
 part 'main.g.dart';
 
 void main() => runApp(
@@ -14,13 +12,12 @@ void main() => runApp(
       ),
     );
 
-@freezed
-class Segments with _$Segments, TypedSegment {
-  Segments._();
-  factory Segments.page1() = Page1Segment;
-  factory Segments.page2() = Page2Segment;
+class Page1Segment extends TypedSegment {
+  static Page1Segment fromSegmentMap(SegmentMap map) => Page1Segment();
+}
 
-  factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
+class Page2Segment extends TypedSegment {
+  static Page2Segment fromSegmentMap(SegmentMap map) => Page2Segment();
 }
 
 /// helper extension for screens
@@ -38,10 +35,8 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<Segments>(Segments.fromJson, [
-              RRoute<Page1Segment>(Page1Screen.new),
-              RRoute<Page2Segment>(Page2Screen.new),
-            ])
+            RRoute<Page1Segment>(Page1Segment.fromSegmentMap, Page1Screen.new),
+            RRoute<Page2Segment>(Page2Segment.fromSegmentMap, Page2Screen.new),
           ],
         );
 

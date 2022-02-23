@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 part 'async.g.dart';
-part 'async.freezed.dart';
 
 void main() => runApp(
       ProviderScope(
@@ -14,13 +12,17 @@ void main() => runApp(
       ),
     );
 
-@freezed
-class Segments with _$Segments, TypedSegment {
-  Segments._();
-  factory Segments.home() = HomeSegment;
-  factory Segments.page({required int id}) = PageSegment;
+class HomeSegment extends TypedSegment {
+  static HomeSegment fromSegmentMap(SegmentMap map) => HomeSegment();
+}
 
-  factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
+class PageSegment extends TypedSegment {
+  PageSegment({required this.id});
+  final int id;
+
+  @override
+  void toSegmentMap(SegmentMap map) => map.setInt('id', id);
+  static PageSegment fromSegmentMap(SegmentMap map) => PageSegment(id: map.getInt('id'));
 }
 
 /// helper extension for screens
@@ -56,18 +58,18 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<Segments>(Segments.fromJson, [
-              RRoute<HomeSegment>(
-                HomeScreen.new,
-                opening: (newSegment) => simulateAsyncResult('Home.creating', 2000),
-              ),
-              RRoute<PageSegment>(
-                PageScreen.new,
-                opening: (newSegment) => simulateAsyncResult('Page.creating', 400),
-                replacing: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
-                closing: null,
-              ),
-            ])
+            RRoute<HomeSegment>(
+              HomeSegment.fromSegmentMap,
+              HomeScreen.new,
+              opening: (newSegment) => simulateAsyncResult('Home.creating', 2000),
+            ),
+            RRoute<PageSegment>(
+              PageSegment.fromSegmentMap,
+              PageScreen.new,
+              opening: (newSegment) => simulateAsyncResult('Page.creating', 400),
+              replacing: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
+              closing: null,
+            ),
           ],
           splashBuilder: () => SplashScreen(),
         );
@@ -144,7 +146,8 @@ Widget pageHelper<N extends RNavigator>(
             res.addAll([w, SizedBox(height: 20)]);
           }
           res.addAll([SizedBox(height: 20), Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
-          if (segment.asyncActionResult != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncActionResult}"')]);
+          // TODO(pz): xx
+          // if (segment.asyncActionResult != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncActionResult}"')]);
           return res;
         })(),
       ),

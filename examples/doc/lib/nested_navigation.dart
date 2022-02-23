@@ -3,13 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 //import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 //import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-part 'nested_navigation.freezed.dart';
 part 'nested_navigation.g.dart';
 
 void main() => runApp(
@@ -27,15 +25,30 @@ Widget app(WidgetRef ref) => MaterialApp.router(
       debugShowCheckedModeBanner: false,
     );
 
-@freezed
-class Segments with _$Segments, TypedSegment {
-  Segments._();
-  factory Segments.home() = HomeSegment;
-  factory Segments.book({required int id}) = BookSegment;
-  factory Segments.author({required int id}) = AuthorSegment;
-  factory Segments.booksAuthors() = BooksAuthorsSegment;
+class HomeSegment extends TypedSegment {
+  static HomeSegment fromSegmentMap(SegmentMap map) => HomeSegment();
+}
 
-  factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
+class BookSegment extends TypedSegment {
+  BookSegment({required this.id});
+  final int id;
+
+  @override
+  void toSegmentMap(SegmentMap map) => map.setInt('id', id);
+  static BookSegment fromSegmentMap(SegmentMap map) => BookSegment(id: map.getInt('id'));
+}
+
+class AuthorSegment extends TypedSegment {
+  AuthorSegment({required this.id});
+  final int id;
+
+  @override
+  void toSegmentMap(SegmentMap map) => map.setInt('id', id);
+  static AuthorSegment fromSegmentMap(SegmentMap map) => AuthorSegment(id: map.getInt('id'));
+}
+
+class BooksAuthorsSegment extends TypedSegment {
+  static BooksAuthorsSegment fromSegmentMap(SegmentMap map) => BooksAuthorsSegment();
 }
 
 /// helper extension for screens
@@ -54,9 +67,7 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<Segments>(Segments.fromJson, [
-              RRoute<BookSegment>(BookScreen.new),
-            ])
+            RRoute<BookSegment>(BookSegment.fromSegmentMap, BookScreen.new),
           ],
         );
 
@@ -65,9 +76,7 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<Segments>(Segments.fromJson, [
-              RRoute<AuthorSegment>(AuthorScreen.new),
-            ])
+            RRoute<AuthorSegment>(AuthorSegment.fromSegmentMap, AuthorScreen.new),
           ],
         );
   // ignore: sort_unnamed_constructors_first
@@ -75,12 +84,10 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<Segments>(Segments.fromJson, [
-              RRoute<HomeSegment>(HomeScreen.new),
-              RRoute<BookSegment>(BookScreen.new),
-              RRoute<AuthorSegment>(AuthorScreen.new),
-              RRoute<BooksAuthorsSegment>(BooksAuthorsScreen.new),
-            ])
+            RRoute<HomeSegment>(HomeSegment.fromSegmentMap, HomeScreen.new),
+            RRoute<BookSegment>(BookSegment.fromSegmentMap, BookScreen.new),
+            RRoute<AuthorSegment>(AuthorSegment.fromSegmentMap, AuthorScreen.new),
+            RRoute<BooksAuthorsSegment>(BooksAuthorsSegment.fromSegmentMap, BooksAuthorsScreen.new),
           ],
         );
 
@@ -207,7 +214,7 @@ Widget pageHelper<N extends RNavigator>(
             res.addAll([w, SizedBox(height: 20)]);
           }
           res.addAll([SizedBox(height: 20), Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
-          if (segment.asyncActionResult != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncActionResult}"')]);
+          // if (segment.asyncActionResult != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncActionResult}"')]);
           return res;
         })(),
       ),
