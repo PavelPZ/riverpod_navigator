@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:tuple/tuple.dart';
 
-part 'defer2NextTick.dart';
+part 'defer2_next_tick.dart';
 part 'navigator.dart';
 part 'pathParser.dart';
 part 'providers.dart';

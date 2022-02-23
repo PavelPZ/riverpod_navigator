@@ -7,7 +7,7 @@ analyzer:
     unused_catch_clause: ignore
     avoid_return_types_on_setters: ignore
     invalid_annotation_target: ignore
-    curly_braces_in_flow_control_structures: false
+    curly_braces_in_flow_control_structures: true
     
 linter:
   rules:

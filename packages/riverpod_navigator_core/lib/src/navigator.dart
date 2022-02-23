@@ -86,21 +86,27 @@ class RNavigatorCore {
       final n = newPath[i];
       // nothing to merge
       if (identical(o, n)) continue;
-      if (o.runtimeType == n.runtimeType)
+      if (o.runtimeType == n.runtimeType) {
         // old and new has the same runtimeType => merging
         futures.add(Tuple2(router.segment2Route(n).callReplacing(o, n), n));
-      else {
+      } else {
         // old and new has different runtimeType => deactivanting old, creating new
         futures.add(Tuple2(router.segment2Route(o).callClosing(o), o));
         futures.add(Tuple2(router.segment2Route(n).callOpening(n), n));
       }
     }
     // deactivating the rest of old segments
-    if (oldPath.length > minLen)
-      for (var i = minLen; i < oldPath.length; i++) futures.add(Tuple2(router.segment2Route(oldPath[i]).callClosing(oldPath[i]), oldPath[i]));
+    if (oldPath.length > minLen) {
+      for (var i = minLen; i < oldPath.length; i++) {
+        futures.add(Tuple2(router.segment2Route(oldPath[i]).callClosing(oldPath[i]), oldPath[i]));
+      }
+    }
     // creating the rest of new segments
-    if (newPath.length > minLen)
-      for (var i = minLen; i < newPath.length; i++) futures.add(Tuple2(router.segment2Route(newPath[i]).callOpening(newPath[i]), newPath[i]));
+    if (newPath.length > minLen) {
+      for (var i = minLen; i < newPath.length; i++) {
+        futures.add(Tuple2(router.segment2Route(newPath[i]).callOpening(newPath[i]), newPath[i]));
+      }
+    }
     // remove empty futures
     final notEmptyFutures = [
       for (final f in futures)
@@ -111,7 +117,9 @@ class RNavigatorCore {
     return Future.wait(notEmptyFutures.map((fs) => fs.item1 as Future)).then((asyncResults) {
       assert(asyncResults.length == notEmptyFutures.length);
       // Save the result of the async action
-      for (var i = 0; i < asyncResults.length; i++) notEmptyFutures[i].item2.asyncActionResult = asyncResults[i];
+      for (var i = 0; i < asyncResults.length; i++) {
+        notEmptyFutures[i].item2.asyncActionResult = asyncResults[i];
+      }
     });
   }
 
@@ -143,10 +151,11 @@ class RNavigatorCore {
   static TypedPath eq2Identical(TypedPath oldPath, TypedPath newPath) {
     var pathsEqual = oldPath.length == newPath.length;
     for (var i = 0; i < min(oldPath.length, newPath.length); i++) {
-      if (oldPath[i] == newPath[i])
+      if (oldPath[i] == newPath[i]) {
         newPath[i] = oldPath[i]; // "eq"  => "identical"
-      else
+      } else {
         pathsEqual = false; // same of the state[i] is not equal
+      }
     }
     return pathsEqual ? oldPath : newPath;
   }

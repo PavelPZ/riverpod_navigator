@@ -9,8 +9,7 @@ part 'async.freezed.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides:
-            RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
+        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
     );
@@ -21,8 +20,7 @@ class Segments with _$Segments, TypedSegment {
   factory Segments.home() = HomeSegment;
   factory Segments.page({required int id}) = PageSegment;
 
-  factory Segments.fromJson(Map<String, dynamic> json) =>
-      _$SegmentsFromJson(json);
+  factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
 }
 
 /// helper extension for screens
@@ -61,15 +59,12 @@ class AppNavigator extends RNavigator {
             RRoutes<Segments>(Segments.fromJson, [
               RRoute<HomeSegment>(
                 HomeScreen.new,
-                opening: (newSegment) =>
-                    simulateAsyncResult('Home.creating', 2000),
+                opening: (newSegment) => simulateAsyncResult('Home.creating', 2000),
               ),
               RRoute<PageSegment>(
                 PageScreen.new,
-                opening: (newSegment) =>
-                    simulateAsyncResult('Page.creating', 400),
-                replacing: (oldSegment, newSegment) =>
-                    simulateAsyncResult('Page.merging', 200),
+                opening: (newSegment) => simulateAsyncResult('Page.creating', 400),
+                replacing: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
                 closing: null,
               ),
             ])
@@ -81,12 +76,10 @@ class AppNavigator extends RNavigator {
   // These can then be used not only for writing screen widgets, but also for testing.
 
   /// navigate to page
-  Future toPage({required int id}) =>
-      navigate([HomeSegment(), PageSegment(id: id)]);
+  Future toPage({required int id}) => navigate([HomeSegment(), PageSegment(id: id)]);
 
   /// navigate to next page
-  Future toNextPage() =>
-      replaceLast<PageSegment>((old) => PageSegment(id: old.id + 1));
+  Future toNextPage() => replaceLast<PageSegment>((old) => PageSegment(id: old.id + 1));
 
   /// navigate to home
   Future toHome() => navigate([HomeSegment()]);
@@ -107,22 +100,19 @@ Future<String> simulateAsyncResult(String asyncResult, int msec) async {
 }
 
 @cwidget
-Widget homeScreen(WidgetRef ref, HomeSegment segment) =>
-    PageHelper<AppNavigator>(
+Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper<AppNavigator>(
       segment: segment,
       title: 'Home',
       buildChildren: (navigator) => [
         ElevatedButton(
-          onPressed: () =>
-              navigator.navigate([HomeSegment(), PageSegment(id: 1)]),
+          onPressed: () => navigator.navigate([HomeSegment(), PageSegment(id: 1)]),
           child: const Text('Go to page'),
         ),
       ],
     );
 
 @cwidget
-Widget pageScreen(WidgetRef ref, PageSegment segment) =>
-    PageHelper<AppNavigator>(
+Widget pageScreen(WidgetRef ref, PageSegment segment) => PageHelper<AppNavigator>(
       segment: segment,
       title: 'Page ${segment.id}',
       buildChildren: (navigator) => [
@@ -150,18 +140,11 @@ Widget pageHelper<N extends RNavigator>(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: (() {
           final res = <Widget>[SizedBox(height: 20)];
-          for (final w in buildChildren(navigator))
+          for (final w in buildChildren(navigator)) {
             res.addAll([w, SizedBox(height: 20)]);
-          res.addAll([
-            SizedBox(height: 20),
-            Text(
-                'Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')
-          ]);
-          if (segment.asyncActionResult != null)
-            res.addAll([
-              SizedBox(height: 20),
-              Text('Async result: "${segment.asyncActionResult}"')
-            ]);
+          }
+          res.addAll([SizedBox(height: 20), Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
+          if (segment.asyncActionResult != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncActionResult}"')]);
           return res;
         })(),
       ),
@@ -170,9 +153,5 @@ Widget pageHelper<N extends RNavigator>(
 }
 
 @swidget
-Widget splashScreen() => SizedBox.expand(
-    child: Container(
-        color: Colors.white,
-        child: Center(
-            child: Icon(Icons.hourglass_full,
-                size: 150, color: Colors.deepPurple))));
+Widget splashScreen() =>
+    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.hourglass_full, size: 150, color: Colors.deepPurple))));

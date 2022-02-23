@@ -51,7 +51,7 @@ class Segments with _$Segments, TypedSegment {
 }
 ```
 
-### Step2 - Configure AppNavigator...
+### Step2 - configure AppNavigator...
 
 by extending the RNavigator class:
 
@@ -91,7 +91,7 @@ class App extends ConsumerWidget {
 }
 ```
 
-### Step4 - Place and configure riverpod ProviderScope ...
+### Step4 - place and configure riverpod ProviderScope ...
 
 ... in main entry point
 

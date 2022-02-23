@@ -58,7 +58,9 @@ class RNavigator {
     // 2. Add ref.listen's removeListener's to unlistens
     // 3. Use unlistens in ref.onDispose
     final List<Function> unlistens = [];
-    for (final depend in dependsOn) unlistens.add(ref.listen<dynamic>(depend, (previous, next) => _onNavigationStateChanged()));
+    for (final depend in dependsOn) {
+      unlistens.add(ref.listen<dynamic>(depend, (previous, next) => _onNavigationStateChanged()));
+    }
     // ignore: avoid_function_literals_in_foreach_calls
     ref.onDispose(() => unlistens.forEach((f) => f()));
   }
@@ -141,10 +143,11 @@ class AppNavigator extends RNavigator {
   void toBookNextPrev({bool? isPrev}) {
     assert(currentTypedPath.last is BookSegment);
     var id = (currentTypedPath.last as BookSegment).id;
-    if (isPrev == true)
+    if (isPrev == true) {
       id = id == 0 ? booksLen - 1 : id - 1;
-    else
+    } else {
       id = booksLen - 1 > id ? id + 1 : 0;
+    }
     toBook(id: id);
   }
 

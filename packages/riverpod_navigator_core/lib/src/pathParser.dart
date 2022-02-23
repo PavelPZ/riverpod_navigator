@@ -47,9 +47,10 @@ class SimplePathParser extends PathParser {
       final runtimeType = properties[0].split('-');
       assert(runtimeType.length <= 2);
       String unionKey = PathParser.defaultJsonUnionKey;
-      if (runtimeType.length == 1) // 'book;id=1'
+      if (runtimeType.length == 1) {
+        // 'book;id=1'
         segmentMap[PathParser.defaultJsonUnionKey] = runtimeType[0];
-      else {
+      } else {
         // 'login-login'
         unionKey = '_${runtimeType[0]}';
         segmentMap[unionKey] = runtimeType[1];
@@ -93,14 +94,15 @@ class SimplePathParser extends PathParser {
       n = n.substring(0, n.length - 1);
       nv = Uri.decodeFull(v);
     } else {
-      if (v == 'true')
+      if (v == 'true') {
         nv = true;
-      else if (v == 'false')
+      } else if (v == 'false') {
         nv = false;
-      else if ((nv = int.tryParse(v)) != null) {
+      } else if ((nv = int.tryParse(v)) != null) {
       } else if ((nv = double.tryParse(v)) != null) {
-      } else
+      } else {
         nv = Uri.decodeComponent(v);
+      }
     }
     res[n] = nv;
   }
@@ -109,11 +111,11 @@ class SimplePathParser extends PathParser {
     if (nv.value == null) return null;
     String value;
     String name = nv.key;
-    if (nv.value is int || nv.value is double)
+    if (nv.value is int || nv.value is double) {
       value = nv.value.toString();
-    else if (nv.value is bool)
+    } else if (nv.value is bool) {
       value = nv.value ? 'true' : 'false';
-    else {
+    } else {
       assert(nv.value is String);
       if (_stringNeedsType(nv.value)) name += ':';
       value = Uri.encodeComponent(nv.value);
