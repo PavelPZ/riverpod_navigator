@@ -47,9 +47,8 @@ class RRoute4Dart<T extends TypedSegment> {
   final Type segmentType;
 
   AsyncOper? callOpening(TypedSegment newPath) => opening == null ? null : () => opening!(newPath as T);
-  AsyncOper? callReplacing(TypedSegment oldPath, TypedSegment newPath) =>
-      replacing == null ? null : () => replacing!.call(oldPath as T, newPath as T);
-  AsyncOper? callClosing(TypedSegment oldPath) => closing == null ? null : () => closing!.call(oldPath as T);
+  AsyncOper? callReplacing(TypedSegment oldPath, TypedSegment newPath) => replacing == null ? null : () => replacing!(oldPath as T, newPath as T);
+  AsyncOper? callClosing(TypedSegment oldPath) => closing == null ? null : () => closing!(oldPath as T);
 
   String toUrl(T segment) {
     final map = <String, String>{};

@@ -82,6 +82,7 @@ class RNavigatorCore {
       todo.add(Tuple2(oper, segment));
     }
 
+    // close olds
     for (var i = oldPath.length - 1; i >= 0; i--) {
       final o = oldPath[i];
       final n = i >= newPath.length ? null : newPath[i];
@@ -91,6 +92,7 @@ class RNavigatorCore {
         continue;
       }
     }
+    // open or replace new
     for (var i = 0; i < newPath.length; i++) {
       final n = newPath[i];
       final o = i >= oldPath.length ? null : oldPath[i];
@@ -104,13 +106,6 @@ class RNavigatorCore {
       }
     }
     return todo;
-    // return Future.wait(notEmptyFutures.map((fs) => fs.item1 as Future)).then((asyncResults) {
-    //   assert(asyncResults.length == notEmptyFutures.length);
-    //   // Save the result of the async action
-    //   for (var i = 0; i < asyncResults.length; i++) {
-    //     notEmptyFutures[i].item2.asyncHolder!.value = asyncResults[i];
-    //   }
-    // });
   }
 
   Future waitEnd(List<Tuple2<AsyncOper, TypedSegment>> todo) async {

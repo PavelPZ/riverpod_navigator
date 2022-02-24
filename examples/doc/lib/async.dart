@@ -173,7 +173,7 @@ class PageHelper<N extends RNavigator> extends ConsumerWidget {
               res.addAll([w, SizedBox(height: 20)]);
             }
             res.addAll([SizedBox(height: 20), Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
-            if (segment.asyncHolder != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncHolder!.value.toString()}"')]);
+            if (segment.asyncHolder != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncHolder!.value}"')]);
             return res;
           })(),
         ),
