@@ -4,7 +4,7 @@ part of 'riverpod_navigator_core.dart';
 //   SegmentMap extension
 // ********************************************
 
-extension SegmentMapEx on UrlPars {
+extension UrlParsEx on UrlPars {
   UrlPars setInt(String name, int value, {int defaultValue = 0}) {
     if (value != defaultValue) this[name] = value.toString();
     return this;
