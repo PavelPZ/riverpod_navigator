@@ -10,7 +10,7 @@ class RNavigatorCore {
     this.ref,
     List<RRoute4Dart> routes,
   ) : router = RRouter(routes) {
-    pathParser = PathParser(router.json2Segment);
+    pathParser = PathParser(router);
 
     // see Defer2NextTick doc
     _defer2NextTick = Defer2NextTick()..navigator = this;

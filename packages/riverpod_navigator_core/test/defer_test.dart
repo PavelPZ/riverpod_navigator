@@ -10,7 +10,7 @@ import 'model.dart';
 final loginProvider = StateProvider<bool>((_) => false);
 
 class TestNavigator extends RNavigatorCore {
-  TestNavigator(Ref ref, {this.delayMsec, this.isError = false}) : super(ref, []);
+  TestNavigator(Ref ref, {this.delayMsec, this.isError = false}) : super(ref, routes);
 
   final int? delayMsec;
   final bool isError;
@@ -45,14 +45,14 @@ void main() {
 
     await container.pump();
     await navigator.navigationCompleted;
-    final p1 = container.read(navigationStackProvider).toPath();
-    expect(p1, '{"runtimeType":"HomeSegment"}');
+    final p1 = navigator.navigationStack2Url;
+    expect(p1, 'home');
 
     container.read(ongoingPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 1)];
     await container.pump();
     await navigator.navigationCompleted;
-    final p2 = container.read(navigationStackProvider).toPath();
-    expect(p2, '{"runtimeType":"HomeSegment"}/{"runtimeType":"BookSegment","id":1}');
+    final p2 = navigator.navigationStack2Url;
+    expect(p2, 'home/book;id=1');
     return;
   });
 
@@ -87,14 +87,14 @@ void main() {
 
     await container.pump();
     await navigator.navigationCompleted;
-    final p1 = container.read(navigationStackProvider).toPath();
-    expect(p1, '{"runtimeType":"HomeSegment"}');
+    final p1 = navigator.navigationStack2Url;
+    expect(p1, 'home');
 
     container.read(ongoingPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 1)];
     await container.pump();
     await navigator.navigationCompleted;
-    final p2 = container.read(navigationStackProvider).toPath();
-    expect(p2, '{"runtimeType":"HomeSegment"}/{"runtimeType":"BookSegment","id":1}');
+    final p2 = navigator.navigationStack2Url;
+    expect(p2, 'home/book;id=1');
     return;
   });
 
@@ -109,8 +109,8 @@ void main() {
 
     await container.pump();
     await navigator.navigationCompleted;
-    final p1 = container.read(navigationStackProvider).toPath();
-    expect(p1, '{"runtimeType":"HomeSegment"}');
+    final p1 = navigator.navigationStack2Url;
+    expect(p1, 'home');
 
     // for (var i = 0; i < 3; i++) {
     container.read(ongoingPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 1)];
@@ -124,8 +124,8 @@ void main() {
     container.read(ongoingPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 3)];
 
     await navigator.navigationCompleted;
-    final p3 = container.read(navigationStackProvider).toPath();
-    expect(p3, '{"runtimeType":"HomeSegment"}/{"runtimeType":"BookSegment","id":3}');
+    final p3 = navigator.navigationStack2Url;
+    expect(p3, 'home/book;id=3');
     // }
     return;
   });

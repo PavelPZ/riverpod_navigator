@@ -45,7 +45,7 @@ class A {
 class TypedSegment2 {
   const TypedSegment2();
 
-  SegmentMap toJson() => <String, dynamic>{'runtimeType': runtimeType.toString()};
+  SegmentMap toJson() => <String, String>{'runtimeType': runtimeType.toString()};
 
   @override
   String toString() => jsonEncode(toJson());

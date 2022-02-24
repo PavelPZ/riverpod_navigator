@@ -17,7 +17,7 @@ class HomeSegment extends TypedSegment {
 }
 
 class PageSegment extends TypedSegment {
-  PageSegment({required this.id});
+  const PageSegment({required this.id});
   final int id;
 
   @override
@@ -101,60 +101,85 @@ Future<String> simulateAsyncResult(String asyncResult, int msec) async {
   return '$asyncResult: async result after $msec msec';
 }
 
-@cwidget
-Widget homeScreen(WidgetRef ref, HomeSegment segment) => PageHelper<AppNavigator>(
-      segment: segment,
-      title: 'Home',
-      buildChildren: (navigator) => [
-        ElevatedButton(
-          onPressed: () => navigator.navigate([HomeSegment(), PageSegment(id: 1)]),
-          child: const Text('Go to page'),
-        ),
-      ],
-    );
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen(this.segment, {Key? key}) : super(key: key);
 
-@cwidget
-Widget pageScreen(WidgetRef ref, PageSegment segment) => PageHelper<AppNavigator>(
-      segment: segment,
-      title: 'Page ${segment.id}',
-      buildChildren: (navigator) => [
-        ElevatedButton(
-          onPressed: () => navigator.navigate([HomeSegment()]),
-          child: const Text('Go to home'),
-        ),
-      ],
-    );
+  final HomeSegment segment;
 
-@cwidget
-Widget pageHelper<N extends RNavigator>(
-  WidgetRef ref, {
-  required TypedSegment segment,
-  required String title,
-  required List<Widget> buildChildren(N navigator),
-}) {
-  final navigator = ref.navigator as N;
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(title),
-    ),
-    body: Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: (() {
-          final res = <Widget>[SizedBox(height: 20)];
-          for (final w in buildChildren(navigator)) {
-            res.addAll([w, SizedBox(height: 20)]);
-          }
-          res.addAll([SizedBox(height: 20), Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
-          // TODO(pz): xx
-          // if (segment.asyncActionResult != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncActionResult}"')]);
-          return res;
-        })(),
-      ),
-    ),
-  );
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => PageHelper<AppNavigator>(
+        segment: segment,
+        title: 'Home',
+        buildChildren: (navigator) => [
+          ElevatedButton(
+            onPressed: () => navigator.navigate([HomeSegment(), PageSegment(id: 1)]),
+            child: const Text('Go to page'),
+          ),
+        ],
+      );
 }
 
-@swidget
-Widget splashScreen() =>
-    SizedBox.expand(child: Container(color: Colors.white, child: Center(child: Icon(Icons.hourglass_full, size: 150, color: Colors.deepPurple))));
+class PageScreen extends ConsumerWidget {
+  const PageScreen(this.segment, {Key? key}) : super(key: key);
+
+  final PageSegment segment;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => PageHelper<AppNavigator>(
+        segment: segment,
+        title: 'Page ${segment.id}',
+        buildChildren: (navigator) => [
+          ElevatedButton(
+            onPressed: () => navigator.navigate([HomeSegment()]),
+            child: const Text('Go to home'),
+          ),
+        ],
+      );
+}
+
+class PageHelper<N extends RNavigator> extends ConsumerWidget {
+  const PageHelper({Key? key, required this.segment, required this.title, required this.buildChildren}) : super(key: key);
+
+  final TypedSegment segment;
+
+  final String title;
+
+  final List<Widget> Function(N) buildChildren;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final navigator = ref.navigator as N;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: (() {
+            final res = <Widget>[SizedBox(height: 20)];
+            for (final w in buildChildren(navigator)) {
+              res.addAll([w, SizedBox(height: 20)]);
+            }
+            res.addAll([SizedBox(height: 20), Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
+            // TODO(pz): xx
+            // if (segment.asyncActionResult != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncActionResult}"')]);
+            return res;
+          })(),
+        ),
+      ),
+    );
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => SizedBox.expand(
+      child: Container(
+          color: Colors.white,
+          child: Center(
+            child: Icon(Icons.hourglass_full, size: 150, color: Colors.deepPurple),
+          )));
+}

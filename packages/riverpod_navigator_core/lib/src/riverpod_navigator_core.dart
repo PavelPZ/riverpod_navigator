@@ -16,31 +16,9 @@ part 'routes.dart';
 // ********************************************
 
 typedef AsyncActionResult = dynamic;
-typedef SegmentMap = Map<String, dynamic>;
+typedef SegmentMap = Map<String, String>;
 typedef Json2Segment = TypedSegment Function(SegmentMap, String unionKey);
 typedef FromSegmentMap<T extends TypedSegment> = T Function(SegmentMap map);
-
-extension SegmentMapEx on SegmentMap {
-  SegmentMap setInt(String name, int value, {int defaultValue = 0}) {
-    if (value != defaultValue) this[name] = value.toString();
-    return this;
-  }
-
-  int getInt(String name, {int defaultValue = 0}) {
-    final value = this[name];
-    return value == null ? defaultValue : int.parse(value);
-  }
-
-  SegmentMap setString(String name, String? value, {String? defaultValue}) {
-    if (value != defaultValue) this[name] = value;
-    return this;
-  }
-
-  String? getString(String name, {String? defaultValue}) {
-    final value = this[name];
-    return value ?? defaultValue;
-  }
-}
 
 /// Abstract interface for typed variant of path's segment.
 ///
@@ -48,17 +26,15 @@ extension SegmentMapEx on SegmentMap {
 /// e.g. navigate([Home(), Books(), Book(id: bookId)]);
 @immutable
 class TypedSegment {
-  //TypedSegment();
+  const TypedSegment();
 
   /// temporary field. Transmits result of async action to screen
   // @JsonKey(ignore: true)
   // AsyncActionResult asyncActionResult;
-  @deprecated
-  SegmentMap toJson() => <String, dynamic>{'runtimeType': runtimeType.toString()};
 
   void toSegmentMap(SegmentMap map) {}
 
-  String toType() => runtimeType.toString();
+  // static String toType() => runtimeType.toString().replaceFirst('Segment', '').toLowerCase();
 
   // @override
   // String toString() => _toString ?? (_toString = jsonEncode(toJson()));
@@ -77,8 +53,4 @@ class RestorePath {
   TypedPath? path;
   void saveLastKnownStack(TypedPath lastStack) => path = lastStack;
   TypedPath getInitialPath(TypedPath initPath) => path ?? initPath;
-}
-
-extension TypedPathEx on TypedPath {
-  String toPath() => map((s) => s.toString()).join('/');
 }

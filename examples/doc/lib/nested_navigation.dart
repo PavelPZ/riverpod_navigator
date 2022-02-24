@@ -30,7 +30,7 @@ class HomeSegment extends TypedSegment {
 }
 
 class BookSegment extends TypedSegment {
-  BookSegment({required this.id});
+  const BookSegment({required this.id});
   final int id;
 
   @override
@@ -39,7 +39,7 @@ class BookSegment extends TypedSegment {
 }
 
 class AuthorSegment extends TypedSegment {
-  AuthorSegment({required this.id});
+  const AuthorSegment({required this.id});
   final int id;
 
   @override

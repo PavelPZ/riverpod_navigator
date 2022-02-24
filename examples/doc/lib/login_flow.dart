@@ -27,7 +27,7 @@ class HomeSegment extends TypedSegment {
 }
 
 class BookSegment extends TypedSegment {
-  BookSegment({required this.id});
+  const BookSegment({required this.id});
   final int id;
 
   @override
@@ -36,14 +36,14 @@ class BookSegment extends TypedSegment {
 }
 
 class LoginSegment extends TypedSegment {
-  LoginSegment({this.loggedUrl, this.canceledUrl});
+  const LoginSegment({this.loggedUrl, this.canceledUrl});
   final String? loggedUrl;
   final String? canceledUrl;
 
   @override
   void toSegmentMap(SegmentMap map) => map.setString('loggedUrl', loggedUrl)..setString('canceledUrl', canceledUrl);
   static LoginSegment fromSegmentMap(SegmentMap map) =>
-      LoginSegment(loggedUrl: map.getString('loggedUrl'), canceledUrl: map.getString('canceledUrl'));
+      LoginSegment(loggedUrl: map.getStringNull('loggedUrl'), canceledUrl: map.getStringNull('canceledUrl'));
 }
 
 /// !!! there is another provider on which the navigation status depends:

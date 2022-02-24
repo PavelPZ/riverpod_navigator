@@ -1,24 +1,51 @@
 part of 'riverpod_navigator_core.dart';
 
 // ********************************************
+//   SegmentMap extension
+// ********************************************
+
+extension SegmentMapEx on SegmentMap {
+  SegmentMap setInt(String name, int value, {int defaultValue = 0}) {
+    if (value != defaultValue) this[name] = value.toString();
+    return this;
+  }
+
+  int getInt(String name, {int defaultValue = 0}) {
+    final value = this[name];
+    return value == null ? defaultValue : int.parse(value);
+  }
+
+  SegmentMap setString(String name, String? value, {String? defaultValue}) {
+    if (value == defaultValue || value == null) return this;
+    this[name] = value;
+    return this;
+  }
+
+  String? getStringNull(String name, {String? defaultValue}) {
+    final value = this[name];
+    return value ?? defaultValue;
+  }
+
+  String getString(String name, {String? defaultValue}) {
+    final value = this[name];
+    return value ?? defaultValue!;
+  }
+}
+
+// ********************************************
 //   PathParser
 // ********************************************
 
 /// Path parser interface
 class PathParser {
-  PathParser(this.json2Segment);
+  PathParser(this.router);
 
-  final Json2Segment json2Segment;
+  final RRouter router;
 
   static const String defaultJsonUnionKey = 'runtimeType';
 
   /// String path => TypedPath
-  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) {
-        final map = <String, String>{};
-        s.toSegmentMap(map);
-        final props = [s.toType()] + map.entries.map((kv) => '${kv.key}=${Uri.encodeComponent(kv.value)}').toList();
-        return props.join(';');
-      }).join('/');
+  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => router.toPathSegment(s)).join('/');
   //String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(jsonEncode(s.toJson()))).join('/');
 
   // TypedPath path2TypedPath(String? path) {
@@ -45,7 +72,7 @@ class PathParser {
         assert(nameValue.length == 2);
         map[nameValue[0]] = Uri.decodeComponent(nameValue[1]);
       }
-      res.add(json2Segment(map, properties[0]));
+      res.add(router.fromPathSegment(map, properties[0]));
     }
     return res;
   }

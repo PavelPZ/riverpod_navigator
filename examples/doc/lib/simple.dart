@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
-part 'simple.g.dart';
-
 void main() => runApp(
       ProviderScope(
         // home=path and navigator constructor are required
@@ -17,12 +15,12 @@ class HomeSegment extends TypedSegment {
 }
 
 class PageSegment extends TypedSegment {
-  PageSegment({required this.title});
+  const PageSegment({required this.title});
   final String title;
 
   @override
   void toSegmentMap(SegmentMap map) => map.setString('title', title);
-  static PageSegment fromSegmentMap(SegmentMap map) => PageSegment(title: map.getString('title') as String);
+  static PageSegment fromSegmentMap(SegmentMap map) => PageSegment(title: map.getString('title'));
 }
 
 class AppNavigator extends RNavigator {

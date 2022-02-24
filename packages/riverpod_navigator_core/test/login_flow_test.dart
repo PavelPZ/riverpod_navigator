@@ -10,7 +10,7 @@ import 'model.dart';
 final isLoggedProvider = StateProvider<bool>((_) => false);
 
 class TestNavigator extends RNavigatorCore {
-  TestNavigator(Ref ref) : super(ref, []);
+  TestNavigator(Ref ref) : super(ref, routes);
 
   @override
   FutureOr<TypedPath> appNavigationLogicCore(TypedPath oldNavigationStack, TypedPath ongoingPath) {
@@ -43,7 +43,7 @@ void main() {
       action();
       await navigator.navigationCompleted;
       await container.pump();
-      final stringPath = container.read(navigationStackProvider).toPath();
+      final stringPath = navigator.navigationStack2Url;
       expect(stringPath, expected);
     }
 
@@ -57,22 +57,22 @@ void main() {
     //*****************************
 
     // book with even id => load book
-    await changeOngoing([HomeSegment(), BookSegment(id: 2)], '{"runtimeType":"HomeSegment"}/{"runtimeType":"BookSegment","id":2}');
+    await changeOngoing([HomeSegment(), BookSegment(id: 2)], 'home/book;id=2');
 
     // book with odd id => redirect to login
-    await changeOngoing([HomeSegment(), BookSegment(id: 1)], '{"runtimeType":"LoginSegment"}');
+    await changeOngoing([HomeSegment(), BookSegment(id: 1)], 'login');
 
     // log in => book loaded
     await changeState(() {
       container.read(ongoingPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 1)];
       container.read(isLoggedProvider.notifier).state = true;
-    }, '{"runtimeType":"HomeSegment"}/{"runtimeType":"BookSegment","id":1}');
+    }, 'home/book;id=1');
 
     // logoff => redirect to login
-    await changeState(() => container.read(isLoggedProvider.notifier).state = false, '{"runtimeType":"LoginSegment"}');
+    await changeState(() => container.read(isLoggedProvider.notifier).state = false, 'login');
 
     // login screen visible. When set login state to true => redirect to home
-    await changeState(() => container.read(isLoggedProvider.notifier).state = true, '{"runtimeType":"HomeSegment"}');
+    await changeState(() => container.read(isLoggedProvider.notifier).state = true, 'home');
 
     return;
   });

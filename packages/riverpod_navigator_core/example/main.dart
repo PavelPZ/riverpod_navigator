@@ -10,14 +10,22 @@ class HomeSegment extends TypedSegment {
 
 @immutable
 class BookSegment extends TypedSegment {
-  BookSegment({required this.id});
+  const BookSegment({required this.id});
   final int id;
   @override
   void toSegmentMap(SegmentMap map) => map.setInt('id', id);
   static BookSegment fromSegmentMap(SegmentMap map) => BookSegment(id: map.getInt('id'));
 }
 
-class LoginSegment extends TypedSegment {}
+class LoginSegment extends TypedSegment {
+  static LoginSegment fromSegmentMap(SegmentMap map) => LoginSegment();
+}
+
+final routes = <RRoute4Dart>[
+  RRoute4Dart<HomeSegment>(HomeSegment.fromSegmentMap),
+  RRoute4Dart<BookSegment>(BookSegment.fromSegmentMap),
+  RRoute4Dart<LoginSegment>(LoginSegment.fromSegmentMap),
+];
 
 final loginProvider = StateProvider<bool>((_) => false);
 
@@ -51,13 +59,13 @@ Future main() async {
 
   await container.pump();
   await navigator.navigationCompleted;
-  final p1 = container.read(navigationStackProvider).toPath();
+  final p1 = navigator.navigationStack2Url;
   assert(p1 == '{"runtimeType":"HomeSegment"}');
 
   container.read(ongoingPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 1)];
   await container.pump();
   await navigator.navigationCompleted;
-  final p2 = container.read(navigationStackProvider).toPath();
+  final p2 = navigator.navigationStack2Url;
   assert(p2 == '{"runtimeType":"HomeSegment"}/{"runtimeType":"BookSegment","id":1}');
   return;
 }

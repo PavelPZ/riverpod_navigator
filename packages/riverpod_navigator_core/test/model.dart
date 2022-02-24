@@ -5,7 +5,7 @@ class HomeSegment extends TypedSegment {
 }
 
 class BookSegment extends TypedSegment {
-  BookSegment({required this.id});
+  const BookSegment({required this.id});
   final int id;
 
   @override
@@ -13,4 +13,12 @@ class BookSegment extends TypedSegment {
   static BookSegment fromSegmentMap(SegmentMap map) => BookSegment(id: map.getInt('id'));
 }
 
-class LoginSegment extends TypedSegment {}
+class LoginSegment extends TypedSegment {
+  static LoginSegment fromSegmentMap(SegmentMap map) => LoginSegment();
+}
+
+final routes = <RRoute4Dart>[
+  RRoute4Dart<HomeSegment>(HomeSegment.fromSegmentMap),
+  RRoute4Dart<BookSegment>(BookSegment.fromSegmentMap),
+  RRoute4Dart<LoginSegment>(LoginSegment.fromSegmentMap),
+];

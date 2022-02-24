@@ -23,22 +23,22 @@ class LoginSegment extends TypedSegment {
 }
 
 class FamilySegment extends TypedSegment {
-  FamilySegment({required this.fid});
+  const FamilySegment({required this.fid});
   final String fid;
 
   @override
   void toSegmentMap(SegmentMap map) => map.setString('fid', fid);
-  static FamilySegment fromSegmentMap(SegmentMap map) => FamilySegment(fid: map.getString('fid') as String);
+  static FamilySegment fromSegmentMap(SegmentMap map) => FamilySegment(fid: map.getString('fid'));
 }
 
 class PersonSegment extends TypedSegment {
-  PersonSegment({required this.fid, required this.pid});
+  const PersonSegment({required this.fid, required this.pid});
   final String fid;
   final String pid;
 
   @override
   void toSegmentMap(SegmentMap map) => map.setString('fid', fid)..setString('pid', pid);
-  static PersonSegment fromSegmentMap(SegmentMap map) => PersonSegment(fid: map.getString('fid') as String, pid: map.getString('pid') as String);
+  static PersonSegment fromSegmentMap(SegmentMap map) => PersonSegment(fid: map.getString('fid'), pid: map.getString('pid'));
 }
 
 /// helper extension for screens

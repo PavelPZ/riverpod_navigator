@@ -11,10 +11,10 @@ class RRouter {
   // }
   RRouter(List<RRoute4Dart> routes) {
     for (final r in routes) {
-      if (string2Route.containsKey(r.type)) throw Exception('');
-      string2Route[r.type] = r;
+      if (string2Route.containsKey(r.segmentTypeName)) throw Exception('');
+      string2Route[r.segmentTypeName] = r;
       if (type2Route.containsKey(r.runtimeType)) throw Exception('');
-      type2Route[r.runtimeType] = r;
+      type2Route[r.segmentType] = r;
     }
   }
   //final List<RRoutes> groups;
@@ -26,7 +26,11 @@ class RRouter {
   R segment2Route<R extends RRoute4Dart>(TypedSegment segment) =>
       type2Route[segment.runtimeType] as R; //" segment2Routes(segment).segment2Route(segment) as R;
 
-  TypedSegment json2Segment(SegmentMap jsonMap, String unionKey) => string2Route[unionKey]!.fromSegmentMap!(jsonMap);
+  // TypedSegment json2Segment(SegmentMap jsonMap, String unionKey) => string2Route[unionKey]!.fromSegmentMap!(jsonMap);
+
+  String toPathSegment(TypedSegment s) => type2Route[s.runtimeType]!.toPathSegment(s);
+
+  TypedSegment fromPathSegment(SegmentMap map, String typeName) => string2Route[typeName]!.fromSegmentMap!(map);
 }
 
 // class RRoutes<T extends TypedSegment> {
@@ -49,20 +53,23 @@ class RRoute4Dart<T extends TypedSegment> {
     this.opening,
     this.replacing,
     this.closing,
-    String? type,
-  }) : type = type ?? T.toString();
+    String? segmentTypeName,
+  })  : segmentTypeName = segmentTypeName ?? T.toString().replaceFirst('Segment', '').toLowerCase(),
+        segmentType = T;
   RRoute4Dart.noWeb({
     this.opening,
     this.replacing,
     this.closing,
   })  : fromSegmentMap = null,
-        type = T.toString();
+        segmentTypeName = T.toString(),
+        segmentType = T;
   Opening<T>? opening;
   Replacing<T>? replacing;
   Closing<T>? closing;
 
   final FromSegmentMap<T>? fromSegmentMap;
-  final String type;
+  final String segmentTypeName;
+  final Type segmentType;
 
   @nonVirtual
   Future<AsyncActionResult>? callOpening(TypedSegment newPath) => opening?.call(newPath as T);
@@ -72,4 +79,11 @@ class RRoute4Dart<T extends TypedSegment> {
   Future<AsyncActionResult>? callClosing(TypedSegment oldPath) => closing?.call(oldPath as T);
 
   bool isRoute(TypedSegment segment) => segment is T;
+
+  String toPathSegment(T segment) {
+    final map = <String, String>{};
+    segment.toSegmentMap(map);
+    final props = [segmentTypeName] + map.entries.map((kv) => '${kv.key}=${Uri.encodeComponent(kv.value)}').toList();
+    return props.join(';');
+  }
 }
