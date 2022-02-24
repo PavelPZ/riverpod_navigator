@@ -30,24 +30,23 @@ Take a look at the following terms related to URL path ```home/book;id=2```
 
 Create an application using these simple steps:
 
-### Step1 - define imutable classes for the typed-segment
+### Step1 - define classes for the typed-segment 
 
-We use [freezed-package](https://github.com/rrousselGit/freezed) to generate immutable TypedSegment descendant classes.
-
-It's a good idea to be familiar with the freezed-package (including support for JSON serialization).
-
-From the following *Segments* class declaration, the freezed generates two classes: *HomeSegment* and *PageSegment*.
+Note: *fromUrlPars* and *toUrlPars* helps to convert **typed-segment** to **string-segment** and back.
 
 ```dart
-@freezed
-class Segments with _$Segments, TypedSegment {
-  Segments._();
-  /// Segments.home() means that the string 'home' appears in the web URL, e.g. '/home'
-  factory Segments.home() = HomeSegment;
-  /// the Segments.page() means that the string 'page' appeares in web url, e.g. '/page;title=title'
-  factory Segments.page({required String title}) = PageSegment;
+class HomeSegment extends TypedSegment {
+  const HomeSegment();
+  factory HomeSegment.fromUrlPars(UrlPars map) => const HomeSegment();
+}
 
-  factory Segments.fromJson(Map<String, dynamic> json) => _$SegmentsFromJson(json);
+class PageSegment extends TypedSegment {
+  const PageSegment({required this.title});
+  factory PageSegment.fromUrlPars(UrlPars map) => PageSegment(title: map.getString('title'));
+  @override
+  void toUrlPars(UrlPars map) => map.setString('title', title);
+
+  final String title;
 }
 ```
 
@@ -61,10 +60,8 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<Segments>(Segments.fromJson, [ // deserialize HomeSegment or PageSegment
-              RRoute<HomeSegment>(HomeScreen.new), // assign HomeScreen builder for HomeSegment
-              RRoute<PageSegment>(PageScreen.new), // assign PageScreen builder for PageSegment
-            ])
+            RRoute<HomeSegment>(HomeSegment.fromUrlPars, HomeScreen.new), // build a HomeScreen for HomeSegment
+            RRoute<PageSegment>(PageSegment.fromUrlPars, PageScreen.new), // build a PageScreen for PageSegment
           ],
         );
 }
@@ -128,7 +125,7 @@ ElevatedButton(
 ### Testing
 
 Before developing a GUI, it is good practice to develop and test the invisible part of the application (app model and state).
-It is advantageous to use a dart test environment, see:
+It is recommended to use a dart test environment, see:
 
 ```dart 
   test('navigation test', () async {
@@ -157,7 +154,6 @@ It is advantageous to use a dart test environment, see:
 
 - [Async navigation and splash screen](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async.md)
 - [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
-- [More TypedSegment roots](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/more_groups.md)
 - [Nested navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/nested_navigation.md)
 
 Note: *The examples are prepared using a **[functional_widget package](https://pub.dev/packages/functional_widget)** that simplifies writing widgets.

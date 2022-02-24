@@ -16,18 +16,18 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<Segments>(Segments.fromJson, [
-              RRoute<HomeSegment>(
-                HomeScreen.new,
-                opening: (newSegment) => simulateAsyncResult('Home.opening', 2000),
-              ),
-              RRoute<PageSegment>(
-                PageScreen.new,
-                opening: (newSegment) => simulateAsyncResult('Page.opening', 400),
-                replacing: (oldSegment, newSegment) => simulateAsyncResult('Page.replacing', 200),
-                closing: null,
-              ),
-            ])
+            RRoute<HomeSegment>(
+              HomeSegment.fromUrlPars,
+              HomeScreen.new,
+              opening: (newSegment) => simulateAsyncResult('Home.creating', 2000),
+            ),
+            RRoute<PageSegment>(
+              PageSegment.fromUrlPars,
+              PageScreen.new,
+              opening: (newSegment) => simulateAsyncResult('Page.creating', 400),
+              replacing: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
+              closing: null,
+            ),
           ],
           splashBuilder: () => SplashScreen(),
         );

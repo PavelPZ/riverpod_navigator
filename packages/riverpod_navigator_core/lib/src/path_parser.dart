@@ -4,8 +4,8 @@ part of 'riverpod_navigator_core.dart';
 //   SegmentMap extension
 // ********************************************
 
-extension SegmentMapEx on SegmentMap {
-  SegmentMap setInt(String name, int value, {int defaultValue = 0}) {
+extension SegmentMapEx on UrlPars {
+  UrlPars setInt(String name, int value, {int defaultValue = 0}) {
     if (value != defaultValue) this[name] = value.toString();
     return this;
   }
@@ -15,7 +15,7 @@ extension SegmentMapEx on SegmentMap {
     return value == null ? defaultValue : int.parse(value);
   }
 
-  SegmentMap setString(String name, String? value, {String? defaultValue}) {
+  UrlPars setString(String name, String? value, {String? defaultValue}) {
     if (value == defaultValue || value == null) return this;
     this[name] = value;
     return this;
@@ -28,6 +28,8 @@ extension SegmentMapEx on SegmentMap {
 
   String getString(String name, {String? defaultValue}) {
     final value = this[name];
+    assert(value != null || defaultValue != null,
+        'Must be value != null || defaultValue != null');
     return value ?? defaultValue!;
   }
 }
@@ -45,19 +47,11 @@ class PathParser {
   static const String defaultJsonUnionKey = 'runtimeType';
 
   /// String path => TypedPath
-  String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => router.toPathSegment(s)).join('/');
-  //String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(jsonEncode(s.toJson()))).join('/');
+  String toUrl(TypedPath typedPath) =>
+      typedPath.map((s) => router.toUrl(s)).join('/');
 
-  // TypedPath path2TypedPath(String? path) {
-  //   if (path == null || path.isEmpty) return [];
-  //   return [
-  //     for (final s in path.split('/'))
-  //       if (s.isNotEmpty) json2Segment(jsonDecode(Uri.decodeFull(s)) as PathMap, PathParser.defaultJsonUnionKey)
-  //   ];
-  // }
-
-  /// TypedPath => String path, suitable for browser
-  TypedPath path2TypedPath(String? path) {
+  /// TypedPath => String path
+  TypedPath fromUrl(String? path) {
     final res = <TypedSegment>[];
     if (path == null || path.isEmpty) return res;
     final segments = path.split('/').where((s) => s.isNotEmpty).toList();
@@ -72,7 +66,7 @@ class PathParser {
         assert(nameValue.length == 2);
         map[nameValue[0]] = Uri.decodeComponent(nameValue[1]);
       }
-      res.add(router.fromPathSegment(map, properties[0]));
+      res.add(router.fromUrl(map, properties[0]));
     }
     return res;
   }

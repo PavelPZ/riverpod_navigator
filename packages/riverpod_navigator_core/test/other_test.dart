@@ -13,6 +13,10 @@ void main() {
     expect(identical(a1, a2), true);
     expect(identical(a1, a3), false);
 
+    const b1 = B();
+    const b2 = B();
+    expect(identical(b1, b2), true);
+
     const as1 = [A(1, '2'), A(3, '2')];
     const as2 = [A(1, '2'), A(3, '2')];
     expect(identical(as1, as2), true);
@@ -35,7 +39,15 @@ void main() {
 }
 
 @immutable
-class A {
+class PA {
+  const PA();
+}
+
+class B extends PA {
+  const B();
+}
+
+class A extends PA {
   const A(this.id, this.title);
   final int id;
   final String title;
@@ -45,7 +57,7 @@ class A {
 class TypedSegment2 {
   const TypedSegment2();
 
-  SegmentMap toJson() => <String, String>{'runtimeType': runtimeType.toString()};
+  UrlPars toJson() => <String, String>{'runtimeType': runtimeType.toString()};
 
   @override
   String toString() => jsonEncode(toJson());

@@ -7,7 +7,7 @@ import 'package:tuple/tuple.dart';
 
 part 'defer2_next_tick.dart';
 part 'navigator.dart';
-part 'pathParser.dart';
+part 'path_parser.dart';
 part 'providers.dart';
 part 'routes.dart';
 
@@ -16,29 +16,18 @@ part 'routes.dart';
 // ********************************************
 
 typedef AsyncActionResult = dynamic;
-typedef SegmentMap = Map<String, String>;
-typedef Json2Segment = TypedSegment Function(SegmentMap, String unionKey);
-typedef FromSegmentMap<T extends TypedSegment> = T Function(SegmentMap map);
+typedef UrlPars = Map<String, String>;
+typedef Json2Segment = TypedSegment Function(UrlPars, String unionKey);
+typedef FromUrlPars<T extends TypedSegment> = T Function(UrlPars map);
 
-/// Abstract interface for typed variant of path's segment.
+/// Ancestor for typed segmenta.
 ///
 /// Instead of three-segment url path 'home/books/$bookId' we can use
-/// e.g. navigate([Home(), Books(), Book(id: bookId)]);
+/// e.g. navigate([HomeSegment(), BooksSegment(), BookSegment(id: bookId)]);
 @immutable
 class TypedSegment {
   const TypedSegment();
-
-  /// temporary field. Transmits result of async action to screen
-  // @JsonKey(ignore: true)
-  // AsyncActionResult asyncActionResult;
-
-  void toSegmentMap(SegmentMap map) {}
-
-  // static String toType() => runtimeType.toString().replaceFirst('Segment', '').toLowerCase();
-
-  // @override
-  // String toString() => _toString ?? (_toString = jsonEncode(toJson()));
-  // String? _toString;
+  void toUrlPars(UrlPars map) {}
 }
 
 /// Typed variant of whole url path (which consists of [TypedSegment]s)

@@ -42,8 +42,8 @@ class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
   final PathParser _pathParser;
 
   @override
-  Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) => Future.value(_pathParser.path2TypedPath(routeInformation.location));
+  Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) => Future.value(_pathParser.fromUrl(routeInformation.location));
 
   @override
-  RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: _pathParser.typedPath2Path(configuration));
+  RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: _pathParser.toUrl(configuration));
 }

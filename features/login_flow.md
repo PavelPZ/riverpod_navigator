@@ -7,11 +7,28 @@ A slightly more complicated example, implementing a login flow as follows:
 3. the book screen with odd 'id' is not accessible without login (for such screens, if the user is not logged in, the application is redirected to the login page)
 4. after logging in, the application redirects to the page that requires a login
 
+## LoginSegment
+
+```dart
+class LoginSegment extends TypedSegment {
+  const LoginSegment({this.loggedUrl, this.canceledUrl});
+  factory LoginSegment.fromUrlPars(UrlPars map) =>
+      LoginSegment(loggedUrl: map.getStringNull('loggedUrl'), canceledUrl: map.getStringNull('canceledUrl'));
+  /// where to navigate on successful login
+  final String? loggedUrl;
+  /// where to navigate when canceling a login
+  final String? canceledUrl;
+
+  @override
+  void toUrlPars(UrlPars map) => map.setString('loggedUrl', loggedUrl)..setString('canceledUrl', canceledUrl);
+}
+```
+
 ## Application logic
 
-Redirect when:
-- if the user is not logged in and some screen in the navigation stack requires a login
-- if the user is logged in and goes to the login screen
+Application logic will redirect when:
+- the user is not logged in and some screen in the stack requires a login
+- the user is logged in and goes to the login screen
 
 ```dart
   @override

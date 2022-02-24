@@ -5,22 +5,24 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 void main() => runApp(
       ProviderScope(
         // home=path and navigator constructor are required
-        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
+        overrides: RNavigatorCore.providerOverrides(const [HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
     );
 
 class HomeSegment extends TypedSegment {
-  static HomeSegment fromSegmentMap(SegmentMap map) => HomeSegment();
+  const HomeSegment();
+  // ignore: avoid_unused_constructor_parameters
+  factory HomeSegment.fromUrlPars(UrlPars map) => const HomeSegment();
 }
 
 class PageSegment extends TypedSegment {
   const PageSegment({required this.title});
+  factory PageSegment.fromUrlPars(UrlPars map) => PageSegment(title: map.getString('title'));
   final String title;
 
   @override
-  void toSegmentMap(SegmentMap map) => map.setString('title', title);
-  static PageSegment fromSegmentMap(SegmentMap map) => PageSegment(title: map.getString('title'));
+  void toUrlPars(UrlPars map) => map.setString('title', title);
 }
 
 class AppNavigator extends RNavigator {
@@ -28,8 +30,8 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<HomeSegment>(HomeSegment.fromSegmentMap, HomeScreen.new), // build a HomeScreen for HomeSegment
-            RRoute<PageSegment>(PageSegment.fromSegmentMap, PageScreen.new), // build a PageScreen for PageSegment
+            RRoute<HomeSegment>(HomeSegment.fromUrlPars, HomeScreen.new), // build a HomeScreen for HomeSegment
+            RRoute<PageSegment>(PageSegment.fromUrlPars, PageScreen.new), // build a PageScreen for PageSegment
           ],
         );
 }

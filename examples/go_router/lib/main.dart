@@ -13,11 +13,15 @@ void main() => runApp(
     );
 
 class Page1Segment extends TypedSegment {
-  static Page1Segment fromSegmentMap(SegmentMap map) => Page1Segment();
+  const Page1Segment();
+  // ignore: avoid_unused_constructor_parameters
+  factory Page1Segment.fromUrlPars(UrlPars map) => Page1Segment();
 }
 
 class Page2Segment extends TypedSegment {
-  static Page2Segment fromSegmentMap(SegmentMap map) => Page2Segment();
+  const Page2Segment();
+  // ignore: avoid_unused_constructor_parameters
+  factory Page2Segment.fromUrlPars(UrlPars map) => Page2Segment();
 }
 
 /// helper extension for screens
@@ -35,8 +39,8 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<Page1Segment>(Page1Segment.fromSegmentMap, Page1Screen.new),
-            RRoute<Page2Segment>(Page2Segment.fromSegmentMap, Page2Screen.new),
+            RRoute<Page1Segment>(Page1Segment.fromUrlPars, Page1Screen.new),
+            RRoute<Page2Segment>(Page2Segment.fromUrlPars, Page2Screen.new),
           ],
         );
 

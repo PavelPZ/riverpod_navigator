@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
-
-part 'async.g.dart';
 
 void main() => runApp(
       ProviderScope(
@@ -13,16 +10,18 @@ void main() => runApp(
     );
 
 class HomeSegment extends TypedSegment {
-  static HomeSegment fromSegmentMap(SegmentMap map) => HomeSegment();
+  const HomeSegment();
+  // ignore: avoid_unused_constructor_parameters
+  factory HomeSegment.fromUrlPars(UrlPars map) => HomeSegment();
 }
 
 class PageSegment extends TypedSegment {
   const PageSegment({required this.id});
+  factory PageSegment.fromUrlPars(UrlPars map) => PageSegment(id: map.getInt('id'));
   final int id;
 
   @override
-  void toSegmentMap(SegmentMap map) => map.setInt('id', id);
-  static PageSegment fromSegmentMap(SegmentMap map) => PageSegment(id: map.getInt('id'));
+  void toUrlPars(UrlPars map) => map.setInt('id', id);
 }
 
 /// helper extension for screens
@@ -59,12 +58,12 @@ class AppNavigator extends RNavigator {
           ref,
           [
             RRoute<HomeSegment>(
-              HomeSegment.fromSegmentMap,
+              HomeSegment.fromUrlPars,
               HomeScreen.new,
               opening: (newSegment) => simulateAsyncResult('Home.creating', 2000),
             ),
             RRoute<PageSegment>(
-              PageSegment.fromSegmentMap,
+              PageSegment.fromUrlPars,
               PageScreen.new,
               opening: (newSegment) => simulateAsyncResult('Page.creating', 400),
               replacing: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
@@ -87,13 +86,17 @@ class AppNavigator extends RNavigator {
   Future toHome() => navigate([HomeSegment()]);
 }
 
-@cwidget
-Widget app(WidgetRef ref) => MaterialApp.router(
-      title: 'Riverpod Navigator Example',
-      routerDelegate: ref.navigator.routerDelegate,
-      routeInformationParser: ref.navigator.routeInformationParser,
-      debugShowCheckedModeBanner: false,
-    );
+class App extends ConsumerWidget {
+  const App({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
+        title: 'Riverpod Navigator Example',
+        routerDelegate: ref.navigator.routerDelegate,
+        routeInformationParser: ref.navigator.routeInformationParser,
+        debugShowCheckedModeBanner: false,
+      );
+}
 
 // simulates an action such as loading external data or saving to external storage
 Future<String> simulateAsyncResult(String asyncResult, int msec) async {

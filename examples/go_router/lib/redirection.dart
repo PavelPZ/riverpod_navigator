@@ -15,30 +15,34 @@ void main() => runApp(
     );
 
 class HomeSegment extends TypedSegment {
-  static HomeSegment fromSegmentMap(SegmentMap map) => HomeSegment();
+  const HomeSegment();
+  // ignore: avoid_unused_constructor_parameters
+  factory HomeSegment.fromUrlPars(UrlPars map) => HomeSegment();
 }
 
 class LoginSegment extends TypedSegment {
-  static LoginSegment fromSegmentMap(SegmentMap map) => LoginSegment();
+  const LoginSegment();
+  // ignore: avoid_unused_constructor_parameters
+  factory LoginSegment.fromUrlPars(UrlPars map) => LoginSegment();
 }
 
 class FamilySegment extends TypedSegment {
   const FamilySegment({required this.fid});
+  factory FamilySegment.fromUrlPars(UrlPars map) => FamilySegment(fid: map.getString('fid'));
   final String fid;
 
   @override
-  void toSegmentMap(SegmentMap map) => map.setString('fid', fid);
-  static FamilySegment fromSegmentMap(SegmentMap map) => FamilySegment(fid: map.getString('fid'));
+  void toUrlPars(UrlPars map) => map.setString('fid', fid);
 }
 
 class PersonSegment extends TypedSegment {
   const PersonSegment({required this.fid, required this.pid});
+  factory PersonSegment.fromUrlPars(UrlPars map) => PersonSegment(fid: map.getString('fid'), pid: map.getString('pid'));
   final String fid;
   final String pid;
 
   @override
-  void toSegmentMap(SegmentMap map) => map.setString('fid', fid)..setString('pid', pid);
-  static PersonSegment fromSegmentMap(SegmentMap map) => PersonSegment(fid: map.getString('fid'), pid: map.getString('pid'));
+  void toUrlPars(UrlPars map) => map.setString('fid', fid)..setString('pid', pid);
 }
 
 /// helper extension for screens
@@ -56,10 +60,10 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<HomeSegment>(HomeSegment.fromSegmentMap, HomeScreen.new),
-            RRoute<LoginSegment>(LoginSegment.fromSegmentMap, LoginScreen.new),
-            RRoute<FamilySegment>(FamilySegment.fromSegmentMap, FamilyScreen.new),
-            RRoute<PersonSegment>(PersonSegment.fromSegmentMap, PersonScreen.new),
+            RRoute<HomeSegment>(HomeSegment.fromUrlPars, HomeScreen.new),
+            RRoute<LoginSegment>(LoginSegment.fromUrlPars, LoginScreen.new),
+            RRoute<FamilySegment>(FamilySegment.fromUrlPars, FamilyScreen.new),
+            RRoute<PersonSegment>(PersonSegment.fromUrlPars, PersonScreen.new),
           ],
         );
 
