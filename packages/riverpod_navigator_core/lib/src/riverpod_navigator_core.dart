@@ -29,13 +29,18 @@ class TypedSegment {
   const TypedSegment();
   void toUrlPars(UrlPars pars) {}
 
-  // for async segments
+  /// for async navigation: holds async opening or replacing result
   AsyncHolder? get asyncHolder => null;
   void set asyncHolder(AsyncHolder? value) {}
 }
 
 /// Typed variant of whole url path (which consists of [TypedSegment]s)
 typedef TypedPath = List<TypedSegment>;
+
+/// for async navigation: holds async opening or replacing result
+class AsyncHolder<T> {
+  T? value;
+}
 
 // ********************************************
 // RestorePath

@@ -29,6 +29,7 @@ class AppNavigator extends RNavigator {
               closing: null,
             ),
           ],
+          // define splash screen
           splashBuilder: () => SplashScreen(),
         );
 

@@ -33,10 +33,6 @@ extension UrlParsEx on UrlPars {
   }
 }
 
-class AsyncHolder<T> {
-  T? value;
-}
-
 // ********************************************
 //   PathParser
 // ********************************************

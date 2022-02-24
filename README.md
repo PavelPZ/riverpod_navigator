@@ -32,8 +32,6 @@ Create an application using these simple steps:
 
 ### Step1 - define classes for the typed-segment 
 
-Note: *fromUrlPars* and *toUrlPars* helps to convert **typed-segment** to **string-segment** and back.
-
 ```dart
 class HomeSegment extends TypedSegment {
   const HomeSegment();
@@ -43,12 +41,15 @@ class HomeSegment extends TypedSegment {
 class PageSegment extends TypedSegment {
   const PageSegment({required this.title});
   factory PageSegment.fromUrlPars(UrlPars pars) => PageSegment(title: map.getString('title'));
+
   @override
   void toUrlPars(UrlPars pars) => map.setString('title', title);
 
   final String title;
 }
 ```
+
+Note: *fromUrlPars* and *toUrlPars* helps to convert **typed-segment** to **string-segment** and back.
 
 ### Step2 - configure AppNavigator...
 

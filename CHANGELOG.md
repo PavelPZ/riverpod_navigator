@@ -1,5 +1,9 @@
-## 0.28.0
+## 0.29.0
 
+- **Breaking**: remove Freezed dependency
+
+## 0.28.0
+n
 - Lint and examples
 
 ## 0.27.0
@@ -21,8 +25,7 @@
 ## 0.23.0
 
 - doc fix
-
-## 0.22.0
+y
 
 - simplier example on home
 

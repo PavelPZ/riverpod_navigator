@@ -3,6 +3,7 @@ part of 'riverpod_navigator_core.dart';
 typedef Opening<T extends TypedSegment> = Future<AsyncActionResult> Function(T newPath);
 typedef Replacing<T extends TypedSegment> = Future<AsyncActionResult> Function(T oldPath, T newPath);
 typedef Closing<T extends TypedSegment> = Future<AsyncActionResult> Function(T oldPath);
+typedef AsyncOper = Future<AsyncActionResult> Function();
 
 class RRouter {
   RRouter(List<RRoute4Dart> routes) {
@@ -45,12 +46,10 @@ class RRoute4Dart<T extends TypedSegment> {
   final String segmentTypeName;
   final Type segmentType;
 
-  @nonVirtual
-  Future<AsyncActionResult>? callOpening(TypedSegment newPath) => opening?.call(newPath as T);
-  @nonVirtual
-  Future<AsyncActionResult>? callReplacing(TypedSegment oldPath, TypedSegment newPath) => replacing?.call(oldPath as T, newPath as T);
-  @nonVirtual
-  Future<AsyncActionResult>? callClosing(TypedSegment oldPath) => closing?.call(oldPath as T);
+  AsyncOper? callOpening(TypedSegment newPath) => opening == null ? null : () => opening!(newPath as T);
+  AsyncOper? callReplacing(TypedSegment oldPath, TypedSegment newPath) =>
+      replacing == null ? null : () => replacing!.call(oldPath as T, newPath as T);
+  AsyncOper? callClosing(TypedSegment oldPath) => closing == null ? null : () => closing!.call(oldPath as T);
 
   String toUrl(T segment) {
     final map = <String, String>{};

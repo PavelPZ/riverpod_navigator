@@ -38,9 +38,9 @@ class RNavigatorCore {
     newOngoingPath = eq2Identical(navigationStack, newOngoingPath);
     if (newOngoingPath == navigationStack) return null;
 
-    final asyncResult = wait4AsyncScreenActions(router, navigationStack, newOngoingPath);
-    if (asyncResult is Future) return asyncResult.then((_) => newOngoingPath);
-    return newOngoingPath;
+    final todo = waitStart(router, navigationStack, newOngoingPath);
+    if (todo.isEmpty) return newOngoingPath;
+    return waitEnd(todo).then((_) => newOngoingPath);
   }
 
   void registerProtectedFuture(Future future) => _defer2NextTick.registerProtectedFuture(future);
@@ -75,50 +75,50 @@ class RNavigatorCore {
 
   /// Wait for the asynchronous screen actions. The action is waiting in parallel
   ///- rewrite, when other waiting strategy is needed.
-  static FutureOr<void> wait4AsyncScreenActions(RRouter router, TypedPath oldPath, TypedPath newPath) {
-    final minLen = min(oldPath.length, newPath.length);
-    final futures = <Tuple2<Future?, TypedSegment>>[];
-    // merge old and new
-    for (var i = 0; i < minLen; i++) {
-      final o = oldPath[i];
-      final n = newPath[i];
-      // nothing to merge
-      if (identical(o, n)) continue;
-      if (o.runtimeType == n.runtimeType) {
-        // old and new has the same runtimeType => merging
-        futures.add(Tuple2(router.segment2Route(n).callReplacing(o, n), n));
-      } else {
-        // old and new has different runtimeType => deactivanting old, creating new
-        futures.add(Tuple2(router.segment2Route(o).callClosing(o), o));
-        futures.add(Tuple2(router.segment2Route(n).callOpening(n), n));
-      }
+  static List<Tuple2<AsyncOper, TypedSegment>> waitStart(RRouter router, TypedPath oldPath, TypedPath newPath) {
+    final todo = <Tuple2<AsyncOper, TypedSegment>>[];
+    void add(AsyncOper? oper, TypedSegment segment) {
+      if (oper == null) return;
+      todo.add(Tuple2(oper, segment));
     }
-    // deactivating the rest of old segments
-    if (oldPath.length > minLen) {
-      for (var i = minLen; i < oldPath.length; i++) {
-        futures.add(Tuple2(router.segment2Route(oldPath[i]).callClosing(oldPath[i]), oldPath[i]));
-      }
-    }
-    // creating the rest of new segments
-    if (newPath.length > minLen) {
-      for (var i = minLen; i < newPath.length; i++) {
-        futures.add(Tuple2(router.segment2Route(newPath[i]).callOpening(newPath[i]), newPath[i]));
-      }
-    }
-    // remove empty futures
-    final notEmptyFutures = [
-      for (final f in futures)
-        if (f.item1 != null) f
-    ];
-    if (notEmptyFutures.isEmpty) return null;
 
-    return Future.wait(notEmptyFutures.map((fs) => fs.item1 as Future)).then((asyncResults) {
-      assert(asyncResults.length == notEmptyFutures.length);
-      // Save the result of the async action
-      for (var i = 0; i < asyncResults.length; i++) {
-        notEmptyFutures[i].item2.asyncHolder!.value = asyncResults[i];
+    for (var i = oldPath.length - 1; i >= 0; i--) {
+      final o = oldPath[i];
+      final n = i >= newPath.length ? null : newPath[i];
+      if (n == null || o.runtimeType != n.runtimeType) {
+        add(router.segment2Route(o).callClosing(o), o);
+      } else if (identical(o, n)) {
+        continue;
       }
-    });
+    }
+    for (var i = 0; i < newPath.length; i++) {
+      final n = newPath[i];
+      final o = i >= oldPath.length ? null : oldPath[i];
+      if (o == null || o.runtimeType != n.runtimeType) {
+        add(router.segment2Route(n).callOpening(n), n);
+      } else if (identical(o, n)) {
+        continue;
+      } else {
+        // not identical and the same runtimeType
+        add(router.segment2Route(n).callReplacing(o, n), n);
+      }
+    }
+    return todo;
+    // return Future.wait(notEmptyFutures.map((fs) => fs.item1 as Future)).then((asyncResults) {
+    //   assert(asyncResults.length == notEmptyFutures.length);
+    //   // Save the result of the async action
+    //   for (var i = 0; i < asyncResults.length; i++) {
+    //     notEmptyFutures[i].item2.asyncHolder!.value = asyncResults[i];
+    //   }
+    // });
+  }
+
+  Future waitEnd(List<Tuple2<AsyncOper, TypedSegment>> todo) async {
+    for (final fs in todo) {
+      final asyncRes = await fs.item1();
+      if (fs.item2.asyncHolder == null) throw 'fs.item2.asyncHolder == null';
+      fs.item2.asyncHolder!.value = asyncRes;
+    }
   }
 
   TypedPath getNavigationStack() => ref.read(navigationStackProvider);
