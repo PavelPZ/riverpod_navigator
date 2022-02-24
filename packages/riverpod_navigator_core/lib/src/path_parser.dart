@@ -28,10 +28,13 @@ extension SegmentMapEx on UrlPars {
 
   String getString(String name, {String? defaultValue}) {
     final value = this[name];
-    assert(value != null || defaultValue != null,
-        'Must be value != null || defaultValue != null');
+    assert(value != null || defaultValue != null, 'Must be value != null || defaultValue != null');
     return value ?? defaultValue!;
   }
+}
+
+class AsyncHolder<T> {
+  T? value;
 }
 
 // ********************************************
@@ -47,8 +50,7 @@ class PathParser {
   static const String defaultJsonUnionKey = 'runtimeType';
 
   /// String path => TypedPath
-  String toUrl(TypedPath typedPath) =>
-      typedPath.map((s) => router.toUrl(s)).join('/');
+  String toUrl(TypedPath typedPath) => typedPath.map((s) => router.toUrl(s)).join('/');
 
   /// TypedPath => String path
   TypedPath fromUrl(String? path) {

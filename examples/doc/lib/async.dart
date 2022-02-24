@@ -10,15 +10,19 @@ void main() => runApp(
     );
 
 class HomeSegment extends TypedSegment {
-  const HomeSegment();
+  HomeSegment();
   // ignore: avoid_unused_constructor_parameters
   factory HomeSegment.fromUrlPars(UrlPars map) => HomeSegment();
+  @override
+  final asyncHolder = AsyncHolder<String>();
 }
 
 class PageSegment extends TypedSegment {
-  const PageSegment({required this.id});
+  PageSegment({required this.id});
   factory PageSegment.fromUrlPars(UrlPars map) => PageSegment(id: map.getInt('id'));
   final int id;
+  @override
+  final asyncHolder = AsyncHolder<String>();
 
   @override
   void toUrlPars(UrlPars map) => map.setInt('id', id);
@@ -133,6 +137,10 @@ class PageScreen extends ConsumerWidget {
         title: 'Page ${segment.id}',
         buildChildren: (navigator) => [
           ElevatedButton(
+            onPressed: () => navigator.toNextPage(),
+            child: const Text('Go to next book'),
+          ),
+          ElevatedButton(
             onPressed: () => navigator.navigate([HomeSegment()]),
             child: const Text('Go to home'),
           ),
@@ -165,8 +173,7 @@ class PageHelper<N extends RNavigator> extends ConsumerWidget {
               res.addAll([w, SizedBox(height: 20)]);
             }
             res.addAll([SizedBox(height: 20), Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
-            // TODO(pz): xx
-            // if (segment.asyncActionResult != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncActionResult}"')]);
+            if (segment.asyncHolder != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncHolder!.value.toString()}"')]);
             return res;
           })(),
         ),

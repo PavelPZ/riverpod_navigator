@@ -28,6 +28,10 @@ typedef FromUrlPars<T extends TypedSegment> = T Function(UrlPars map);
 class TypedSegment {
   const TypedSegment();
   void toUrlPars(UrlPars map) {}
+
+  // for async segments
+  AsyncHolder? get asyncHolder => null;
+  void set asyncHolder(AsyncHolder? value) {}
 }
 
 /// Typed variant of whole url path (which consists of [TypedSegment]s)

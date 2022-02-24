@@ -156,9 +156,6 @@ It is recommended to use a dart test environment, see:
 - [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
 - [Nested navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/nested_navigation.md)
 
-Note: *The examples are prepared using a **[functional_widget package](https://pub.dev/packages/functional_widget)** that simplifies writing widgets.
-The use of functional_widget is optional.*
-
 ## Installation of examples
 
 After cloning the [riverpod_navigator repository](https://github.com/PavelPZ/riverpod_navigator), go to ```examples/doc``` subdirectory and execute:
