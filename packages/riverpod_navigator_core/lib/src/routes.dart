@@ -25,7 +25,7 @@ class RRouter {
 
   String? toUrl(TypedSegment s) => type2Route[s.runtimeType]!.toUrl(s);
 
-  TypedSegment fromUrl(UrlPars map, String typeName) => string2Route[typeName]!.fromUrlPars(map);
+  TypedSegment fromUrl(UrlPars pars, String typeName) => string2Route[typeName]!.fromUrlPars(pars);
 }
 
 class RRoute4Dart<T extends TypedSegment> {

@@ -13,16 +13,16 @@ void main() => runApp(
 class HomeSegment extends TypedSegment {
   const HomeSegment();
   // ignore: avoid_unused_constructor_parameters
-  factory HomeSegment.fromUrlPars(UrlPars map) => const HomeSegment();
+  factory HomeSegment.fromUrlPars(UrlPars pars) => const HomeSegment();
 }
 
 class PageSegment extends TypedSegment {
   const PageSegment({required this.title});
-  factory PageSegment.fromUrlPars(UrlPars map) => PageSegment(title: map.getString('title'));
+  factory PageSegment.fromUrlPars(UrlPars pars) => PageSegment(title: pars.getString('title'));
   final String title;
 
   @override
-  void toUrlPars(UrlPars map) => map.setString('title', title);
+  void toUrlPars(UrlPars pars) => pars.setString('title', title);
 }
 
 class AppNavigator extends RNavigator {

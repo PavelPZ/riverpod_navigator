@@ -27,31 +27,31 @@ class App extends ConsumerWidget {
 class HomeSegment extends TypedSegment {
   const HomeSegment();
   // ignore: avoid_unused_constructor_parameters
-  factory HomeSegment.fromUrlPars(UrlPars map) => HomeSegment();
+  factory HomeSegment.fromUrlPars(UrlPars pars) => HomeSegment();
 }
 
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
-  factory BookSegment.fromUrlPars(UrlPars map) => BookSegment(id: map.getInt('id'));
+  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
   final int id;
 
   @override
-  void toUrlPars(UrlPars map) => map.setInt('id', id);
+  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 }
 
 class AuthorSegment extends TypedSegment {
   const AuthorSegment({required this.id});
-  factory AuthorSegment.fromUrlPars(UrlPars map) => AuthorSegment(id: map.getInt('id'));
+  factory AuthorSegment.fromUrlPars(UrlPars pars) => AuthorSegment(id: pars.getInt('id'));
   final int id;
 
   @override
-  void toUrlPars(UrlPars map) => map.setInt('id', id);
+  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 }
 
 class BooksAuthorsSegment extends TypedSegment {
   const BooksAuthorsSegment();
   // ignore: avoid_unused_constructor_parameters
-  factory BooksAuthorsSegment.fromUrlPars(UrlPars map) => BooksAuthorsSegment();
+  factory BooksAuthorsSegment.fromUrlPars(UrlPars pars) => BooksAuthorsSegment();
 }
 
 /// helper extension for screens

@@ -37,14 +37,14 @@ Note: *fromUrlPars* and *toUrlPars* helps to convert **typed-segment** to **stri
 ```dart
 class HomeSegment extends TypedSegment {
   const HomeSegment();
-  factory HomeSegment.fromUrlPars(UrlPars map) => const HomeSegment();
+  factory HomeSegment.fromUrlPars(UrlPars pars) => const HomeSegment();
 }
 
 class PageSegment extends TypedSegment {
   const PageSegment({required this.title});
-  factory PageSegment.fromUrlPars(UrlPars map) => PageSegment(title: map.getString('title'));
+  factory PageSegment.fromUrlPars(UrlPars pars) => PageSegment(title: map.getString('title'));
   @override
-  void toUrlPars(UrlPars map) => map.setString('title', title);
+  void toUrlPars(UrlPars pars) => map.setString('title', title);
 
   final String title;
 }

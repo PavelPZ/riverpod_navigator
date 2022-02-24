@@ -17,32 +17,32 @@ void main() => runApp(
 class HomeSegment extends TypedSegment {
   const HomeSegment();
   // ignore: avoid_unused_constructor_parameters
-  factory HomeSegment.fromUrlPars(UrlPars map) => HomeSegment();
+  factory HomeSegment.fromUrlPars(UrlPars pars) => HomeSegment();
 }
 
 class LoginSegment extends TypedSegment {
   const LoginSegment();
   // ignore: avoid_unused_constructor_parameters
-  factory LoginSegment.fromUrlPars(UrlPars map) => LoginSegment();
+  factory LoginSegment.fromUrlPars(UrlPars pars) => LoginSegment();
 }
 
 class FamilySegment extends TypedSegment {
   const FamilySegment({required this.fid});
-  factory FamilySegment.fromUrlPars(UrlPars map) => FamilySegment(fid: map.getString('fid'));
+  factory FamilySegment.fromUrlPars(UrlPars pars) => FamilySegment(fid: pars.getString('fid'));
   final String fid;
 
   @override
-  void toUrlPars(UrlPars map) => map.setString('fid', fid);
+  void toUrlPars(UrlPars pars) => pars.setString('fid', fid);
 }
 
 class PersonSegment extends TypedSegment {
   const PersonSegment({required this.fid, required this.pid});
-  factory PersonSegment.fromUrlPars(UrlPars map) => PersonSegment(fid: map.getString('fid'), pid: map.getString('pid'));
+  factory PersonSegment.fromUrlPars(UrlPars pars) => PersonSegment(fid: pars.getString('fid'), pid: pars.getString('pid'));
   final String fid;
   final String pid;
 
   @override
-  void toUrlPars(UrlPars map) => map.setString('fid', fid)..setString('pid', pid);
+  void toUrlPars(UrlPars pars) => pars.setString('fid', fid)..setString('pid', pid);
 }
 
 /// helper extension for screens

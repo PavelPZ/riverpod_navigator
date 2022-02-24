@@ -12,20 +12,20 @@ void main() => runApp(
 class HomeSegment extends TypedSegment {
   HomeSegment();
   // ignore: avoid_unused_constructor_parameters
-  factory HomeSegment.fromUrlPars(UrlPars map) => HomeSegment();
+  factory HomeSegment.fromUrlPars(UrlPars pars) => HomeSegment();
   @override
   final asyncHolder = AsyncHolder<String>();
 }
 
 class PageSegment extends TypedSegment {
   PageSegment({required this.id});
-  factory PageSegment.fromUrlPars(UrlPars map) => PageSegment(id: map.getInt('id'));
+  factory PageSegment.fromUrlPars(UrlPars pars) => PageSegment(id: pars.getInt('id'));
   final int id;
   @override
   final asyncHolder = AsyncHolder<String>();
 
   @override
-  void toUrlPars(UrlPars map) => map.setInt('id', id);
+  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 }
 
 /// helper extension for screens

@@ -12,7 +12,7 @@ A slightly more complicated example, implementing a login flow as follows:
 ```dart
 class LoginSegment extends TypedSegment {
   const LoginSegment({this.loggedUrl, this.canceledUrl});
-  factory LoginSegment.fromUrlPars(UrlPars map) =>
+  factory LoginSegment.fromUrlPars(UrlPars pars) =>
       LoginSegment(loggedUrl: map.getStringNull('loggedUrl'), canceledUrl: map.getStringNull('canceledUrl'));
   /// where to navigate on successful login
   final String? loggedUrl;
@@ -20,7 +20,7 @@ class LoginSegment extends TypedSegment {
   final String? canceledUrl;
 
   @override
-  void toUrlPars(UrlPars map) => map.setString('loggedUrl', loggedUrl)..setString('canceledUrl', canceledUrl);
+  void toUrlPars(UrlPars pars) => map.setString('loggedUrl', loggedUrl)..setString('canceledUrl', canceledUrl);
 }
 ```
 

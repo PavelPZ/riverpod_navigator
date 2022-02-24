@@ -18,7 +18,7 @@ part 'routes.dart';
 typedef AsyncActionResult = dynamic;
 typedef UrlPars = Map<String, String>;
 typedef Json2Segment = TypedSegment Function(UrlPars, String unionKey);
-typedef FromUrlPars<T extends TypedSegment> = T Function(UrlPars map);
+typedef FromUrlPars<T extends TypedSegment> = T Function(UrlPars pars);
 
 /// Ancestor for typed segmenta.
 ///
@@ -27,7 +27,7 @@ typedef FromUrlPars<T extends TypedSegment> = T Function(UrlPars map);
 @immutable
 class TypedSegment {
   const TypedSegment();
-  void toUrlPars(UrlPars map) {}
+  void toUrlPars(UrlPars pars) {}
 
   // for async segments
   AsyncHolder? get asyncHolder => null;

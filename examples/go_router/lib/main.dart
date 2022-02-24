@@ -15,13 +15,13 @@ void main() => runApp(
 class Page1Segment extends TypedSegment {
   const Page1Segment();
   // ignore: avoid_unused_constructor_parameters
-  factory Page1Segment.fromUrlPars(UrlPars map) => Page1Segment();
+  factory Page1Segment.fromUrlPars(UrlPars pars) => Page1Segment();
 }
 
 class Page2Segment extends TypedSegment {
   const Page2Segment();
   // ignore: avoid_unused_constructor_parameters
-  factory Page2Segment.fromUrlPars(UrlPars map) => Page2Segment();
+  factory Page2Segment.fromUrlPars(UrlPars pars) => Page2Segment();
 }
 
 /// helper extension for screens

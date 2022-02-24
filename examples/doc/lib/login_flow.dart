@@ -26,27 +26,27 @@ class App extends ConsumerWidget {
 class HomeSegment extends TypedSegment {
   const HomeSegment();
   // ignore: avoid_unused_constructor_parameters
-  factory HomeSegment.fromUrlPars(UrlPars map) => HomeSegment();
+  factory HomeSegment.fromUrlPars(UrlPars pars) => HomeSegment();
 }
 
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
-  factory BookSegment.fromUrlPars(UrlPars map) => BookSegment(id: map.getInt('id'));
+  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
   final int id;
 
   @override
-  void toUrlPars(UrlPars map) => map.setInt('id', id);
+  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 }
 
 class LoginSegment extends TypedSegment {
   const LoginSegment({this.loggedUrl, this.canceledUrl});
-  factory LoginSegment.fromUrlPars(UrlPars map) =>
-      LoginSegment(loggedUrl: map.getStringNull('loggedUrl'), canceledUrl: map.getStringNull('canceledUrl'));
+  factory LoginSegment.fromUrlPars(UrlPars pars) =>
+      LoginSegment(loggedUrl: pars.getStringNull('loggedUrl'), canceledUrl: pars.getStringNull('canceledUrl'));
   final String? loggedUrl;
   final String? canceledUrl;
 
   @override
-  void toUrlPars(UrlPars map) => map.setString('loggedUrl', loggedUrl)..setString('canceledUrl', canceledUrl);
+  void toUrlPars(UrlPars pars) => pars.setString('loggedUrl', loggedUrl)..setString('canceledUrl', canceledUrl);
 }
 
 /// !!! there is another provider on which the navigation status depends:
