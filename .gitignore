@@ -13,6 +13,4 @@ ios/
 web/
 pubspec.lock
 windows/
-# **/*.g.dart
-# **/*.freezed.dart
 trash/

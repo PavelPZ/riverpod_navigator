@@ -1,3 +1,7 @@
+## 0.30.0
+
+- remove Freezed from doc
+
 ## 0.29.0
 
 - **Breaking**: remove Freezed dependency

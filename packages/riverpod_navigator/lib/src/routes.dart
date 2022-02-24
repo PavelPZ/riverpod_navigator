@@ -9,7 +9,11 @@ class RRoute<T extends TypedSegment> extends RRoute4Dart<T> {
     Replacing<T>? replacing,
     Closing<T>? closing,
     String? segmentTypeName,
-  }) : super(fromUrlPars, opening: opening, replacing: replacing, closing: closing, segmentTypeName: segmentTypeName);
+  }) : super(fromUrlPars,
+            opening: opening,
+            replacing: replacing,
+            closing: closing,
+            segmentTypeName: segmentTypeName);
 
   ScreenBuilder<T> screenBuilder;
   Screen2Page<T>? screen2Page;

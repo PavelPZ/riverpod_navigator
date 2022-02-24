@@ -1,11 +1,15 @@
 part of 'index.dart';
 
-final Screen2Page screen2PageDefault = (segment, screenBuilder) => _Screen2PageDefault(segment, screenBuilder);
-final Screen2Page screen2PageRebuild = (segment, screenBuilder) => _Screen2PageRebuild(segment, screenBuilder);
-final Screen2Page screen2PageSimple = (segment, screenBuilder) => MaterialPage(key: ValueKey(segment.toString()), child: screenBuilder(segment));
+final Screen2Page screen2PageDefault =
+    (segment, screenBuilder) => _Screen2PageDefault(segment, screenBuilder);
+final Screen2Page screen2PageRebuild =
+    (segment, screenBuilder) => _Screen2PageRebuild(segment, screenBuilder);
+final Screen2Page screen2PageSimple = (segment, screenBuilder) => MaterialPage(
+    key: ValueKey(segment.toString()), child: screenBuilder(segment));
 
 class _Screen2PageRebuild extends Page {
-  _Screen2PageRebuild(this._typedSegment, this._screenBuilder) : super(key: ValueKey(_typedSegment.toString()));
+  _Screen2PageRebuild(this._typedSegment, this._screenBuilder)
+      : super(key: ValueKey(_typedSegment.toString()));
 
   final TypedSegment _typedSegment;
   final ScreenBuilder _screenBuilder;
@@ -20,7 +24,8 @@ class _Screen2PageRebuild extends Page {
 }
 
 class _Screen2PageDefault extends Page {
-  _Screen2PageDefault(this._typedSegment, this._screenBuilder) : super(key: ObjectKey(_typedSegment));
+  _Screen2PageDefault(this._typedSegment, this._screenBuilder)
+      : super(key: ObjectKey(_typedSegment));
 
   final TypedSegment _typedSegment;
   final ScreenBuilder _screenBuilder;

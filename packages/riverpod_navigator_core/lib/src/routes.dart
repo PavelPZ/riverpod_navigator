@@ -12,7 +12,9 @@ class RRouter {
         throw Exception('"${r.segmentTypeName}" segmentTypeName already registered.');
       }
       string2Route[r.segmentTypeName] = r;
-      if (type2Route.containsKey(r.runtimeType)) throw Exception('"${r.runtimeType.toString()}" segment.runtimeType already registered.');
+      if (type2Route.containsKey(r.runtimeType)) {
+        throw Exception('"${r.runtimeType.toString()}" segment.runtimeType already registered.');
+      }
       type2Route[r.segmentType] = r;
     }
   }
@@ -26,7 +28,7 @@ class RRouter {
 
   String? toUrl(TypedSegment s) => type2Route[s.runtimeType]!.toUrl(s);
 
-  TypedSegment fromUrl(UrlPars pars, String typeName) => string2Route[typeName]!.fromUrlPars(pars);
+  TypedSegment fromUrlPars(UrlPars pars, String typeName) => string2Route[typeName]!.fromUrlPars(pars);
 }
 
 class RRoute4Dart<T extends TypedSegment> {
