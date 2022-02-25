@@ -50,6 +50,7 @@ class PageSegment extends TypedSegment {
 ```
 
 Note: *fromUrlPars* and *toUrlPars* helps to convert **typed-segment** to **string-segment** and back.
+This is needed for Flutter on the Web.
 
 ### Step2 - configure AppNavigator...
 
