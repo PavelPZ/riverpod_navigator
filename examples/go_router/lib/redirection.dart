@@ -60,10 +60,10 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<HomeSegment>(HomeSegment.fromUrlPars, HomeScreen.new),
-            RRoute<LoginSegment>(LoginSegment.fromUrlPars, LoginScreen.new),
-            RRoute<FamilySegment>(FamilySegment.fromUrlPars, FamilyScreen.new),
-            RRoute<PersonSegment>(PersonSegment.fromUrlPars, PersonScreen.new),
+            RRoute<HomeSegment>('home', HomeSegment.fromUrlPars, HomeScreen.new),
+            RRoute<LoginSegment>('login', LoginSegment.fromUrlPars, LoginScreen.new),
+            RRoute<FamilySegment>('family', FamilySegment.fromUrlPars, FamilyScreen.new),
+            RRoute<PersonSegment>('person', PersonSegment.fromUrlPars, PersonScreen.new),
           ],
         );
 

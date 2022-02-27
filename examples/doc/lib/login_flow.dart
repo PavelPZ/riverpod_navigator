@@ -72,9 +72,9 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<HomeSegment>(HomeSegment.fromUrlPars, HomeScreen.new),
-            RRoute<BookSegment>(BookSegment.fromUrlPars, BookScreen.new),
-            RRoute<LoginSegment>(LoginSegment.fromUrlPars, LoginScreen.new),
+            RRoute<HomeSegment>('home', HomeSegment.fromUrlPars, HomeScreen.new),
+            RRoute<BookSegment>('page', BookSegment.fromUrlPars, BookScreen.new),
+            RRoute<LoginSegment>('login', LoginSegment.fromUrlPars, LoginScreen.new),
           ],
         );
 
@@ -202,7 +202,8 @@ class LoginScreen extends StatelessWidget {
 }
 
 class PageHelper extends ConsumerWidget {
-  const PageHelper({Key? key, required this.title, required this.segment, required this.buildChildren, this.isLoginPage}) : super(key: key);
+  const PageHelper({Key? key, required this.title, required this.segment, required this.buildChildren, this.isLoginPage})
+      : super(key: key);
 
   final String title;
 

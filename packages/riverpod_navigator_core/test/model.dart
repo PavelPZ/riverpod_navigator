@@ -8,8 +8,7 @@ class HomeSegment extends TypedSegment {
 
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
-  factory BookSegment.fromUrlPars(UrlPars pars) =>
-      BookSegment(id: pars.getInt('id'));
+  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
 
   final int id;
 
@@ -24,7 +23,7 @@ class LoginSegment extends TypedSegment {
 }
 
 final routes = <RRoute4Dart>[
-  RRoute4Dart<HomeSegment>(HomeSegment.fromUrlPars),
-  RRoute4Dart<BookSegment>(BookSegment.fromUrlPars),
-  RRoute4Dart<LoginSegment>(LoginSegment.fromUrlPars),
+  RRoute4Dart<HomeSegment>('home', HomeSegment.fromUrlPars),
+  RRoute4Dart<BookSegment>('book', BookSegment.fromUrlPars),
+  RRoute4Dart<LoginSegment>('login', LoginSegment.fromUrlPars),
 ];

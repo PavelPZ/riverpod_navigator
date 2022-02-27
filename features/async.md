@@ -17,11 +17,13 @@ class AppNavigator extends RNavigator {
           ref,
           [
             RRoute<HomeSegment>(
+              'home',
               HomeSegment.fromUrlPars,
               HomeScreen.new,
               opening: (newSegment) => simulateAsyncResult('Home.creating', 2000),
             ),
             RRoute<PageSegment>(
+              'page',
               PageSegment.fromUrlPars,
               PageScreen.new,
               opening: (newSegment) => simulateAsyncResult('Page.creating', 400),
@@ -79,7 +81,7 @@ Use in your test:
   await container.navigator.toNextPage();
 ```
 
-#### Running applications, source code and test, see:
+#### See:
 
 - [running example](https://pavelpz.github.io/doc_async/)
 - [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/async.dart)

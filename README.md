@@ -62,8 +62,8 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<HomeSegment>(HomeSegment.fromUrlPars, HomeScreen.new), // build a HomeScreen for HomeSegment
-            RRoute<PageSegment>(PageSegment.fromUrlPars, PageScreen.new), // build a PageScreen for PageSegment
+            RRoute<HomeSegment>('home', HomeSegment.fromUrlPars, HomeScreen.new),
+            RRoute<PageSegment>('page', PageSegment.fromUrlPars, PageScreen.new),
           ],
         );
 }
@@ -118,19 +118,18 @@ ElevatedButton(
   onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment()]),
 ```
 
-#### Running applications, source code and test, see:
+#### See:
 
 - [running example](https://pavelpz.github.io/doc_simple/)
 - [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart)
 - [test code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
 
-### Testing
+### Development and testing without GUI
 
-Before developing a GUI, it is good practice to develop and test the invisible part of the application (app model and state).
-It is recommended to use a dart test environment, see:
+Navigation logic can be developed and tested without typing a single flutter widget:
 
 ```dart 
-  test('navigation test', () async {
+  test('navigation model', () async {
     final container = ProviderContainer(overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new));
     final navigator = container.read(navigatorProvider);
 

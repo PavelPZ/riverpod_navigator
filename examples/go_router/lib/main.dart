@@ -39,8 +39,8 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<Page1Segment>(Page1Segment.fromUrlPars, Page1Screen.new),
-            RRoute<Page2Segment>(Page2Segment.fromUrlPars, Page2Screen.new),
+            RRoute<Page1Segment>('page2', Page1Segment.fromUrlPars, Page1Screen.new),
+            RRoute<Page2Segment>('page2', Page2Segment.fromUrlPars, Page2Screen.new),
           ],
         );
 

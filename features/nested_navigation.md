@@ -14,9 +14,7 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<Segments>(Segments.fromJson, [
-              RRoute<BookSegment>(BookScreen.new),
-            ])
+            RRoute<BookSegment>('book', BookSegment.fromUrlPars, BookScreen.new),
           ],
         );
 
@@ -25,9 +23,7 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoutes<Segments>(Segments.fromJson, [
-              RRoute<AuthorSegment>(AuthorScreen.new),
-            ])
+            RRoute<AuthorSegment>('author', AuthorSegment.fromUrlPars, AuthorScreen.new),
           ],
         );
 ```
@@ -72,7 +68,7 @@ Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment
 }
 ```
 
-#### Running applications and source code, see:
+#### See:
 
 - [running example](https://pavelpz.github.io/doc_nested_navigation/)
 - [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/nested_navigation.dart)

@@ -97,7 +97,7 @@ Application logic will redirect when:
   }
 ```
 
-#### Running applications, source code and test, see:
+#### See:
 
 - [running example](https://pavelpz.github.io/doc_login_flow/)
 - [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/login_flow.dart)

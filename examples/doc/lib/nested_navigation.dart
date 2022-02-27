@@ -70,7 +70,7 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<BookSegment>(BookSegment.fromUrlPars, BookScreen.new),
+            RRoute<BookSegment>('book', BookSegment.fromUrlPars, BookScreen.new),
           ],
         );
 
@@ -79,7 +79,7 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<AuthorSegment>(AuthorSegment.fromUrlPars, AuthorScreen.new),
+            RRoute<AuthorSegment>('author', AuthorSegment.fromUrlPars, AuthorScreen.new),
           ],
         );
   // ignore: sort_unnamed_constructors_first
@@ -87,10 +87,10 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<HomeSegment>(HomeSegment.fromUrlPars, HomeScreen.new),
-            RRoute<BookSegment>(BookSegment.fromUrlPars, BookScreen.new),
-            RRoute<AuthorSegment>(AuthorSegment.fromUrlPars, AuthorScreen.new),
-            RRoute<BooksAuthorsSegment>(BooksAuthorsSegment.fromUrlPars, BooksAuthorsScreen.new),
+            RRoute<HomeSegment>('home', HomeSegment.fromUrlPars, HomeScreen.new),
+            RRoute<BookSegment>('book', BookSegment.fromUrlPars, BookScreen.new),
+            RRoute<AuthorSegment>('author', AuthorSegment.fromUrlPars, AuthorScreen.new),
+            RRoute<BooksAuthorsSegment>('books-authors', BooksAuthorsSegment.fromUrlPars, BooksAuthorsScreen.new),
           ],
         );
 
@@ -98,7 +98,8 @@ class AppNavigator extends RNavigator {
 
   Future gotoNextBook() => replaceLast<BookSegment>((actualBook) => BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
 
-  Future gotoNextAuthor() => replaceLast<AuthorSegment>((actualAuthor) => AuthorSegment(id: actualAuthor.id == 5 ? 1 : actualAuthor.id + 1));
+  Future gotoNextAuthor() =>
+      replaceLast<AuthorSegment>((actualAuthor) => AuthorSegment(id: actualAuthor.id == 5 ? 1 : actualAuthor.id + 1));
 }
 
 class HomeScreen extends ConsumerWidget {

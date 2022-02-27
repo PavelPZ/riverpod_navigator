@@ -62,11 +62,13 @@ class AppNavigator extends RNavigator {
           ref,
           [
             RRoute<HomeSegment>(
+              'home',
               HomeSegment.fromUrlPars,
               HomeScreen.new,
               opening: (newSegment) => simulateAsyncResult('Home.creating', 2000),
             ),
             RRoute<PageSegment>(
+              'page',
               PageSegment.fromUrlPars,
               PageScreen.new,
               opening: (newSegment) => simulateAsyncResult('Page.creating', 400),
