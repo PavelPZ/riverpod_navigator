@@ -26,7 +26,7 @@ Take a look at the following terms related to URL path ```home/book;id=2```
 - **typed-path** describes coresponding *string-path* (```[HomeSegment(), BookSegment(id:2)]```)<br>
 *typed-path* is ```typedef TypedPath = List<TypedSegment>```
 - Flutter Navigator 2.0 **navigation-stack** is uniquely determined by the TypedPath (where each TypedPath's *TypedSegment* instance corresponds to a screen and page instance):<br>
-  ```[MaterialPage (child: HomeScreen(HomeSegment())),  MaterialPage (child: BookScreen(BookSegment(id:2)))]```
+  ```pages = [MaterialPage (child: HomeScreen(HomeSegment())),  MaterialPage (child: BookScreen(BookSegment(id:2)))]```
 
 ## Simple example
 
@@ -56,7 +56,7 @@ This is needed for Flutter on the Web.
 
 ### Step2 - configure AppNavigator...
 
-by extending the RNavigator class. 
+... by extending the RNavigator class. 
 
 ```dart
 class AppNavigator extends RNavigator {
@@ -65,7 +65,7 @@ class AppNavigator extends RNavigator {
           ref,
           [
             // 'home' and 'book' strings are used in web URL, e.g. 'home/book;id=2'
-            // fromUrlPars is used to decode web URL to segment
+            // fromUrlPars is used to decode web URL string-segment to typed-segment
             // HomeScreen.new and BookScreen.new are screens for a given segment
             RRoute<HomeSegment>('home', HomeSegment.fromUrlPars, HomeScreen.new),
             RRoute<BookSegment>('book', BookSegment.fromUrlPars, BookScreen.new),
@@ -130,13 +130,11 @@ ElevatedButton(
 - [test code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
 
 *Note*: The link ```Go to book: [3, 13, 103]``` in the [running example](https://pavelpz.github.io/doc_simple/) would not make much sense in the real Books application.
-It just shows the transition to the navigation stack with four screens (or four segments or four Navigator MaterialPages):
+It just shows the transition to the stack of four screens:
 
 - **string-path** = ```'home/book;id=3/book;id=13/book;id=103'```. 
 - **typed-path** = ```[HomeSegment(), BookSegment(id:3), BookSegment(id:13), BookSegment(id:103)]```. 
-- **navigation-stack** = ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: HomeScreen(BookSegment(id:3))), MaterialPage (child: HomeScreen(BookSegment(id:13))), MaterialPage (child: HomeScreen(BookSegment(id:103)))]```. 
-
-See ```HomeScreen``` [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart) for details.
+- **navigation-stack** pages = ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:3))), MaterialPage (child: BookScreen(BookSegment(id:13))), MaterialPage (child: BookScreen(BookSegment(id:103)))]```. 
 
 ### Development and testing without GUI
 
