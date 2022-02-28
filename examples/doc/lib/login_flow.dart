@@ -99,8 +99,8 @@ class AppNavigator extends RNavigator {
       // user is logged and LogginScreen is going to display => redirect to HomeScreen
       if (userIsLogged && (ongoingPath.isEmpty || ongoingPath.last is LoginSegment)) return [HomeSegment()];
     }
-    // no redirection is needed
-    return ongoingPath;
+    // no redirection is needed but rebuild can appear (e.g. during logout)
+    return [...ongoingPath];
   }
 
   // ******* actions used on the screens
@@ -202,8 +202,7 @@ class LoginScreen extends StatelessWidget {
 }
 
 class PageHelper extends ConsumerWidget {
-  const PageHelper({Key? key, required this.title, required this.segment, required this.buildChildren, this.isLoginPage})
-      : super(key: key);
+  const PageHelper({Key? key, required this.title, required this.segment, required this.buildChildren, this.isLoginPage}) : super(key: key);
 
   final String title;
 
@@ -228,10 +227,10 @@ class PageHelper extends ConsumerWidget {
         actions: [
           if (isLoginPage != true)
             Consumer(builder: (_, ref, __) {
-              final isLoggedNotifier = ref.watch(isLoggedProvider.notifier);
+              final isLogged = ref.watch(isLoggedProvider);
               return ElevatedButton(
-                onPressed: () => isLoggedNotifier.update((s) => !s),
-                child: Text(isLoggedNotifier.state ? 'Logout' : 'Login'),
+                onPressed: isLogged ? navigator.onLogout : navigator.onLogin,
+                child: Text(isLogged ? 'Logout' : 'Login'),
               );
             })
         ],
