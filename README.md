@@ -23,9 +23,9 @@ Take a look at the following terms related to URL path ```home/book;id=2```
 - **string-segment:** the *string-path* consists of two slash-delimited *string-segment*s (```home``` and ```book;id=2```)
 - **typed-segment** describes coresponding *string-segment*s (```HomeSegment()``` for 'home' and ```BookSegment(id:2)``` for 'book;id=2')<br>
 *typed-segment* is ```class TypedSegment {}```'s descendant.
-- **typed-path** describes coresponding *string-path* (```[HomeSegment(), BookSegment(id:2)]```)
+- **typed-path** describes coresponding *string-path* (```[HomeSegment(), BookSegment(id:2)]```)<br>
 *typed-path* is ```typedef TypedPath = List<TypedSegment>```
-- Flutter Navigator 2.0 **navigation-stack** is uniquely determined by the TypedPath (where each TypedSegment instance corresponds to a screen and page instance):<br>
+- Flutter Navigator 2.0 **navigation-stack** is uniquely determined by the TypedPath (where each TypedPath's *TypedSegment* instance corresponds to a screen and page instance):<br>
   ```[MaterialPage (child: HomeScreen(HomeSegment())),  MaterialPage (child: BookScreen(BookSegment(id:2)))]```
 
 ## Simple example
