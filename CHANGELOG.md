@@ -1,3 +1,7 @@
+## 0.35.0
+
+- small example fix
+
 ## 0.34.0
 
 - **Breaking**: urlName is mandatory parameter fo RRoute

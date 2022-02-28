@@ -19,9 +19,11 @@ just use the nested riverpod ```ProviderScope()``` and Flutter ```Router``` widg
 
 Take a look at the following terms related to URL path ```home/book;id=2```
 
-- **string-path:** ```final stringPath = 'home/book;id=2';```
+- **string-path:** e.g. ```home/book;id=2```
 - **string-segment:** the string-path consists of two slash-delimited string-segments (```home``` and ```book;id=2```)
-- **typed-segment:** (```class TypedSegment {}```'s descendant) describes coresponding string-segment's (```HomeSegment()``` and ```BookSegment(id:2)```)
+- **typed-segment** describes coresponding string-segment's (```HomeSegment()``` for 'home' and ```BookSegment(id:2)` for 'book;id=2')<br>
+*typed-segment* is ```class TypedSegment {}```'s descendant.
+(```class TypedSegment {}```'s descendant) describes coresponding string-segment's (```HomeSegment()``` and ```BookSegment(id:2)```)
 - **typed-path**: (```typedef TypedPath = List<TypedSegment>```) describes coresponding string-path (```[HomeSegment(), BookSegment(id:2)];```)
 - Flutter Navigator 2.0 **navigation-stack** is uniquely determined by the TypedPath (where each TypedSegment instance corresponds to a screen and page instance):<br>
   ```[MaterialPage (child: HomeScreen(HomeSegment())),  MaterialPage (child: BookScreen(BookSegment(id:2)))]```
