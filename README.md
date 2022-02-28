@@ -21,7 +21,7 @@ Take a look at the following terms related to URL path ```home/book;id=2```
 
 - **string-path:** e.g. ```home/book;id=2```
 - **string-segment:** the *string-path* consists of two slash-delimited *string-segment*s (```home``` and ```book;id=2```)
-- **typed-segment** describes coresponding *string-segment*s (```HomeSegment()``` for 'home' and ```BookSegment(id:2)` for 'book;id=2')<br>
+- **typed-segment** describes coresponding *string-segment*s (```HomeSegment()``` for 'home' and ```BookSegment(id:2)``` for 'book;id=2')<br>
 *typed-segment* is ```class TypedSegment {}```'s descendant.
 - **typed-path** describes coresponding *string-path* (```[HomeSegment(), BookSegment(id:2)]```)
 *typed-path* is ```typedef TypedPath = List<TypedSegment>```
