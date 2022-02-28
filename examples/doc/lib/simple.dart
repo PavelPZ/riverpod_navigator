@@ -64,12 +64,19 @@ class HomeScreen extends ConsumerWidget {
         appBar: AppBar(title: const Text('Home')),
         body: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment(), BookSegment(id: 1)]),
-                child: const Text('Go to book'),
-              ),
+              for (var i = 1; i < 4; i++) ...[
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: () => ref.read(navigatorProvider).navigate([
+                    HomeSegment(),
+                    BookSegment(id: i),
+                    if (i > 1) BookSegment(id: 10 + i),
+                    if (i > 2) BookSegment(id: 100 + i),
+                  ]),
+                  child: Text('Go to Book: [$i${i > 1 ? ', 1$i' : ''}${i > 2 ? ', 10$i' : ''}]'),
+                ),
+              ]
             ],
           ),
         ),
