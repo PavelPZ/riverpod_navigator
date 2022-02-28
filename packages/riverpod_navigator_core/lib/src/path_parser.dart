@@ -28,8 +28,7 @@ extension UrlParsEx on UrlPars {
 
   String getString(String name, {String? defaultValue}) {
     final value = this[name];
-    assert(value != null || defaultValue != null,
-        'Must be value != null || defaultValue != null');
+    assert(value != null || defaultValue != null, 'Must be value != null || defaultValue != null');
     return value ?? defaultValue!;
   }
 }
@@ -40,15 +39,12 @@ extension UrlParsEx on UrlPars {
 
 /// Path parser interface
 class PathParser {
-  PathParser(this.router);
+  PathParser(this._router);
 
-  final RRouter router;
-
-  static const String defaultJsonUnionKey = 'runtimeType';
+  final RRouter _router;
 
   /// String path => TypedPath
-  String toUrl(TypedPath typedPath) =>
-      typedPath.map((s) => router.toUrl(s)).join('/');
+  String toUrl(TypedPath typedPath) => typedPath.map((s) => _router.toUrl(s)).join('/');
 
   /// TypedPath => String path
   TypedPath fromUrl(String? path) {
@@ -66,7 +62,7 @@ class PathParser {
         assert(nameValue.length == 2);
         map[nameValue[0]] = Uri.decodeComponent(nameValue[1]);
       }
-      res.add(router.fromUrlPars(map, properties[0]));
+      res.add(_router.fromUrlPars(map, properties[0]));
     }
     return res;
   }
