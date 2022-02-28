@@ -93,8 +93,13 @@ class BookScreen extends ConsumerWidget {
         appBar: AppBar(title: Text('Book ${segment.id}')),
         body: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () => ref.read(navigatorProvider).replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1)),
+                child: const Text('Go to next book'),
+              ),
+              const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment()]),
                 child: const Text('Go to home'),
