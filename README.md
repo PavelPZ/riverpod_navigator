@@ -128,7 +128,13 @@ ElevatedButton(
 - [test code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
 
 *Note*: The link ```Go to book: [3, 13, 103]``` in the [running example](https://pavelpz.github.io/doc_simple/) would not make much sense in the real Books application.
-It just shows the transition to the navigation stack with four screens that match **string-path** = ```'home/book;id=3/book;id=13/book;id=103'```. See ```HomeScreen``` [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart) for details.
+It just shows the transition to the navigation stack with four screens (or four segments or four Navigator MaterialPages):
+
+- **string-path** = ```'home/book;id=3/book;id=13/book;id=103'```. 
+- **typed-path** = ```[HomeSegment(), BookSegment(id:3), BookSegment(id:13), BookSegment(id:103)]```. 
+- **navigation-stack** = ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: HomeScreen(BookSegment(id:3))), MaterialPage (child: HomeScreen(BookSegment(id:13))), MaterialPage (child: HomeScreen(BookSegment(id:103)))]```. 
+
+See ```HomeScreen``` [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart) for details.
 
 ### Development and testing without GUI
 
