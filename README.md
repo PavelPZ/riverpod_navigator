@@ -35,17 +35,17 @@ Create an application using these simple steps:
 ```dart
 class HomeSegment extends TypedSegment {
   const HomeSegment();
+  // ignore: avoid_unused_constructor_parameters
   factory HomeSegment.fromUrlPars(UrlPars pars) => const HomeSegment();
 }
 
-class PageSegment extends TypedSegment {
-  const PageSegment({required this.title});
-  factory PageSegment.fromUrlPars(UrlPars pars) => PageSegment(title: map.getString('title'));
-
+class BookSegment extends TypedSegment {
+  const BookSegment({required this.id});
+  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
   @override
-  void toUrlPars(UrlPars pars) => map.setString('title', title);
+  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 
-  final String title;
+  final int id;
 }
 ```
 
@@ -54,7 +54,7 @@ This is needed for Flutter on the Web.
 
 ### Step2 - configure AppNavigator...
 
-by extending the RNavigator class:
+by extending the RNavigator class. 
 
 ```dart
 class AppNavigator extends RNavigator {
@@ -62,8 +62,11 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
+            // 'home' and 'book' strings are used in web URL, e.g. 'home/book;id=2'
+            // fromUrlPars is used to decode web URL to segment
+            // HomeScreen.new and BookScreen.new are screens for a given segment
             RRoute<HomeSegment>('home', HomeSegment.fromUrlPars, HomeScreen.new),
-            RRoute<PageSegment>('page', PageSegment.fromUrlPars, PageScreen.new),
+            RRoute<BookSegment>('book', BookSegment.fromUrlPars, BookScreen.new),
           ],
         );
 }
@@ -141,13 +144,13 @@ Navigation logic can be developed and tested without typing a single flutter wid
 
     await navigTest(() => navigator.navigate([HomeSegment()]), 'home');
 
-    await navigTest(() => navigator.navigate([HomeSegment(), PageSegment(title: 'Page')]), 'home/page;title=Page');
+    await navigTest(() => navigator.navigate([HomeSegment(), BookSegment(id: 1)]), 'home/book;id=1');
 
     await navigTest(() => navigator.pop(), 'home');
 
-    await navigTest(() => navigator.push(PageSegment(title: 'Page2')), 'home/page;title=Page2');
+    await navigTest(() => navigator.push(BookSegment(id: 2)), 'home/book;id=2');
 
-    await navigTest(() => navigator.replaceLast<PageSegment>((old) => PageSegment(title: 'X${old.title}')), 'home/page;title=XPage2');
+    await navigTest(() => navigator.replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1)), 'home/book;id=3');
   });
 ```
 

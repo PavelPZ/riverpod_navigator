@@ -1,3 +1,9 @@
+## 0.32.0
+
+## 0.31.0
+
+- **Breaking**: urlName is mandatory parameter fo RRoute
+
 ## 0.30.0
 
 - remove Freezed from doc

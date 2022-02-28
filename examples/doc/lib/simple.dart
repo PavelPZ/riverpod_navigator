@@ -16,13 +16,13 @@ class HomeSegment extends TypedSegment {
   factory HomeSegment.fromUrlPars(UrlPars pars) => const HomeSegment();
 }
 
-class PageSegment extends TypedSegment {
-  const PageSegment({required this.title});
-  factory PageSegment.fromUrlPars(UrlPars pars) => PageSegment(title: pars.getString('title'));
-  final String title;
-
+class BookSegment extends TypedSegment {
+  const BookSegment({required this.id});
+  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
   @override
-  void toUrlPars(UrlPars pars) => pars.setString('title', title);
+  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
+
+  final int id;
 }
 
 class AppNavigator extends RNavigator {
@@ -30,8 +30,11 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<HomeSegment>('home', HomeSegment.fromUrlPars, HomeScreen.new), // build a HomeScreen for HomeSegment
-            RRoute<PageSegment>('page', PageSegment.fromUrlPars, PageScreen.new), // build a PageScreen for PageSegment
+            // 'home' and 'book' strings are used in web URL, e.g. 'home/book;id=2'
+            // fromUrlPars is used to decode URL to segment
+            // HomeScreen.new and BookScreen.new are screens for a given segment
+            RRoute<HomeSegment>('home', HomeSegment.fromUrlPars, HomeScreen.new),
+            RRoute<BookSegment>('book', BookSegment.fromUrlPars, BookScreen.new),
           ],
         );
 }
@@ -64,8 +67,8 @@ class HomeScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]),
-                child: const Text('Go to page'),
+                onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment(), BookSegment(id: 1)]),
+                child: const Text('Go to book'),
               ),
             ],
           ),
@@ -73,14 +76,14 @@ class HomeScreen extends ConsumerWidget {
       );
 }
 
-class PageScreen extends ConsumerWidget {
-  const PageScreen(this.segment, {Key? key}) : super(key: key);
+class BookScreen extends ConsumerWidget {
+  const BookScreen(this.segment, {Key? key}) : super(key: key);
 
-  final PageSegment segment;
+  final BookSegment segment;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-        appBar: AppBar(title: Text(segment.title)),
+        appBar: AppBar(title: Text('Book ${segment.id}')),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
