@@ -115,7 +115,7 @@ class HomeScreen extends ConsumerWidget {
   final HomeSegment segment;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => PageHelper<AppNavigator>(
+  Widget build(BuildContext context, WidgetRef ref) => PageHelper(
         segment: segment,
         title: 'Home',
         buildChildren: (navigator) => [
@@ -133,7 +133,7 @@ class PageScreen extends ConsumerWidget {
   final PageSegment segment;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => PageHelper<AppNavigator>(
+  Widget build(BuildContext context, WidgetRef ref) => PageHelper(
         segment: segment,
         title: 'Page ${segment.id}',
         buildChildren: (navigator) => [
@@ -145,38 +145,63 @@ class PageScreen extends ConsumerWidget {
             onPressed: () => navigator.navigate([HomeSegment()]),
             child: const Text('Go to home'),
           ),
+          ElevatedButton(
+            onPressed: () => navigator.registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000))),
+            child: const Text('Side effect (5000 msec)'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              ref.navigator.blockGui(true);
+              try {
+                await Future.delayed(Duration(milliseconds: 5000));
+              } finally {
+                ref.navigator.blockGui(false);
+              }
+            },
+            child: const Text('Multi side effect (5000 msec)'),
+          ),
         ],
       );
 }
 
-class PageHelper<N extends RNavigator> extends ConsumerWidget {
+class PageHelper extends ConsumerWidget {
   const PageHelper({Key? key, required this.segment, required this.title, required this.buildChildren}) : super(key: key);
 
   final TypedSegment segment;
 
   final String title;
 
-  final List<Widget> Function(N) buildChildren;
+  final List<Widget> Function(AppNavigator) buildChildren;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final navigator = ref.navigator as N;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: (() {
-            final res = <Widget>[SizedBox(height: 20)];
-            for (final w in buildChildren(navigator)) {
-              res.addAll([w, SizedBox(height: 20)]);
-            }
-            res.addAll([SizedBox(height: 20), Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
-            if (segment.asyncHolder != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncHolder!.value}"')]);
-            return res;
-          })(),
+    final navigator = ref.navigator;
+    final canPop = navigator.getNavigationStack().length > 1;
+    return WillPopScope(
+      onWillPop: () async => !canPop,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+          leading: !canPop
+              ? null
+              : IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () => navigator.onPopRoute(),
+                ),
+        ),
+        body: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: (() {
+              final res = <Widget>[SizedBox(height: 20)];
+              for (final w in buildChildren(navigator)) {
+                res.addAll([w, SizedBox(height: 20)]);
+              }
+              res.addAll([SizedBox(height: 20), Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
+              if (segment.asyncHolder != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncHolder!.value}"')]);
+              return res;
+            })(),
+          ),
         ),
       ),
     );

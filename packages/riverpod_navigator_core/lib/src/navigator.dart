@@ -59,7 +59,7 @@ class RNavigatorCore {
     return navigationCompleted;
   }
 
-  void navigating(bool running) => ref.read(appLogicRunningProvider.notifier).state = running;
+  void blockGui(bool running) => ref.read(appLogicRunningProvider.notifier).state = running;
 
   /// When changing navigation state: completed after [navigationStackProvider] is actual
   Future<void> get navigationCompleted => _defer2NextTick.future;
