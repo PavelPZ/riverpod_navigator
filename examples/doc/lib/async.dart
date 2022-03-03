@@ -174,37 +174,34 @@ class PageHelper extends ConsumerWidget {
   final List<Widget> Function(AppNavigator) buildChildren;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final navigator = ref.navigator;
-    final canPop = navigator.getNavigationStack().length > 1;
-    // https://stackoverflow.com/a/45918186
-    return WillPopScope(
-      onWillPop: () async => !canPop,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          leading: !canPop
-              ? null
-              : IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () => navigator.onPopRoute(),
-                ),
-        ),
-        body: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: (() {
-              final res = <Widget>[SizedBox(height: 20)];
-              for (final w in buildChildren(navigator)) {
-                res.addAll([w, SizedBox(height: 20)]);
-              }
-              res.addAll([SizedBox(height: 20), Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
-              if (segment.asyncHolder != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncHolder!.value}"')]);
-              return res;
-            })(),
+  Widget build(BuildContext context, WidgetRef ref) => ScreenRoot<AppNavigator>(
+        buildScreen: (navigator, appBarLeading) => Scaffold(
+          appBar: AppBar(
+            title: Text(title),
+            leading: appBarLeading,
+          ),
+          body: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: (() {
+                final res = <Widget>[SizedBox(height: 20)];
+                for (final w in buildChildren(navigator)) {
+                  res.addAll([w, SizedBox(height: 20)]);
+                }
+                res.addAll([
+                  SizedBox(height: 20),
+                  Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
+                ]);
+                if (segment.asyncHolder != null) {
+                  res.addAll([
+                    SizedBox(height: 20),
+                    Text('Async result: "${segment.asyncHolder!.value}"'),
+                  ]);
+                }
+                return res;
+              })(),
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }

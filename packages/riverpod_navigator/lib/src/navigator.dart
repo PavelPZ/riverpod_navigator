@@ -35,11 +35,10 @@ class RNavigator extends RNavigatorCore {
   }
 
   /// for [Navigator.onPopPage] in [RRouterDelegate.build]
-  @nonVirtual
   bool onPopRoute() {
     final navigationStack = getNavigationStack();
     if (navigationStack.length <= 1) return false;
     navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
-    return false;
+    return true;
   }
 }
