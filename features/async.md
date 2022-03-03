@@ -31,8 +31,6 @@ class AppNavigator extends RNavigator {
               closing: null,
             ),
           ],
-          // define splash screen
-          splashBuilder: () => SplashScreen(),
         );
 
   // It is good practice to place the code for all events specific to navigation in AppNavigator.

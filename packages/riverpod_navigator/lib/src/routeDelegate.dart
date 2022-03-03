@@ -13,7 +13,10 @@ class RRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, Pop
   Widget build(BuildContext context) {
     final navigationStack = currentConfiguration;
     if (navigationStack.isEmpty) {
-      return navigator.splashBuilder?.call() ?? SizedBox();
+      if (navigator.splashBuilder == null) {
+        return SizedBox.expand(child: Container(color: Colors.white, child: Center(child: CircularProgressIndicator())));
+      }
+      return navigator.splashBuilder!();
     }
     final navigatorWidget = Navigator(
         key: navigatorKey,
@@ -28,11 +31,11 @@ class RRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, Pop
         ? Consumer(builder: (_, ref, __) {
             final navigating = ref.watch(appLogicRunningProvider);
             return Stack(children: [
-              Positioned.fill(child: AbsorbPointer(child: navigatorWidget, absorbing: navigating)),
+              SizedBox.expand(child: AbsorbPointer(child: navigatorWidget, absorbing: navigating)),
               if (navigating)
                 FutureBuilder(
                   future: Future.delayed(Duration(milliseconds: 250)),
-                  builder: (_, snapshot) => Positioned.fill(
+                  builder: (_, snapshot) => SizedBox.expand(
                     child: snapshot.connectionState == ConnectionState.waiting ? SizedBox() : Center(child: CircularProgressIndicator()),
                   ),
                 ),

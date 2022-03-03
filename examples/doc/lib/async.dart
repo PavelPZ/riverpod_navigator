@@ -76,7 +76,6 @@ class AppNavigator extends RNavigator {
               closing: null,
             ),
           ],
-          splashBuilder: () => SplashScreen(),
         );
 
   // It is good practice to place the code for all events specific to navigation in AppNavigator.
@@ -182,16 +181,4 @@ class PageHelper<N extends RNavigator> extends ConsumerWidget {
       ),
     );
   }
-}
-
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) => SizedBox.expand(
-      child: Container(
-          color: Colors.white,
-          child: Center(
-            child: Icon(Icons.hourglass_full, size: 150, color: Colors.deepPurple),
-          )));
 }
