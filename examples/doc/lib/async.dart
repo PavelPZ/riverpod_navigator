@@ -117,15 +117,17 @@ abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S
           leading: appBarLeading,
         ),
         body: Center(
-          child: Column(children: [
-            for (final w in buildWidgets(navigator)) ...[SizedBox(height: 20), w],
-            SizedBox(height: 20),
-            Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
-            if (segment.asyncHolder != null) ...[
+          child: Column(
+            children: [
+              for (final w in buildWidgets(navigator)) ...[SizedBox(height: 20), w],
               SizedBox(height: 20),
-              Text('Async result: "${segment.asyncHolder!.value}"'),
-            ]
-          ]),
+              Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
+              if (segment.asyncHolder != null) ...[
+                SizedBox(height: 20),
+                Text('Async result: "${segment.asyncHolder!.value}"'),
+              ]
+            ],
+          ),
         ),
       );
 
