@@ -67,6 +67,8 @@ class RNavigatorCore {
   /// When changing navigation state: completed after [navigationStackProvider] is actual
   Future<void> get navigationCompleted => _defer2NextTick.future;
 
+  String screenTitle(TypedSegment segment) => router.segment2Route(segment).getScreenTitle(segment);
+
   String get navigationStack2Url => pathParser.toUrl(getNavigationStack());
   String debugSegmentSubpath(TypedSegment s) => pathParser.toUrl(segmentSubpath(s));
 

@@ -60,24 +60,29 @@ class HomeScreen extends ConsumerWidget {
   final HomeSegment segment;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-        appBar: AppBar(title: const Text('Home')),
-        body: Center(
-          child: Column(
-            children: [
-              for (var i = 1; i < 4; i++) ...[
-                const SizedBox(height: 30),
-                ElevatedButton(
-                  onPressed: () => ref.read(navigatorProvider).navigate([
-                    HomeSegment(),
-                    BookSegment(id: i),
-                    if (i > 1) BookSegment(id: 10 + i),
-                    if (i > 2) BookSegment(id: 100 + i),
-                  ]),
-                  child: Text('Go to Book: [$i${i > 1 ? ', 1$i' : ''}${i > 2 ? ', 10$i' : ''}]'),
-                ),
-              ]
-            ],
+  Widget build(BuildContext context, WidgetRef ref) => ScreenRoot<AppNavigator>(
+        buildScreen: (navigator, appBarLeading) => Scaffold(
+          appBar: AppBar(
+            title: const Text('Home'),
+            leading: appBarLeading,
+          ),
+          body: Center(
+            child: Column(
+              children: [
+                for (var i = 1; i < 4; i++) ...[
+                  const SizedBox(height: 30),
+                  ElevatedButton(
+                    onPressed: () => navigator.navigate([
+                      HomeSegment(),
+                      BookSegment(id: i),
+                      if (i > 1) BookSegment(id: 10 + i),
+                      if (i > 2) BookSegment(id: 100 + i),
+                    ]),
+                    child: Text('Go to Book: [$i${i > 1 ? ', 1$i' : ''}${i > 2 ? ', 10$i' : ''}]'),
+                  ),
+                ]
+              ],
+            ),
           ),
         ),
       );

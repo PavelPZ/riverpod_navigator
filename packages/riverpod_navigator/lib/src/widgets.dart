@@ -37,6 +37,31 @@ class _Screen2PageDefault extends Page {
   }
 }
 
+abstract class RScreen<N extends RNavigator, S extends TypedSegment> extends ConsumerWidget {
+  const RScreen(this.segment) : super();
+
+  final S segment;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final navigator = ref.read(navigatorProvider) as N;
+    final canPop = navigator.getNavigationStack().length > 1;
+    final appBarLeading = !canPop
+        ? null
+        : IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => navigator.onPopRoute(),
+          );
+    // https://stackoverflow.com/a/45918186
+    return WillPopScope(
+      onWillPop: () async => !canPop,
+      child: buildScreen(ref, navigator, appBarLeading),
+    );
+  }
+
+  Widget buildScreen(WidgetRef ref, N navigator, IconButton? appBarLeading);
+}
+
 class ScreenRoot<N extends RNavigator> extends ConsumerWidget {
   const ScreenRoot({Key? key, required this.buildScreen}) : super(key: key);
 

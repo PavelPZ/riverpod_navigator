@@ -45,6 +45,7 @@ class RRoute4Dart<T extends TypedSegment> {
     this.opening,
     this.replacing,
     this.closing,
+    this.screenTitle,
   });
   final Opening<T>? opening;
   final Replacing<T>? replacing;
@@ -53,7 +54,9 @@ class RRoute4Dart<T extends TypedSegment> {
   final FromUrlPars<T> fromUrlPars;
   final String urlName;
   final Type segmentType = T;
+  String Function(T segment)? screenTitle;
 
+  String getScreenTitle(TypedSegment segment) => screenTitle == null ? segment.runtimeType.toString() : screenTitle!(segment as T);
   AsyncOper? callOpening(TypedSegment newPath) => opening == null ? null : () => opening!(newPath as T);
   AsyncOper? callReplacing(TypedSegment oldPath, TypedSegment newPath) =>
       replacing == null ? null : () => replacing!(oldPath as T, newPath as T);

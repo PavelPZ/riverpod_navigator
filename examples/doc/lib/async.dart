@@ -28,30 +28,12 @@ class PageSegment extends TypedSegment {
   void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 }
 
-/// helper extension for screens
-///
-/// ```dart
-/// class HomeScreen extends ConsumerWidget {
-///   @override
-///   Widget build(BuildContext context, WidgetRef ref) {
-/// ...
-///     ElevatedButton(onPressed: () => ref.navigator.toPage('Page title')
-/// ```
+/// helper extension for app
 extension WidgetRefEx on WidgetRef {
   AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
 }
 
 /// helper extension for testing
-///
-/// ```dart
-/// void main() {
-///   test('navigation test', () async {
-///     final container = ProviderContainer();
-///     await container.navigator.toPage('Page');
-///     await container.pump();
-///     expect(container.navigator.navigationStack2Url, 'home/page;title=Page');
-/// ...
-/// ```
 extension ProviderContainerEx on ProviderContainer {
   AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
 }
@@ -65,14 +47,16 @@ class AppNavigator extends RNavigator {
               'home',
               HomeSegment.fromUrlPars,
               HomeScreen.new,
-              opening: (newSegment) => simulateAsyncResult('Home.creating', 2000),
+              screenTitle: (segment) => 'Home',
+              opening: (newSegment) => _simulateAsyncResult('Home.creating', 2000),
             ),
             RRoute<PageSegment>(
               'page',
               PageSegment.fromUrlPars,
               PageScreen.new,
-              opening: (newSegment) => simulateAsyncResult('Page.creating', 240),
-              replacing: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 800),
+              screenTitle: (segment) => 'Page ${segment.id}',
+              opening: (newSegment) => _simulateAsyncResult('Page.creating', 240),
+              replacing: (oldSegment, newSegment) => _simulateAsyncResult('Page.merging', 800),
               closing: null,
             ),
           ],
@@ -89,6 +73,25 @@ class AppNavigator extends RNavigator {
 
   /// navigate to home
   Future toHome() => navigate([HomeSegment()]);
+
+  /// sideEffect
+  Future sideEffect() => registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000)));
+
+  /// multi sideEffect
+  Future multiSideEffect() async {
+    blockGui(true);
+    try {
+      await registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000)));
+    } finally {
+      blockGui(false);
+    }
+  }
+}
+
+// simulates an action such as loading external data or saving to external storage
+Future<String> _simulateAsyncResult(String asyncResult, int msec) async {
+  await Future.delayed(Duration(milliseconds: msec));
+  return '$asyncResult: async result after $msec msec';
 }
 
 class App extends ConsumerWidget {
@@ -103,105 +106,64 @@ class App extends ConsumerWidget {
       );
 }
 
-// simulates an action such as loading external data or saving to external storage
-Future<String> simulateAsyncResult(String asyncResult, int msec) async {
-  await Future.delayed(Duration(milliseconds: msec));
-  return '$asyncResult: async result after $msec msec';
-}
-
-class HomeScreen extends ConsumerWidget {
-  const HomeScreen(this.segment, {Key? key}) : super(key: key);
-
-  final HomeSegment segment;
+/// common app screen
+abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S> {
+  const AppScreen(S segment) : super(segment);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => PageHelper(
-        segment: segment,
-        title: 'Home',
-        buildChildren: (navigator) => [
-          ElevatedButton(
-            onPressed: () => navigator.navigate([HomeSegment(), PageSegment(id: 1)]),
-            child: const Text('Go to page'),
-          ),
-        ],
-      );
-}
-
-class PageScreen extends ConsumerWidget {
-  const PageScreen(this.segment, {Key? key}) : super(key: key);
-
-  final PageSegment segment;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) => PageHelper(
-        segment: segment,
-        title: 'Page ${segment.id}',
-        buildChildren: (navigator) => [
-          ElevatedButton(
-            onPressed: () => navigator.toNextPage(),
-            child: const Text('Go to next book'),
-          ),
-          ElevatedButton(
-            onPressed: () => navigator.navigate([HomeSegment()]),
-            child: const Text('Go to home'),
-          ),
-          ElevatedButton(
-            onPressed: () => navigator.registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000))),
-            child: const Text('Side effect (5000 msec)'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              ref.navigator.blockGui(true);
-              try {
-                await navigator.registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000)));
-              } finally {
-                ref.navigator.blockGui(false);
-              }
-            },
-            child: const Text('Multi side effect (5000 msec)'),
-          ),
-        ],
-      );
-}
-
-class PageHelper extends ConsumerWidget {
-  const PageHelper({Key? key, required this.segment, required this.title, required this.buildChildren}) : super(key: key);
-
-  final TypedSegment segment;
-
-  final String title;
-
-  final List<Widget> Function(AppNavigator) buildChildren;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) => ScreenRoot<AppNavigator>(
-        buildScreen: (navigator, appBarLeading) => Scaffold(
-          appBar: AppBar(
-            title: Text(title),
-            leading: appBarLeading,
-          ),
-          body: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: (() {
-                final res = <Widget>[SizedBox(height: 20)];
-                for (final w in buildChildren(navigator)) {
-                  res.addAll([w, SizedBox(height: 20)]);
-                }
-                res.addAll([
-                  SizedBox(height: 20),
-                  Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
-                ]);
-                if (segment.asyncHolder != null) {
-                  res.addAll([
-                    SizedBox(height: 20),
-                    Text('Async result: "${segment.asyncHolder!.value}"'),
-                  ]);
-                }
-                return res;
-              })(),
-            ),
-          ),
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          title: Text(navigator.screenTitle(segment)),
+          leading: appBarLeading,
+        ),
+        body: Center(
+          child: Column(children: [
+            for (final w in buildWidgets(navigator)) ...[SizedBox(height: 20), w],
+            SizedBox(height: 20),
+            Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
+            if (segment.asyncHolder != null) ...[
+              SizedBox(height: 20),
+              Text('Async result: "${segment.asyncHolder!.value}"'),
+            ]
+          ]),
         ),
       );
+
+  List<Widget> buildWidgets(AppNavigator navigator);
+}
+
+class HomeScreen extends AppScreen<HomeSegment> {
+  const HomeScreen(HomeSegment segment) : super(segment);
+
+  @override
+  List<Widget> buildWidgets(navigator) => [
+        ElevatedButton(
+          onPressed: () => navigator.toPage(id: 1),
+          child: const Text('Go to page'),
+        ),
+      ];
+}
+
+class PageScreen extends AppScreen<PageSegment> {
+  const PageScreen(PageSegment segment) : super(segment);
+
+  @override
+  List<Widget> buildWidgets(navigator) => [
+        ElevatedButton(
+          onPressed: navigator.toNextPage,
+          child: const Text('Go to next book'),
+        ),
+        ElevatedButton(
+          onPressed: navigator.toHome,
+          child: const Text('Go to home'),
+        ),
+        ElevatedButton(
+          onPressed: navigator.sideEffect,
+          child: const Text('Side effect (5000 msec)'),
+        ),
+        ElevatedButton(
+          onPressed: navigator.multiSideEffect,
+          child: const Text('Multi side effect (5000 msec)'),
+        )
+      ];
 }
