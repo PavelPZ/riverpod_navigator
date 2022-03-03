@@ -54,11 +54,19 @@ Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment
           ProviderScope(
             // The RestorePath class preserves the last state of the navigator.
             // Used during the next navigator initialization.
-            overrides: RNavigatorCore.providerOverrides([BookSegment(id: 2)], AppNavigator.forBook, restorePath: restoreBook),
+            overrides: providerOverrides(
+              [BookSegment(id: 2)], 
+              AppNavigator.forBook, 
+              restorePath: restoreBook,
+            ),
             child: BooksTab(),
           ),
           ProviderScope(
-            overrides: RNavigatorCore.providerOverrides([AuthorSegment(id: 2)], AppNavigator.forAuthor, restorePath: restoreAuthor),
+            overrides: providerOverrides(
+              [AuthorSegment(id: 2)], 
+              AppNavigator.forAuthor, 
+              restorePath: restoreAuthor,
+            ),
             child: AuthorTab(),
           ),
         ],

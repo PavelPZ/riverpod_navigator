@@ -4,12 +4,12 @@
 
 - **Strictly typed navigation:** <br>
 you can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code
-- **asynchronous navigation**<br>
-is the case when changing the navigation state requires asynchronous actions (such as loading or saving data from the Internet)
-- **multiple providers**<br>
-is the case when the navigation state depends on multiple riverpod providers
+- **asynchronous navigation** ...<br>
+... is the case when changing the navigation state requires asynchronous actions (such as loading or saving data from the Internet)
+- **multiple providers** ...<br>
+... is the case when the navigation state depends on multiple riverpod providers
 - **easier coding:** <br>
-the problem of navigation is reduced to manipulation an immutable collection
+the navigation problem is reduced to manipulating the class collection
 - **better separation of concerns: UI x Model** (thanks to [riverpod](https://riverpod.dev/) :+1:):<br>
 navigation logic can be developed and tested without typing a single flutter widget
 - **nested navigation**<br>
@@ -89,7 +89,6 @@ class App extends ConsumerWidget {
       title: 'Riverpod Navigator Example',
       routerDelegate: navigator.routerDelegate,
       routeInformationParser: navigator.routeInformationParser,
-      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -102,8 +101,8 @@ class App extends ConsumerWidget {
 ```dart
 void main() => runApp(
       ProviderScope(
-        // home-path and navigator constructor are required
-        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
+        // aaaign ProviderScope.overrides. home typed-path and navigator constructor are required
+        overrides: providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
     );
@@ -130,9 +129,9 @@ ElevatedButton(
 - [test code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
 
 *Note*: The link ```Go to book: [3, 13, 103]``` in the [running example](https://pavelpz.github.io/doc_simple/) would not make much sense in the real Books application.
-It just shows the transition to the stack of four screens:
+It provide navigation to the stack of four screens:
 
-- **string-path** = ```'home/book;id=3/book;id=13/book;id=103'```. 
+- **string-path** = ```home/book;id=3/book;id=13/book;id=103```. 
 - **typed-path** = ```[HomeSegment(), BookSegment(id:3), BookSegment(id:13), BookSegment(id:103)]```. 
 - **navigation-stack** pages = ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:3))), MaterialPage (child: BookScreen(BookSegment(id:13))), MaterialPage (child: BookScreen(BookSegment(id:103)))]```. 
 
@@ -142,7 +141,13 @@ Navigation logic can be developed and tested without typing a single flutter wid
 
 ```dart 
   test('navigation model', () async {
-    final container = ProviderContainer(overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new));
+    final container = ProviderContainer(
+      overrides: 
+        providerOverrides(
+          [HomeSegment()], 
+          AppNavigator.new,
+        ),
+      );
     final navigator = container.read(navigatorProvider);
 
     Future navigTest(Future action(), String expected) async {

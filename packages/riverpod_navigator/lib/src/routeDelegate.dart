@@ -1,7 +1,6 @@
 part of 'index.dart';
 
-class RRouterDelegate extends RouterDelegate<TypedPath>
-    with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
+class RRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
   @override
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -19,16 +18,17 @@ class RRouterDelegate extends RouterDelegate<TypedPath>
     final navigatorWidget = Navigator(
         key: navigatorKey,
         // segment => Page(child:screen)
-        pages: navigationStack
-            .map((segment) => navigator.screen2Page(segment))
-            .toList(),
+        pages: navigationStack.map((segment) => navigator.screen2Page(segment)).toList(),
         onPopPage: (route, result) {
           if (!route.didPop(result)) return false;
           return navigator.onPopRoute();
         });
 
     return navigator.navigatorWidgetBuilder == null
-        ? navigatorWidget
+        ? Stack(children: [
+            Positioned.fill(child: navigatorWidget),
+            Positioned.fill(child: AbsorbPointer()),
+          ])
         : navigator.navigatorWidgetBuilder!(context, navigatorWidget);
   }
 
@@ -51,6 +51,5 @@ class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
       Future.value(_pathParser.fromUrl(routeInformation.location));
 
   @override
-  RouteInformation restoreRouteInformation(TypedPath configuration) =>
-      RouteInformation(location: _pathParser.toUrl(configuration));
+  RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: _pathParser.toUrl(configuration));
 }
