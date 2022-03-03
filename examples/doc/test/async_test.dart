@@ -4,9 +4,7 @@ import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 import 'package:test/test.dart';
 
 ProviderContainer createContainer() {
-  final res = ProviderContainer(
-      overrides:
-          RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new));
+  final res = ProviderContainer(overrides: providerOverrides([HomeSegment()], AppNavigator.new));
   addTearDown(res.dispose);
   return res;
 }
@@ -18,8 +16,7 @@ void main() {
 
     Future navigTest(Future action(), String expected) async {
       await action();
-      print(
-          '${DateTime.now().difference(start).inMilliseconds} msec ($expected)');
+      print('${DateTime.now().difference(start).inMilliseconds} msec ($expected)');
       await container.pump();
       expect(container.navigator.navigationStack2Url, expected);
     }
@@ -30,12 +27,9 @@ void main() {
 
     await navigTest(() => container.navigator.pop(), 'home');
 
-    await navigTest(
-        () => container.navigator.push(PageSegment(id: 2)), 'home/page;id=2');
+    await navigTest(() => container.navigator.push(PageSegment(id: 2)), 'home/page;id=2');
 
-    await navigTest(
-        () => container.navigator.replaceLast((_) => PageSegment(id: 3)),
-        'home/page;id=3');
+    await navigTest(() => container.navigator.replaceLast((_) => PageSegment(id: 3)), 'home/page;id=3');
 
     await navigTest(() => container.navigator.toNextPage(), 'home/page;id=4');
 

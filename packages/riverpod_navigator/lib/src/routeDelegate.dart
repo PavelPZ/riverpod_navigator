@@ -25,10 +25,19 @@ class RRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, Pop
         });
 
     return navigator.navigatorWidgetBuilder == null
-        ? Stack(children: [
-            Positioned.fill(child: navigatorWidget),
-            Positioned.fill(child: AbsorbPointer()),
-          ])
+        ? Consumer(builder: (_, ref, __) {
+            final navigating = ref.watch(appLogicRunningProvider);
+            return Stack(children: [
+              Positioned.fill(child: AbsorbPointer(child: navigatorWidget, absorbing: navigating)),
+              if (navigating)
+                FutureBuilder(
+                  future: Future.delayed(Duration(milliseconds: 250)),
+                  builder: (_, snapshot) => Positioned.fill(
+                    child: snapshot.connectionState == ConnectionState.waiting ? SizedBox() : Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+            ]);
+          })
         : navigator.navigatorWidgetBuilder!(context, navigatorWidget);
   }
 

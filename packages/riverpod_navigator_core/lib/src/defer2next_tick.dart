@@ -10,60 +10,55 @@ part of 'riverpod_navigator_core.dart';
 ///
 /// 1. two providers (on which navigation depends) change in one tick
 /// eg. if after a successful login:
-///
 ///   - change the login state to true
 ///   - change the ongoingPath state to a screen requiring a login
 ///
 /// in this case, without the Defer2NextTick class, [navigationStackProvider] is changed twice
 ///
-/// 2. state on which navigation depends changed during [RNavigatorCore.computeNavigation].
+/// 2. state on which navigation depends changed during [RNavigatorCore.appNavigationLogicCore].
 ///
-/// then [NavigationComputingException] is raised and [navigationStackProvider] and [ongoingPathProvider]
-/// are not synchronized
+/// then [navigationStackProvider] and [ongoingPathProvider] are not synchronized
 class Defer2NextTick {
   Defer2NextTick();
 
   late RNavigatorCore navigator;
 
+  void registerProtectedFuture(Future future) {
+    _protectedFutures.add(future);
+    future.whenComplete(() => _protectedFutures.remove(future));
+  }
+
+  final _protectedFutures = <Future>[];
+
   void providerChanged() {
     // synchronize navigation stack and ongoingPath
     if (ignoreNextProviderChange) return;
     assert(_p('providerChanged start'));
+    navigator.navigating(true);
     _resultCompleter ??= Completer();
     _resultFuture = _resultCompleter!.future;
-    _ignoreNext = true;
+    _providerChangedCalled = true;
     if (_isRunning) return;
     _isRunning = true;
-    scheduleMicrotask(() {
-      _refreshStack();
-      // if (!_running) {
-      //   assert(_p('providerChanged _refreshStack'));
-      //   _refreshStack();
-      // } else
-      //   assert(_p('providerChanged _running'));
-    });
+    scheduleMicrotask(_refreshStack);
   }
-
-  void registerProtectedFuture(Future future) {
-    protectedFutures.add(future);
-    future.whenComplete(() => protectedFutures.remove(future));
-  }
-
-  final protectedFutures = <Future>[];
 
   // *********************** private
 
-  // during _refreshStack running, another providerChanged() raises
-  var _ignoreNext = false;
+  /// during _refreshStack running, another providerChanged() called
+  var _providerChangedCalled = false;
 
-  // _refreshStack is running
+  /// _refreshStack is running
   var _isRunning = false;
 
+  /// for ongoingPathNotifier.state syncing: ignore providerChanged call
   var ignoreNextProviderChange = false;
 
-  // exist till _refreshStack is working
+  /// exist till [_refreshStack] is working
   Completer? _resultCompleter;
-  // (last _resultCompleter).future. Needed because _resultCompleter is set to null at the end of navigation roundtrip
+
+  /// (last [_resultCompleter]).future.
+  /// Needed because [_resultCompleter] is set to null at the end of navigation roundtrip
   Future? _resultFuture;
 
   Future<void> get future => _resultFuture ?? Future.value();
@@ -71,31 +66,22 @@ class Defer2NextTick {
   Future _refreshStack() async {
     try {
       try {
-        while (_ignoreNext) {
-          _ignoreNext = false;
-          final navigationStackNotifier =
-              navigator.ref.read(navigationStackProvider.notifier);
-          final ongoingPathNotifier =
-              navigator.ref.read(ongoingPathProvider.notifier);
-          if (protectedFutures.isNotEmpty) await Future.wait(protectedFutures);
-          assert(protectedFutures.isEmpty);
+        while (_providerChangedCalled) {
+          _providerChangedCalled = false;
+          final navigationStackNotifier = navigator.ref.read(navigationStackProvider.notifier);
+          final ongoingPathNotifier = navigator.ref.read(ongoingPathProvider.notifier);
+          if (_protectedFutures.isNotEmpty) await Future.wait(_protectedFutures);
+          assert(_protectedFutures.isEmpty);
           assert(_p('appLogic start'));
-          final futureOr = navigator.appNavigationLogicCore(
-              navigationStackNotifier.state, ongoingPathNotifier.state);
-          final newPath =
-              futureOr is Future<TypedPath?> ? await futureOr : futureOr;
-          // during async appNavigationLogicCore state change come (in providerChanged)
-          // run another cycle (appNavigationLogicCore for fresh input navigation state)
-          if (_ignoreNext) {
+          final futureOr = navigator.appNavigationLogicCore(navigationStackNotifier.state, ongoingPathNotifier.state);
+          final newPath = futureOr is Future<TypedPath?> ? await futureOr : futureOr;
+          // during async appNavigationLogicCore state another providerChanged called
+          // do not finish _refreshStack but run its while cycle again
+          if (_providerChangedCalled) {
             assert(_p('_needRefresh'));
             continue;
           }
-          // appNavigationLogicCore recognize no change to navig stack
-          if (newPath == null) {
-            assert(_p('newPath == null'));
-            continue;
-          }
-          // synchronize navigation stack and ongoingPath
+          // synchronize stack and ongoingPath
           ignoreNextProviderChange = true;
           try {
             ongoingPathNotifier.state = navigationStackNotifier.state = newPath;
@@ -106,6 +92,7 @@ class Defer2NextTick {
           // remember last navigation stack for restorePath
           navigator._restorePath?.saveLastKnownStack(newPath);
         }
+        // completed
         _resultCompleter!.complete(null);
       } catch (e, s) {
         // or sync exception or appNavigationLogicCore future error
@@ -114,6 +101,7 @@ class Defer2NextTick {
     } finally {
       _isRunning = false;
       _resultCompleter = null;
+      navigator.navigating(false);
     }
   }
 }

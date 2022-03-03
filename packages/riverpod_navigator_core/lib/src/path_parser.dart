@@ -4,32 +4,29 @@ part of 'riverpod_navigator_core.dart';
 //   SegmentMap extension
 // ********************************************
 
+/// helper for typed-segment <=> string-segment conversion
 extension UrlParsEx on UrlPars {
-  UrlPars setInt(String name, int value, {int defaultValue = 0}) {
-    if (value != defaultValue) this[name] = value.toString();
+  UrlPars setInt(String name, int value) {
+    this[name] = value.toString();
     return this;
   }
 
-  int getInt(String name, {int defaultValue = 0}) {
+  int getInt(String name) {
     final value = this[name];
-    return value == null ? defaultValue : int.parse(value);
+    return value == null ? 0 : int.parse(value);
   }
 
-  UrlPars setString(String name, String? value, {String? defaultValue}) {
-    if (value == defaultValue || value == null) return this;
-    this[name] = value;
+  UrlPars setString(String name, String? value) {
+    if (value != null) this[name] = value;
     return this;
   }
 
-  String? getStringNull(String name, {String? defaultValue}) {
-    final value = this[name];
-    return value ?? defaultValue;
-  }
+  String? getStringNull(String name) => this[name];
 
-  String getString(String name, {String? defaultValue}) {
+  String getString(String name) {
     final value = this[name];
-    assert(value != null || defaultValue != null, 'Must be value != null || defaultValue != null');
-    return value ?? defaultValue!;
+    assert(value != null, 'value != null expected');
+    return value!;
   }
 }
 

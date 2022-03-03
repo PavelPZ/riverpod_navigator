@@ -6,7 +6,7 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [isLoggedProvider]),
+        overrides: providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [isLoggedProvider]),
         child: const App(),
       ),
     );
@@ -202,7 +202,8 @@ class LoginScreen extends StatelessWidget {
 }
 
 class PageHelper extends ConsumerWidget {
-  const PageHelper({Key? key, required this.title, required this.segment, required this.buildChildren, this.isLoginPage}) : super(key: key);
+  const PageHelper({Key? key, required this.title, required this.segment, required this.buildChildren, this.isLoginPage})
+      : super(key: key);
 
   final String title;
 

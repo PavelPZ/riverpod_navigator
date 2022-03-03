@@ -4,7 +4,7 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
+        overrides: providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
     );
@@ -71,8 +71,8 @@ class AppNavigator extends RNavigator {
               'page',
               PageSegment.fromUrlPars,
               PageScreen.new,
-              opening: (newSegment) => simulateAsyncResult('Page.creating', 400),
-              replacing: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 200),
+              opening: (newSegment) => simulateAsyncResult('Page.creating', 240),
+              replacing: (oldSegment, newSegment) => simulateAsyncResult('Page.merging', 800),
               closing: null,
             ),
           ],

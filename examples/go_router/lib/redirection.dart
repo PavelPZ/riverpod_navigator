@@ -9,7 +9,7 @@ part 'redirection.g.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [loginInfoProvider]),
+        overrides: providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [loginInfoProvider]),
         child: const App(),
       ),
     );

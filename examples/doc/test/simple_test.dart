@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('navigation test', () async {
-    final container = ProviderContainer(overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new));
+    final container = ProviderContainer(overrides: providerOverrides([HomeSegment()], AppNavigator.new));
     final navigator = container.read(navigatorProvider);
 
     Future navigTest(Future action(), String expected) async {

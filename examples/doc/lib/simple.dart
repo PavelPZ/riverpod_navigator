@@ -5,7 +5,7 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 void main() => runApp(
       ProviderScope(
         // home=path and navigator constructor are required
-        overrides: RNavigatorCore.providerOverrides(const [HomeSegment()], AppNavigator.new),
+        overrides: providerOverrides(const [HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
     );

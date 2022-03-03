@@ -13,6 +13,9 @@ final ongoingPathProvider = StateProvider<TypedPath>((_) => throw UnimplementedE
 /// navigationStackProvider
 final navigationStackProvider = StateProvider<TypedPath>((_) => []);
 
+/// navigationStackProvider
+final appLogicRunningProvider = StateProvider<bool>((_) => false);
+
 /// initialize providers
 List<Override> providerOverrides(
   TypedPath initPath,
@@ -28,6 +31,7 @@ List<Override> providerOverrides(
         ),
       ),
       navigationStackProvider,
+      appLogicRunningProvider,
       navigatorProvider.overrideWithProvider(
         Provider((ref) => navigator(ref)
           .._restorePath = restorePath

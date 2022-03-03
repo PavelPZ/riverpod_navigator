@@ -15,15 +15,19 @@ part 'routes.dart';
 // Basic types
 // ********************************************
 
+/// result for async action (opening, closing, replacing)
 typedef AsyncActionResult = dynamic;
+
+/// parsed string-segment pars, e.g. for 'book;id=3' it is {'id':'3'}
 typedef UrlPars = Map<String, String>;
-typedef Json2Segment = TypedSegment Function(UrlPars, String unionKey);
+
+/// from URL TypedSegment creator
 typedef FromUrlPars<T extends TypedSegment> = T Function(UrlPars pars);
 
-/// Ancestor for typed segmenta.
+/// Ancestor for typed segments.
 ///
-/// Instead of three-segment url path 'home/books/$bookId' we can use
-/// e.g. navigate([HomeSegment(), BooksSegment(), BookSegment(id: bookId)]);
+/// Instead of navigate('home/books/book;id=3') we can use
+/// navigate([HomeSegment(), BooksSegment(), BookSegment(id: 3)]);
 @immutable
 class TypedSegment {
   const TypedSegment();
@@ -45,7 +49,7 @@ class AsyncHolder<T> {
 // ********************************************
 // RestorePath
 // ********************************************
-
+/// for nested navigation: holds navigator initPath
 class RestorePath {
   RestorePath();
   TypedPath? path;
