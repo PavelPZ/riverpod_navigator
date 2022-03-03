@@ -14,7 +14,7 @@ final ongoingPathProvider = StateProvider<TypedPath>((_) => throw UnimplementedE
 final navigationStackProvider = StateProvider<TypedPath>((_) => []);
 
 /// navigationStackProvider
-final appLogicRunningProvider = StateProvider<bool>((_) => false);
+final appLogicRunningProvider = StateProvider<int>((_) => 0);
 
 /// initialize providers
 List<Override> providerOverrides(

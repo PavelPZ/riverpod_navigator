@@ -56,3 +56,10 @@ class RestorePath {
   void saveLastKnownStack(TypedPath lastStack) => path = lastStack;
   TypedPath getInitialPath(TypedPath initPath) => path ?? initPath;
 }
+
+bool _p(String title) {
+  if (!_ignorePrint) print(title);
+  return true;
+}
+
+var _ignorePrint = true;

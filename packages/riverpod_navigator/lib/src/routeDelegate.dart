@@ -31,8 +31,8 @@ class RRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, Pop
         ? Consumer(builder: (_, ref, __) {
             final navigating = ref.watch(appLogicRunningProvider);
             return Stack(children: [
-              SizedBox.expand(child: AbsorbPointer(child: navigatorWidget, absorbing: navigating)),
-              if (navigating)
+              SizedBox.expand(child: AbsorbPointer(child: navigatorWidget, absorbing: navigating > 0)),
+              if (navigating > 0)
                 FutureBuilder(
                   future: Future.delayed(Duration(milliseconds: 250)),
                   builder: (_, snapshot) => SizedBox.expand(

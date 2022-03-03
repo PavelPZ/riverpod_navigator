@@ -34,9 +34,11 @@ class Defer2NextTick {
     // synchronize navigation stack and ongoingPath
     if (ignoreNextProviderChange) return;
     assert(_p('providerChanged start'));
-    navigator.blockGui(true);
-    _resultCompleter ??= Completer();
-    _resultFuture = _resultCompleter!.future;
+    if (_resultCompleter == null) {
+      navigator.blockGui(true);
+      _resultCompleter = Completer();
+      _resultFuture = _resultCompleter!.future;
+    }
     _providerChangedCalled = true;
     if (_isRunning) return;
     _isRunning = true;
@@ -70,15 +72,16 @@ class Defer2NextTick {
           _providerChangedCalled = false;
           final navigationStackNotifier = navigator.ref.read(navigationStackProvider.notifier);
           final ongoingPathNotifier = navigator.ref.read(ongoingPathProvider.notifier);
-          if (_protectedFutures.isNotEmpty) await Future.wait(_protectedFutures);
-          assert(_protectedFutures.isEmpty);
           assert(_p('appLogic start'));
+          if (_protectedFutures.isNotEmpty) await Future.wait(_protectedFutures);
+          assert(_p('_protectedFutures'));
+          assert(_protectedFutures.isEmpty);
           final futureOr = navigator.appNavigationLogicCore(navigationStackNotifier.state, ongoingPathNotifier.state);
           final newPath = futureOr is Future<TypedPath?> ? await futureOr : futureOr;
           // during async appNavigationLogicCore state another providerChanged called
           // do not finish _refreshStack but run its while cycle again
           if (_providerChangedCalled) {
-            assert(_p('_needRefresh'));
+            assert(_p('_providerChangedCalled'));
             continue;
           }
           // synchronize stack and ongoingPath
@@ -105,10 +108,3 @@ class Defer2NextTick {
     }
   }
 }
-
-bool _p(String title) {
-  if (!_ignorePrint) print(title);
-  return true;
-}
-
-var _ignorePrint = true;

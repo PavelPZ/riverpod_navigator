@@ -42,7 +42,10 @@ class RNavigatorCore {
     return waitEnd(todo).then((_) => newOngoingPath);
   }
 
-  void registerProtectedFuture(Future future) => _defer2NextTick.registerProtectedFuture(future);
+  Future registerProtectedFuture(Future future) {
+    _defer2NextTick.registerProtectedFuture(future);
+    return future;
+  }
 
   /// home path
   late TypedPath initPath;
@@ -59,7 +62,7 @@ class RNavigatorCore {
     return navigationCompleted;
   }
 
-  void blockGui(bool running) => ref.read(appLogicRunningProvider.notifier).state = running;
+  void blockGui(bool running) => ref.read(appLogicRunningProvider.notifier).update((state) => running ? state + 1 : state - 1);
 
   /// When changing navigation state: completed after [navigationStackProvider] is actual
   Future<void> get navigationCompleted => _defer2NextTick.future;

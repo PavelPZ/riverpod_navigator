@@ -32,10 +32,13 @@ void main() {
     await container.pump();
     doPrint('start');
 
-    navigator.registerProtectedFuture(Future.delayed(Duration(milliseconds: 2000)).then((value) => doPrint('protectedFuture 2000')));
-    navigator.registerProtectedFuture(Future.delayed(Duration(milliseconds: 1500)).then((value) => doPrint('protectedFuture 1500')));
-    navigator.registerProtectedFuture(Future.delayed(Duration(milliseconds: 2500)).then((value) => doPrint('protectedFuture 2500')));
-    navigator.registerProtectedFuture(Future.value().then((value) => doPrint('protectedFuture none')));
+    unawaited(
+        navigator.registerProtectedFuture(Future.delayed(Duration(milliseconds: 2000)).then((value) => doPrint('protectedFuture 2000'))));
+    unawaited(
+        navigator.registerProtectedFuture(Future.delayed(Duration(milliseconds: 1500)).then((value) => doPrint('protectedFuture 1500'))));
+    unawaited(
+        navigator.registerProtectedFuture(Future.delayed(Duration(milliseconds: 2500)).then((value) => doPrint('protectedFuture 2500'))));
+    unawaited(navigator.registerProtectedFuture(Future.value().then((value) => doPrint('protectedFuture none'))));
     container.read(ongoingPathProvider.notifier).state = [Segment()];
     await container.pump();
     doPrint('before navigationCompleted');

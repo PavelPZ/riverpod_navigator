@@ -153,7 +153,7 @@ class PageScreen extends ConsumerWidget {
             onPressed: () async {
               ref.navigator.blockGui(true);
               try {
-                await Future.delayed(Duration(milliseconds: 5000));
+                await navigator.registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000)));
               } finally {
                 ref.navigator.blockGui(false);
               }
@@ -177,6 +177,7 @@ class PageHelper extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final navigator = ref.navigator;
     final canPop = navigator.getNavigationStack().length > 1;
+    // https://stackoverflow.com/a/45918186
     return WillPopScope(
       onWillPop: () async => !canPop,
       child: Scaffold(
