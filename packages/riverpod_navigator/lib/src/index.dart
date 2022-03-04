@@ -14,7 +14,7 @@ part 'widgets.dart';
 // ********************************************
 
 typedef RiverpodNavigatorCreator = RNavigator Function(Ref);
-typedef NavigatorWidgetBuilder = Widget Function(BuildContext, Navigator);
+typedef NavigatorWraperBuilder = Widget Function(Navigator);
 typedef ScreenBuilder<T extends TypedSegment> = Widget Function(T);
 typedef SplashBuilder = Widget Function();
 typedef Screen2Page<T extends TypedSegment> = Page Function(T, ScreenBuilder<T>);

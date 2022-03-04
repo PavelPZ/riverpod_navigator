@@ -88,3 +88,34 @@ abstract class RScreenWithScaffold<N extends RNavigator, S extends TypedSegment>
 
   Widget buildBody(WidgetRef ref, N navigator);
 }
+
+class NavigatorWraper extends ConsumerWidget {
+  const NavigatorWraper(this.navigator);
+
+  final Navigator navigator;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isNavigating = ref.watch(appLogicRunningProvider) > 0;
+    return Stack(children: [
+      SizedBox.expand(child: AbsorbPointer(child: navigator, absorbing: isNavigating)),
+      if (isNavigating)
+        FutureBuilder(
+          future: Future.delayed(Duration(milliseconds: 250)),
+          builder: (_, snapshot) => SizedBox.expand(
+            child: snapshot.connectionState == ConnectionState.waiting ? SizedBox() : Center(child: CircularProgressIndicator()),
+          ),
+        ),
+    ]);
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  @override
+  Widget build(context) => SizedBox.expand(
+        child: Container(
+          color: Colors.white,
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      );
+}
