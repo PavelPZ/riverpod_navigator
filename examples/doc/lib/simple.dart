@@ -18,8 +18,7 @@ class HomeSegment extends TypedSegment {
 
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
-  factory BookSegment.fromUrlPars(UrlPars pars) =>
-      BookSegment(id: pars.getInt('id'));
+  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
   @override
   void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 
@@ -35,9 +34,17 @@ class AppNavigator extends RNavigator {
             // fromUrlPars is used to decode URL to segment
             // HomeScreen.new and BookScreen.new are screens for a given segment
             RRoute<HomeSegment>(
-                'home', HomeSegment.fromUrlPars, HomeScreen.new),
+              'home',
+              HomeSegment.fromUrlPars,
+              HomeScreen.new,
+              screenTitle: (_) => 'Home',
+            ),
             RRoute<BookSegment>(
-                'book', BookSegment.fromUrlPars, BookScreen.new),
+              'book',
+              BookSegment.fromUrlPars,
+              BookScreen.new,
+              screenTitle: (segment) => 'Book ${segment.id}',
+            ),
           ],
         );
 }
@@ -73,8 +80,7 @@ class HomeScreen extends RScreenWithScaffold<AppNavigator, HomeSegment> {
                   if (i > 1) BookSegment(id: 10 + i),
                   if (i > 2) BookSegment(id: 100 + i),
                 ]),
-                child: Text(
-                    'Go to Book: [$i${i > 1 ? ', 1$i' : ''}${i > 2 ? ', 10$i' : ''}]'),
+                child: Text('Go to Book: [$i${i > 1 ? ', 1$i' : ''}${i > 2 ? ', 10$i' : ''}]'),
               ),
             ]
           ],
@@ -91,16 +97,12 @@ class BookScreen extends RScreenWithScaffold<AppNavigator, BookSegment> {
           children: [
             const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () => ref
-                  .read(navigatorProvider)
-                  .replaceLast<BookSegment>(
-                      (last) => BookSegment(id: last.id + 1)),
+              onPressed: () => ref.read(navigatorProvider).replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1)),
               child: const Text('Go to next book'),
             ),
             const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () =>
-                  ref.read(navigatorProvider).navigate([HomeSegment()]),
+              onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment()]),
               child: const Text('Go to home'),
             ),
           ],
