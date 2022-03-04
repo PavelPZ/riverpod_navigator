@@ -6,6 +6,8 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 void main() => runApp(
       ProviderScope(
+        /// Navigation stack depends on isLoggedProvider too.
+        /// Add @dependsOn with [isLoggedProvider]
         overrides: providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [isLoggedProvider]),
         child: const App(),
       ),
@@ -15,12 +17,15 @@ class App extends ConsumerWidget {
   const App({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
-        title: 'Riverpod Navigator Example',
-        routerDelegate: ref.navigator.routerDelegate,
-        routeInformationParser: ref.navigator.routeInformationParser,
-        debugShowCheckedModeBanner: false,
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final navigator = ref.read(navigatorProvider) as AppNavigator;
+    return MaterialApp.router(
+      title: 'Riverpod Navigator Example',
+      routerDelegate: navigator.routerDelegate,
+      routeInformationParser: navigator.routeInformationParser,
+      debugShowCheckedModeBanner: false,
+    );
+  }
 }
 
 class HomeSegment extends TypedSegment {
@@ -52,29 +57,32 @@ class LoginSegment extends TypedSegment {
 /// !!! there is another provider on which the navigation status depends:
 final isLoggedProvider = StateProvider<bool>((_) => false);
 
-typedef NeedsLogin<T extends TypedSegment> = bool Function(T segment);
-
 /// !!! only book screens with odd 'id' require a login
 bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
-
-/// helper extension for screens
-extension WidgetRefApp on WidgetRef {
-  AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
-}
-
-/// helper extension for test
-extension ProviderContainerApp on ProviderContainer {
-  AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
-}
 
 class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
           [
-            RRoute<HomeSegment>('home', HomeSegment.fromUrlPars, HomeScreen.new),
-            RRoute<BookSegment>('page', BookSegment.fromUrlPars, BookScreen.new),
-            RRoute<LoginSegment>('login', LoginSegment.fromUrlPars, LoginScreen.new),
+            RRoute<HomeSegment>(
+              'home',
+              HomeSegment.fromUrlPars,
+              HomeScreen.new,
+              screenTitle: (_) => 'Home',
+            ),
+            RRoute<BookSegment>(
+              'page',
+              BookSegment.fromUrlPars,
+              BookScreen.new,
+              screenTitle: (segment) => 'Book ${segment.id}',
+            ),
+            RRoute<LoginSegment>(
+              'login',
+              LoginSegment.fromUrlPars,
+              LoginScreen.new,
+              screenTitle: (_) => 'Login',
+            ),
           ],
         );
 
@@ -97,7 +105,9 @@ class AppNavigator extends RNavigator {
       return [LoginSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
     } else {
       // user is logged and LogginScreen is going to display => redirect to HomeScreen
-      if (userIsLogged && (ongoingPath.isEmpty || ongoingPath.last is LoginSegment)) return [HomeSegment()];
+      if (userIsLogged && (ongoingPath.isEmpty || ongoingPath.last is LoginSegment)) {
+        return [HomeSegment()];
+      }
     }
     // no redirection is needed but rebuild can appear (e.g. during logout)
     return [...ongoingPath];
@@ -105,7 +115,14 @@ class AppNavigator extends RNavigator {
 
   // ******* actions used on the screens
 
-  Future gotoNextBook() => replaceLast<BookSegment>((actualBook) => BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
+  /// navigate to book
+  Future toBook({required int id}) => navigate([HomeSegment(), BookSegment(id: id)]);
+
+  /// navigate to next book
+  Future toNextBook() => replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1));
+
+  /// navigate to home
+  Future toHome() => navigate([HomeSegment()]);
 
   Future onLogout() {
     // actualize login state
@@ -143,90 +160,16 @@ class AppNavigator extends RNavigator {
   }
 }
 
-class HomeScreen extends ConsumerWidget {
-  const HomeScreen(this.segment, {Key? key}) : super(key: key);
-
-  final HomeSegment segment;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) => PageHelper(
-        title: 'Home',
-        segment: segment,
-        buildChildren: (navigator) {
-          final bool isLogged = ref.watch(isLoggedProvider);
-          return [
-            for (var i = 1; i <= bookCount; i++)
-              ElevatedButton(
-                onPressed: () => navigator.navigate([HomeSegment(), BookSegment(id: i)]),
-                child: Text('Book $i${!isLogged && i.isOdd ? '(log in first)' : ''}'),
-              ) // normal page
-          ];
-        },
-      );
-}
-
-const bookCount = 5;
-
-class BookScreen extends ConsumerWidget {
-  const BookScreen(this.book, {Key? key}) : super(key: key);
-
-  final BookSegment book;
+/// common screen ancestor for [HomeScreen] and [BookScreen]
+abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S> {
+  const AppScreen(S segment) : super(segment);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => PageHelper(
-        segment: book,
-        title: 'Book ${book.id}',
-        buildChildren: (navigator) => [
-          ElevatedButton(
-            onPressed: navigator.gotoNextBook,
-            child: const Text('Go to next book'),
-          ),
-        ],
-      );
-}
-
-class LoginScreen extends StatelessWidget {
-  const LoginScreen(this.segment, {Key? key}) : super(key: key);
-
-  final LoginSegment segment;
-
-  @override
-  Widget build(BuildContext context) => PageHelper(
-        segment: segment,
-        title: 'Login Page',
-        isLoginPage: true,
-        buildChildren: (navigator) => [
-          ElevatedButton(onPressed: navigator.loginScreenOK, child: Text('Login')),
-        ],
-      );
-}
-
-class PageHelper extends ConsumerWidget {
-  const PageHelper({Key? key, required this.title, required this.segment, required this.buildChildren, this.isLoginPage})
-      : super(key: key);
-
-  final String title;
-
-  final TypedSegment segment;
-
-  final List<Widget> Function(AppNavigator) buildChildren;
-
-  final bool? isLoginPage;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final navigator = ref.navigator;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        leading: isLoginPage == true
-            ? IconButton(
-                onPressed: navigator.loginScreenCancel,
-                icon: Icon(Icons.cancel),
-              )
-            : null,
-        actions: [
-          if (isLoginPage != true)
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          title: Text(navigator.screenTitle(segment)),
+          leading: appBarLeading,
+          actions: [
             Consumer(builder: (_, ref, __) {
               final isLogged = ref.watch(isLoggedProvider);
               return ElevatedButton(
@@ -234,21 +177,70 @@ class PageHelper extends ConsumerWidget {
                 child: Text(isLogged ? 'Logout' : 'Login'),
               );
             })
-        ],
-      ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: (() {
-            final res = <Widget>[SizedBox(height: 20)];
-            for (final w in buildChildren(navigator)) {
-              res.addAll([w, SizedBox(height: 20)]);
-            }
-            res.addAll([Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
-            return res;
-          })(),
+          ],
         ),
-      ),
-    );
+        body: Center(
+          child: Column(
+            children: [
+              for (final w in buildWidgets(ref, navigator)) ...[SizedBox(height: 20), w],
+            ],
+          ),
+        ),
+      );
+
+  List<Widget> buildWidgets(WidgetRef ref, AppNavigator navigator);
+}
+
+class HomeScreen extends AppScreen<HomeSegment> {
+  const HomeScreen(HomeSegment segment) : super(segment);
+
+  @override
+  List<Widget> buildWidgets(ref, navigator) {
+    final bool isLogged = ref.watch(isLoggedProvider);
+    return [
+      for (var i = 1; i <= bookCount; i++)
+        ElevatedButton(
+          onPressed: () => navigator.toBook(id: i),
+          child: Text('Book $i${!isLogged && i.isOdd ? '(log in first)' : ''}'),
+        ) // normal page
+    ];
   }
+}
+
+class BookScreen extends AppScreen<BookSegment> {
+  const BookScreen(BookSegment book) : super(book);
+
+  @override
+  List<Widget> buildWidgets(ref, navigator) {
+    return [
+      ElevatedButton(
+        onPressed: navigator.toNextBook,
+        child: const Text('Go to next book'),
+      ),
+      ElevatedButton(
+        onPressed: navigator.toHome,
+        child: const Text('Go to home'),
+      ),
+    ];
+  }
+}
+
+const bookCount = 5;
+
+class LoginScreen extends RScreen<AppNavigator, LoginSegment> {
+  const LoginScreen(LoginSegment segment) : super(segment);
+
+  @override
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          title: Text(navigator.screenTitle(segment)),
+          leading: IconButton(
+            onPressed: navigator.loginScreenCancel,
+            icon: Icon(Icons.cancel),
+          ),
+        ),
+        body: Center(
+          child: ElevatedButton(onPressed: navigator.loginScreenOK, child: Text('Login')),
+        ),
+      );
 }

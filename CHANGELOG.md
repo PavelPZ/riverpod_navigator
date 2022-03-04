@@ -1,10 +1,15 @@
+## 0.36.0
+
+- **Breaking**: renaming RRoute4Dart ti RRouteCore
+- add getScreenTitle parametter to RRoute
+
 ## 0.35.0
 
 - small example fix
 
 ## 0.34.0
 
-- **Breaking**: urlName is mandatory parameter fo RRoute
+- **Breaking**: urlName is mandatory parameter of RRoute
 
 ## 0.30.0
 

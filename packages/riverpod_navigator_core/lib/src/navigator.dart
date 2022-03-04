@@ -30,7 +30,8 @@ class RNavigatorCore {
   TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
 
   /// low level app logic
-  FutureOr<TypedPath> appNavigationLogicCore(TypedPath oldNavigationStack, TypedPath ongoingPath) {
+  FutureOr<TypedPath> appNavigationLogicCore(
+      TypedPath oldNavigationStack, TypedPath ongoingPath) {
     final newOngoingPath = appNavigationLogic(ongoingPath);
 
     // in ongoingPath, when ongoingPath[i] == currentTypedPath[i], set ongoingPath[i] = currentTypedPath[i]
@@ -65,15 +66,19 @@ class RNavigatorCore {
     return navigationCompleted;
   }
 
-  void blockGui(bool running) => ref.read(appLogicRunningProvider.notifier).update((state) => running ? state + 1 : state - 1);
+  void blockGui(bool running) => ref
+      .read(appLogicRunningProvider.notifier)
+      .update((state) => running ? state + 1 : state - 1);
 
   /// When changing navigation state: completed after [navigationStackProvider] is actual
   Future<void> get navigationCompleted => _defer2NextTick.future;
 
-  String screenTitle(TypedSegment segment) => router.segment2Route(segment).getScreenTitle(segment);
+  String screenTitle(TypedSegment segment) =>
+      router.segment2Route(segment).getScreenTitle(segment);
 
   String get navigationStack2Url => pathParser.toUrl(getNavigationStack());
-  String debugSegmentSubpath(TypedSegment s) => pathParser.toUrl(segmentSubpath(s));
+  String debugSegmentSubpath(TypedSegment s) =>
+      pathParser.toUrl(segmentSubpath(s));
 
   TypedPath segmentSubpath(TypedSegment s) {
     final navigationStack = getNavigationStack();
@@ -87,7 +92,8 @@ class RNavigatorCore {
   }
 
   /// asynchronous screen actions, start
-  static List<Tuple2<AsyncOper, TypedSegment>> waitStart(RRouter router, TypedPath oldPath, TypedPath newPath) {
+  static List<Tuple2<AsyncOper, TypedSegment>> waitStart(
+      RRouter router, TypedPath oldPath, TypedPath newPath) {
     final todo = <Tuple2<AsyncOper, TypedSegment>>[];
     void add(AsyncOper? oper, TypedSegment segment) {
       if (oper == null) return;
@@ -132,14 +138,20 @@ class RNavigatorCore {
   TypedPath getNavigationStack() => ref.read(navigationStackProvider);
 
   void _setdependsOn(List<AlwaysAliveProviderListenable> value) {
-    _dependsOn = [...value, if (!value.contains(ongoingPathProvider)) ongoingPathProvider];
+    _dependsOn = [
+      ...value,
+      if (!value.contains(ongoingPathProvider)) ongoingPathProvider
+    ];
     assert(_dependsOn.every((p) => p is Override));
 
     // 1. Listen to the riverpod providers. If any change, call _defer2NextTick.start().
     // 2. [providerChanged] ensures that _runNavigation is called only once the next tick
     // 3. Add RemoveListener's to unlistens
     // 4. Use unlistens in ref.onDispose
-    _unlistens = _dependsOn.map((depend) => ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick.providerChanged())).toList();
+    _unlistens = _dependsOn
+        .map((depend) => ref.listen<dynamic>(
+            depend, (previous, next) => _defer2NextTick.providerChanged()))
+        .toList();
   }
 
   late List<AlwaysAliveProviderListenable> _dependsOn;
@@ -167,15 +179,22 @@ class RNavigatorCore {
     final navigationStack = getNavigationStack();
     return navigationStack.length <= 1
         ? Future.value()
-        : navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
+        : navigate([
+            for (var i = 0; i < navigationStack.length - 1; i++)
+              navigationStack[i]
+          ]);
   }
 
-  Future<void> push(TypedSegment segment) => navigate([...getNavigationStack(), segment]);
+  Future<void> push(TypedSegment segment) =>
+      navigate([...getNavigationStack(), segment]);
 
   Future<void> replaceLast<T extends TypedSegment>(T replace(T old)) {
     final navigationStack = getNavigationStack();
     return navigate(
-      [for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i], replace(navigationStack.last as T)],
+      [
+        for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i],
+        replace(navigationStack.last as T)
+      ],
     );
   }
 }

@@ -37,14 +37,11 @@ class _Screen2PageDefault extends Page {
   }
 }
 
-abstract class RScreen<N extends RNavigator, S extends TypedSegment> extends ConsumerWidget {
-  const RScreen(this.segment) : super();
-
-  final S segment;
-
-  @override
+mixin BackButtonListenerMixin<N extends RNavigator> on Widget {
   Widget build(BuildContext context, WidgetRef ref) {
+    final BackButtonDispatcher? rootBackDispatcher = Router.of(context).backButtonDispatcher;
     final navigator = ref.read(navigatorProvider) as N;
+    if (rootBackDispatcher == null) return buildScreen(ref, navigator, null);
     final canPop = navigator.getNavigationStack().length > 1;
     final appBarLeading = !canPop
         ? null
@@ -52,39 +49,41 @@ abstract class RScreen<N extends RNavigator, S extends TypedSegment> extends Con
             icon: Icon(Icons.arrow_back),
             onPressed: () => navigator.onPopRoute(),
           );
-    // https://stackoverflow.com/a/45918186
-    return WillPopScope(
-      onWillPop: () async => !canPop,
+    return BackButtonListener(
+      onBackButtonPressed: () async => canPop,
       child: buildScreen(ref, navigator, appBarLeading),
     );
+    // // https://stackoverflow.com/a/45918186
+    // return WillPopScope(
+    //   onWillPop: () async => !canPop,
+    //   child: buildScreen(ref, navigator, appBarLeading),
+    // );
   }
 
   Widget buildScreen(WidgetRef ref, N navigator, IconButton? appBarLeading);
 }
 
-class ScreenRoot<N extends RNavigator> extends ConsumerWidget {
-  const ScreenRoot({Key? key, required this.buildScreen}) : super(key: key);
+abstract class RScreen<N extends RNavigator, S extends TypedSegment> extends ConsumerWidget with BackButtonListenerMixin<N> {
+  const RScreen(this.segment) : super();
+  final S segment;
+}
+
+abstract class RScreenHook<N extends RNavigator, S extends TypedSegment> extends HookConsumerWidget with BackButtonListenerMixin<N> {
+  const RScreenHook(this.segment) : super();
+  final S segment;
+}
+
+abstract class RScreenWithScaffold<N extends RNavigator, S extends TypedSegment> extends RScreen<N, S> {
+  const RScreenWithScaffold(S segment) : super(segment);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final navigator = ref.read(navigatorProvider) as N;
-    final canPop = navigator.getNavigationStack().length > 1;
-    final appBarLeading = !canPop
-        ? null
-        : IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: navigator.onPopRoute,
-          );
-    return BackButtonListener(
-      onBackButtonPressed: () async => canPop,
-      child: buildScreen(navigator, appBarLeading),
-    );
-    // https://stackoverflow.com/a/45918186
-    // return WillPopScope(
-    //   onWillPop: () async => !canPop,
-    //   child: buildScreen(navigator, appBarLeading),
-    // );
-  }
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          title: Text(navigator.screenTitle(segment)),
+          leading: appBarLeading,
+        ),
+        body: buildBody(ref, navigator),
+      );
 
-  final Widget Function(N navigator, IconButton? appBarLeading) buildScreen;
+  Widget buildBody(WidgetRef ref, N navigator);
 }

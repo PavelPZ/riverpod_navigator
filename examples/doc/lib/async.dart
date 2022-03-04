@@ -17,20 +17,15 @@ class HomeSegment extends TypedSegment {
   final asyncHolder = AsyncHolder<String>();
 }
 
-class PageSegment extends TypedSegment {
-  PageSegment({required this.id});
-  factory PageSegment.fromUrlPars(UrlPars pars) => PageSegment(id: pars.getInt('id'));
+class BookSegment extends TypedSegment {
+  BookSegment({required this.id});
+  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
   final int id;
   @override
   final asyncHolder = AsyncHolder<String>();
 
   @override
   void toUrlPars(UrlPars pars) => pars.setInt('id', id);
-}
-
-/// helper extension for testing
-extension ProviderContainerEx on ProviderContainer {
-  AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
 }
 
 class AppNavigator extends RNavigator {
@@ -42,16 +37,16 @@ class AppNavigator extends RNavigator {
               'home',
               HomeSegment.fromUrlPars,
               HomeScreen.new,
-              screenTitle: (segment) => 'Home',
-              opening: (newSegment) => _simulateAsyncResult('Home.creating', 2000),
+              screenTitle: (_) => 'Home',
+              opening: (newSegment) => _simulateAsyncResult('Home.opening', 2000),
             ),
-            RRoute<PageSegment>(
+            RRoute<BookSegment>(
               'page',
-              PageSegment.fromUrlPars,
-              PageScreen.new,
-              screenTitle: (segment) => 'Page ${segment.id}',
-              opening: (newSegment) => _simulateAsyncResult('Page.creating', 240),
-              replacing: (oldSegment, newSegment) => _simulateAsyncResult('Page.merging', 800),
+              BookSegment.fromUrlPars,
+              BookScreen.new,
+              screenTitle: (segment) => 'Book ${segment.id}',
+              opening: (newSegment) => _simulateAsyncResult('Book.opening', 240),
+              replacing: (oldSegment, newSegment) => _simulateAsyncResult('Book.replacing', 800),
               closing: null,
             ),
           ],
@@ -60,11 +55,11 @@ class AppNavigator extends RNavigator {
   // It is good practice to place the code for all events specific to navigation in AppNavigator.
   // These can then be used not only for writing screen widgets, but also for testing.
 
-  /// navigate to page
-  Future toPage({required int id}) => navigate([HomeSegment(), PageSegment(id: id)]);
+  /// navigate to book
+  Future toBook({required int id}) => navigate([HomeSegment(), BookSegment(id: id)]);
 
-  /// navigate to next page
-  Future toNextPage() => replaceLast<PageSegment>((old) => PageSegment(id: old.id + 1));
+  /// navigate to next book
+  Future toNextBook() => replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1));
 
   /// navigate to home
   Future toHome() => navigate([HomeSegment()]);
@@ -105,27 +100,21 @@ class App extends ConsumerWidget {
 }
 
 /// common app screen
-abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S> {
+abstract class AppScreen<S extends TypedSegment> extends RScreenWithScaffold<AppNavigator, S> {
   const AppScreen(S segment) : super(segment);
 
   @override
-  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
-        appBar: AppBar(
-          title: Text(navigator.screenTitle(segment)),
-          leading: appBarLeading,
-        ),
-        body: Center(
-          child: Column(
-            children: [
-              for (final w in buildWidgets(navigator)) ...[SizedBox(height: 20), w],
+  Widget buildBody(ref, navigator) => Center(
+        child: Column(
+          children: [
+            for (final w in buildWidgets(navigator)) ...[SizedBox(height: 20), w],
+            SizedBox(height: 20),
+            Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
+            if (segment.asyncHolder != null) ...[
               SizedBox(height: 20),
-              Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
-              if (segment.asyncHolder != null) ...[
-                SizedBox(height: 20),
-                Text('Async result: "${segment.asyncHolder!.value}"'),
-              ]
-            ],
-          ),
+              Text('Async result: "${segment.asyncHolder!.value}"'),
+            ]
+          ],
         ),
       );
 
@@ -138,19 +127,19 @@ class HomeScreen extends AppScreen<HomeSegment> {
   @override
   List<Widget> buildWidgets(navigator) => [
         ElevatedButton(
-          onPressed: () => navigator.toPage(id: 1),
+          onPressed: () => navigator.toBook(id: 1),
           child: const Text('Go to Page 1'),
         ),
       ];
 }
 
-class PageScreen extends AppScreen<PageSegment> {
-  const PageScreen(PageSegment segment) : super(segment);
+class BookScreen extends AppScreen<BookSegment> {
+  const BookScreen(BookSegment segment) : super(segment);
 
   @override
   List<Widget> buildWidgets(navigator) => [
         ElevatedButton(
-          onPressed: navigator.toNextPage,
+          onPressed: navigator.toNextBook,
           child: const Text('Go to next page'),
         ),
         ElevatedButton(

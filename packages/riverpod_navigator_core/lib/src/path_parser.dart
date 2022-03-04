@@ -41,7 +41,8 @@ class PathParser {
   final RRouter _router;
 
   /// String path => TypedPath
-  String toUrl(TypedPath typedPath) => typedPath.map((s) => _router.toUrl(s)).join('/');
+  String toUrl(TypedPath typedPath) =>
+      typedPath.map((s) => _router.toUrl(s)).join('/');
 
   /// TypedPath => String path
   TypedPath fromUrl(String? path) {
