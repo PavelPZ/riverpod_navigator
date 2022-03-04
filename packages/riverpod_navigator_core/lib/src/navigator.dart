@@ -8,7 +8,7 @@ part of 'riverpod_navigator_core.dart';
 class RNavigatorCore {
   RNavigatorCore(
     this.ref,
-    List<RRoute4Dart> routes,
+    List<RRouteCore> routes,
   ) : router = RRouter(routes) {
     pathParser = PathParser(router);
 
@@ -42,6 +42,9 @@ class RNavigatorCore {
     return waitEnd(todo).then((_) => newOngoingPath);
   }
 
+  /// Navigation is delayed until [future] is completed.
+  /// This allows the global state to be synchronized
+  /// (for example, when [future] is storing data that can be used by another screen)
   Future registerProtectedFuture(Future future) {
     _defer2NextTick.registerProtectedFuture(future);
     return future;

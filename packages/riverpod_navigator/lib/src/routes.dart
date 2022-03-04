@@ -1,6 +1,6 @@
 part of 'index.dart';
 
-class RRoute<T extends TypedSegment> extends RRoute4Dart<T> {
+class RRoute<T extends TypedSegment> extends RRouteCore<T> {
   RRoute(
     String urlName,
     FromUrlPars<T> fromUrlPars,

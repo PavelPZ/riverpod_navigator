@@ -12,7 +12,7 @@ typedef AsyncOper = Future<AsyncActionResult> Function();
 
 /// rroute's holder
 class RRouter {
-  RRouter(List<RRoute4Dart> routes) {
+  RRouter(List<RRouteCore> routes) {
     for (final r in routes) {
       if (_string2Route.containsKey(r.urlName)) {
         throw Exception('"${r.urlName}" segment.TypeName already registered.');
@@ -25,10 +25,10 @@ class RRouter {
     }
   }
 
-  final _string2Route = <String, RRoute4Dart>{};
-  final _type2Route = <Type, RRoute4Dart>{};
+  final _string2Route = <String, RRouteCore>{};
+  final _type2Route = <Type, RRouteCore>{};
 
-  R segment2Route<R extends RRoute4Dart>(TypedSegment segment) => _type2Route[segment.runtimeType] as R;
+  R segment2Route<R extends RRouteCore>(TypedSegment segment) => _type2Route[segment.runtimeType] as R;
 
   bool segmentEq(TypedSegment s1, TypedSegment s2) => segment2Route(s1).toUrl(s1) == segment2Route(s2).toUrl(s2);
 
@@ -38,15 +38,15 @@ class RRouter {
 }
 
 /// meta infos for given TypedSegment
-class RRoute4Dart<T extends TypedSegment> {
-  RRoute4Dart(
+class RRouteCore<T extends TypedSegment> {
+  RRouteCore(
     this.urlName,
     this.fromUrlPars, {
     this.opening,
     this.replacing,
     this.closing,
-    this.screenTitle,
-  });
+    String screenTitle(T segment)?,
+  }) : screenTitle = screenTitle ?? ((_) => T.toString());
   final Opening<T>? opening;
   final Replacing<T>? replacing;
   final Closing<T>? closing;
@@ -54,9 +54,9 @@ class RRoute4Dart<T extends TypedSegment> {
   final FromUrlPars<T> fromUrlPars;
   final String urlName;
   final Type segmentType = T;
-  String Function(T segment)? screenTitle;
+  String Function(T segment) screenTitle;
 
-  String getScreenTitle(TypedSegment segment) => screenTitle == null ? segment.runtimeType.toString() : screenTitle!(segment as T);
+  String getScreenTitle(TypedSegment segment) => screenTitle(segment as T);
   AsyncOper? callOpening(TypedSegment newPath) => opening == null ? null : () => opening!(newPath as T);
   AsyncOper? callReplacing(TypedSegment oldPath, TypedSegment newPath) =>
       replacing == null ? null : () => replacing!(oldPath as T, newPath as T);

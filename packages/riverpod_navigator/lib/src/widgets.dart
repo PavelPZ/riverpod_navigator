@@ -73,13 +73,17 @@ class ScreenRoot<N extends RNavigator> extends ConsumerWidget {
         ? null
         : IconButton(
             icon: Icon(Icons.arrow_back),
-            onPressed: () => navigator.onPopRoute(),
+            onPressed: navigator.onPopRoute,
           );
-    // https://stackoverflow.com/a/45918186
-    return WillPopScope(
-      onWillPop: () async => !canPop,
+    return BackButtonListener(
+      onBackButtonPressed: () async => canPop,
       child: buildScreen(navigator, appBarLeading),
     );
+    // https://stackoverflow.com/a/45918186
+    // return WillPopScope(
+    //   onWillPop: () async => !canPop,
+    //   child: buildScreen(navigator, appBarLeading),
+    // );
   }
 
   final Widget Function(N navigator, IconButton? appBarLeading) buildScreen;

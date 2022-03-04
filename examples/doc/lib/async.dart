@@ -28,11 +28,6 @@ class PageSegment extends TypedSegment {
   void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 }
 
-/// helper extension for app
-extension WidgetRefEx on WidgetRef {
-  AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
-}
-
 /// helper extension for testing
 extension ProviderContainerEx on ProviderContainer {
   AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
@@ -98,12 +93,15 @@ class App extends ConsumerWidget {
   const App({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
-        title: 'Riverpod Navigator Example',
-        routerDelegate: ref.navigator.routerDelegate,
-        routeInformationParser: ref.navigator.routeInformationParser,
-        debugShowCheckedModeBanner: false,
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final navigator = ref.read(navigatorProvider) as AppNavigator;
+    return MaterialApp.router(
+      title: 'Riverpod Navigator Example',
+      routerDelegate: navigator.routerDelegate,
+      routeInformationParser: navigator.routeInformationParser,
+      debugShowCheckedModeBanner: false,
+    );
+  }
 }
 
 /// common app screen
@@ -141,7 +139,7 @@ class HomeScreen extends AppScreen<HomeSegment> {
   List<Widget> buildWidgets(navigator) => [
         ElevatedButton(
           onPressed: () => navigator.toPage(id: 1),
-          child: const Text('Go to page'),
+          child: const Text('Go to Page 1'),
         ),
       ];
 }
@@ -153,7 +151,7 @@ class PageScreen extends AppScreen<PageSegment> {
   List<Widget> buildWidgets(navigator) => [
         ElevatedButton(
           onPressed: navigator.toNextPage,
-          child: const Text('Go to next book'),
+          child: const Text('Go to next page'),
         ),
         ElevatedButton(
           onPressed: navigator.toHome,
