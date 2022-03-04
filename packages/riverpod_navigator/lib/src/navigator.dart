@@ -15,20 +15,20 @@ class RNavigator extends RNavigatorCore {
         splashBuilder = splashBuilder ?? SplashScreen.new,
         routerDelegate = RRouterDelegate(),
         super(ref, routes) {
-    routerDelegate.navigator = this;
+    routeInformationParser = RouteInformationParserImpl(pathParser);
 
-    final callInDispose = ref.listen(navigationStackProvider, (previous, next) => routerDelegate.doNotifyListeners());
+    routerDelegate.navigator = this;
+    final callInDispose = ref.listen(
+      navigationStackProvider,
+      (_, __) => routerDelegate.doNotifyListeners(),
+    );
     ref.onDispose(callInDispose);
   }
 
   final NavigatorWraperBuilder navigatorWraperBuilder;
   final SplashBuilder splashBuilder;
-
   final RRouterDelegate routerDelegate;
-
-  RouteInformationParserImpl get routeInformationParser =>
-      _routeInformationParser ?? (_routeInformationParser = RouteInformationParserImpl(pathParser));
-  RouteInformationParserImpl? _routeInformationParser;
+  late RouteInformationParserImpl routeInformationParser;
 
   Page screen2Page(TypedSegment segment) {
     final route = router.segment2Route<RRoute>(segment);

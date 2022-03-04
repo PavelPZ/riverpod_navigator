@@ -35,7 +35,7 @@ class Defer2NextTick {
     if (ignoreNextProviderChange) return;
     assert(_p('providerChanged start'));
     if (_resultCompleter == null) {
-      navigator.blockGui(true);
+      navigator.absorbPointer(true);
       _resultCompleter = Completer();
       _resultFuture = _resultCompleter!.future;
     }
@@ -106,7 +106,7 @@ class Defer2NextTick {
     } finally {
       _isRunning = false;
       _resultCompleter = null;
-      navigator.blockGui(false);
+      navigator.absorbPointer(false);
     }
   }
 }

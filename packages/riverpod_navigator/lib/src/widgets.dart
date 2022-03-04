@@ -89,6 +89,9 @@ abstract class RScreenWithScaffold<N extends RNavigator, S extends TypedSegment>
   Widget buildBody(WidgetRef ref, N navigator);
 }
 
+/// when async navigation is computed:
+/// 1. AbsorbPointer for screen
+/// 2. when computation is longer than 250msec, display CircularProgressIndicator
 class NavigatorWraper extends ConsumerWidget {
   const NavigatorWraper(this.navigator);
 
@@ -96,7 +99,8 @@ class NavigatorWraper extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isNavigating = ref.watch(appLogicRunningProvider) > 0;
+    final isNavigating = ref.watch(absorbPointerProvider) > 0;
+
     return Stack(children: [
       SizedBox.expand(child: AbsorbPointer(child: navigator, absorbing: isNavigating)),
       if (isNavigating)
@@ -110,6 +114,7 @@ class NavigatorWraper extends ConsumerWidget {
   }
 }
 
+/// splash screen is visible before home screen is displayed
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(context) => SizedBox.expand(
