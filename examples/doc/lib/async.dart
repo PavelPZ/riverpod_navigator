@@ -69,11 +69,11 @@ class AppNavigator extends RNavigator {
 
   /// multi sideEffect
   Future multiSideEffect() async {
-    absorbPointers(true);
+    absorbPointer(true);
     try {
       await registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000)));
     } finally {
-      absorbPointers(false);
+      absorbPointer(false);
     }
   }
 }

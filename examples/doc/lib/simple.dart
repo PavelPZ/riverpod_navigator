@@ -30,9 +30,10 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            // 'home' and 'book' strings are used in web URL, e.g. 'home/book;id=2'
-            // fromUrlPars is used to decode URL to segment
-            // HomeScreen.new and BookScreen.new are screens for a given segment
+            /// 'home' and 'book' strings are used in web URL, e.g. 'home/book;id=2'
+            /// fromUrlPars is used to decode URL to segment
+            /// HomeScreen.new and BookScreen.new are screen builders for a given segment
+            /// screenTitle is not mandatory but allows a general solution e.g. for [AppBar.title]
             RRoute<HomeSegment>(
               'home',
               HomeSegment.fromUrlPars,
