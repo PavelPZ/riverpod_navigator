@@ -233,7 +233,7 @@ class MyLinkButton extends ElevatedButton {
 }
 ```
 
-Use the *Path* variant of the helper methods (*navigatePath*, *replaceLastPath*, *pushPath*, *popPath*), which returns *NavigatePath*:
+Use the *Path* variant of the helper methods (*navigatePath*, *replaceLastPath*, *pushPath*, *popPath*), which returns *NavigatePath*
 
 ```dart
 class AppNavigator extends RNavigator {
@@ -254,6 +254,8 @@ class AppNavigator extends RNavigator {
 // new code:
 MyLinkButton (toNextBook());
 ```
+
+You have to modify test as well: ```await navigTest(navigator.toNextBook().onPressed, 'home/book;id=2');```
 
 ## Other features and examples 
 
