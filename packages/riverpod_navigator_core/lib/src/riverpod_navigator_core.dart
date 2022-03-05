@@ -57,6 +57,13 @@ class RestorePath {
   TypedPath getInitialPath(TypedPath initPath) => path ?? initPath;
 }
 
+class NavigatePath {
+  const NavigatePath(this.navigate, this.path);
+  final Future Function() navigate;
+  final TypedPath path;
+}
+
+/// allow print during development only, e.g. assert(_p('message'));
 bool _p(String title) {
   if (!_ignorePrint) print(title);
   return true;

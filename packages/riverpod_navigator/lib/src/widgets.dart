@@ -36,10 +36,12 @@ class _Screen2PageDefault extends Page {
   }
 }
 
-mixin BackButtonListenerMixin<N extends RNavigator> on Widget {
+mixin BackButtonListenerMixin<N extends RNavigator> on ConsumerWidget {
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final navigator = ref.read(navigatorProvider) as N;
 
+    // fix for nested navigator where rootBackDispatcher is null
     final BackButtonDispatcher? rootBackDispatcher = Router.of(context).backButtonDispatcher;
     if (rootBackDispatcher == null) return buildScreen(ref, navigator, null);
 
@@ -54,11 +56,6 @@ mixin BackButtonListenerMixin<N extends RNavigator> on Widget {
       onBackButtonPressed: () async => canPop,
       child: buildScreen(ref, navigator, appBarLeading),
     );
-    // // https://stackoverflow.com/a/45918186
-    // return WillPopScope(
-    //   onWillPop: () async => !canPop,
-    //   child: buildScreen(ref, navigator, appBarLeading),
-    // );
   }
 
   Widget buildScreen(WidgetRef ref, N navigator, IconButton? appBarLeading);
@@ -123,4 +120,18 @@ class SplashScreen extends StatelessWidget {
           child: Center(child: CircularProgressIndicator()),
         ),
       );
+}
+
+/// navigation button
+class NavigationButton extends ConsumerWidget {
+  const NavigationButton(this.navigatePath);
+  final NavigatePath navigatePath;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final navigator = ref.read(navigatorProvider);
+    return ElevatedButton(
+      onPressed: navigatePath.navigate,
+      child: Text(navigator.screenTitle(navigatePath.path.last)),
+    );
+  }
 }

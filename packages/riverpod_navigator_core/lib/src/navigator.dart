@@ -75,6 +75,12 @@ class RNavigatorCore {
     return navigationCompleted;
   }
 
+  /// Main [RNavigator] method. Provides navigation to the newPath.
+  NavigatePath navigatePath(TypedPath newPath) => NavigatePath(() {
+        ref.read(ongoingPathProvider.notifier).state = newPath;
+        return navigationCompleted;
+      }, newPath);
+
   /// wrap your async actions:
   /// ```
   /// absorbPointer(true);
