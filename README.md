@@ -203,7 +203,7 @@ ElevatedButton(
 // old code:
   /*onPressed: () => replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1)),*/
 // new code:
-  onPressed: () => navigator.toNextBook(),
+  onPressed: navigator.toNextBook,
   child: Text('Book ${segment.id}'),
 ),  
 ```
@@ -214,12 +214,12 @@ and test like this:
 // old code:
   /*await navigTest(() => replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1));*/
 // new code:
-  await navigTest(() => navigator.toNextBook(), 'home/book;id=2');
+  await navigTest(navigator.toNextBook, 'home/book;id=2');
 ```
 
-## Use the screen title in the screen link as well
+## Also use the screen name in the screen link
 
-In a Simple example, we used *RRoute<BookSegment>* parameter ```screenTitle: (segment) => 'Book ${segment.id}'``` for the value of the screen ```AppBar.title```. The same title can be used for the title of the link to the screen (in *ListTile*, *ElevatedButton* etc.). 
+In a Simple example, we used *RRoute<BookSegment>* parameter ```screenTitle: (segment) => 'Book ${segment.id}'``` for the value of the screen ```AppBar.title```. The same title can be used in the screen link (in *ListTile*, *ElevatedButton* etc.). 
 
 First, define your link widget:
 
@@ -234,7 +234,7 @@ class MyLinkButton extends ElevatedButton {
 }
 ```
 
-You must use the *..Path* variant of the helper methods (*navigatePath*, *replaceLastPath*, *pushPath*, *popPath*):
+You must use the *Path* variant of the helper methods (*navigatePath*, *replaceLastPath*, *pushPath*, *popPath*), which return *NavigatePath*:
 
 ```dart
 class AppNavigator extends RNavigator {
@@ -245,14 +245,14 @@ class AppNavigator extends RNavigator {
 
 .......
 
-// ElevatedButton(
-//   onPressed: () => navigator.toNextBook(),
-//   child: Text('Book ${segment.id}'),
-// ),
+// old code:
+/* ElevatedButton(
+     onPressed: () => navigator.toNextBook(),
+     child: Text('Book ${segment.id}'),
+),*/
+// new code:
 MyLinkButton (toNextBook());
 ```
-
-
 
 ## Other features and examples 
 
