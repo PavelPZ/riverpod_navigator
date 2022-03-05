@@ -13,8 +13,8 @@ final ongoingPathProvider = StateProvider<TypedPath>((_) => throw UnimplementedE
 /// navigationStackProvider
 final navigationStackProvider = StateProvider<TypedPath>((_) => []);
 
-/// absorbPointerProvider: navigation is running iff ref.read(absorbPointerProvider) > 0
-final absorbPointerProvider = StateProvider<int>((_) => 0);
+/// isNavigatingProvider: navigation is running iff ref.read(isNavigatingProvider) > 0
+final isNavigatingProvider = StateProvider<int>((_) => 0);
 
 /// initialize providers
 List<Override> providerOverrides(
@@ -31,7 +31,7 @@ List<Override> providerOverrides(
         ),
       ),
       navigationStackProvider,
-      absorbPointerProvider,
+      isNavigatingProvider,
       navigatorProvider.overrideWithProvider(
         Provider((ref) => navigator(ref)
           .._restorePath = restorePath

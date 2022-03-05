@@ -96,7 +96,7 @@ class NavigatorWraper extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isNavigating = ref.watch(absorbPointerProvider) > 0;
+    final isNavigating = ref.watch(isNavigatingProvider) > 0;
 
     return Stack(children: [
       SizedBox.expand(child: AbsorbPointer(child: navigator, absorbing: isNavigating)),
