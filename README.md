@@ -149,7 +149,8 @@ class BookScreen extends RScreen<AppNavigator, BookSegment> {
           /// [appBarLeading] overrides standard back button behavior
           leading: appBarLeading,
         ),
-        body: ...
+        body: 
+  ...
 ```
 
 #### And that's all
@@ -242,7 +243,8 @@ and in test like this:
 
 In a Simple example, we used *RRoute<BookSegment>* parameter ```screenTitle: (segment) => 'Book ${segment.id}'``` for the value of the screen ```AppBar.title```. The same title can be used in the screen link (in *ListTile*, *ElevatedButton* etc.). 
 
-Use the *Path* variant of the helper methods (*navigatePath*, *replaceLastPath*, *pushPath*, *popPath*), which returns *NavigatePath*
+Use the *Path* variant of the helper methods (*navigatePath*, *replaceLastPath*, *pushPath*, *popPath*)
+in AppNavigator:
 
 ```dart
 class AppNavigator extends RNavigator {
@@ -268,7 +270,7 @@ class MyLinkButton extends ElevatedButton {
 }
 ```
 
-The use in the widget code then looks like this
+Use MyLinkButton in the screen code:
 
 ```dart
 ...
@@ -276,7 +278,7 @@ MyLinkButton(navigator.toBook(id))
 ... 
 ```
 
-and in test like this:
+and in the test code:
 
 ```dart
   await navigTest(navigator.toBook(2).navigate, 'home/book;id=2');
