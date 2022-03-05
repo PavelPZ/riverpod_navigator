@@ -73,7 +73,7 @@ class HomeScreen extends RScreenWithScaffold<AppNavigator, HomeSegment> {
         child: Column(
           children: [
             for (var i = 1; i < 4; i++) ...[
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => navigator.navigate([
                   HomeSegment(),
@@ -98,12 +98,12 @@ class BookScreen extends RScreenWithScaffold<AppNavigator, BookSegment> {
           children: [
             const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () => ref.read(navigatorProvider).replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1)),
+              onPressed: () => navigator.replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1)),
               child: const Text('Go to next book'),
             ),
             const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment()]),
+              onPressed: () => navigator.navigate([HomeSegment()]),
               child: const Text('Go to home'),
             ),
           ],

@@ -69,7 +69,7 @@ class RNavigatorCore {
     return future;
   }
 
-  /// Main [RNavigator] method. Provides navigation to newPath.
+  /// Main [RNavigator] method. Provides navigation to the newPath.
   Future navigate(TypedPath newPath) {
     ref.read(ongoingPathProvider.notifier).state = newPath;
     return navigationCompleted;

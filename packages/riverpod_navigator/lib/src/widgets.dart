@@ -124,10 +124,3 @@ class SplashScreen extends StatelessWidget {
         ),
       );
 }
-
-/// navigation button
-class NavigationButton extends ElevatedButton {
-  factory NavigationButton(VoidCallback onPressed) {
-    onPressed();
-  }
-}
