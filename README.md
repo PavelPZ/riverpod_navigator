@@ -125,10 +125,10 @@ void main() => runApp(
     );
 ```
 
-### Step5 - code screen widgets as a RScreen descendants
+### Step5 - code screen widgets (as a RScreen widget descendants)
 
-RScreen:
-- replace the standard Android back button behavior (using BackButtonListener widget)
+RScreen widget:
+- replaces the standard Android back button behavior (using Flutter BackButtonListener widget)
 - will provide appBarLeading icon to replace the standard AppBar back button behavior
 
 This is essential for asynchronous navigation to function properly.
@@ -140,8 +140,8 @@ class BookScreen extends RScreen<AppNavigator, BookSegment> {
   @override
   Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
         appBar: AppBar(
-          /// screen title is computed from:
-          /// RRoute<BookSegment>.screenTitle: (segment) => 'Book ${segment.id}',
+          /// navigator.screenTitle(segment) returns screen title defined in 
+          /// RRoute<BookSegment>.screenTitle: (segment) => 'Book ${segment.id}'
           title: Text(navigator.screenTitle(segment)),
           /// [appBarLeading] overrides standard back button behavior
           leading: appBarLeading,
@@ -149,22 +149,9 @@ class BookScreen extends RScreen<AppNavigator, BookSegment> {
         body: ...
 ```
 
+#### And that's all
 
-### And that's all
-
-Navigation to a specific navigation stack is performed as follows:
-
-```dart
-// navigation to BookScreen
-ElevatedButton(
-  onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment(), BookSegment(id: 3)]),
-
-// navigation to HomeScreen
-ElevatedButton(
-  onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment()]),
-```
-
-#### See:
+See:
 
 - [running example](https://pavelpz.github.io/doc_simple/)
 - [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart)
