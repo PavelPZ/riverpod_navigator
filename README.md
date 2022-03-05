@@ -186,13 +186,13 @@ Navigation logic can be developed and tested without typing a single flutter wid
 
 It is good practice to place the code for all events specific to navigation in AppNavigator.
 These can then be used not only for writing screen widgets, but also for testing.
-See toNextBook action bellow:
+See ```toNextBook``` action bellow:
 
 ```dart
 class AppNavigator extends RNavigator {
   ......
   /// navigate to next book
-  Future toNextBook() => replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1));
+  Future toNextBook() => replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1));
 }
 ```
 
@@ -201,23 +201,58 @@ The BookScreen code then looks like this:
 ```dart
 ElevatedButton(
 // old code:
-  /*onPressed: () => navigator.replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1)),*/
+  /*onPressed: () => replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1)),*/
 // new code:
-  onPressed: navigator.toNextBook,
+  onPressed: () => navigator.toNextBook(),
+  child: Text('Book ${segment.id}'),
+),  
 ```
 
 and test like this:
 
 ```dart
 // old code:
-  /*await navigTest(() => navigator.replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1)), 'home/book;id=1');*/
+  /*await navigTest(() => replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1));*/
 // new code:
-  await navigTest(navigator.toNextBook, 'home/book;id=1');
+  await navigTest(() => navigator.toNextBook(), 'home/book;id=2');
 ```
 
-## navigatePath, RLinkButton and RRoute.screenTitle
+## Use the screen title in the screen link as well
 
-I
+In a Simple example, we used *RRoute<BookSegment>* parameter ```screenTitle: (segment) => 'Book ${segment.id}'``` for the value of the screen ```AppBar.title```. The same title can be used for the title of the link to the screen (in *ListTile*, *ElevatedButton* etc.). 
+
+First, define your link widget:
+
+```dart
+class MyLinkButton extends ElevatedButton {
+  MyLinkButton(NavigatePath navigatePath)
+      : super(
+          onPressed: navigatePath.onPressed,
+          child: Text(navigatePath.title),
+          // other button attributes
+        );
+}
+```
+
+You must use the *..Path* variant of the helper methods (*navigatePath*, *replaceLastPath*, *pushPath*, *popPath*):
+
+```dart
+class AppNavigator extends RNavigator {
+  ......
+  /// navigate to next book
+  NavigatePath toNextBook() => replaceLastPath<BookSegment>((last) => BookSegment(id: last.id + 1));
+}
+
+.......
+
+// ElevatedButton(
+//   onPressed: () => navigator.toNextBook(),
+//   child: Text('Book ${segment.id}'),
+// ),
+MyLinkButton (toNextBook());
+```
+
+
 
 ## Other features and examples 
 

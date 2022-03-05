@@ -74,10 +74,10 @@ class RNavigatorCore {
   NavigatePath navigatePath(TypedPath newPath) => NavigatePath(() {
         ref.read(ongoingPathProvider.notifier).state = newPath;
         return navigationCompleted;
-      }, newPath);
+      }, screenTitle(newPath.last));
 
   /// Main [RNavigator] method. Provides navigation to the newPath.
-  Future navigate(TypedPath newPath) => navigatePath(newPath).navigate();
+  Future navigate(TypedPath newPath) => navigatePath(newPath).onPressed();
 
   /// wrap your async actions:
   /// ```
@@ -182,7 +182,7 @@ class RNavigatorCore {
     return navigatePath([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
   }
 
-  Future<void> pop() => popPath().navigate();
+  Future<void> pop() => popPath().onPressed();
 
   NavigatePath replaceLastPath<T extends TypedSegment>(T replace(T old)) {
     final navigationStack = getNavigationStack();
@@ -191,9 +191,9 @@ class RNavigatorCore {
     );
   }
 
-  Future replaceLast<T extends TypedSegment>(T replace(T old)) => replaceLastPath<T>(replace).navigate();
+  Future replaceLast<T extends TypedSegment>(T replace(T old)) => replaceLastPath<T>(replace).onPressed();
 
   NavigatePath pushPath(TypedSegment segment) => navigatePath([...getNavigationStack(), segment]);
 
-  Future<void> push(TypedSegment segment) => pushPath(segment).navigate();
+  Future<void> push(TypedSegment segment) => pushPath(segment).onPressed();
 }

@@ -120,14 +120,11 @@ class SplashScreen extends StatelessWidget {
 }
 
 /// RLinkButton navigation button
-abstract class RLinkButton extends ConsumerWidget {
+abstract class RLinkButton extends StatelessWidget {
   const RLinkButton(this.navigatePath);
   final NavigatePath navigatePath;
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final navigator = ref.read(navigatorProvider);
-    return buildButton(ref, navigatePath.navigate, navigator.screenTitle(navigatePath.path.last));
-  }
+  Widget build(BuildContext context) => buildButton(navigatePath.onPressed, navigatePath.title);
 
-  Widget buildButton(WidgetRef ref, VoidCallback onPressed, String screenTitle);
+  Widget buildButton(VoidCallback onPressed, String screenTitle);
 }

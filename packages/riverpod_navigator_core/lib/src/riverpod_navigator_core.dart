@@ -58,9 +58,9 @@ class RestorePath {
 }
 
 class NavigatePath {
-  const NavigatePath(this.navigate, this.path);
-  final Future Function() navigate;
-  final TypedPath path;
+  const NavigatePath(this.onPressed, this.title);
+  final Future Function() onPressed;
+  final String title;
 }
 
 /// allow print during development only, e.g. assert(_p('message'));
