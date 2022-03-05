@@ -70,16 +70,14 @@ class RNavigatorCore {
   }
 
   /// Main [RNavigator] method. Provides navigation to the newPath.
-  Future navigate(TypedPath newPath) {
-    ref.read(ongoingPathProvider.notifier).state = newPath;
-    return navigationCompleted;
-  }
-
-  /// Main [RNavigator] method. Provides navigation to the newPath.
+  /// Used in e.g RLinkbutton
   NavigatePath navigatePath(TypedPath newPath) => NavigatePath(() {
         ref.read(ongoingPathProvider.notifier).state = newPath;
         return navigationCompleted;
       }, newPath);
+
+  /// Main [RNavigator] method. Provides navigation to the newPath.
+  Future navigate(TypedPath newPath) => navigatePath(newPath).navigate();
 
   /// wrap your async actions:
   /// ```
@@ -178,19 +176,24 @@ class RNavigatorCore {
 
   // *** common navigation-agnostic app actions ***
 
-  Future<void> pop() {
+  NavigatePath popPath() {
     final navigationStack = getNavigationStack();
-    return navigationStack.length <= 1
-        ? Future.value()
-        : navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
+    assert(navigationStack.length > 1);
+    return navigatePath([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
   }
 
-  Future<void> push(TypedSegment segment) => navigate([...getNavigationStack(), segment]);
+  Future<void> pop() => popPath().navigate();
 
-  Future<void> replaceLast<T extends TypedSegment>(T replace(T old)) {
+  NavigatePath replaceLastPath<T extends TypedSegment>(T replace(T old)) {
     final navigationStack = getNavigationStack();
-    return navigate(
+    return navigatePath(
       [for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i], replace(navigationStack.last as T)],
     );
   }
+
+  Future replaceLast<T extends TypedSegment>(T replace(T old)) => replaceLastPath<T>(replace).navigate();
+
+  NavigatePath pushPath(TypedSegment segment) => navigatePath([...getNavigationStack(), segment]);
+
+  Future<void> push(TypedSegment segment) => pushPath(segment).navigate();
 }

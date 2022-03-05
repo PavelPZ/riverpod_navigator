@@ -19,8 +19,9 @@ class RRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, Pop
             Navigator(
                 key: navigatorKey,
                 // segment => Page(child:screen)
-                pages: navigationStack.map((segment) => navigator.screen2Page(segment)).toList(),
+                pages: navigationStack.map((segment) => navigator.segment2Page(segment)).toList(),
                 onPopPage: (route, result) {
+                  // cannot be used when navigation is async
                   if (!route.didPop(result)) return false;
                   return navigator.onPopRoute();
                 }),

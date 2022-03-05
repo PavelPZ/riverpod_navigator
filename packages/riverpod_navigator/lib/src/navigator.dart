@@ -30,7 +30,7 @@ class RNavigator extends RNavigatorCore {
   final RRouterDelegate routerDelegate;
   late RouteInformationParserImpl routeInformationParser;
 
-  Page screen2Page(TypedSegment segment) {
+  Page segment2Page(TypedSegment segment) {
     final route = router.segment2Route<RRoute>(segment);
     final screen2Page = route.screen2Page ?? screen2PageDefault;
     return screen2Page(segment, (segment) => route.buildScreen(segment));

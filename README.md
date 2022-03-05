@@ -168,7 +168,7 @@ Navigation logic can be developed and tested without typing a single flutter wid
       'home/book;id=1',
     );
     await navigTest(
-      navigator.pop,
+      () => navigator.pop(),
       'home',
     );
     await navigTest(
@@ -184,7 +184,7 @@ Navigation logic can be developed and tested without typing a single flutter wid
 
 ## Other features and examples 
 
-- ### [Async navigation and splash screen](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async.md)
+- ### [Async navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async.md)
 - ### [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
 - ### [Nested navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/nested_navigation.md)
 
