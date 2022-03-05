@@ -118,7 +118,7 @@ class App extends ConsumerWidget {
 ```dart
 void main() => runApp(
       ProviderScope(
-        // ProviderScope.overrides: home typed-path and navigator constructor are required
+        // home path and navigator constructor are required
         overrides: providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
@@ -128,9 +128,9 @@ void main() => runApp(
 ### Step5 - code screen widgets
 
 There are two screen to code: *HomeScreen* and *BookScreen*. 
-Extends this screens from RScreen widget.
+Extend this screens from **RScreen widget**.
 
-RScreen widget:
+*RScreen widget*:
 - replaces the standard Android back button behavior (using Flutter BackButtonListener widget)
 - will provide appBarLeading icon to replace the standard AppBar back button behavior
 
@@ -204,11 +204,10 @@ Navigation logic can be developed and tested without typing a single flutter wid
   });
 ```
 
-## Navigation aware events to AppNavigator
+## Place navigation events in AppNavigator
 
 It is good practice to place the code for all events specific to navigation in AppNavigator.
 These can then be used not only for writing screen widgets, but also for testing.
-See ```toNextBook``` action bellow:
 
 ```dart
 class AppNavigator extends RNavigator {
@@ -222,7 +221,7 @@ class AppNavigator extends RNavigator {
 }
 ```
 
-The use in the widget code then looks like this
+In the screen code it is used as follows:
 
 ```dart
 ...
@@ -233,55 +232,10 @@ ElevatedButton(
 ... 
 ```
 
-and in test like this:
+and in the test code as follows:
 
 ```dart
   await navigTest(() => navigator.toBook(2), 'home/book;id=2');
-```
-
-## The screen title can be used in the screen link as well.
-
-In a Simple example, we used *RRoute<BookSegment>* parameter ```screenTitle: (segment) => 'Book ${segment.id}'``` for the value of the screen ```AppBar.title```. The same title can be used in the screen link (in *ListTile*, *ElevatedButton* etc.). 
-
-Use the *...Path* variant of the helper methods (*navigatePath*, *replaceLastPath*, *pushPath*, *popPath*)
-in AppNavigator:
-
-```dart
-class AppNavigator extends RNavigator {
-  ......
-  /// navigate to next book
-  NavigatePath toNextBook() => replaceLastPath<BookSegment>((last) => BookSegment(id: last.id + 1));
-  /// navigate to home
-  NavigatePath toHome() => navigatehPath([HomeSegment()]);
-  /// navigate to book
-  NavigatePath toBook({required int id}) => navigatePat([HomeSegment(), BookSegment(id: id)]);
-}
-```
-
-Define a link widget that matches the design of your application, e.g.:
-
-```dart
-class MyLinkButton extends ElevatedButton {
-  MyLinkButton(NavigatePath navigatePath)
-      : super(
-          onPressed: navigatePath.onPressed,
-          child: Text(navigatePath.title),
-        );
-}
-```
-
-Use MyLinkButton in the screen code:
-
-```dart
-...
-MyLinkButton(navigator.toBook(id))
-... 
-```
-
-and in the test code:
-
-```dart
-  await navigTest(navigator.toBook(2).onPressed, 'home/book;id=2');
 ```
 
 ## Other features and examples 

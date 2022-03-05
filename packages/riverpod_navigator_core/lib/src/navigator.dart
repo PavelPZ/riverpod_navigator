@@ -81,15 +81,15 @@ class RNavigatorCore {
 
   /// wrap your async actions:
   /// ```
-  /// isNavigating(true);
+  /// setIsNavigating(true);
   /// try {
   ///   // async action
   /// } finally {
-  ///   isNavigating(false);
+  ///   setIsNavigating(false);
   /// }
   /// ```
-  void isNavigating(bool isNavigatingStart) =>
-      ref.read(isNavigatingProvider.notifier).update((state) => isNavigatingStart ? state + 1 : state - 1);
+  void setIsNavigating(bool isNavigating) =>
+      ref.read(isNavigatingProvider.notifier).update((state) => isNavigating ? state + 1 : state - 1);
 
   /// When changing navigation state: completed after [navigationStackProvider] is actual
   Future<void> get navigationCompleted => _defer2NextTick.future;

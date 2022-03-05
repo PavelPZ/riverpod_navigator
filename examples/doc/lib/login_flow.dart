@@ -45,8 +45,10 @@ class BookSegment extends TypedSegment {
 
 class LoginSegment extends TypedSegment {
   const LoginSegment({this.loggedUrl, this.canceledUrl});
-  factory LoginSegment.fromUrlPars(UrlPars pars) =>
-      LoginSegment(loggedUrl: pars.getStringNull('loggedUrl'), canceledUrl: pars.getStringNull('canceledUrl'));
+  factory LoginSegment.fromUrlPars(UrlPars pars) => LoginSegment(
+        loggedUrl: pars.getStringNull('loggedUrl'),
+        canceledUrl: pars.getStringNull('canceledUrl'),
+      );
   final String? loggedUrl;
   final String? canceledUrl;
 
@@ -72,7 +74,7 @@ class AppNavigator extends RNavigator {
               screenTitle: (_) => 'Home',
             ),
             RRoute<BookSegment>(
-              'page',
+              'book',
               BookSegment.fromUrlPars,
               BookScreen.new,
               screenTitle: (segment) => 'Book ${segment.id}',
@@ -116,13 +118,13 @@ class AppNavigator extends RNavigator {
   // ******* actions used on the screens
 
   /// navigate to book
-  Future toBook({required int id}) => navigate([HomeSegment(), BookSegment(id: id)]);
+  NavigatePath toBook({required int id}) => navigatePath([HomeSegment(), BookSegment(id: id)]);
 
   /// navigate to next book
-  Future toNextBook() => replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1));
+  NavigatePath toNextBook() => replaceLastPath<BookSegment>((old) => BookSegment(id: old.id + 1));
 
   /// navigate to home
-  Future toHome() => navigate([HomeSegment()]);
+  NavigatePath toHome() => navigatePath([HomeSegment()]);
 
   Future onLogout() {
     // actualize login state
@@ -191,6 +193,14 @@ abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S
   List<Widget> buildWidgets(WidgetRef ref, AppNavigator navigator);
 }
 
+class MyLinkButton extends ElevatedButton {
+  MyLinkButton(NavigatePath navigatePath)
+      : super(
+          onPressed: navigatePath.onPressed,
+          child: Text('Go to ${navigatePath.title}'),
+        );
+}
+
 class HomeScreen extends AppScreen<HomeSegment> {
   const HomeScreen(HomeSegment segment) : super(segment);
 
@@ -200,7 +210,7 @@ class HomeScreen extends AppScreen<HomeSegment> {
     return [
       for (var i = 1; i <= bookCount; i++)
         ElevatedButton(
-          onPressed: () => navigator.toBook(id: i),
+          onPressed: navigator.toBook(id: i).onPressed,
           child: Text('Book $i${!isLogged && i.isOdd ? '(log in first)' : ''}'),
         ) // normal page
     ];
@@ -211,18 +221,10 @@ class BookScreen extends AppScreen<BookSegment> {
   const BookScreen(BookSegment book) : super(book);
 
   @override
-  List<Widget> buildWidgets(ref, navigator) {
-    return [
-      ElevatedButton(
-        onPressed: navigator.toNextBook,
-        child: const Text('Go to next book'),
-      ),
-      ElevatedButton(
-        onPressed: navigator.toHome,
-        child: const Text('Go to home'),
-      ),
-    ];
-  }
+  List<Widget> buildWidgets(ref, navigator) => [
+        MyLinkButton(navigator.toNextBook()),
+        MyLinkButton(navigator.toHome()),
+      ];
 }
 
 const bookCount = 5;
