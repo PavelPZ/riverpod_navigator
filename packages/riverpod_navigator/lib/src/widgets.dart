@@ -46,17 +46,14 @@ mixin BackButtonListenerMixin<N extends RNavigator> on ConsumerWidget {
     if (rootBackDispatcher == null) return buildScreen(ref, navigator, null);
 
     final canPop = navigator.getNavigationStack().length > 1;
-    final appBarLeading = !canPop
-        ? null
-        : IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => navigator.onPopRoute(),
-          );
+    final appBarLeading = canPop ? buildIcon(navigator.onPopRoute) : null;
     return BackButtonListener(
       onBackButtonPressed: () async => canPop,
       child: buildScreen(ref, navigator, appBarLeading),
     );
   }
+
+  IconButton buildIcon(void onPressed()) => IconButton(icon: Icon(Icons.arrow_back), onPressed: onPressed);
 
   Widget buildScreen(WidgetRef ref, N navigator, IconButton? appBarLeading);
 }

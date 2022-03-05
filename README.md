@@ -182,6 +182,43 @@ Navigation logic can be developed and tested without typing a single flutter wid
   });
 ```
 
+## Navigation aware actions to AppNavigator 
+
+It is good practice to place the code for all events specific to navigation in AppNavigator.
+These can then be used not only for writing screen widgets, but also for testing.
+See toNextBook action bellow:
+
+```dart
+class AppNavigator extends RNavigator {
+  ......
+  /// navigate to next book
+  Future toNextBook() => replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1));
+}
+```
+
+The BookScreen code then looks like this:
+
+```dart
+ElevatedButton(
+// old code:
+  /*onPressed: () => navigator.replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1)),*/
+// new code:
+  onPressed: navigator.toNextBook,
+```
+
+and test like this:
+
+```dart
+// old code:
+  /*await navigTest(() => navigator.replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1)), 'home/book;id=1');*/
+// new code:
+  await navigTest(navigator.toNextBook, 'home/book;id=1');
+```
+
+## navigatePath, RLinkButton and RRoute.screenTitle
+
+I
+
 ## Other features and examples 
 
 - ### [Async navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async.md)
