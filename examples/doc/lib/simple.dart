@@ -12,13 +12,19 @@ void main() => runApp(
 
 class HomeSegment extends TypedSegment {
   const HomeSegment();
+
+  /// used for decoding HomeSegment from URL
   // ignore: avoid_unused_constructor_parameters
   factory HomeSegment.fromUrlPars(UrlPars pars) => const HomeSegment();
 }
 
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
+
+  /// used for decoding BookSegment from URL
   factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
+
+  /// used for encoding BookSegment to URL
   @override
   void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 
@@ -65,48 +71,60 @@ class App extends ConsumerWidget {
   }
 }
 
-class HomeScreen extends RScreenWithScaffold<AppNavigator, HomeSegment> {
+class HomeScreen extends RScreen<AppNavigator, HomeSegment> {
   const HomeScreen(HomeSegment segment) : super(segment);
 
   @override
-  Widget buildBody(ref, navigator) => Center(
-        child: Column(
-          children: [
-            for (var i = 1; i < 4; i++) ...[
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => navigator.navigate([
-                  HomeSegment(),
-                  BookSegment(id: i),
-                  if (i > 1) BookSegment(id: 10 + i),
-                  if (i > 2) BookSegment(id: 100 + i),
-                ]),
-                child: Text('Go to Book: [$i${i > 1 ? ', 1$i' : ''}${i > 2 ? ', 10$i' : ''}]'),
-              ),
-            ]
-          ],
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          title: Text(navigator.screenTitle(segment)),
+          leading: appBarLeading,
+        ),
+        body: Center(
+          child: Column(
+            children: [
+              for (var i = 1; i < 4; i++) ...[
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => navigator.navigate([
+                    HomeSegment(),
+                    BookSegment(id: i),
+                    if (i > 1) BookSegment(id: 10 + i),
+                    if (i > 2) BookSegment(id: 100 + i),
+                  ]),
+                  child: Text('Go to Book: [$i${i > 1 ? ', 1$i' : ''}${i > 2 ? ', 10$i' : ''}]'),
+                ),
+              ]
+            ],
+          ),
         ),
       );
 }
 
-class BookScreen extends RScreenWithScaffold<AppNavigator, BookSegment> {
+class BookScreen extends RScreen<AppNavigator, BookSegment> {
   const BookScreen(BookSegment segment) : super(segment);
 
   @override
-  Widget buildBody(ref, navigator) => Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () => navigator.replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1)),
-              child: const Text('Go to next book'),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () => navigator.navigate([HomeSegment()]),
-              child: const Text('Go to home'),
-            ),
-          ],
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          title: Text(navigator.screenTitle(segment)),
+          leading: appBarLeading,
+        ),
+        body: Center(
+          child: Column(
+            children: [
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () => navigator.replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1)),
+                child: const Text('Go to next book'),
+              ),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () => navigator.navigate([HomeSegment()]),
+                child: const Text('Go to home'),
+              ),
+            ],
+          ),
         ),
       );
 }

@@ -37,13 +37,19 @@ Create an application using these simple steps:
 ```dart
 class HomeSegment extends TypedSegment {
   const HomeSegment();
+
+  /// used for decoding HomeSegment from URL
   // ignore: avoid_unused_constructor_parameters
   factory HomeSegment.fromUrlPars(UrlPars pars) => const HomeSegment();
 }
 
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
+
+  /// used for decoding BookSegment from URL
   factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
+
+  /// used for encoding BookSegment to URL
   @override
   void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 
@@ -105,7 +111,7 @@ class App extends ConsumerWidget {
 }
 ```
 
-### Step4 - place and configure riverpod ProviderScope ...
+### Step4 - configure riverpod ProviderScope ...
 
 ... in main entry point
 
@@ -119,6 +125,31 @@ void main() => runApp(
     );
 ```
 
+### Step5 - code screen widgets as a RScreen descendants
+
+RScreen:
+- replace the standard Android back button behavior (using BackButtonListener widget)
+- will provide appBarLeading icon to replace the standard AppBar back button behavior
+
+This is essential for asynchronous navigation to function properly.
+
+```dart
+class BookScreen extends RScreen<AppNavigator, BookSegment> {
+  const BookScreen(BookSegment segment) : super(segment);
+
+  @override
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          /// screen title is computed from:
+          /// RRoute<BookSegment>.screenTitle: (segment) => 'Book ${segment.id}',
+          title: Text(navigator.screenTitle(segment)),
+          /// [appBarLeading] overrides standard back button behavior
+          leading: appBarLeading,
+        ),
+        body: ...
+```
+
+
 ### And that's all
 
 Navigation to a specific navigation stack is performed as follows:
@@ -126,7 +157,7 @@ Navigation to a specific navigation stack is performed as follows:
 ```dart
 // navigation to BookScreen
 ElevatedButton(
-  onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment(), BookSegment(title: 'Page')]),
+  onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment(), BookSegment(id: 3)]),
 
 // navigation to HomeScreen
 ElevatedButton(
@@ -140,7 +171,7 @@ ElevatedButton(
 - [test code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
 
 *Note*: The link ```Go to book: [3, 13, 103]``` in the [running example](https://pavelpz.github.io/doc_simple/) would not make much sense in the real Books application.
-It provide navigation to the stack of four screens:
+It shows the navigation to the four-screen navigation stack:
 
 - **string-path** = ```home/book;id=3/book;id=13/book;id=103```. 
 - **typed-path** = ```[HomeSegment(), BookSegment(id:3), BookSegment(id:13), BookSegment(id:103)]```. 
@@ -182,7 +213,7 @@ Navigation logic can be developed and tested without typing a single flutter wid
   });
 ```
 
-## Navigation aware actions to AppNavigator 
+## Navigation aware events to AppNavigator
 
 It is good practice to place the code for all events specific to navigation in AppNavigator.
 These can then be used not only for writing screen widgets, but also for testing.
@@ -193,35 +224,49 @@ class AppNavigator extends RNavigator {
   ......
   /// navigate to next book
   Future toNextBook() => replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1));
+  /// navigate to home
+  Future toHome() => navigate([HomeSegment()]);
+  /// navigate to book
+  Future toBook({required int id}) => navigate([HomeSegment(), BookSegment(id: id)]);
 }
 ```
 
-The BookScreen code then looks like this:
+The use in the widget code then looks like this
 
 ```dart
+...
 ElevatedButton(
-// old code:
-  /*onPressed: () => replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1)),*/
-// new code:
-  onPressed: navigator.toNextBook,
-  child: Text('Book ${segment.id}'),
-),  
+  onPressed: () => navigator.toBook(id),
+  child: Text('Book $id'),
+), 
+... 
 ```
 
-and test like this:
+and in test like this:
 
 ```dart
-// old code:
-  /*await navigTest(() => replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1));*/
-// new code:
-  await navigTest(navigator.toNextBook, 'home/book;id=2');
+  await navigTest(() => navigator.toBook(2), 'home/book;id=2');
 ```
 
 ## The screen title can be used in the screen link as well.
 
 In a Simple example, we used *RRoute<BookSegment>* parameter ```screenTitle: (segment) => 'Book ${segment.id}'``` for the value of the screen ```AppBar.title```. The same title can be used in the screen link (in *ListTile*, *ElevatedButton* etc.). 
 
-First, define a link widget that matches the design of your application:
+Use the *Path* variant of the helper methods (*navigatePath*, *replaceLastPath*, *pushPath*, *popPath*), which returns *NavigatePath*
+
+```dart
+class AppNavigator extends RNavigator {
+  ......
+  /// navigate to next book
+  NavigatePath toNextBook() => replaceLastPath<BookSegment>((last) => BookSegment(id: last.id + 1));
+  /// navigate to home
+  NavigatePath toHome() => navigatehPath([HomeSegment()]);
+  /// navigate to book
+  NavigatePath toBook({required int id}) => navigatePat([HomeSegment(), BookSegment(id: id)]);
+}
+```
+
+Define a link widget that matches the design of your application, e.g.:
 
 ```dart
 class MyLinkButton extends ElevatedButton {
@@ -233,29 +278,19 @@ class MyLinkButton extends ElevatedButton {
 }
 ```
 
-Use the *Path* variant of the helper methods (*navigatePath*, *replaceLastPath*, *pushPath*, *popPath*), which returns *NavigatePath*
+The use in the widget code then looks like this
 
 ```dart
-class AppNavigator extends RNavigator {
-  ......
-  /// navigate to next book
-  NavigatePath toNextBook() => replaceLastPath<BookSegment>((last) => BookSegment(id: last.id + 1));
-}
-
-........
-
-//**** replace ElevatedButton by MyLinkButton
-
-// old code:
-/* ElevatedButton(
-     onPressed: () => navigator.toNextBook(),
-     child: Text('Book ${segment.id}'),
-),*/
-// new code:
-MyLinkButton (toNextBook());
+...
+MyLinkButton(navigator.toBook(id))
+... 
 ```
 
-You have to modify test as well: ```await navigTest(navigator.toNextBook().onPressed, 'home/book;id=2');```
+and in test like this:
+
+```dart
+  await navigTest(navigator.toBook(2).navigate, 'home/book;id=2');
+```
 
 ## Other features and examples 
 
