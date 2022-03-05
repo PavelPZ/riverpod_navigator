@@ -122,7 +122,7 @@ class SplashScreen extends StatelessWidget {
       );
 }
 
-/// navigation button
+/// RLinkButton navigation button
 abstract class RLinkButton extends ConsumerWidget {
   const RLinkButton(this.navigatePath);
   final NavigatePath navigatePath;
