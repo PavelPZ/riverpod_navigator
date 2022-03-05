@@ -23,32 +23,32 @@ void main() {
     }
 
     await navigTest(
-      navigator.toHome,
+      navigator.toHome().onPressed,
       'home',
     );
 
     await navigTest(
-      () => navigator.toBook(id: 1),
+      navigator.toBook(id: 1).onPressed,
       'home/page;id=1',
     );
 
     await navigTest(
-      navigator.pop,
+      navigator.popPath().onPressed,
       'home',
     );
 
     await navigTest(
-      () => navigator.push(BookSegment(id: 2)),
+      navigator.pushPath(BookSegment(id: 2)).onPressed,
       'home/page;id=2',
     );
 
     await navigTest(
-      () => navigator.replaceLast((_) => BookSegment(id: 3)),
+      navigator.replaceLastPath((_) => BookSegment(id: 3)).onPressed,
       'home/page;id=3',
     );
 
     await navigTest(
-      navigator.toNextBook,
+      navigator.toNextBook().onPressed,
       'home/page;id=4',
     );
 

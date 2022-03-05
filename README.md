@@ -243,7 +243,7 @@ and in test like this:
 
 In a Simple example, we used *RRoute<BookSegment>* parameter ```screenTitle: (segment) => 'Book ${segment.id}'``` for the value of the screen ```AppBar.title```. The same title can be used in the screen link (in *ListTile*, *ElevatedButton* etc.). 
 
-Use the *Path* variant of the helper methods (*navigatePath*, *replaceLastPath*, *pushPath*, *popPath*)
+Use the *...Path* variant of the helper methods (*navigatePath*, *replaceLastPath*, *pushPath*, *popPath*)
 in AppNavigator:
 
 ```dart
@@ -281,7 +281,7 @@ MyLinkButton(navigator.toBook(id))
 and in the test code:
 
 ```dart
-  await navigTest(navigator.toBook(2).navigate, 'home/book;id=2');
+  await navigTest(navigator.toBook(2).onPressed, 'home/book;id=2');
 ```
 
 ## Other features and examples 

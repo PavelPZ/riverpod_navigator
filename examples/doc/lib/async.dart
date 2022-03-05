@@ -58,13 +58,13 @@ class AppNavigator extends RNavigator {
   // These can then be used not only for writing screen widgets, but also for testing.
 
   /// navigate to book
-  Future toBook({required int id}) => navigate([HomeSegment(), BookSegment(id: id)]);
+  NavigatePath toBook({required int id}) => navigatePath([HomeSegment(), BookSegment(id: id)]);
 
   /// navigate to next book
-  Future toNextBook() => replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1));
+  NavigatePath toNextBook() => replaceLastPath<BookSegment>((old) => BookSegment(id: old.id + 1));
 
   /// navigate to home
-  Future toHome() => navigate([HomeSegment()]);
+  NavigatePath toHome() => navigatePath([HomeSegment()]);
 
   /// sideEffect
   Future sideEffect() => registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000)));
@@ -123,15 +123,20 @@ abstract class AppScreen<S extends TypedSegment> extends RScreenWithScaffold<App
   List<Widget> buildWidgets(AppNavigator navigator);
 }
 
+class MyLinkButton extends ElevatedButton {
+  MyLinkButton(NavigatePath navigatePath)
+      : super(
+          onPressed: navigatePath.onPressed,
+          child: Text('Go to ${navigatePath.title}'),
+        );
+}
+
 class HomeScreen extends AppScreen<HomeSegment> {
   const HomeScreen(HomeSegment segment) : super(segment);
 
   @override
   List<Widget> buildWidgets(navigator) => [
-        ElevatedButton(
-          onPressed: () => navigator.toBook(id: 1),
-          child: const Text('Go to Page 1'),
-        ),
+        MyLinkButton(navigator.toBook(id: 1)),
       ];
 }
 
@@ -140,14 +145,8 @@ class BookScreen extends AppScreen<BookSegment> {
 
   @override
   List<Widget> buildWidgets(navigator) => [
-        ElevatedButton(
-          onPressed: navigator.toNextBook,
-          child: const Text('Go to next page'),
-        ),
-        ElevatedButton(
-          onPressed: navigator.toHome,
-          child: const Text('Go to home'),
-        ),
+        MyLinkButton(navigator.toNextBook()),
+        MyLinkButton(navigator.toHome()),
         ElevatedButton(
           onPressed: navigator.sideEffect,
           child: const Text('Side effect (5000 msec)'),
