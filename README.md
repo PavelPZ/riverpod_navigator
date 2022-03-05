@@ -112,7 +112,7 @@ class App extends ConsumerWidget {
 ```dart
 void main() => runApp(
       ProviderScope(
-        // aaaign ProviderScope.overrides. home typed-path and navigator constructor are required
+        // ProviderScope.overrides: home typed-path and navigator constructor are required
         overrides: providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
@@ -121,12 +121,12 @@ void main() => runApp(
 
 ### And that's all
 
-Navigation to a specific screen is performed as follows:
+Navigation to a specific navigation stack is performed as follows:
 
 ```dart
-// navigation to PageScreen
+// navigation to BookScreen
 ElevatedButton(
-  onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]),
+  onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment(), BookSegment(title: 'Page')]),
 
 // navigation to HomeScreen
 ElevatedButton(
@@ -144,7 +144,7 @@ It provide navigation to the stack of four screens:
 
 - **string-path** = ```home/book;id=3/book;id=13/book;id=103```. 
 - **typed-path** = ```[HomeSegment(), BookSegment(id:3), BookSegment(id:13), BookSegment(id:103)]```. 
-- **navigation-stack** pages = ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:3))), MaterialPage (child: BookScreen(BookSegment(id:13))), MaterialPage (child: BookScreen(BookSegment(id:103)))]```. 
+- **navigation-stack** flutter Navigator.pages = ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:3))), MaterialPage (child: BookScreen(BookSegment(id:13))), MaterialPage (child: BookScreen(BookSegment(id:103)))]```. 
 
 ### Development and testing without GUI
 
@@ -153,37 +153,40 @@ Navigation logic can be developed and tested without typing a single flutter wid
 ```dart 
   test('navigation model', () async {
     final container = ProviderContainer(
-      overrides: 
-        providerOverrides(
-          [HomeSegment()], 
-          AppNavigator.new,
-        ),
-      );
+      overrides: providerOverrides([HomeSegment()], AppNavigator.new),
+    );
     final navigator = container.read(navigatorProvider);
-
+    
     Future navigTest(Future action(), String expected) async {
       await action();
       await container.pump();
       expect(navigator.navigationStack2Url, expected);
     }
 
-    await navigTest(() => navigator.navigate([HomeSegment()]), 'home');
-
-    await navigTest(() => navigator.navigate([HomeSegment(), BookSegment(id: 1)]), 'home/book;id=1');
-
-    await navigTest(() => navigator.pop(), 'home');
-
-    await navigTest(() => navigator.push(BookSegment(id: 2)), 'home/book;id=2');
-
-    await navigTest(() => navigator.replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1)), 'home/book;id=3');
+    await navigTest(
+      () => navigator.navigate([HomeSegment(), BookSegment(id: 1)]),
+      'home/book;id=1',
+    );
+    await navigTest(
+      navigator.pop,
+      'home',
+    );
+    await navigTest(
+      () => navigator.push(BookSegment(id: 2)),
+      'home/book;id=2',
+    );
+    await navigTest(
+      () => navigator.replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1)),
+      'home/book;id=3',
+    );
   });
 ```
 
 ## Other features and examples 
 
-- [Async navigation and splash screen](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async.md)
-- [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
-- [Nested navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/nested_navigation.md)
+- ### [Async navigation and splash screen](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async.md)
+- ### [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
+- ### [Nested navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/nested_navigation.md)
 
 ## Installation of examples
 
