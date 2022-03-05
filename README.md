@@ -125,7 +125,10 @@ void main() => runApp(
     );
 ```
 
-### Step5 - code screen widgets (as a RScreen widget descendants)
+### Step5 - code screen widgets
+
+There are two screen to code: *HomeScreen* and *BookScreen*. 
+Extends this screens from RScreen widget.
 
 RScreen widget:
 - replaces the standard Android back button behavior (using Flutter BackButtonListener widget)
