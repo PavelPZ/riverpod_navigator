@@ -71,19 +71,16 @@ class AppNavigator extends RNavigator {
               'home',
               HomeSegment.fromUrlPars,
               HomeScreen.new,
-              screenTitle: (_) => 'Home',
             ),
             RRoute<BookSegment>(
               'book',
               BookSegment.fromUrlPars,
               BookScreen.new,
-              screenTitle: (segment) => 'Book ${segment.id}',
             ),
             RRoute<LoginSegment>(
               'login',
               LoginSegment.fromUrlPars,
               LoginScreen.new,
-              screenTitle: (_) => 'Login',
             ),
           ],
         );
@@ -164,12 +161,14 @@ class AppNavigator extends RNavigator {
 
 /// common screen ancestor for [HomeScreen] and [BookScreen]
 abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S> {
-  const AppScreen(S segment) : super(segment);
+  const AppScreen(S segment, this.screenTitle) : super(segment);
+
+  final String screenTitle;
 
   @override
   Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
         appBar: AppBar(
-          title: Text(navigator.screenTitle(segment)),
+          title: Text(screenTitle),
           leading: appBarLeading,
           actions: [
             Consumer(builder: (_, ref, __) {
@@ -193,16 +192,8 @@ abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S
   List<Widget> buildWidgets(WidgetRef ref, AppNavigator navigator);
 }
 
-class MyLinkButton extends ElevatedButton {
-  MyLinkButton(NavigatePath navigatePath)
-      : super(
-          onPressed: navigatePath.onPressed,
-          child: Text('Go to ${navigatePath.title}'),
-        );
-}
-
 class HomeScreen extends AppScreen<HomeSegment> {
-  const HomeScreen(HomeSegment segment) : super(segment);
+  const HomeScreen(HomeSegment segment) : super(segment, 'Home');
 
   @override
   List<Widget> buildWidgets(ref, navigator) {
@@ -218,12 +209,18 @@ class HomeScreen extends AppScreen<HomeSegment> {
 }
 
 class BookScreen extends AppScreen<BookSegment> {
-  const BookScreen(BookSegment book) : super(book);
+  BookScreen(BookSegment segment) : super(segment, 'Book ${segment.id}');
 
   @override
   List<Widget> buildWidgets(ref, navigator) => [
-        MyLinkButton(navigator.toNextBook()),
-        MyLinkButton(navigator.toHome()),
+        ElevatedButton(
+          onPressed: navigator.toNextBook,
+          child: const Text('Go to next book'),
+        ),
+        ElevatedButton(
+          onPressed: navigator.toHome,
+          child: const Text('Go to Home'),
+        ),
       ];
 }
 
@@ -235,7 +232,7 @@ class LoginScreen extends RScreen<AppNavigator, LoginSegment> {
   @override
   Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
         appBar: AppBar(
-          title: Text(navigator.screenTitle(segment)),
+          title: Text('Login'),
           leading: IconButton(
             onPressed: navigator.loginScreenCancel,
             icon: Icon(Icons.cancel),

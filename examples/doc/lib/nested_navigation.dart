@@ -67,7 +67,6 @@ class AppNavigator extends RNavigator {
               'book',
               BookSegment.fromUrlPars,
               BookScreen.new,
-              screenTitle: (segment) => 'Book ${segment.id}',
             ),
           ],
         );
@@ -81,7 +80,6 @@ class AppNavigator extends RNavigator {
               'author',
               AuthorSegment.fromUrlPars,
               AuthorScreen.new,
-              screenTitle: (segment) => 'Author ${segment.id}',
             ),
           ],
         );
@@ -95,25 +93,21 @@ class AppNavigator extends RNavigator {
               'home',
               HomeSegment.fromUrlPars,
               HomeScreen.new,
-              screenTitle: (_) => 'Home',
             ),
             RRoute<BookSegment>(
               'book',
               BookSegment.fromUrlPars,
               BookScreen.new,
-              screenTitle: (segment) => 'Book ${segment.id}',
             ),
             RRoute<AuthorSegment>(
               'author',
               AuthorSegment.fromUrlPars,
               AuthorScreen.new,
-              screenTitle: (segment) => 'Author ${segment.id}',
             ),
             RRoute<BooksAuthorsSegment>(
               'books-authors',
               BooksAuthorsSegment.fromUrlPars,
               BooksAuthorsScreen.new,
-              screenTitle: (_) => 'Books and Authors',
             ),
           ],
         );
@@ -127,17 +121,25 @@ class AppNavigator extends RNavigator {
 }
 
 /// common app screen
-abstract class AppScreen<S extends TypedSegment> extends RScreenWithScaffold<AppNavigator, S> {
-  const AppScreen(S segment) : super(segment);
+abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S> {
+  const AppScreen(S segment, this.screenTitle) : super(segment);
+
+  final String screenTitle;
 
   @override
-  Widget buildBody(ref, navigator) => Center(
-        child: Column(
-          children: [
-            for (final w in buildWidgets(navigator)) ...[SizedBox(height: 20), w],
-            SizedBox(height: 20),
-            Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
-          ],
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          title: Text(screenTitle),
+          leading: appBarLeading,
+        ),
+        body: Center(
+          child: Column(
+            children: [
+              for (final w in buildWidgets(navigator)) ...[SizedBox(height: 20), w],
+              SizedBox(height: 20),
+              Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
+            ],
+          ),
         ),
       );
 
@@ -145,7 +147,7 @@ abstract class AppScreen<S extends TypedSegment> extends RScreenWithScaffold<App
 }
 
 class HomeScreen extends AppScreen<HomeSegment> {
-  const HomeScreen(HomeSegment segment) : super(segment);
+  const HomeScreen(HomeSegment segment) : super(segment, 'Home');
 
   @override
   List<Widget> buildWidgets(navigator) => [
@@ -171,7 +173,7 @@ class HomeScreen extends AppScreen<HomeSegment> {
 const count = 3;
 
 class BookScreen extends AppScreen<BookSegment> {
-  const BookScreen(BookSegment book) : super(book);
+  BookScreen(BookSegment segment) : super(segment, 'Book ${segment.id}');
 
   @override
   List<Widget> buildWidgets(navigator) => [
@@ -183,7 +185,7 @@ class BookScreen extends AppScreen<BookSegment> {
 }
 
 class AuthorScreen extends AppScreen<AuthorSegment> {
-  const AuthorScreen(AuthorSegment auhor) : super(auhor);
+  AuthorScreen(AuthorSegment auhor) : super(auhor, 'Author ${auhor.id}');
 
   @override
   List<Widget> buildWidgets(navigator) => [
@@ -196,7 +198,6 @@ class AuthorScreen extends AppScreen<AuthorSegment> {
 
 /// TabBarView screen
 class BooksAuthorsScreen extends RScreenHook<AppNavigator, BooksAuthorsSegment> {
-  /// TabBarView screen
   const BooksAuthorsScreen(BooksAuthorsSegment booksAuthorsSegment) : super(booksAuthorsSegment);
 
   @override
@@ -217,18 +218,26 @@ class BooksAuthorsScreen extends RScreenHook<AppNavigator, BooksAuthorsSegment> 
               Tab(text: 'Authors'),
             ],
           ),
-          title: Text(navigator.screenTitle(segment)),
+          title: Text('Books and Authors'),
         ),
         body: TabBarView(
           children: [
             ProviderScope(
               // The RestorePath class preserves the last state of the navigator.
               // Used during the next navigator initialization.
-              overrides: providerOverrides([BookSegment(id: 2)], AppNavigator.forBook, restorePath: restoreBook),
+              overrides: providerOverrides(
+                [BookSegment(id: 2)],
+                AppNavigator.forBook,
+                restorePath: restoreBook,
+              ),
               child: BooksTab(),
             ),
             ProviderScope(
-              overrides: providerOverrides([AuthorSegment(id: 2)], AppNavigator.forAuthor, restorePath: restoreAuthor),
+              overrides: providerOverrides(
+                [AuthorSegment(id: 2)],
+                AppNavigator.forAuthor,
+                restorePath: restoreAuthor,
+              ),
               child: AuthorTab(),
             ),
           ],

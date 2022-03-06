@@ -38,7 +38,7 @@ Create an application using these simple steps:
 class HomeSegment extends TypedSegment {
   const HomeSegment();
 
-  /// used for decoding HomeSegment from URL
+  /// used for creating HomeSegment from URL pars
   // ignore: avoid_unused_constructor_parameters
   factory HomeSegment.fromUrlPars(UrlPars pars) => const HomeSegment();
 }
@@ -46,10 +46,10 @@ class HomeSegment extends TypedSegment {
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
 
-  /// used for decoding BookSegment from URL
+  /// used for creating BookSegment from URL pars
   factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
 
-  /// used for encoding BookSegment to URL
+  /// used for encoding BookSegment props to URL pars
   @override
   void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 
@@ -73,18 +73,15 @@ class AppNavigator extends RNavigator {
             /// 'home' and 'book' strings are used in web URL, e.g. 'home/book;id=2'
             /// fromUrlPars is used to decode URL to segment
             /// HomeScreen.new and BookScreen.new are screen builders for a given segment
-            /// screenTitle is not mandatory but allows a general solution e.g. for [AppBar.title]
             RRoute<HomeSegment>(
               'home',
               HomeSegment.fromUrlPars,
               HomeScreen.new,
-              screenTitle: (_) => 'Home',
             ),
             RRoute<BookSegment>(
               'book',
               BookSegment.fromUrlPars,
               BookScreen.new,
-              screenTitle: (segment) => 'Book ${segment.id}',
             ),
           ],
         );
@@ -143,14 +140,12 @@ class BookScreen extends RScreen<AppNavigator, BookSegment> {
   @override
   Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
         appBar: AppBar(
-          /// navigator.screenTitle(segment) returns screen title defined in 
-          /// RRoute<BookSegment>.screenTitle: (segment) => 'Book ${segment.id}'
-          title: Text(navigator.screenTitle(segment)),
+          title: Text('Book ${segment.id}'),
           /// [appBarLeading] overrides standard back button behavior
           leading: appBarLeading,
         ),
         body: 
-  ...
+...
 ```
 
 #### And that's all
@@ -216,17 +211,15 @@ class AppNavigator extends RNavigator {
   Future toNextBook() => replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1));
   /// navigate to home
   Future toHome() => navigate([HomeSegment()]);
-  /// navigate to book
-  Future toBook({required int id}) => navigate([HomeSegment(), BookSegment(id: id)]);
 }
 ```
 
-In the screen code it is used as follows:
+In the screen code, it is used as follows:
 
 ```dart
 ...
 ElevatedButton(
-  onPressed: () => navigator.toBook(id),
+  onPressed: navigator.toNextBook,
   child: Text('Book $id'),
 ), 
 ... 
@@ -235,7 +228,7 @@ ElevatedButton(
 and in the test code as follows:
 
 ```dart
-  await navigTest(() => navigator.toBook(2), 'home/book;id=2');
+  await navigTest(navigator.toNextBook, 'home/book;id=3');
 ```
 
 ## Other features and examples 

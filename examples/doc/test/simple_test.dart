@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   test('navigation test', () async {
     final container = ProviderContainer(overrides: providerOverrides([HomeSegment()], AppNavigator.new));
-    final navigator = container.read(navigatorProvider);
+    final navigator = container.read(navigatorProvider) as AppNavigator;
 
     Future navigTest(Future action(), String expected) async {
       await action();
@@ -14,7 +14,7 @@ void main() {
       expect(navigator.navigationStack2Url, expected);
     }
 
-    await navigTest(() => navigator.navigate([HomeSegment()]), 'home');
+    await navigTest(navigator.toHome, 'home');
 
     await navigTest(
       () => navigator.navigate([HomeSegment(), BookSegment(id: 1)]),
@@ -32,7 +32,7 @@ void main() {
     );
 
     await navigTest(
-      () => navigator.replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1)),
+      navigator.toNextBook,
       'home/book;id=3',
     );
 

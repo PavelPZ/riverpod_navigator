@@ -39,14 +39,12 @@ class AppNavigator extends RNavigator {
               'home',
               HomeSegment.fromUrlPars,
               HomeScreen.new,
-              screenTitle: (_) => 'Home',
               opening: (newSegment) => _simulateAsyncResult('Home.opening', 2000),
             ),
             RRoute<BookSegment>(
               'page',
               BookSegment.fromUrlPars,
               BookScreen.new,
-              screenTitle: (segment) => 'Book ${segment.id}',
               opening: (newSegment) => _simulateAsyncResult('Book.opening', 240),
               replacing: (oldSegment, newSegment) => _simulateAsyncResult('Book.replacing', 800),
               closing: null,
@@ -71,11 +69,11 @@ class AppNavigator extends RNavigator {
 
   /// multi sideEffect
   Future multiSideEffect() async {
-    isNavigating(true);
+    setIsNavigating(true);
     try {
       await registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000)));
     } finally {
-      isNavigating(false);
+      setIsNavigating(false);
     }
   }
 }
@@ -102,51 +100,60 @@ class App extends ConsumerWidget {
 }
 
 /// common app screen
-abstract class AppScreen<S extends TypedSegment> extends RScreenWithScaffold<AppNavigator, S> {
-  const AppScreen(S segment) : super(segment);
+abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S> {
+  const AppScreen(S segment, this.screenTitle) : super(segment);
+
+  final String screenTitle;
 
   @override
-  Widget buildBody(ref, navigator) => Center(
-        child: Column(
-          children: [
-            for (final w in buildWidgets(navigator)) ...[SizedBox(height: 20), w],
-            SizedBox(height: 20),
-            Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
-            if (segment.asyncHolder != null) ...[
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          title: Text(screenTitle),
+          leading: appBarLeading,
+        ),
+        body: Center(
+          child: Column(
+            children: [
+              for (final w in buildWidgets(navigator)) ...[SizedBox(height: 20), w],
               SizedBox(height: 20),
-              Text('Async result: "${segment.asyncHolder!.value}"'),
-            ]
-          ],
+              Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
+              if (segment.asyncHolder != null) ...[
+                SizedBox(height: 20),
+                Text('Async result: "${segment.asyncHolder!.value}"'),
+              ]
+            ],
+          ),
         ),
       );
 
   List<Widget> buildWidgets(AppNavigator navigator);
 }
 
-class MyLinkButton extends ElevatedButton {
-  MyLinkButton(NavigatePath navigatePath)
-      : super(
-          onPressed: navigatePath.onPressed,
-          child: Text('Go to ${navigatePath.title}'),
-        );
-}
-
 class HomeScreen extends AppScreen<HomeSegment> {
-  const HomeScreen(HomeSegment segment) : super(segment);
+  const HomeScreen(HomeSegment segment) : super(segment, 'Home');
 
   @override
   List<Widget> buildWidgets(navigator) => [
-        MyLinkButton(navigator.toBook(id: 1)),
+        ElevatedButton(
+          onPressed: () => navigator.toBook(id: 1),
+          child: const Text('Go to Book 1'),
+        ),
       ];
 }
 
 class BookScreen extends AppScreen<BookSegment> {
-  const BookScreen(BookSegment segment) : super(segment);
+  BookScreen(BookSegment segment) : super(segment, 'Book ${segment.id}');
 
   @override
   List<Widget> buildWidgets(navigator) => [
-        MyLinkButton(navigator.toNextBook()),
-        MyLinkButton(navigator.toHome()),
+        ElevatedButton(
+          onPressed: navigator.toNextBook,
+          child: const Text('Go to next book'),
+        ),
+        ElevatedButton(
+          onPressed: navigator.toHome,
+          child: const Text('Go to Home'),
+        ),
         ElevatedButton(
           onPressed: navigator.sideEffect,
           child: const Text('Side effect (5000 msec)'),
