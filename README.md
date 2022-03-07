@@ -199,7 +199,7 @@ Navigation logic can be developed and tested without typing a single flutter wid
 
 ## URL parsing
 
-Flutter Navigator 2.0 and its [MaterialApp.router] constructor requires a URL parser ([RouteInformationParser]).
+Flutter Navigator 2.0 and its *MaterialApp.router* constructor requires a URL parser (*RouteInformationParser*).
 We use URL syntax, see [section 3.3. of RFC 3986](https://www.ietf.org/rfc/rfc3986.txt): 
 *"For example, one URI producer might use a segment such as "name;v=1.1"...*"
 
@@ -215,10 +215,10 @@ Instead of directly converting to/from the string, we convert to/from ```typedef
 ```
 
 So far, we support the following types of TypedSegment property: **int, double, bool, String, int?, double?, bool?, String?**. See ```extension UrlParsEx on UrlPars``` in 
-[path_parser.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/lib/path_parser.dart).
+[path_parser.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/lib/src/path_parser.dart).
 
 Every aspect of URL conversion can be customized, e.g.
-- support another property type (as a DateTime, providing *getDateTime*, *getDateTimeNull* and *setDateTime* in *UrlPars* extension)
+- support another property type (as a DateTime, providing *getDateTime*, *getDateTimeNull* and *setDateTime* *UrlPars*'s extension)
 - rewrite the entire *IPathParser* and use a completely different URL syntax. Then use your parser in AppNavigator:
 
 ```
@@ -230,7 +230,7 @@ class AppNavigator extends RNavigator {
 ...         
 ```
 
-**** TestSegment example:
+#### TestSegment example:
 ```dart
 class TestSegment extends TypedSegment {
   const TestSegment({required this.i, this.s, required this.b, this.d});
