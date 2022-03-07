@@ -200,12 +200,15 @@ Navigation logic can be developed and tested without typing a single flutter wid
 ## URL parsing
 
 Flutter Navigator 2.0 and its *MaterialApp.router* constructor requires a URL parser (*RouteInformationParser*).
-We use URL syntax, see [section 3.3. of RFC 3986](https://www.ietf.org/rfc/rfc3986.txt): 
-*"For example, one URI producer might use a segment such as "name;v=1.1"...*"
+We use URL syntax, see [section 3.3. of RFC 3986](https://www.ietf.org/rfc/rfc3986.txt), note 
+*For example, one URI producer might use a segment such as "name;v=1.1"..."
 
 Each *TypedSegment* must be converted to *string-segment* and back. 
-The format of *string-segment* is ```<unique TypedSegment id>[;<property name>=<property value>]*```, 
-e.g. ```book;id=3```.*
+The format of *string-segment* is 
+
+```<unique TypedSegment id>[;<property name>=<property value>]*```
+
+e.g. ```book;id=3```.
 
 Instead of directly converting to/from the string, we convert to/from ```typedef UrlPars = Map<String,String>```, e.g.:
 ```
