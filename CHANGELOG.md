@@ -1,6 +1,10 @@
+## 0.37.0
+
+- documentation
+
 ## 0.36.0
 
-- **Breaking**: renaming RRoute4Dart ti RRouteCore
+- **Breaking**: renaming RRoute4Dart to RRouteCore
 - add getScreenTitle parametter to RRoute
 
 ## 0.35.0

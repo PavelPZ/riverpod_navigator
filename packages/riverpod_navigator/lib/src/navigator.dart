@@ -40,7 +40,9 @@ class RNavigator extends RNavigatorCore {
   bool onPopRoute() {
     final navigationStack = getNavigationStack();
     if (navigationStack.length <= 1) return false;
-    navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
+    navigate([
+      for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]
+    ]);
     return true;
   }
 }
