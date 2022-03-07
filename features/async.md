@@ -3,7 +3,7 @@
 Navigation is delayed until the asynchronous actions are performed. These actions for each screen are:
 - **opening** (before opening a new screen)
 - **closing** (before closing the old screen)
-- **merging** (before replacing the screen with the same segment type)
+- **merging** (before replacing the screen with a screen with the same segment type)
 
 ```dart
 class AppNavigator extends RNavigator {

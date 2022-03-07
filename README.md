@@ -37,22 +37,16 @@ Create an application using these simple steps:
 ```dart
 class HomeSegment extends TypedSegment {
   const HomeSegment();
-
-  /// used for creating HomeSegment from URL pars
   factory HomeSegment.fromUrlPars(UrlPars pars) => const HomeSegment();
 }
 
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
-
-  /// used for creating BookSegment from URL pars
   factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
 
-  /// used for encoding BookSegment props to URL pars
+  final int id;
   @override
   void toUrlPars(UrlPars pars) => pars.setInt('id', id);
-
-  final int id;
 }
 ```
 
@@ -69,8 +63,8 @@ class AppNavigator extends RNavigator {
           ref,
           [
             /// 'home' and 'book' strings are used in web URL, e.g. 'home/book;id=2'
-            /// fromUrlPars is used to decode URL to segment
-            /// HomeScreen.new and BookScreen.new are screen builders for a given segment
+            /// fromUrlPars is used to decode URL to HomeSegment/BookSegment
+            /// HomeScreen/BookScreen.new are screen builders for a given segment
             RRoute<HomeSegment>(
               'home',
               HomeSegment.fromUrlPars,
@@ -113,7 +107,7 @@ class App extends ConsumerWidget {
 ```dart
 void main() => runApp(
       ProviderScope(
-        // home path and navigator constructor are required
+        // [HomeSegment()] as home TypedPath and navigator constructor are required
         overrides: providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
@@ -123,9 +117,9 @@ void main() => runApp(
 ### Step5 - code screen widgets
 
 There are two screen to code: *HomeScreen* and *BookScreen*. 
-Extend this screens from **RScreen widget**.
+Extend this screens from **RScreen** widget.
 
-*RScreen widget*:
+*RScreen* widget:
 - replaces the standard Android back button behavior (using Flutter BackButtonListener widget)
 - will provide appBarLeading icon to replace the standard AppBar back button behavior
 
@@ -155,7 +149,7 @@ See:
 - [test code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
 
 *Note*: The link ```Go to book: [3, 13, 103]``` in the [running example](https://pavelpz.github.io/doc_simple/) would not make much sense in the real Books application.
-It shows the navigation to the four-screen navigation stack:
+But it shows the navigation to the four-screen navigation stack:
 
 - **string-path** = ```home/book;id=3/book;id=13/book;id=103```. 
 - **typed-path** = ```[HomeSegment(), BookSegment(id:3), BookSegment(id:13), BookSegment(id:103)]```. 
