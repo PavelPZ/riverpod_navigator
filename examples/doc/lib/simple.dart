@@ -31,6 +31,27 @@ class BookSegment extends TypedSegment {
   final int id;
 }
 
+class TestSegment extends TypedSegment {
+  const TestSegment({required this.i, this.s, required this.b, this.d});
+
+  /// used for creating BookSegment from URL pars
+  factory TestSegment.fromUrlPars(UrlPars pars) => TestSegment(
+        i: pars.getInt('id'),
+        s: pars.getStringNull('s'),
+        b: pars.getBool('b'),
+        d: pars.getDoubleNull('d'),
+      );
+
+  /// used for encoding BookSegment props to URL pars
+  @override
+  void toUrlPars(UrlPars pars) => pars.setInt('i', i).setString('s', s).setBool('b', b).setDouble('d', d);
+
+  final int i;
+  final String? s;
+  final bool b;
+  final double? d;
+}
+
 class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(

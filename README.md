@@ -197,6 +197,62 @@ Navigation logic can be developed and tested without typing a single flutter wid
   });
 ```
 
+## URL parsing
+
+Flutter Navigator 2.0 and its [MaterialApp.router] constructor requires a URL parser ([RouteInformationParser]).
+We use URL syntax, see [section 3.3. of RFC 3986](https://www.ietf.org/rfc/rfc3986.txt): 
+*"For example, one URI producer might use a segment such as "name;v=1.1"...*"
+
+Each *TypedSegment* must be converted to *string-segment* and back. 
+The format of *string-segment* is ```<unique TypedSegment id>[;<property name>=<property value>]*```, 
+e.g. ```book;id=3```.*
+
+Instead of directly converting to/from the string, we convert to/from ```typedef UrlPars = Map<String,String>```, e.g.:
+```
+  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
+  @override
+  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
+```
+
+So far, we support the following types of TypedSegment property: **int, double, bool, String, int?, double?, bool?, String?**. See ```extension UrlParsEx on UrlPars``` in 
+[path_parser.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/lib/path_parser.dart).
+
+Every aspect of URL conversion can be customized, e.g.
+- support another property type (as a DateTime, providing *getDateTime*, *getDateTimeNull* and *setDateTime* in *UrlPars* extension)
+- rewrite the entire *IPathParser* and use a completely different URL syntax. Then use your parser in AppNavigator:
+
+```
+class AppNavigator extends RNavigator {
+  AppNavigator(Ref ref)
+      : super(
+....
+  	pathParserCreator: (router) => MyPathParser(router),
+...         
+```
+
+**** TestSegment example:
+```dart
+class TestSegment extends TypedSegment {
+  const TestSegment({required this.i, this.s, required this.b, this.d});
+
+  factory TestSegment.fromUrlPars(UrlPars pars) => TestSegment(
+        i: pars.getInt('id'),
+        s: pars.getStringNull('s'),
+        b: pars.getBool('b'),
+        d: pars.getDoubleNull('d'),
+      );
+
+  @override
+  void toUrlPars(UrlPars pars) => 
+    pars.setInt('i', i).setString('s', s).setBool('b', b).setDouble('d', d);
+
+  final int i;
+  final String? s;
+  final bool b;
+  final double? d;
+}
+```
+
 ## Place navigation events in AppNavigator
 
 It is good practice to place the code for all events specific to navigation in AppNavigator.
