@@ -56,13 +56,13 @@ class AppNavigator extends RNavigator {
   // These can then be used not only for writing screen widgets, but also for testing.
 
   /// navigate to book
-  NavigatePath toBook({required int id}) => navigatePath([HomeSegment(), BookSegment(id: id)]);
+  Future toBook({required int id}) => navigate([HomeSegment(), BookSegment(id: id)]);
 
   /// navigate to next book
-  NavigatePath toNextBook() => replaceLastPath<BookSegment>((old) => BookSegment(id: old.id + 1));
+  Future toNextBook() => replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1));
 
   /// navigate to home
-  NavigatePath toHome() => navigatePath([HomeSegment()]);
+  Future toHome() => navigate([HomeSegment()]);
 
   /// sideEffect
   Future sideEffect() => registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000)));

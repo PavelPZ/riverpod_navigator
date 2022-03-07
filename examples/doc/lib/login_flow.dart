@@ -115,13 +115,13 @@ class AppNavigator extends RNavigator {
   // ******* actions used on the screens
 
   /// navigate to book
-  NavigatePath toBook({required int id}) => navigatePath([HomeSegment(), BookSegment(id: id)]);
+  Future toBook({required int id}) => navigate([HomeSegment(), BookSegment(id: id)]);
 
   /// navigate to next book
-  NavigatePath toNextBook() => replaceLastPath<BookSegment>((old) => BookSegment(id: old.id + 1));
+  Future toNextBook() => replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1));
 
   /// navigate to home
-  NavigatePath toHome() => navigatePath([HomeSegment()]);
+  Future toHome() => navigate([HomeSegment()]);
 
   Future onLogout() {
     // actualize login state
@@ -201,7 +201,7 @@ class HomeScreen extends AppScreen<HomeSegment> {
     return [
       for (var i = 1; i <= bookCount; i++)
         ElevatedButton(
-          onPressed: navigator.toBook(id: i).onPressed,
+          onPressed: () => navigator.toBook(id: i),
           child: Text('Book $i${!isLogged && i.isOdd ? '(log in first)' : ''}'),
         ) // normal page
     ];
