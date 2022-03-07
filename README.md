@@ -39,7 +39,6 @@ class HomeSegment extends TypedSegment {
   const HomeSegment();
 
   /// used for creating HomeSegment from URL pars
-  // ignore: avoid_unused_constructor_parameters
   factory HomeSegment.fromUrlPars(UrlPars pars) => const HomeSegment();
 }
 
@@ -58,7 +57,6 @@ class BookSegment extends TypedSegment {
 ```
 
 Note: *fromUrlPars* and *toUrlPars* helps to convert **typed-segment** to **string-segment** and back.
-This is needed for Flutter on the Web.
 
 ### Step2 - configure AppNavigator...
 

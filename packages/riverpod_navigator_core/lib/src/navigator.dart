@@ -8,9 +8,10 @@ part of 'riverpod_navigator_core.dart';
 class RNavigatorCore {
   RNavigatorCore(
     this.ref,
-    List<RRouteCore> routes,
-  ) : router = RRouter(routes) {
-    pathParser = PathParser(router);
+    List<RRouteCore> routes, {
+    IPathParser pathParserCreator(RRouter router)?,
+  }) : router = RRouter(routes) {
+    pathParser = pathParserCreator == null ? PathParser(router) : pathParserCreator(router);
 
     // see Defer2NextTick doc
     _defer2NextTick = Defer2NextTick()..navigator = this;
@@ -31,7 +32,7 @@ class RNavigatorCore {
   final RRouter router;
 
   /// path parser
-  late PathParser pathParser;
+  late IPathParser pathParser;
 
   /// for nested navigator: keep state of nested navigator eg. in flutter tabs widget
   late RestorePath? _restorePath;

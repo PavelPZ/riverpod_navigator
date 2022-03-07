@@ -40,7 +40,7 @@ class RRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, Pop
 class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
   RouteInformationParserImpl(this._pathParser);
 
-  final PathParser _pathParser;
+  final IPathParser _pathParser;
 
   @override
   Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
