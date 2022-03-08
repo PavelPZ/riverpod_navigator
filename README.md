@@ -315,7 +315,8 @@ Navigation is delayed until the asynchronous actions are performed. These action
 
 ### Define classes for the typed-segment 
 
-Create *asyncHolder* to save the result of the asynchronous action. The screen then uses this result.
+Create a *asyncHolder* property that stores the result of the asynchronous action. 
+The screen will then use this result.
 
 ```dart
 class HomeSegment extends TypedSegment {
@@ -334,6 +335,8 @@ class BookSegment extends TypedSegment {
 ```
 
 ### Configure AppNavigator
+
+Add *opening*, *closing* or *merging* actions to *RRoute* definition.
 
 ```dart
 class AppNavigator extends RNavigator {
