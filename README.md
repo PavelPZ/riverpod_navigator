@@ -19,7 +19,23 @@ just use the nested riverpod ```ProviderScope()``` and Flutter ```Router``` widg
 
 - [Terminology used](#terminology-used)
 - [Simple example](#simple-example)
-    - [Step1 - define classes for the typed-segment](#step1---define-classes-for-the-typed-segment)
+  - [Step1 - define classes for the typed-segment](#step1---define-classes-for-the-typed-segment)
+  - [Step2 - configure AppNavigator](#step2---configure-appnavigator)
+  - [Step3 - use the AppNavigator in MaterialApp.router](#step3---use-the-appnavigator-in-materialapprouter)
+  - [Step4 - configure riverpod ProviderScope](#step4---configure-riverpod-providerscope-)
+  - [Step5 - code screen widgets](#step5---code-screen-widgets)
+- [Development and testing without GUI](#development-and-testing-without-gui)
+- [URL parsing](#url-parsing)
+- [Place navigation events in AppNavigator](#place-navigation-events-in-appnavigator)
+- [Async navigation](#async-navigation)
+  - [Define classes for the typed-segment](#define-classes-for-the-typed-segmen)
+  - [Configure AppNavigator](#configure-appnavigator)
+- [Other features and examples](#other-features-and-examples)
+  - [Login flow](#login-flow)
+  - [Nested navigation](#nested-navigation)
+- [Installation of examples](#installation-of-examples)
+- [Navigator Data Flow Diagram](#navigator-data-flow-diagram)
+- [Roadmap](#roadmap)
 
 ## Terminology used
 
