@@ -179,7 +179,7 @@ But it shows the navigation to the four-screen navigation stack:
 - **typed-path** = ```[HomeSegment(), BookSegment(id:3), BookSegment(id:13), BookSegment(id:103)]```. 
 - **navigation-stack** (flutter Navigator.pages) = ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:3))), MaterialPage (child: BookScreen(BookSegment(id:13))), MaterialPage (child: BookScreen(BookSegment(id:103)))]```. 
 
-### Development and testing without GUI
+## Development and testing without GUI
 
 Navigation logic can be developed and tested without typing a single flutter widget:
 
@@ -257,7 +257,7 @@ class TestSegment extends TypedSegment {
   const TestSegment({required this.i, this.s, required this.b, this.d});
 
   factory TestSegment.fromUrlPars(UrlPars pars) => TestSegment(
-        i: pars.getInt('id'),
+        i: pars.getInt('i'),
         s: pars.getStringNull('s'),
         b: pars.getBool('b'),
         d: pars.getDoubleNull('d'),
