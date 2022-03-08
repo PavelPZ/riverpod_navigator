@@ -17,9 +17,9 @@ just use the nested riverpod ```ProviderScope()``` and Flutter ```Router``` widg
 
 ## Index
 
-[Terminology used](#terminology-used)
-[Simple example](#simple-example)
-    [Step1 - define classes for the typed-segment](#step1---define-classes-for-the-typed-segment)
+- [Terminology used](#terminology-used)
+- [Simple example](#simple-example)
+    - [Step1 - define classes for the typed-segment](#step1---define-classes-for-the-typed-segment)
 
 ## Terminology used
 
