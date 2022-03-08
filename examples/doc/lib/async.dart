@@ -65,10 +65,7 @@ class AppNavigator extends RNavigator {
   Future toHome() => navigate([HomeSegment()]);
 
   /// sideEffect
-  Future sideEffect() => registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000)));
-
-  /// multi sideEffect
-  Future multiSideEffect() async {
+  Future sideEffect() async {
     setIsNavigating(true);
     try {
       await registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000)));
@@ -158,9 +155,5 @@ class BookScreen extends AppScreen<BookSegment> {
           onPressed: navigator.sideEffect,
           child: const Text('Side effect (5000 msec)'),
         ),
-        ElevatedButton(
-          onPressed: navigator.multiSideEffect,
-          child: const Text('Multi side effect (5000 msec)'),
-        )
       ];
 }

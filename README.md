@@ -15,6 +15,10 @@ navigation logic can be developed and tested without typing a single flutter wid
 - **nested navigation**<br>
 just use the nested riverpod ```ProviderScope()``` and Flutter ```Router``` widget
 
+## Index
+
+
+
 ## Terminology used
 
 Take a look at the following terms related to URL path ```home/book;id=2```
@@ -282,9 +286,75 @@ and in the test code as follows:
   await navigTest(navigator.toNextBook, 'home/book;id=3');
 ```
 
+## Async navigation
+
+Navigation is delayed until the asynchronous actions are performed. These actions for each screen are:
+- **opening** (before opening a new screen)
+- **closing** (before closing the old screen)
+- **merging** (before replacing the screen with a screen with the same segment type)
+
+### Define classes for the typed-segment 
+
+Create *asyncHolder* to save the result of the asynchronous action. The screen then uses this result.
+
+```dart
+class HomeSegment extends TypedSegment {
+  ....
+  /// for async navigation: holds async opening or replacing result
+  @override
+  final asyncHolder = AsyncHolder<String>();
+}
+
+class BookSegment extends TypedSegment {
+  ....
+  /// for async navigation: holds async opening or replacing result
+  @override
+  final asyncHolder = AsyncHolder<String>();
+}
+```
+
+### Configure AppNavigator
+
+```dart
+class AppNavigator extends RNavigator {
+  AppNavigator(Ref ref)
+      : super(
+          ref,
+          [
+            RRoute<HomeSegment>(
+              'home',
+              HomeSegment.fromUrlPars,
+              HomeScreen.new,
+              opening: (newSegment) => _simulateAsyncResult('Home.opening', 2000),
+            ),
+            RRoute<BookSegment>(
+              'page',
+              BookSegment.fromUrlPars,
+              BookScreen.new,
+              opening: (newSegment) => _simulateAsyncResult('Book.opening', 240),
+              replacing: (oldSegment, newSegment) => _simulateAsyncResult('Book.replacing', 800),
+              closing: null,
+            ),
+          ],
+        );
+....
+}
+
+// simulates an action such as loading external data or saving to external storage
+Future<String> _simulateAsyncResult(String asyncResult, int msec) async {
+  await Future.delayed(Duration(milliseconds: msec));
+  return '$asyncResult: async result after $msec msec';
+}
+```
+
+#### See:
+
+- [running example](https://pavelpz.github.io/doc_async/)
+- [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/async.dart)
+- [test code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/async_test.dart)
+
 ## Other features and examples 
 
-- ### [Async navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async.md)
 - ### [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
 - ### [Nested navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/nested_navigation.md)
 
