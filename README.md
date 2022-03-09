@@ -281,7 +281,7 @@ class AppNavigator extends RNavigator {
 
 ## Place navigation events in AppNavigator
 
-It is good practice to place the code for all events specific to navigation in AppNavigator.
+It is good practice to place the code for all events (specific to navigation) in AppNavigator.
 These can then be used not only for writing screen widgets, but also for testing.
 
 ```dart
@@ -322,7 +322,7 @@ The *opening* and *closing* actions can return an asynchronous result that can b
 
 ### Define classes for the typed-segment 
 
-Apply ```AsyncSegment<String>``` mixin to TypedSegment's.
+Apply a ```AsyncSegment``` mixin with appropriate type (```String```) to TypedSegment's.
 
 ```dart
 class HomeSegment extends TypedSegment with AsyncSegment<String>{
