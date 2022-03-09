@@ -49,7 +49,8 @@ class AsyncHolder<T> {
 mixin AsyncSegment<T> on TypedSegment {
   /// for async navigation: holds async opening or replacing result
   final asyncHolder2 = AsyncHolder<T>();
-  Future setAsyncValue(Future<T> value) async => asyncHolder2.value = await value;
+  Future setAsyncValue(Future<T> value) async =>
+      asyncHolder2.value = await value;
   T get asyncValue => asyncHolder2.value!;
 }
 

@@ -1,3 +1,8 @@
+## 0.39.0
+
+- **Breaking**: AsyncSegment<String> mixin
+- documentation
+
 ## 0.38.0
 
 - documentation
