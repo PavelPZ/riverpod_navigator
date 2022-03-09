@@ -46,6 +46,14 @@ class AsyncHolder<T> {
   T? value;
 }
 
+mixin AsyncTypedSegment<A> on TypedSegment {
+  Future setOpening(Future<A> future) async => _holder.value = await future;
+  Future setReplacing(Future<A> future) async => _holder.value = await future;
+
+  final _holder = AsyncHolder<A>();
+  A? get asyncValue => _holder.value;
+}
+
 // ********************************************
 // RestorePath
 // ********************************************
