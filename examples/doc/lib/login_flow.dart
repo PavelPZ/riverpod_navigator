@@ -7,7 +7,7 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 void main() => runApp(
       ProviderScope(
         /// Navigation stack depends on isLoggedProvider too.
-        /// Add @dependsOn with [isLoggedProvider]
+        /// Add dependsOn with [isLoggedProvider]
         overrides: providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [isLoggedProvider]),
         child: const App(),
       ),
@@ -53,7 +53,7 @@ class LoginSegment extends TypedSegment {
   final String? canceledUrl;
 
   @override
-  void toUrlPars(UrlPars pars) => pars.setString('loggedUrl', loggedUrl)..setString('canceledUrl', canceledUrl);
+  void toUrlPars(UrlPars pars) => pars.setString('loggedUrl', loggedUrl).setString('canceledUrl', canceledUrl);
 }
 
 /// !!! there is another provider on which the navigation status depends:
@@ -89,9 +89,9 @@ class AppNavigator extends RNavigator {
   @override
   TypedPath appNavigationLogic(TypedPath ongoingPath) {
     final userIsLogged = ref.read(isLoggedProvider);
-    final navigationStack = getNavigationStack();
+    final navigationStack = ref.read(navigationStackProvider);
 
-    // if user is not logged-in and some of the screen in navigations stack needs login => redirect to LoginScreen
+    // if user is not logged-in and some of the screen in ongoingPath needs login => redirect to LoginScreen
     if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
       // prepare URLs for confirmation or cancel cases on the login screen
       final loggedUrl = pathParser.toUrl(ongoingPath);
@@ -108,8 +108,8 @@ class AppNavigator extends RNavigator {
         return [HomeSegment()];
       }
     }
-    // no redirection is needed but rebuild can appear (e.g. during logout)
-    return [...ongoingPath];
+    // no redirection is needed, return ongoingPath
+    return ongoingPath;
   }
 
   // ******* actions used on the screens
