@@ -19,7 +19,7 @@ class HomeSegment extends TypedSegment {
   final asyncHolder = AsyncHolder<String>();
 }
 
-class BookSegment extends TypedSegment with AsyncTypedSegment<String> {
+class BookSegment extends TypedSegment {
   BookSegment({required this.id});
   factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
   final int id;
@@ -45,14 +45,10 @@ class AppNavigator extends RNavigator {
               'page',
               BookSegment.fromUrlPars,
               BookScreen.new,
-              opening: (newSegment) => newSegment.setOpening(
-                _simulateAsyncResult('Book:${newSegment.id}.openning', 240),
-              ),
-              replacing: (oldSegment, newSegment) => newSegment.setReplacing(
-                _simulateAsyncResult('Book:${oldSegment.id}=>${newSegment.id}.replacing', 800),
-              ),
+              opening: (newSegment) => _simulateAsyncResult('Book.opening', 240),
+              replacing: (oldSegment, newSegment) => _simulateAsyncResult('Book.replacing', 800),
               closing: null,
-            )
+            ),
           ],
         );
 

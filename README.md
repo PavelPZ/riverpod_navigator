@@ -251,8 +251,7 @@ class AppNavigator extends RNavigator {
 ...         
 ```
 
-#### Another fromUrlPars/toUrlPars example:
-
+#### TestSegment example:
 ```dart
 class TestSegment extends TypedSegment {
   const TestSegment({required this.i, this.s, required this.b, this.d});
@@ -274,12 +273,6 @@ class TestSegment extends TypedSegment {
   final double? d;
 }
 ```
-
-After registering *TestSegment*: ```... RRoute<TestSegment>('test',TestSegment.fromUrlPars, ...```, the following URL's are correct:
-
-- test;i=1;b=true
-- test;i=2;b=true;d=12.6;s=abcd
-- test;i=2;b=true/test;i=2;b=true;d=12.6;s=abcd/test;i=3;b=false
 
 ## Place navigation events in AppNavigator
 
