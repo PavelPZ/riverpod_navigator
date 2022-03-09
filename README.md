@@ -224,37 +224,15 @@ We use URL syntax, see [section 3.3. of RFC 3986](https://www.ietf.org/rfc/rfc39
 Each *TypedSegment* must be converted to *string-segment* and back. 
 The format of *string-segment* is 
 
-```<unique TypedSegment id>[;<property name>=<property value>]*```
+```<unique TypedSegment id>[;<property name>=<property value>]*```, e.g. ```book;id=3```.
 
-e.g. ```book;id=3```.
+### fromUrlPars/toUrlPars example:
 
-Instead of directly converting to/from the string, we convert to/from ```typedef UrlPars = Map<String,String>```, e.g.:
-```
-  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
-  @override
-  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
-```
+Instead of directly converting to/from the string, we convert to/from <br>
+```typedef UrlPars = Map<String,String>```
 
-So far, we support the following types of TypedSegment property: 
+So far, we support the following types of TypedSegment property:<br>
 **int, double, bool, String, int?, double?, bool?, String?**. 
-
-See ```extension UrlParsEx on UrlPars``` in 
-[path_parser.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/lib/src/path_parser.dart).
-
-Every aspect of URL conversion can be customized, e.g.
-- support another property type (as a DateTime, providing *getDateTime*, *getDateTimeNull* and *setDateTime* *UrlPars*'s extension)
-- rewrite the entire *IPathParser* and use a completely different URL syntax. Then use your parser in AppNavigator:
-
-```
-class AppNavigator extends RNavigator {
-  AppNavigator(Ref ref)
-      : super(
-....
-  	pathParserCreator: (router) => MyPathParser(router),
-...         
-```
-
-#### fromUrlPars/toUrlPars example:
 
 ```dart
 class TestSegment extends TypedSegment {
@@ -278,11 +256,28 @@ class TestSegment extends TypedSegment {
 }
 ```
 
-After registering *TestSegment*: ```... RRoute<TestSegment>('test',TestSegment.fromUrlPars, ...```, the following URL's are correct:
+After registering *TestSegment* by ```RRoute<TestSegment>('test',TestSegment.fromUrlPars```, the following URL's are correct:
 
 - test;i=1;b=true
 - test;i=2;b=true;d=12.6;s=abcd
 - test;i=2;b=true/test;i=2;b=true;d=12.6;s=abcd/test;i=3;b=false
+
+### Customization
+
+Every aspect of URL conversion can be customized, e.g.
+- support another property type (as a DateTime, providing *getDateTime*, *getDateTimeNull* and *setDateTime* in your own *UrlPars*'s extension)<br>
+See ```extension UrlParsEx on UrlPars``` in 
+[path_parser.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/lib/src/path_parser.dart).
+- rewrite the entire *IPathParser* and use a completely different URL syntax. Then use your parser in AppNavigator:
+
+```
+class AppNavigator extends RNavigator {
+  AppNavigator(Ref ref)
+      : super(
+....
+  	pathParserCreator: (router) => MyPathParser(router),
+...         
+```
 
 ## Place navigation events in AppNavigator
 
@@ -299,7 +294,7 @@ class AppNavigator extends RNavigator {
 }
 ```
 
-In the screen code, it is used as follows:
+In the screen widget, it is used as follows:
 
 ```dart
 ...
@@ -318,12 +313,12 @@ and in the test code as follows:
 
 ## Async navigation
 
-Navigation is delayed until the asynchronous actions are performed. These actions for each screen are:
+Async navigation means that navigation is delayed until the asynchronous actions are performed. These actions for each screen are:
 - **opening** (before opening a new screen)
 - **closing** (before closing the old screen)
 - **replacing** (before replacing the screen with a screen with the same segment type)
 
-The *opening* and *closing* actions can return an asynchronous result that can be used later when build a screen.
+The *opening* and *closing* actions can return an asynchronous result that can be used later when building a screen.
 
 ### Define classes for the typed-segment 
 
