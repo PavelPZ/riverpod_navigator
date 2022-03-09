@@ -26,8 +26,8 @@ typedef FromUrlPars<T extends TypedSegment> = T Function(UrlPars pars);
 
 /// Ancestor for typed segments.
 ///
-/// Instead of navigate('home/books/book;id=3') we can use
-/// navigate([HomeSegment(), BooksSegment(), BookSegment(id: 3)]);
+/// Instead of navigate('home/book;id=3') we can use
+/// navigate([HomeSegment(), BookSegment(id: 3)]);
 @immutable
 class TypedSegment {
   const TypedSegment();
