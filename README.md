@@ -74,7 +74,7 @@ class BookSegment extends TypedSegment {
 }
 ```
 
-Note: *fromUrlPars* and *toUrlPars* helps to convert **typed-segment** to **string-segment** and back.
+> *fromUrlPars* and *toUrlPars* helps to convert **typed-segment** to **string-segment** and back.
 
 ### Step2 - configure AppNavigator...
 
@@ -143,12 +143,6 @@ void main() => runApp(
 There are two screen to code: *HomeScreen* and *BookScreen*. 
 Extend this screens from **RScreen** widget.
 
-*RScreen* widget:
-- replaces the standard Android back button behavior (using Flutter BackButtonListener widget)
-- will provide appBarLeading icon to replace the standard AppBar back button behavior
-
-This is essential for asynchronous navigation to function properly.
-
 ```dart
 class BookScreen extends RScreen<AppNavigator, BookSegment> {
   const BookScreen(BookSegment segment) : super(segment);
@@ -164,6 +158,12 @@ class BookScreen extends RScreen<AppNavigator, BookSegment> {
 ...
 ```
 
+> *RScreen* widget:
+> - replaces the standard Android back button behavior (using Flutter BackButtonListener widget)
+> - will provide appBarLeading icon to replace the standard AppBar back button behavior
+> 
+> This is essential for asynchronous navigation to function properly.
+
 #### And that's all
 
 See:
@@ -172,12 +172,12 @@ See:
 - [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart)
 - [test code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
 
-*Note*: The link ```Go to book: [3, 13, 103]``` in the [running example](https://pavelpz.github.io/doc_simple/) would not make much sense in the real Books application.
+> The link ```Go to book: [3, 13, 103]``` in the [running example](https://pavelpz.github.io/doc_simple/) would not make much sense in the real Books application.
 But it shows the navigation to the four-screen navigation stack:
-
-- **string-path** = ```home/book;id=3/book;id=13/book;id=103```. 
-- **typed-path** = ```[HomeSegment(), BookSegment(id:3), BookSegment(id:13), BookSegment(id:103)]```. 
-- **navigation-stack** (flutter Navigator.pages) = ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:3))), MaterialPage (child: BookScreen(BookSegment(id:13))), MaterialPage (child: BookScreen(BookSegment(id:103)))]```. 
+> 
+> - **string-path** = ```home/book;id=3/book;id=13/book;id=103```. 
+> - **typed-path** = ```[HomeSegment(), BookSegment(id:3), BookSegment(id:13), BookSegment(id:103)]```. 
+> - **navigation-stack** (flutter Navigator.pages) = ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:3))), MaterialPage (child: BookScreen(BookSegment(id:13))), MaterialPage (child: BookScreen(BookSegment(id:103)))]```. 
 
 ## Development and testing without GUI
 
@@ -217,7 +217,7 @@ Navigation logic can be developed and tested without typing a single flutter wid
 
 ## URL parsing
 
-Flutter Navigator 2.0 and its *MaterialApp.router* constructor requires a URL parser (*RouteInformationParser*).
+> Flutter Navigator 2.0 and its *MaterialApp.router* constructor requires a URL parser (*RouteInformationParser*).
 We use URL syntax, see [section 3.3. of RFC 3986](https://www.ietf.org/rfc/rfc3986.txt), note 
 *For example, one URI producer might use a segment such as "name;v=1.1"..."
 
@@ -235,7 +235,10 @@ Instead of directly converting to/from the string, we convert to/from ```typedef
   void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 ```
 
-So far, we support the following types of TypedSegment property: **int, double, bool, String, int?, double?, bool?, String?**. See ```extension UrlParsEx on UrlPars``` in 
+So far, we support the following types of TypedSegment property: 
+**int, double, bool, String, int?, double?, bool?, String?**. 
+
+See ```extension UrlParsEx on UrlPars``` in 
 [path_parser.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/lib/src/path_parser.dart).
 
 Every aspect of URL conversion can be customized, e.g.
@@ -251,7 +254,7 @@ class AppNavigator extends RNavigator {
 ...         
 ```
 
-#### Another fromUrlPars/toUrlPars example:
+#### fromUrlPars/toUrlPars example:
 
 ```dart
 class TestSegment extends TypedSegment {
@@ -318,32 +321,27 @@ and in the test code as follows:
 Navigation is delayed until the asynchronous actions are performed. These actions for each screen are:
 - **opening** (before opening a new screen)
 - **closing** (before closing the old screen)
-- **merging** (before replacing the screen with a screen with the same segment type)
+- **replacing** (before replacing the screen with a screen with the same segment type)
+
+The *opening* and *closing* actions can return an asynchronous result that can be used later when build a screen.
 
 ### Define classes for the typed-segment 
 
-Create a *asyncHolder* property that stores the result of the asynchronous action. 
-The screen will then use this result.
+Apply ```AsyncSegment<String>``` mixin to TypedSegment's.
 
 ```dart
-class HomeSegment extends TypedSegment {
+class HomeSegment extends TypedSegment with AsyncSegment<String>{
   ....
-  /// for async navigation: holds async opening or replacing result
-  @override
-  final asyncHolder = AsyncHolder<String>();
 }
 
-class BookSegment extends TypedSegment {
+class BookSegment extends TypedSegment  with AsyncSegment<String>{
   ....
-  /// for async navigation: holds async opening or replacing result
-  @override
-  final asyncHolder = AsyncHolder<String>();
 }
 ```
 
 ### Configure AppNavigator
 
-Add *opening*, *closing* or *merging* actions to *RRoute* definition.
+Add *opening*, *closing* or *replacing* actions to *RRoute* definition.
 
 ```dart
 class AppNavigator extends RNavigator {
@@ -355,15 +353,15 @@ class AppNavigator extends RNavigator {
               'home',
               HomeSegment.fromUrlPars,
               HomeScreen.new,
-              opening: (newSegment) => _simulateAsyncResult('Home.opening', 2000),
+              opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Home.opening', 2000)),
             ),
             RRoute<BookSegment>(
               'page',
               BookSegment.fromUrlPars,
               BookScreen.new,
-              opening: (newSegment) => _simulateAsyncResult('Book.opening', 240),
-              replacing: (oldSegment, newSegment) => _simulateAsyncResult('Book.replacing', 800),
-              closing: null,
+              opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book.opening', 240)),
+              replacing: (sOld, sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book.replacing', 800)),
+              closing: (sOld) => Future.delayed(Duration(milliseconds: 500)),
             ),
           ],
         );
@@ -375,6 +373,14 @@ Future<String> _simulateAsyncResult(String asyncResult, int msec) async {
   await Future.delayed(Duration(milliseconds: msec));
   return '$asyncResult: async result after $msec msec';
 }
+```
+
+### Use the result of an asynchronous action when building the screen
+
+````dart
+...
+Text('Async result: "${segment.asyncValue}"'),
+...
 ```
 
 #### See:

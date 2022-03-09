@@ -11,20 +11,16 @@ void main() => runApp(
       ),
     );
 
-class HomeSegment extends TypedSegment {
+class HomeSegment extends TypedSegment with AsyncSegment<String> {
   HomeSegment();
   // ignore: avoid_unused_constructor_parameters
   factory HomeSegment.fromUrlPars(UrlPars pars) => HomeSegment();
-  @override
-  final asyncHolder = AsyncHolder<String>();
 }
 
-class BookSegment extends TypedSegment {
+class BookSegment extends TypedSegment with AsyncSegment<String> {
   BookSegment({required this.id});
   factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
   final int id;
-  @override
-  final asyncHolder = AsyncHolder<String>();
 
   @override
   void toUrlPars(UrlPars pars) => pars.setInt('id', id);
@@ -39,15 +35,15 @@ class AppNavigator extends RNavigator {
               'home',
               HomeSegment.fromUrlPars,
               HomeScreen.new,
-              opening: (newSegment) => _simulateAsyncResult('Home.opening', 2000),
+              opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Home.opening', 2000)),
             ),
             RRoute<BookSegment>(
               'page',
               BookSegment.fromUrlPars,
               BookScreen.new,
-              opening: (newSegment) => _simulateAsyncResult('Book.opening', 240),
-              replacing: (oldSegment, newSegment) => _simulateAsyncResult('Book.replacing', 800),
-              closing: null,
+              opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book.opening', 240)),
+              replacing: (sOld, sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book.replacing', 800)),
+              closing: (sOld) => Future.delayed(Duration(milliseconds: 500)),
             ),
           ],
         );
@@ -114,10 +110,8 @@ abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S
               for (final w in buildWidgets(navigator)) ...[SizedBox(height: 20), w],
               SizedBox(height: 20),
               Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
-              if (segment.asyncHolder != null) ...[
-                SizedBox(height: 20),
-                Text('Async result: "${segment.asyncHolder!.value}"'),
-              ]
+              SizedBox(height: 20),
+              Text('Async result: "${(segment as AsyncSegment<String>).asyncValue}"'),
             ],
           ),
         ),

@@ -11,9 +11,7 @@ class RNavigatorCore {
     List<RRouteCore> routes, {
     IPathParser pathParserCreator(RRouter router)?,
   }) : router = RRouter(routes) {
-    pathParser = pathParserCreator == null
-        ? PathParser(router)
-        : pathParserCreator(router);
+    pathParser = pathParserCreator == null ? PathParser(router) : pathParserCreator(router);
 
     // see Defer2NextTick doc
     _defer2NextTick = Defer2NextTick()..navigator = this;
@@ -52,8 +50,7 @@ class RNavigatorCore {
   TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
 
   /// low level app logic
-  FutureOr<TypedPath> appNavigationLogicCore(
-      TypedPath oldNavigationStack, TypedPath ongoingPath) {
+  FutureOr<TypedPath> appNavigationLogicCore(TypedPath oldNavigationStack, TypedPath ongoingPath) {
     final newOngoingPath = appNavigationLogic(ongoingPath);
 
     final navigationStack = getNavigationStack();
@@ -61,7 +58,7 @@ class RNavigatorCore {
     eq2Identical(navigationStack, newOngoingPath);
 
     final todo = waitStart(router, navigationStack, newOngoingPath);
-    if (todo.isEmpty) return newOngoingPath;
+    if (todo.item1.isEmpty && todo.item2.isEmpty) return newOngoingPath;
     return waitEnd(todo).then((_) => newOngoingPath);
   }
 
@@ -92,19 +89,16 @@ class RNavigatorCore {
   ///   setIsNavigating(false);
   /// }
   /// ```
-  void setIsNavigating(bool isNavigating) => ref
-      .read(isNavigatingProvider.notifier)
-      .update((state) => isNavigating ? state + 1 : state - 1);
+  void setIsNavigating(bool isNavigating) =>
+      ref.read(isNavigatingProvider.notifier).update((state) => isNavigating ? state + 1 : state - 1);
 
   /// When changing navigation state: completed after [navigationStackProvider] is actual
   Future<void> get navigationCompleted => _defer2NextTick.future;
 
-  String screenTitle(TypedSegment segment) =>
-      router.segment2Route(segment).getScreenTitle(segment);
+  String screenTitle(TypedSegment segment) => router.segment2Route(segment).getScreenTitle(segment);
 
   String get navigationStack2Url => pathParser.toUrl(getNavigationStack());
-  String debugSegmentSubpath(TypedSegment s) =>
-      pathParser.toUrl(segmentSubpath(s));
+  String debugSegmentSubpath(TypedSegment s) => pathParser.toUrl(segmentSubpath(s));
 
   TypedPath segmentSubpath(TypedSegment s) {
     final navigationStack = getNavigationStack();
@@ -118,12 +112,12 @@ class RNavigatorCore {
   }
 
   /// asynchronous screen actions, start
-  static List<Tuple2<AsyncOper, TypedSegment>> waitStart(
-      RRouter router, TypedPath oldPath, TypedPath newPath) {
-    final todo = <Tuple2<AsyncOper, TypedSegment>>[];
-    void add(AsyncOper? oper, TypedSegment segment) {
+  static Tuple2<List<GetFuture>, List<GetFuture>> waitStart(RRouter router, TypedPath oldPath, TypedPath newPath) {
+    final oldTodo = <GetFuture>[];
+    final newTodo = <GetFuture>[];
+    void add(bool isOld, GetFuture? oper) {
       if (oper == null) return;
-      todo.add(Tuple2(oper, segment));
+      (isOld ? oldTodo : newTodo).add(oper);
     }
 
     // close olds
@@ -131,7 +125,7 @@ class RNavigatorCore {
       final o = oldPath[i];
       final n = i >= newPath.length ? null : newPath[i];
       if (n == null || o.runtimeType != n.runtimeType) {
-        add(router.segment2Route(o).callClosing(o), o);
+        add(true, router.segment2Route(o).callClosing(o));
       } else if (identical(o, n)) {
         continue;
       }
@@ -141,23 +135,24 @@ class RNavigatorCore {
       final n = newPath[i];
       final o = i >= oldPath.length ? null : oldPath[i];
       if (o == null || o.runtimeType != n.runtimeType) {
-        add(router.segment2Route(n).callOpening(n), n);
+        add(false, router.segment2Route(n).callOpening(n));
       } else if (identical(o, n)) {
         continue;
       } else {
         // not identical and the same runtimeType
-        add(router.segment2Route(n).callReplacing(o, n), n);
+        add(false, router.segment2Route(n).callReplacing(o, n));
       }
     }
-    return todo;
+    return Tuple2(oldTodo, newTodo);
   }
 
   /// asynchronous screen actions, waiting and collectiong result
-  Future waitEnd(List<Tuple2<AsyncOper, TypedSegment>> todo) async {
-    for (final fs in todo) {
-      final asyncRes = await fs.item1();
-      if (fs.item2.asyncHolder == null) throw 'fs.item2.asyncHolder == null';
-      fs.item2.asyncHolder!.value = asyncRes;
+  Future waitEnd(Tuple2<List<GetFuture>, List<GetFuture>> todo) async {
+    for (final fs in todo.item1) {
+      await fs();
+    }
+    for (final fs in todo.item2) {
+      await fs();
     }
   }
 
@@ -170,10 +165,7 @@ class RNavigatorCore {
 
     // 1. Listen to the riverpod providers. If any change, call _defer2NextTick.start().
     // 2. [_defer2NextTick.providerChanged] ensures that _runNavigation is called only once the next tick
-    _unlistens = _dependsOn
-        .map((depend) => ref.listen<dynamic>(
-            depend, (previous, next) => _defer2NextTick.providerChanged()))
-        .toList();
+    _unlistens = _dependsOn.map((depend) => ref.listen<dynamic>(depend, (previous, next) => _defer2NextTick.providerChanged())).toList();
   }
 
   /// replaces "eq" segments with "identical" ones
@@ -190,9 +182,7 @@ class RNavigatorCore {
   NavigatePath popPath() {
     final navigationStack = getNavigationStack();
     assert(navigationStack.length > 1);
-    return navigatePath([
-      for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]
-    ]);
+    return navigatePath([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
   }
 
   Future<void> pop() => popPath().onPressed();
@@ -200,18 +190,13 @@ class RNavigatorCore {
   NavigatePath replaceLastPath<T extends TypedSegment>(T replace(T old)) {
     final navigationStack = getNavigationStack();
     return navigatePath(
-      [
-        for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i],
-        replace(navigationStack.last as T)
-      ],
+      [for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i], replace(navigationStack.last as T)],
     );
   }
 
-  Future replaceLast<T extends TypedSegment>(T replace(T old)) =>
-      replaceLastPath<T>(replace).onPressed();
+  Future replaceLast<T extends TypedSegment>(T replace(T old)) => replaceLastPath<T>(replace).onPressed();
 
-  NavigatePath pushPath(TypedSegment segment) =>
-      navigatePath([...getNavigationStack(), segment]);
+  NavigatePath pushPath(TypedSegment segment) => navigatePath([...getNavigationStack(), segment]);
 
   Future<void> push(TypedSegment segment) => pushPath(segment).onPressed();
 }
