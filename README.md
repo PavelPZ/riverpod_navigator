@@ -372,7 +372,7 @@ Future<String> _simulateAsyncResult(String asyncResult, int msec) async {
 
 ### Use the result of an asynchronous action when building the screen
 
-````dart
+```dart
 ...
 Text('Async result: "${segment.asyncValue}"'),
 ...
