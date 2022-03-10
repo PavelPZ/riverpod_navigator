@@ -7,15 +7,13 @@ import 'package:test/test.dart';
 
 DateTime start = DateTime.now();
 
-void doPrint(String m) =>
-    print('${DateTime.now().difference(start).inMilliseconds}: $m');
+void doPrint(String m) => print('${DateTime.now().difference(start).inMilliseconds}: $m');
 
 class TestNavigator extends RNavigatorCore {
   TestNavigator(Ref ref) : super(ref, []);
 
   @override
-  FutureOr<TypedPath> appNavigationLogicCore(
-      TypedPath oldNavigationStack, TypedPath ongoingPath) async {
+  FutureOr<TypedPath> appNavigationLogicCore(TypedPath oldNavigationStack, TypedPath intendedPath) async {
     await Future.delayed(Duration(milliseconds: 1000));
     doPrint('after appNavigationLogicCore');
     return [];
@@ -34,18 +32,14 @@ void main() {
     await container.pump();
     doPrint('start');
 
-    unawaited(navigator.registerProtectedFuture(
-        Future.delayed(Duration(milliseconds: 2000))
-            .then((value) => doPrint('protectedFuture 2000'))));
-    unawaited(navigator.registerProtectedFuture(
-        Future.delayed(Duration(milliseconds: 1500))
-            .then((value) => doPrint('protectedFuture 1500'))));
-    unawaited(navigator.registerProtectedFuture(
-        Future.delayed(Duration(milliseconds: 2500))
-            .then((value) => doPrint('protectedFuture 2500'))));
-    unawaited(navigator.registerProtectedFuture(
-        Future.value().then((value) => doPrint('protectedFuture none'))));
-    container.read(ongoingPathProvider.notifier).state = [Segment()];
+    unawaited(
+        navigator.registerProtectedFuture(Future.delayed(Duration(milliseconds: 2000)).then((value) => doPrint('protectedFuture 2000'))));
+    unawaited(
+        navigator.registerProtectedFuture(Future.delayed(Duration(milliseconds: 1500)).then((value) => doPrint('protectedFuture 1500'))));
+    unawaited(
+        navigator.registerProtectedFuture(Future.delayed(Duration(milliseconds: 2500)).then((value) => doPrint('protectedFuture 2500'))));
+    unawaited(navigator.registerProtectedFuture(Future.value().then((value) => doPrint('protectedFuture none'))));
+    container.read(intendedPathProvider.notifier).state = [Segment()];
     await container.pump();
     doPrint('before navigationCompleted');
     await navigator.navigationCompleted;

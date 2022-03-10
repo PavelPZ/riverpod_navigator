@@ -45,14 +45,14 @@ Application logic will redirect when:
 
 ```dart
   @override
-  TypedPath appNavigationLogic(TypedPath ongoingPath) {
+  TypedPath appNavigationLogic(TypedPath intendedPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
 
     // if user is not logged-in and some of the screen in navigations stack needs login => redirect to LoginScreen
-    if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
+    if (!userIsLogged && intendedPath.any((segment) => needsLogin(segment))) {
       // prepare URLs for confirmation or cancel cases on the login screen
       final navigationStack = getNavigationStack();
-      final loggedUrl = pathParser.typedPath2Path(ongoingPath);
+      final loggedUrl = pathParser.typedPath2Path(intendedPath);
       var canceledUrl = navigationStack.isEmpty || navigationStack.last is LoginSegment ? '' : pathParser.typedPath2Path(navigationStack);
       if (loggedUrl == canceledUrl) canceledUrl = ''; // chance to exit login loop
 
@@ -60,10 +60,10 @@ Application logic will redirect when:
       return [LoginSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
     } else {
       // user is logged and LogginScreen is going to display => redirect to HomeScreen
-      if (userIsLogged && (ongoingPath.isEmpty || ongoingPath.last is LoginSegment)) return [HomeSegment()];
+      if (userIsLogged && (intendedPath.isEmpty || intendedPath.last is LoginSegment)) return [HomeSegment()];
     }
     // no redirection is needed
-    return ongoingPath;
+    return intendedPath;
   }
 ```
 
@@ -100,7 +100,7 @@ Application logic will redirect when:
     if (returnPath.isEmpty) returnPath = [HomeSegment()];
 
     // start navigating to a return path
-    ref.read(ongoingPathProvider.notifier).state = returnPath;
+    ref.read(intendedPathProvider.notifier).state = returnPath;
 
     // actualize login state
     if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true;

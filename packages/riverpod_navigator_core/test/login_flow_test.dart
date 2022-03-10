@@ -13,26 +13,24 @@ class TestNavigator extends RNavigatorCore {
   TestNavigator(Ref ref) : super(ref, routes);
 
   @override
-  FutureOr<TypedPath> appNavigationLogicCore(
-      TypedPath oldNavigationStack, TypedPath ongoingPath) {
+  FutureOr<TypedPath> appNavigationLogicCore(TypedPath oldNavigationStack, TypedPath intendedPath) {
     final userIsLogged = ref.read(isLoggedProvider);
 
-    // if user is not logged-in and some of the ongoing screen needs login => redirect to LoginScreen
-    if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
+    // if user is not logged-in and some of the intended screen needs login => redirect to LoginScreen
+    if (!userIsLogged && intendedPath.any((segment) => needsLogin(segment))) {
       return [LoginSegment()];
     }
 
     // user is logged and LogginScreen is going to display => redirect to HomeScreen
-    if (userIsLogged && ongoingPath.any((segment) => segment is LoginSegment)) {
+    if (userIsLogged && intendedPath.any((segment) => segment is LoginSegment)) {
       return [HomeSegment()];
     }
 
     // no redirection is needed
-    return ongoingPath;
+    return intendedPath;
   }
 
-  bool needsLogin(TypedSegment segment) =>
-      segment is BookSegment && segment.id.isOdd;
+  bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 }
 
 void main() {
@@ -57,8 +55,8 @@ void main() {
       expect(stringPath, expected);
     }
 
-    Future changeOngoing(TypedPath path, String expected) => changeState(
-          () => container.read(ongoingPathProvider.notifier).state = path,
+    Future changeIntended(TypedPath path, String expected) => changeState(
+          () => container.read(intendedPathProvider.notifier).state = path,
           expected,
         );
 
@@ -67,27 +65,22 @@ void main() {
     //*****************************
 
     // book with even id => load book
-    await changeOngoing([HomeSegment(), BookSegment(id: 2)], 'home/book;id=2');
+    await changeIntended([HomeSegment(), BookSegment(id: 2)], 'home/book;id=2');
 
     // book with odd id => redirect to login
-    await changeOngoing([HomeSegment(), BookSegment(id: 1)], 'login');
+    await changeIntended([HomeSegment(), BookSegment(id: 1)], 'login');
 
     // log in => book loaded
     await changeState(() {
-      container.read(ongoingPathProvider.notifier).state = [
-        HomeSegment(),
-        BookSegment(id: 1)
-      ];
+      container.read(intendedPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 1)];
       container.read(isLoggedProvider.notifier).state = true;
     }, 'home/book;id=1');
 
     // logoff => redirect to login
-    await changeState(
-        () => container.read(isLoggedProvider.notifier).state = false, 'login');
+    await changeState(() => container.read(isLoggedProvider.notifier).state = false, 'login');
 
     // login screen visible. When set login state to true => redirect to home
-    await changeState(
-        () => container.read(isLoggedProvider.notifier).state = true, 'home');
+    await changeState(() => container.read(isLoggedProvider.notifier).state = true, 'home');
 
     return;
   });

@@ -10,11 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 //  How to easily connect riverpod provider (navigationStackProvider)
 //  with Flutter Navigator 2.0 RouterDelegate.
 //
-//  Works for Flutter mobile and Flutter web and desktop.
-//
-//  A similar principle is used in the
-//  [riverpod_navigator package](https://pub.dev/packages/riverpod_navigator) .
-//
 //*********************************************
 //*********************************************
 
@@ -42,7 +37,10 @@ final navigationStackProvider =
 
 typedef JsonMap = Map<String, dynamic>;
 
-/// Common TypedSegment's ancestor
+/// Ancestor for typed segments.
+///
+/// Instead of ```navigate('home/book;id=3')``` we can use
+/// ```navigate([HomeSegment(), BookSegment(id: 3)]);```
 abstract class TypedSegment {
   factory TypedSegment.fromJson(JsonMap json) =>
       json['runtimeType'] == 'BookSegment'
@@ -117,11 +115,11 @@ class RRouterDelegate extends RouterDelegate<TypedPath>
 
     return Navigator(
         key: navigatorKey,
-        pages: ref
-            .read(navigationStackProvider)
+        pages: navigationStack
             .map((segment) => MaterialPage(
-                key: ValueKey(segment.toString()),
-                child: screenBuilder(segment)))
+                  key: ValueKey(segment.toString()),
+                  child: screenBuilder(segment),
+                ))
             .toList(),
         onPopPage: (route, result) {
           if (!route.didPop(result)) return false;
@@ -138,7 +136,7 @@ class RRouterDelegate extends RouterDelegate<TypedPath>
   @override
   Future<void> setNewRoutePath(TypedPath configuration) {
     if (configuration.isEmpty) configuration = homePath;
-    ref.read(navigationStackProvider.notifier).state = configuration;
+    navigate(configuration);
     return SynchronousFuture(null);
   }
 
@@ -162,9 +160,6 @@ class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
   static String typedPath2Path(TypedPath typedPath) => typedPath
       .map((s) => Uri.encodeComponent(jsonEncode(s.toJson())))
       .join('/');
-
-  static String debugTypedPath2Path(TypedPath typedPath) =>
-      typedPath.map((s) => jsonEncode(s.toJson())).join('/');
 
   static TypedPath path2TypedPath(String? path) {
     if (path == null || path.isEmpty) return [];

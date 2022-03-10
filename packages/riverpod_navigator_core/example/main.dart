@@ -13,8 +13,7 @@ class HomeSegment extends TypedSegment {
 @immutable
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
-  factory BookSegment.fromUrlPars(UrlPars pars) =>
-      BookSegment(id: pars.getInt('id'));
+  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
   final int id;
   @override
   void toUrlPars(UrlPars pars) => pars.setInt('id', id);
@@ -35,23 +34,20 @@ final routes = <RRouteCore>[
 final loginProvider = StateProvider<bool>((_) => false);
 
 class TestNavigator extends RNavigatorCore {
-  TestNavigator(Ref ref, {this.delayMsec, this.isError = false})
-      : super(ref, []);
+  TestNavigator(Ref ref, {this.delayMsec, this.isError = false}) : super(ref, []);
 
   final int? delayMsec;
   final bool isError;
 
   @override
-  FutureOr<TypedPath> appNavigationLogicCore(
-      TypedPath oldNavigationStack, TypedPath ongoingPath) {
+  FutureOr<TypedPath> appNavigationLogicCore(TypedPath oldNavigationStack, TypedPath intendedPath) {
     if (delayMsec == null) {
       if (isError) throw 'SYNC ERROR';
-      return ongoingPath;
+      return intendedPath;
     } else {
-      return Future.delayed(Duration(milliseconds: delayMsec!))
-          .then<TypedPath>((value) {
+      return Future.delayed(Duration(milliseconds: delayMsec!)).then<TypedPath>((value) {
         if (isError) throw 'ASYNC ERROR';
-        return ongoingPath;
+        return intendedPath;
       });
     }
   }
@@ -70,14 +66,10 @@ Future main() async {
   final p1 = navigator.navigationStack2Url;
   assert(p1 == '{"runtimeType":"HomeSegment"}');
 
-  container.read(ongoingPathProvider.notifier).state = [
-    HomeSegment(),
-    BookSegment(id: 1)
-  ];
+  container.read(intendedPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 1)];
   await container.pump();
   await navigator.navigationCompleted;
   final p2 = navigator.navigationStack2Url;
-  assert(p2 ==
-      '{"runtimeType":"HomeSegment"}/{"runtimeType":"BookSegment","id":1}');
+  assert(p2 == '{"runtimeType":"HomeSegment"}/{"runtimeType":"BookSegment","id":1}');
   return;
 }

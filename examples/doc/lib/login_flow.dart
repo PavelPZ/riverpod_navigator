@@ -87,14 +87,14 @@ class AppNavigator extends RNavigator {
 
   /// Quards and redirects for login flow
   @override
-  TypedPath appNavigationLogic(TypedPath ongoingPath) {
+  TypedPath appNavigationLogic(TypedPath intendedPath) {
     final userIsLogged = ref.read(isLoggedProvider);
     final navigationStack = ref.read(navigationStackProvider);
 
-    // if user is not logged-in and some of the screen in ongoingPath needs login => redirect to LoginScreen
-    if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
+    // if user is not logged-in and some of the screen in intendedPath needs login => redirect to LoginScreen
+    if (!userIsLogged && intendedPath.any((segment) => needsLogin(segment))) {
       // prepare URLs for confirmation or cancel cases on the login screen
-      final loggedUrl = pathParser.toUrl(ongoingPath);
+      final loggedUrl = pathParser.toUrl(intendedPath);
       var canceledUrl = navigationStack.isEmpty || navigationStack.last is LoginSegment ? '' : pathParser.toUrl(navigationStack);
       if (loggedUrl == canceledUrl) {
         canceledUrl = ''; // chance to exit login loop
@@ -104,12 +104,12 @@ class AppNavigator extends RNavigator {
       return [LoginSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
     } else {
       // user is logged and LogginScreen is going to display => redirect to HomeScreen
-      if (userIsLogged && (ongoingPath.isEmpty || ongoingPath.last is LoginSegment)) {
+      if (userIsLogged && (intendedPath.isEmpty || intendedPath.last is LoginSegment)) {
         return [HomeSegment()];
       }
     }
-    // no redirection is needed, return ongoingPath
-    return ongoingPath;
+    // no redirection is needed, return intendedPath
+    return intendedPath;
   }
 
   // ******* actions used on the screens
@@ -149,7 +149,7 @@ class AppNavigator extends RNavigator {
     if (returnPath.isEmpty) returnPath = [HomeSegment()];
 
     // start navigating to a return path
-    ref.read(ongoingPathProvider.notifier).state = returnPath;
+    ref.read(intendedPathProvider.notifier).state = returnPath;
 
     // actualize login state
     if (!cancel) ref.read(isLoggedProvider.notifier).state = true;

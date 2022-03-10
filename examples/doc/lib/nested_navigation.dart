@@ -35,7 +35,8 @@ class HomeSegment extends TypedSegment {
 
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
-  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
+  factory BookSegment.fromUrlPars(UrlPars pars) =>
+      BookSegment(id: pars.getInt('id'));
   final int id;
 
   @override
@@ -44,7 +45,8 @@ class BookSegment extends TypedSegment {
 
 class AuthorSegment extends TypedSegment {
   const AuthorSegment({required this.id});
-  factory AuthorSegment.fromUrlPars(UrlPars pars) => AuthorSegment(id: pars.getInt('id'));
+  factory AuthorSegment.fromUrlPars(UrlPars pars) =>
+      AuthorSegment(id: pars.getInt('id'));
   final int id;
 
   @override
@@ -54,7 +56,8 @@ class AuthorSegment extends TypedSegment {
 class BooksAuthorsSegment extends TypedSegment {
   const BooksAuthorsSegment();
   // ignore: avoid_unused_constructor_parameters
-  factory BooksAuthorsSegment.fromUrlPars(UrlPars pars) => BooksAuthorsSegment();
+  factory BooksAuthorsSegment.fromUrlPars(UrlPars pars) =>
+      BooksAuthorsSegment();
 }
 
 class AppNavigator extends RNavigator {
@@ -114,14 +117,16 @@ class AppNavigator extends RNavigator {
 
   // ******* actions used on the screens
 
-  Future toNextBook() => replaceLast<BookSegment>((actualBook) => BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
+  Future toNextBook() => replaceLast<BookSegment>((actualBook) =>
+      BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
 
-  Future toNextAuthor() =>
-      replaceLast<AuthorSegment>((actualAuthor) => AuthorSegment(id: actualAuthor.id == 5 ? 1 : actualAuthor.id + 1));
+  Future toNextAuthor() => replaceLast<AuthorSegment>((actualAuthor) =>
+      AuthorSegment(id: actualAuthor.id == 5 ? 1 : actualAuthor.id + 1));
 }
 
 /// common app screen
-abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S> {
+abstract class AppScreen<S extends TypedSegment>
+    extends RScreen<AppNavigator, S> {
   const AppScreen(S segment, this.screenTitle) : super(segment);
 
   final String screenTitle;
@@ -135,9 +140,13 @@ abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S
         body: Center(
           child: Column(
             children: [
-              for (final w in buildWidgets(navigator)) ...[SizedBox(height: 20), w],
+              for (final w in buildWidgets(navigator)) ...[
+                SizedBox(height: 20),
+                w
+              ],
               SizedBox(height: 20),
-              Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
+              Text(
+                  'Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
             ],
           ),
         ),
@@ -152,19 +161,22 @@ class HomeScreen extends AppScreen<HomeSegment> {
   @override
   List<Widget> buildWidgets(navigator) => [
         ElevatedButton(
-          onPressed: () => navigator.navigate([HomeSegment(), BooksAuthorsSegment()]),
+          onPressed: () =>
+              navigator.navigate([HomeSegment(), BooksAuthorsSegment()]),
           child: Text('Books & Authors'),
         ),
         Text('Books', style: TextStyle(fontSize: 32)),
         for (var i = 1; i <= count; i++)
           ElevatedButton(
-            onPressed: () => navigator.navigate([HomeSegment(), BookSegment(id: i)]),
+            onPressed: () =>
+                navigator.navigate([HomeSegment(), BookSegment(id: i)]),
             child: Text('Book $i'),
           ), // normal page
         Text('Authors', style: TextStyle(fontSize: 32)),
         for (var i = 1; i <= count; i++)
           ElevatedButton(
-            onPressed: () => navigator.navigate([HomeSegment(), AuthorSegment(id: i)]),
+            onPressed: () =>
+                navigator.navigate([HomeSegment(), AuthorSegment(id: i)]),
             child: Text('Author $i'),
           ) // normal page
       ];
@@ -197,8 +209,10 @@ class AuthorScreen extends AppScreen<AuthorSegment> {
 }
 
 /// TabBarView screen
-class BooksAuthorsScreen extends RScreenHook<AppNavigator, BooksAuthorsSegment> {
-  const BooksAuthorsScreen(BooksAuthorsSegment booksAuthorsSegment) : super(booksAuthorsSegment);
+class BooksAuthorsScreen
+    extends RScreenHook<AppNavigator, BooksAuthorsSegment> {
+  const BooksAuthorsScreen(BooksAuthorsSegment booksAuthorsSegment)
+      : super(booksAuthorsSegment);
 
   @override
   Widget buildScreen(ref, navigator, appBarLeading) {
@@ -252,14 +266,16 @@ class BooksTab extends ConsumerWidget {
   const BooksTab({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) =>
-      Router(routerDelegate: (ref.read(navigatorProvider) as AppNavigator).routerDelegate);
+  Widget build(BuildContext context, WidgetRef ref) => Router(
+      routerDelegate:
+          (ref.read(navigatorProvider) as AppNavigator).routerDelegate);
 }
 
 class AuthorTab extends ConsumerWidget {
   const AuthorTab({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) =>
-      Router(routerDelegate: (ref.read(navigatorProvider) as AppNavigator).routerDelegate);
+  Widget build(BuildContext context, WidgetRef ref) => Router(
+      routerDelegate:
+          (ref.read(navigatorProvider) as AppNavigator).routerDelegate);
 }

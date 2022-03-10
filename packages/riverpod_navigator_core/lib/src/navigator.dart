@@ -44,24 +44,24 @@ class RNavigatorCore {
   late Defer2NextTick _defer2NextTick;
 
   /// Enter application navigation logic here (redirection, login, etc.).
-  /// No need to override, eg. when the navigation status depends only on the ongoingPathProvider
+  /// No need to override, eg. when the navigation status depends only on the intendedPathProvider
   /// and no redirects or route guards are needed.
-  /// Returns ongoingPath or other redirection path.
-  TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
+  /// Returns intendedPath or other redirection path.
+  TypedPath appNavigationLogic(TypedPath intendedPath) => intendedPath;
 
   /// low level app logic
-  FutureOr<TypedPath> appNavigationLogicCore(TypedPath oldNavigationStack, TypedPath ongoingPath) {
-    final newOngoingPath = appNavigationLogic(ongoingPath);
+  FutureOr<TypedPath> appNavigationLogicCore(TypedPath oldNavigationStack, TypedPath intendedPath) {
+    final newIntendedPath = appNavigationLogic(intendedPath);
 
     final navigationStack = getNavigationStack();
-    // when navigationStack[i] == newOngoingPath[i], set newOngoingPath[i] = navigationStack[i]
-    eq2Identical(navigationStack, newOngoingPath);
+    // when navigationStack[i] == newIntendedPath[i], set newIntendedPath[i] = navigationStack[i]
+    eq2Identical(navigationStack, newIntendedPath);
 
-    final todo = waitStart(router, navigationStack, newOngoingPath);
+    final todo = waitStart(router, navigationStack, newIntendedPath);
     // no async actions:
-    if (todo.item1.isEmpty && todo.item2.isEmpty) return newOngoingPath;
+    if (todo.item1.isEmpty && todo.item2.isEmpty) return newIntendedPath;
     // wait for async actions:
-    return waitEnd(todo).then((_) => newOngoingPath);
+    return waitEnd(todo).then((_) => newIntendedPath);
   }
 
   /// Navigation is delayed until [future] is completed.
@@ -75,7 +75,7 @@ class RNavigatorCore {
   /// Main [RNavigator] method. Provides navigation to the newPath.
   /// Used in e.g RLinkbutton
   NavigatePath navigatePath(TypedPath newPath) => NavigatePath(() {
-        ref.read(ongoingPathProvider.notifier).state = newPath;
+        ref.read(intendedPathProvider.notifier).state = newPath;
         return navigationCompleted;
       }, screenTitle(newPath.last));
 
@@ -163,8 +163,8 @@ class RNavigatorCore {
   TypedPath getNavigationStack() => ref.read(navigationStackProvider);
 
   void _setdependsOn(List<AlwaysAliveProviderListenable> value) {
-    assert(!value.contains(ongoingPathProvider));
-    _dependsOn = [...value, ongoingPathProvider];
+    assert(!value.contains(intendedPathProvider));
+    _dependsOn = [...value, intendedPathProvider];
     assert(_dependsOn.every((p) => p is Override));
 
     // 1. Listen to the riverpod providers. If any change, call _defer2NextTick.start().

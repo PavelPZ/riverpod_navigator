@@ -4,7 +4,8 @@ import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 import 'package:test/test.dart';
 
 ProviderContainer createContainer() {
-  final res = ProviderContainer(overrides: providerOverrides([HomeSegment()], AppNavigator.new));
+  final res = ProviderContainer(
+      overrides: providerOverrides([HomeSegment()], AppNavigator.new));
   addTearDown(res.dispose);
   return res;
 }
@@ -17,7 +18,8 @@ void main() {
 
     Future navigTest(Future action(), String expected) async {
       await action();
-      print('${DateTime.now().difference(start).inMilliseconds} msec ($expected)');
+      print(
+          '${DateTime.now().difference(start).inMilliseconds} msec ($expected)');
       await container.pump();
       expect(navigator.navigationStack2Url, expected);
     }
