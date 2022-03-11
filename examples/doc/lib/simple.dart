@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 void main() => runApp(
@@ -22,8 +23,7 @@ class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
 
   /// used for creating BookSegment from URL pars
-  factory BookSegment.fromUrlPars(UrlPars pars) =>
-      BookSegment(id: pars.getInt('id'));
+  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
 
   /// used for encoding BookSegment props to URL pars
   @override
@@ -51,14 +51,14 @@ class AppNavigator extends RNavigator {
               BookScreen.new,
             ),
           ],
+          progressIndicatorBuilder: () => const SpinKitCircle(color: Colors.blue, size: 45),
         );
 
   // It is good practice to place the code for all events specific to navigation in AppNavigator.
   // These can then be used not only for writing screen widgets, but also for testing.
 
   /// navigate to next book
-  Future toNextBook() =>
-      replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1));
+  Future toNextBook() => replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1));
 
   /// navigate to home
   Future toHome() => navigate([HomeSegment()]);
@@ -100,8 +100,7 @@ class HomeScreen extends RScreen<AppNavigator, HomeSegment> {
                     if (i > 1) BookSegment(id: 10 + i),
                     if (i > 2) BookSegment(id: 100 + i),
                   ]),
-                  child: Text(
-                      'Go to Book: [$i${i > 1 ? ', 1$i' : ''}${i > 2 ? ', 10$i' : ''}]'),
+                  child: Text('Go to Book: [$i${i > 1 ? ', 1$i' : ''}${i > 2 ? ', 10$i' : ''}]'),
                 ),
               ]
             ],

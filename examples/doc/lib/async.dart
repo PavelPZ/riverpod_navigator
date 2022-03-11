@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 void main() => runApp(
@@ -19,8 +20,7 @@ class HomeSegment extends TypedSegment with AsyncSegment<String> {
 
 class BookSegment extends TypedSegment with AsyncSegment<String> {
   BookSegment({required this.id});
-  factory BookSegment.fromUrlPars(UrlPars pars) =>
-      BookSegment(id: pars.getInt('id'));
+  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
   final int id;
 
   @override
@@ -36,33 +36,28 @@ class AppNavigator extends RNavigator {
               'home',
               HomeSegment.fromUrlPars,
               HomeScreen.new,
-              opening: (sNew) => sNew
-                  .setAsyncValue(_simulateAsyncResult('Home.opening', 2000)),
+              opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Home.opening', 2000)),
             ),
             RRoute<BookSegment>(
               'page',
               BookSegment.fromUrlPars,
               BookScreen.new,
-              opening: (sNew) => sNew.setAsyncValue(
-                  _simulateAsyncResult('Book ${sNew.id}.opening', 240)),
-              replacing: (sOld, sNew) => sNew.setAsyncValue(
-                  _simulateAsyncResult(
-                      'Book ${sOld.id}=>${sNew.id}.replacing', 800)),
+              opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book ${sNew.id}.opening', 240)),
+              replacing: (sOld, sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book ${sOld.id}=>${sNew.id}.replacing', 800)),
               closing: (sOld) => Future.delayed(Duration(milliseconds: 500)),
             ),
           ],
+          progressIndicatorBuilder: () => const SpinKitCircle(color: Colors.blue, size: 45),
         );
 
   // It is good practice to place the code for all events specific to navigation in AppNavigator.
   // These can then be used not only for writing screen widgets, but also for testing.
 
   /// navigate to book
-  Future toBook({required int id}) =>
-      navigate([HomeSegment(), BookSegment(id: id)]);
+  Future toBook({required int id}) => navigate([HomeSegment(), BookSegment(id: id)]);
 
   /// navigate to next book
-  Future toNextBook() =>
-      replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1));
+  Future toNextBook() => replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1));
 
   /// navigate to home
   Future toHome() => navigate([HomeSegment()]);
@@ -71,8 +66,7 @@ class AppNavigator extends RNavigator {
   Future sideEffect() async {
     setIsNavigating(true);
     try {
-      await registerProtectedFuture(
-          Future.delayed(Duration(milliseconds: 5000)));
+      await registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000)));
     } finally {
       setIsNavigating(false);
     }
@@ -101,8 +95,7 @@ class App extends ConsumerWidget {
 }
 
 /// common app screen
-abstract class AppScreen<S extends TypedSegment>
-    extends RScreen<AppNavigator, S> {
+abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S> {
   const AppScreen(S segment, this.screenTitle) : super(segment);
 
   final String screenTitle;
@@ -116,16 +109,11 @@ abstract class AppScreen<S extends TypedSegment>
         body: Center(
           child: Column(
             children: [
-              for (final w in buildWidgets(navigator)) ...[
-                SizedBox(height: 20),
-                w
-              ],
+              for (final w in buildWidgets(navigator)) ...[SizedBox(height: 20), w],
               SizedBox(height: 20),
-              Text(
-                  'Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
+              Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
               SizedBox(height: 20),
-              Text(
-                  'Async result: "${(segment as AsyncSegment<String>).asyncValue}"'),
+              Text('Async result: "${(segment as AsyncSegment<String>).asyncValue}"'),
             ],
           ),
         ),

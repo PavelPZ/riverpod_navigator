@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_hooks:
+  flutter_spinkit:
   hooks_riverpod:
   json_annotation: ^4.4.0
   path:

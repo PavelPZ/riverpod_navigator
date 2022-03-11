@@ -11,8 +11,10 @@ class RNavigator extends RNavigatorCore {
     List<RRoute> routes, {
     NavigatorWraperBuilder? navigatorWraperBuilder,
     SplashBuilder? splashBuilder,
+    WidgetBuilder? progressIndicatorBuilder,
   })  : navigatorWraperBuilder = navigatorWraperBuilder ?? NavigatorWraper.new,
         splashBuilder = splashBuilder ?? SplashScreen.new,
+        progressIndicatorBuilder = progressIndicatorBuilder ?? CircularProgressIndicator.new,
         routerDelegate = RRouterDelegate(),
         super(ref, routes) {
     routeInformationParser = RouteInformationParserImpl(pathParser);
@@ -27,6 +29,7 @@ class RNavigator extends RNavigatorCore {
 
   final NavigatorWraperBuilder navigatorWraperBuilder;
   final SplashBuilder splashBuilder;
+  final WidgetBuilder progressIndicatorBuilder;
   final RRouterDelegate routerDelegate;
   late RouteInformationParserImpl routeInformationParser;
 
@@ -40,9 +43,7 @@ class RNavigator extends RNavigatorCore {
   bool onPopRoute() {
     final navigationStack = getNavigationStack();
     if (navigationStack.length <= 1) return false;
-    navigate([
-      for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]
-    ]);
+    navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
     return true;
   }
 }
