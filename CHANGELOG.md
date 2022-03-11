@@ -1,3 +1,7 @@
+## 0.41.0
+
+- **Breaking**: ongoingPathProvider renamed to intendedPathProvider
+
 ## 0.40.0
 
 - **Breaking**: AsyncSegment<String> mixin
