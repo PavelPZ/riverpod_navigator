@@ -29,8 +29,7 @@ class AppNavigator extends RRouterDelegate {
   AppNavigator(Ref ref, TypedPath homePath) : super(ref, homePath);
 
   @override
-  TypedPath appNavigationLogic(
-      TypedPath actNavigStack, TypedPath intendedPath) {
+  TypedPath appNavigationLogic(TypedPath actNavigStack, TypedPath intendedPath) {
     final userIsLogged = ref.read(isLoggedProvider);
 
     // if user is not logged-in and some of the screen in navigations stack needs login => redirect to LoginScreen
@@ -39,8 +38,7 @@ class AppNavigator extends RRouterDelegate {
     }
 
     // user is logged and LogginScreen is going to display => redirect to HomeScreen
-    if (userIsLogged &&
-        (intendedPath.isEmpty || intendedPath.last is LoginSegment)) {
+    if (userIsLogged && (intendedPath.isEmpty || intendedPath.last is LoginSegment)) {
       return [HomeSegment()];
     }
 
@@ -50,21 +48,18 @@ class AppNavigator extends RRouterDelegate {
 }
 
 /// !!! only book screens with odd 'id' require a login
-bool needsLogin(TypedSegment segment) =>
-    segment is BookSegment && segment.id.isOdd;
+bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 
 //*********************************************
 // PROVIDERS
 //*********************************************
 
-final appNavigatorProvider =
-    Provider<AppNavigator>((ref) => AppNavigator(ref, [HomeSegment()]));
+final appNavigatorProvider = Provider<AppNavigator>((ref) => AppNavigator(ref, [HomeSegment()]));
 
 final intendedPathProvider = StateProvider<TypedPath>((_) => [HomeSegment()]);
 final isLoggedProvider = StateProvider<bool>((_) => false);
 
-final navigationStackProvider =
-    StateProvider<TypedPath>((_) => [HomeSegment()]);
+final navigationStackProvider = StateProvider<TypedPath>((_) => [HomeSegment()]);
 
 //*********************************************
 // MODEL
@@ -75,14 +70,14 @@ typedef JsonMap = Map<String, dynamic>;
 
 /// Common TypedSegment's ancestor
 abstract class TypedSegment {
-  factory TypedSegment.fromJson(JsonMap json) => json['runtimeType'] == 'book'
+  factory TypedSegment.fromJson(JsonMap json) => json['rt'] == 'book'
       ? BookSegment(id: json['id'])
-      : json['runtimeType'] == 'login'
+      : json['rt'] == 'login'
           ? LoginSegment()
           : HomeSegment();
 
   JsonMap toJson() => <String, dynamic>{
-        'runtimeType': this is BookSegment
+        'rt': this is BookSegment
             ? 'book'
             : this is LoginSegment
                 ? 'login'
@@ -143,10 +138,8 @@ class Defer2NextTick {
     _isRunning = true;
     scheduleMicrotask(() {
       try {
-        final navigationStackNotifier =
-            navigator.ref.read(navigationStackProvider.notifier);
-        final intendedPathNotifier =
-            navigator.ref.read(intendedPathProvider.notifier);
+        final navigationStackNotifier = navigator.ref.read(navigationStackProvider.notifier);
+        final intendedPathNotifier = navigator.ref.read(intendedPathProvider.notifier);
 
         // appNavigationLogic with possible redirects
         final newNavigStack = navigator.appNavigationLogic(
@@ -156,8 +149,7 @@ class Defer2NextTick {
         // synchronize navigation stack and intendedPath
         _ignoreNextProviderChange = true;
         try {
-          intendedPathNotifier.state =
-              navigationStackNotifier.state = newNavigStack;
+          intendedPathNotifier.state = navigationStackNotifier.state = newNavigStack;
         } finally {
           _ignoreNextProviderChange = false;
         }
@@ -181,19 +173,16 @@ class Defer2NextTick {
 ///
 /// in this case, without the Defer2NextTick class, [navigationStackProvider] is changed twice
 ///
-abstract class RRouterDelegate extends RouterDelegate<TypedPath>
-    with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
+abstract class RRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
   RRouterDelegate(this.ref, this.homePath) {
     defer2NextTick.navigator = this;
 
     // listen for "input status" => call defer2NextTick.providerChanged => call applicationLogic
-    final unlistens = [intendedPathProvider, isLoggedProvider]
-        .map((e) => ref.listen(e, (_, __) => defer2NextTick.providerChanged()))
-        .toList();
+    final unlistens =
+        [intendedPathProvider, isLoggedProvider].map((e) => ref.listen(e, (_, __) => defer2NextTick.providerChanged())).toList();
 
     // listen navigationStackProvider => call notifyListeners which then rebuilds the navigation stack
-    unlistens
-        .add(ref.listen(navigationStackProvider, (_, __) => notifyListeners()));
+    unlistens.add(ref.listen(navigationStackProvider, (_, __) => notifyListeners()));
 
     // ignore: avoid_function_literals_in_foreach_calls
     ref.onDispose(() => unlistens.forEach((u) => u()));
@@ -227,19 +216,14 @@ abstract class RRouterDelegate extends RouterDelegate<TypedPath>
         key: navigatorKey,
         pages: ref
             .read(navigationStackProvider)
-            .map((segment) => MaterialPage(
-                key: ValueKey(segment.toString()),
-                child: screenBuilder(segment)))
+            .map((segment) => MaterialPage(key: ValueKey(segment.toString()), child: screenBuilder(segment)))
             .toList(),
         onPopPage: (route, result) {
           if (!route.didPop(result)) return false;
           final notifier = ref.read(navigationStackProvider.notifier);
           if (notifier.state.length <= 1) return false;
           // remove last segment from navigationStack
-          notifier.state = [
-            for (var i = 0; i < notifier.state.length - 1; i++)
-              notifier.state[i]
-          ];
+          notifier.state = [for (var i = 0; i < notifier.state.length - 1; i++) notifier.state[i]];
           return true;
         });
   }
@@ -251,15 +235,11 @@ abstract class RRouterDelegate extends RouterDelegate<TypedPath>
     return SynchronousFuture(null);
   }
 
-  void navigate(TypedPath newPath) =>
-      ref.read(intendedPathProvider.notifier).state = newPath;
+  void navigate(TypedPath newPath) => ref.read(intendedPathProvider.notifier).state = newPath;
 
   void replaceLast<T extends TypedSegment>(T Function(T old) replace) {
     final navigationStack = ref.read(navigationStackProvider);
-    return navigate([
-      for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i],
-      replace(navigationStack.last as T)
-    ]);
+    return navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i], replace(navigationStack.last as T)]);
   }
 }
 
@@ -269,19 +249,14 @@ abstract class RRouterDelegate extends RouterDelegate<TypedPath>
 
 class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
   @override
-  Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
-      Future.value(path2TypedPath(routeInformation.location));
+  Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) => Future.value(path2TypedPath(routeInformation.location));
 
   @override
-  RouteInformation restoreRouteInformation(TypedPath configuration) =>
-      RouteInformation(location: typedPath2Path(configuration));
+  RouteInformation restoreRouteInformation(TypedPath configuration) => RouteInformation(location: typedPath2Path(configuration));
 
-  static String typedPath2Path(TypedPath typedPath) => typedPath
-      .map((s) => Uri.encodeComponent(jsonEncode(s.toJson())))
-      .join('/');
+  static String typedPath2Path(TypedPath typedPath) => typedPath.map((s) => Uri.encodeComponent(jsonEncode(s.toJson()))).join('/');
 
-  static String debugTypedPath2Path(TypedPath typedPath) =>
-      typedPath.map((s) => jsonEncode(s.toJson())).join('/');
+  static String debugTypedPath2Path(TypedPath typedPath) => typedPath.map((s) => jsonEncode(s.toJson())).join('/');
 
   static TypedPath path2TypedPath(String? path) {
     if (path == null || path.isEmpty) return [];
@@ -338,8 +313,7 @@ class HomeScreen extends ConsumerWidget {
                       HomeSegment(),
                       BookSegment(id: i),
                     ]),
-                    child: Text(
-                        'Go to Book $i ${i.isOdd && !isLogged ? ' (needs login)' : ''}'),
+                    child: Text('Go to Book $i ${i.isOdd && !isLogged ? ' (needs login)' : ''}'),
                   );
                 }),
               ]
@@ -366,16 +340,12 @@ class BookScreen extends ConsumerWidget {
             children: [
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () => ref
-                    .read(appNavigatorProvider)
-                    .replaceLast<BookSegment>(
-                        (old) => BookSegment(id: old.id + 1)),
+                onPressed: () => ref.read(appNavigatorProvider).replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1)),
                 child: const Text('Go to next book'),
               ),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () =>
-                    ref.read(appNavigatorProvider).navigate([HomeSegment()]),
+                onPressed: () => ref.read(appNavigatorProvider).navigate([HomeSegment()]),
                 child: const Text('Go to home'),
               ),
             ],
@@ -394,8 +364,7 @@ class LoginScreen extends ConsumerWidget {
         appBar: AppBar(
           title: const Text('Login Screen'),
           leading: IconButton(
-            onPressed: () =>
-                ref.read(appNavigatorProvider).navigate([HomeSegment()]),
+            onPressed: () => ref.read(appNavigatorProvider).navigate([HomeSegment()]),
             icon: const Icon(Icons.cancel),
           ),
         ),
@@ -406,9 +375,7 @@ class LoginScreen extends ConsumerWidget {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
-                  ref.read(intendedPathProvider.notifier).state = [
-                    HomeSegment()
-                  ];
+                  ref.read(intendedPathProvider.notifier).state = [HomeSegment()];
                   ref.read(isLoggedProvider.notifier).state = true;
                 },
                 child: const Text('Login'),
