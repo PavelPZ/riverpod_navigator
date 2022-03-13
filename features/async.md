@@ -15,15 +15,15 @@ class AppNavigator extends RNavigator {
               'home',
               HomeSegment.fromUrlPars,
               HomeScreen.new,
-              opening: (newSegment) => _simulateAsyncResult('Home.opening', 2000),
+              opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Home.opening', 2000)),
             ),
             RRoute<BookSegment>(
               'book',
               BookSegment.fromUrlPars,
               BookScreen.new,
-              opening: (newSegment) => _simulateAsyncResult('Book.opening', 240),
-              replacing: (oldSegment, newSegment) => _simulateAsyncResult('Book.replacing', 800),
-              closing: null,
+              opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book ${sNew.id}.opening', 240)),
+              replacing: (sOld, sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book ${sOld.id}=>${sNew.id}.replacing', 800)),
+              closing: (sOld) => Future.delayed(Duration(milliseconds: 500)),
             ),
           ],
         );
@@ -41,10 +41,7 @@ class AppNavigator extends RNavigator {
   Future toHome() => navigate([HomeSegment()]);
 
   /// sideEffect
-  Future sideEffect() => registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000)));
-
-  /// multi sideEffect
-  Future multiSideEffect() async {
+  Future sideEffect() async {
     isNavigating(true);
     try {
       await registerProtectedFuture(Future.delayed(Duration(milliseconds: 5000)));
