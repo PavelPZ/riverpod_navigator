@@ -18,7 +18,7 @@ class AppNavigator extends RNavigator {
               opening: (newSegment) => _simulateAsyncResult('Home.opening', 2000),
             ),
             RRoute<BookSegment>(
-              'page',
+              'book',
               BookSegment.fromUrlPars,
               BookScreen.new,
               opening: (newSegment) => _simulateAsyncResult('Book.opening', 240),

@@ -6,11 +6,13 @@ repository: https://github.com/PavelPZ/riverpod_navigator
 publish_to: 'none'
 
 environment:
-  sdk: ">=2.15.0 <3.0.0"
+  sdk: ">=2.16.1 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  flutter_hooks:
+  flutter_spinkit:
 
   hooks_riverpod: ^1.0.0
   meta: ^1.7.0
@@ -18,8 +20,7 @@ dependencies:
     path: ../riverpod_navigator_core 
 
 dev_dependencies: 
-  flutter_test:
-    sdk: flutter
-
+  test:
+  
 flutter:
   uses-material-design: true

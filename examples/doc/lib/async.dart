@@ -39,7 +39,7 @@ class AppNavigator extends RNavigator {
               opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Home.opening', 2000)),
             ),
             RRoute<BookSegment>(
-              'page',
+              'book',
               BookSegment.fromUrlPars,
               BookScreen.new,
               opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book ${sNew.id}.opening', 240)),
