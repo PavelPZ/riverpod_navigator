@@ -11,7 +11,7 @@
 			"path": "examples\\go_router"
 		},
 		{
-			"path": "..\\pavelpz.github.io"
+			"path": "..\\PavelPZ.github.io"
 		},
 		{
 			"name": "riverpod_navigator",
@@ -25,6 +25,18 @@
 	"settings": {
 		"liveServer.settings.multiRootWorkspaceName": "riverpod_navigator",
 		"search.useGlobalIgnoreFiles": true,
-		"search.useIgnoreFiles": false
+		"search.useIgnoreFiles": false,
+		"explorer.experimental.fileNesting.enabled": true,
+		"explorer.experimental.fileNesting.expand": false,
+		"explorer.experimental.fileNesting.patterns": {
+			"*.ts": "$(capture).js, $(capture).*.ts",
+			"*.js": "$(capture).js.map, $(capture).min.js, $(capture).d.ts",
+			"*.jsx": "$(capture).js",
+			"*.tsx": "$(capture).ts",
+			"tsconfig.json": "tsconfig.*.json",
+			"package.json": "package-lock.json, .npmrc, yarn.lock, .yarnrc, pnpm-lock.yaml",
+			"pubspec.yaml": ".*,*.iml,*.lock",
+			"readme.md": "readme.*,changelog.md,license"
+		}
 	}
 }

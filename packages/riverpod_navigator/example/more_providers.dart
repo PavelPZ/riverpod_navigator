@@ -30,22 +30,23 @@ class AppNavigator extends RRouterDelegate {
   AppNavigator(Ref ref, TypedPath homePath) : super(ref, homePath);
 
   @override
-  TypedPath appNavigationLogic(TypedPath actNavigStack, TypedPath ongoingPath) {
+  TypedPath appNavigationLogic(
+      TypedPath actNavigStack, TypedPath intendedPath) {
     final userIsLogged = ref.read(isLoggedProvider);
 
     // if user is not logged-in and some of the screen in navigations stack needs login => redirect to LoginScreen
-    if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
+    if (!userIsLogged && intendedPath.any((segment) => needsLogin(segment))) {
       return [LoginSegment()];
     }
 
     // user is logged and LogginScreen is going to display => redirect to HomeScreen
     if (userIsLogged &&
-        (ongoingPath.isEmpty || ongoingPath.last is LoginSegment)) {
+        (intendedPath.isEmpty || intendedPath.last is LoginSegment)) {
       return [HomeSegment()];
     }
 
     // no redirection is needed
-    return ongoingPath;
+    return intendedPath;
   }
 }
 
@@ -60,7 +61,7 @@ bool needsLogin(TypedSegment segment) =>
 final routerDelegateProvider =
     Provider<AppNavigator>((ref) => AppNavigator(ref, [HomeSegment()]));
 
-final ongoingPathProvider = StateProvider<TypedPath>((_) => [HomeSegment()]);
+final intendedPathProvider = StateProvider<TypedPath>((_) => [HomeSegment()]);
 final isLoggedProvider = StateProvider<bool>((_) => false);
 
 final navigationStackProvider =
@@ -137,14 +138,14 @@ class Defer2NextTick {
       try {
         final navigationStackNotifier =
             navigator.ref.read(navigationStackProvider.notifier);
-        final ongoingPathNotifier =
-            navigator.ref.read(ongoingPathProvider.notifier);
+        final intendedPathNotifier =
+            navigator.ref.read(intendedPathProvider.notifier);
         final newNavigStack = navigator.appNavigationLogic(
-            navigationStackNotifier.state, ongoingPathNotifier.state);
-        // synchronize navigation stack and ongoingPath
+            navigationStackNotifier.state, intendedPathNotifier.state);
+        // synchronize navigation stack and intendedPath
         _ignoreNextProviderChange = true;
         try {
-          ongoingPathNotifier.state =
+          intendedPathNotifier.state =
               navigationStackNotifier.state = newNavigStack;
         } finally {
           _ignoreNextProviderChange = false;
@@ -161,7 +162,7 @@ abstract class RRouterDelegate extends RouterDelegate<TypedPath>
   RRouterDelegate(this.ref, this.homePath) {
     defer2NextTick.navigator = this;
     // listen for "input status" => using defer2NextTick.providerChanged call applicationLogic
-    final unlistens = [ongoingPathProvider, isLoggedProvider]
+    final unlistens = [intendedPathProvider, isLoggedProvider]
         .map((e) => ref.listen(e, (_, __) => defer2NextTick.providerChanged()))
         .toList();
     // listen navigationStackProvider => call notifyListeners which then rebuilds the navigation stack
@@ -175,7 +176,7 @@ abstract class RRouterDelegate extends RouterDelegate<TypedPath>
   final TypedPath homePath;
   final defer2NextTick = Defer2NextTick();
 
-  TypedPath appNavigationLogic(TypedPath actNavigStack, TypedPath ongoingPath);
+  TypedPath appNavigationLogic(TypedPath actNavigStack, TypedPath intendedPath);
 
   @override
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -224,7 +225,7 @@ abstract class RRouterDelegate extends RouterDelegate<TypedPath>
   }
 
   void navigate(TypedPath newPath) =>
-      ref.read(ongoingPathProvider.notifier).state = newPath;
+      ref.read(intendedPathProvider.notifier).state = newPath;
 
   void replaceLast<T extends TypedSegment>(T Function(T old) replace) {
     final navigationStack = ref.read(navigationStackProvider);
@@ -378,7 +379,7 @@ class LoginScreen extends ConsumerWidget {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
-                  ref.read(ongoingPathProvider.notifier).state = [
+                  ref.read(intendedPathProvider.notifier).state = [
                     HomeSegment()
                   ];
                   ref.read(isLoggedProvider.notifier).state = true;

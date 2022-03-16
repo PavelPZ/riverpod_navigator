@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [isLoggedProvider]),
+        /// Navigation stack depends on isLoggedProvider too.
+        /// Add dependsOn with [isLoggedProvider]
+        overrides: providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [isLoggedProvider]),
         child: const App(),
       ),
     );
@@ -15,12 +18,15 @@ class App extends ConsumerWidget {
   const App({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
-        title: 'Riverpod Navigator Example',
-        routerDelegate: ref.navigator.routerDelegate,
-        routeInformationParser: ref.navigator.routeInformationParser,
-        debugShowCheckedModeBanner: false,
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final navigator = ref.read(navigatorProvider) as AppNavigator;
+    return MaterialApp.router(
+      title: 'Riverpod Navigator Example',
+      routerDelegate: navigator.routerDelegate,
+      routeInformationParser: navigator.routeInformationParser,
+      debugShowCheckedModeBanner: false,
+    );
+  }
 }
 
 class HomeSegment extends TypedSegment {
@@ -40,54 +46,57 @@ class BookSegment extends TypedSegment {
 
 class LoginSegment extends TypedSegment {
   const LoginSegment({this.loggedUrl, this.canceledUrl});
-  factory LoginSegment.fromUrlPars(UrlPars pars) =>
-      LoginSegment(loggedUrl: pars.getStringNull('loggedUrl'), canceledUrl: pars.getStringNull('canceledUrl'));
+  factory LoginSegment.fromUrlPars(UrlPars pars) => LoginSegment(
+        loggedUrl: pars.getStringNull('loggedUrl'),
+        canceledUrl: pars.getStringNull('canceledUrl'),
+      );
   final String? loggedUrl;
   final String? canceledUrl;
 
   @override
-  void toUrlPars(UrlPars pars) => pars.setString('loggedUrl', loggedUrl)..setString('canceledUrl', canceledUrl);
+  void toUrlPars(UrlPars pars) => pars.setString('loggedUrl', loggedUrl).setString('canceledUrl', canceledUrl);
 }
 
 /// !!! there is another provider on which the navigation status depends:
 final isLoggedProvider = StateProvider<bool>((_) => false);
 
-typedef NeedsLogin<T extends TypedSegment> = bool Function(T segment);
-
 /// !!! only book screens with odd 'id' require a login
 bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
-
-/// helper extension for screens
-extension WidgetRefApp on WidgetRef {
-  AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
-}
-
-/// helper extension for test
-extension ProviderContainerApp on ProviderContainer {
-  AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
-}
 
 class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
           [
-            RRoute<HomeSegment>('home', HomeSegment.fromUrlPars, HomeScreen.new),
-            RRoute<BookSegment>('page', BookSegment.fromUrlPars, BookScreen.new),
-            RRoute<LoginSegment>('login', LoginSegment.fromUrlPars, LoginScreen.new),
+            RRoute<HomeSegment>(
+              'home',
+              HomeSegment.fromUrlPars,
+              HomeScreen.new,
+            ),
+            RRoute<BookSegment>(
+              'book',
+              BookSegment.fromUrlPars,
+              BookScreen.new,
+            ),
+            RRoute<LoginSegment>(
+              'login',
+              LoginSegment.fromUrlPars,
+              LoginScreen.new,
+            ),
           ],
+          progressIndicatorBuilder: () => const SpinKitCircle(color: Colors.blue, size: 45),
         );
 
   /// Quards and redirects for login flow
   @override
-  TypedPath appNavigationLogic(TypedPath ongoingPath) {
+  TypedPath appNavigationLogic(TypedPath intendedPath) {
     final userIsLogged = ref.read(isLoggedProvider);
-    final navigationStack = getNavigationStack();
+    final navigationStack = ref.read(navigationStackProvider);
 
-    // if user is not logged-in and some of the screen in navigations stack needs login => redirect to LoginScreen
-    if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
+    // if user is not logged-in and some of the screen in intendedPath needs login => redirect to LoginScreen
+    if (!userIsLogged && intendedPath.any((segment) => needsLogin(segment))) {
       // prepare URLs for confirmation or cancel cases on the login screen
-      final loggedUrl = pathParser.toUrl(ongoingPath);
+      final loggedUrl = pathParser.toUrl(intendedPath);
       var canceledUrl = navigationStack.isEmpty || navigationStack.last is LoginSegment ? '' : pathParser.toUrl(navigationStack);
       if (loggedUrl == canceledUrl) {
         canceledUrl = ''; // chance to exit login loop
@@ -97,15 +106,24 @@ class AppNavigator extends RNavigator {
       return [LoginSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
     } else {
       // user is logged and LogginScreen is going to display => redirect to HomeScreen
-      if (userIsLogged && (ongoingPath.isEmpty || ongoingPath.last is LoginSegment)) return [HomeSegment()];
+      if (userIsLogged && (intendedPath.isEmpty || intendedPath.last is LoginSegment)) {
+        return [HomeSegment()];
+      }
     }
-    // no redirection is needed but rebuild can appear (e.g. during logout)
-    return [...ongoingPath];
+    // no redirection is needed, return intendedPath
+    return intendedPath;
   }
 
   // ******* actions used on the screens
 
-  Future gotoNextBook() => replaceLast<BookSegment>((actualBook) => BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
+  /// navigate to book
+  Future toBook({required int id}) => navigate([HomeSegment(), BookSegment(id: id)]);
+
+  /// navigate to next book
+  Future toNextBook() => replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1));
+
+  /// navigate to home
+  Future toHome() => navigate([HomeSegment()]);
 
   Future onLogout() {
     // actualize login state
@@ -133,7 +151,7 @@ class AppNavigator extends RNavigator {
     if (returnPath.isEmpty) returnPath = [HomeSegment()];
 
     // start navigating to a return path
-    ref.read(ongoingPathProvider.notifier).state = returnPath;
+    ref.read(intendedPathProvider.notifier).state = returnPath;
 
     // actualize login state
     if (!cancel) ref.read(isLoggedProvider.notifier).state = true;
@@ -143,89 +161,18 @@ class AppNavigator extends RNavigator {
   }
 }
 
-class HomeScreen extends ConsumerWidget {
-  const HomeScreen(this.segment, {Key? key}) : super(key: key);
+/// common screen ancestor for [HomeScreen] and [BookScreen]
+abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S> {
+  const AppScreen(S segment, this.screenTitle) : super(segment);
 
-  final HomeSegment segment;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) => PageHelper(
-        title: 'Home',
-        segment: segment,
-        buildChildren: (navigator) {
-          final bool isLogged = ref.watch(isLoggedProvider);
-          return [
-            for (var i = 1; i <= bookCount; i++)
-              ElevatedButton(
-                onPressed: () => navigator.navigate([HomeSegment(), BookSegment(id: i)]),
-                child: Text('Book $i${!isLogged && i.isOdd ? '(log in first)' : ''}'),
-              ) // normal page
-          ];
-        },
-      );
-}
-
-const bookCount = 5;
-
-class BookScreen extends ConsumerWidget {
-  const BookScreen(this.book, {Key? key}) : super(key: key);
-
-  final BookSegment book;
+  final String screenTitle;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => PageHelper(
-        segment: book,
-        title: 'Book ${book.id}',
-        buildChildren: (navigator) => [
-          ElevatedButton(
-            onPressed: navigator.gotoNextBook,
-            child: const Text('Go to next book'),
-          ),
-        ],
-      );
-}
-
-class LoginScreen extends StatelessWidget {
-  const LoginScreen(this.segment, {Key? key}) : super(key: key);
-
-  final LoginSegment segment;
-
-  @override
-  Widget build(BuildContext context) => PageHelper(
-        segment: segment,
-        title: 'Login Page',
-        isLoginPage: true,
-        buildChildren: (navigator) => [
-          ElevatedButton(onPressed: navigator.loginScreenOK, child: Text('Login')),
-        ],
-      );
-}
-
-class PageHelper extends ConsumerWidget {
-  const PageHelper({Key? key, required this.title, required this.segment, required this.buildChildren, this.isLoginPage}) : super(key: key);
-
-  final String title;
-
-  final TypedSegment segment;
-
-  final List<Widget> Function(AppNavigator) buildChildren;
-
-  final bool? isLoginPage;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final navigator = ref.navigator;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        leading: isLoginPage == true
-            ? IconButton(
-                onPressed: navigator.loginScreenCancel,
-                icon: Icon(Icons.cancel),
-              )
-            : null,
-        actions: [
-          if (isLoginPage != true)
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          title: Text(screenTitle),
+          leading: appBarLeading,
+          actions: [
             Consumer(builder: (_, ref, __) {
               final isLogged = ref.watch(isLoggedProvider);
               return ElevatedButton(
@@ -233,21 +180,68 @@ class PageHelper extends ConsumerWidget {
                 child: Text(isLogged ? 'Logout' : 'Login'),
               );
             })
-        ],
-      ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: (() {
-            final res = <Widget>[SizedBox(height: 20)];
-            for (final w in buildChildren(navigator)) {
-              res.addAll([w, SizedBox(height: 20)]);
-            }
-            res.addAll([Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
-            return res;
-          })(),
+          ],
         ),
-      ),
-    );
+        body: Center(
+          child: Column(
+            children: [
+              for (final w in buildWidgets(ref, navigator)) ...[SizedBox(height: 20), w],
+            ],
+          ),
+        ),
+      );
+
+  List<Widget> buildWidgets(WidgetRef ref, AppNavigator navigator);
+}
+
+class HomeScreen extends AppScreen<HomeSegment> {
+  const HomeScreen(HomeSegment segment) : super(segment, 'Home');
+
+  @override
+  List<Widget> buildWidgets(ref, navigator) {
+    final bool isLogged = ref.watch(isLoggedProvider);
+    return [
+      for (var i = 1; i <= bookCount; i++)
+        ElevatedButton(
+          onPressed: () => navigator.toBook(id: i),
+          child: Text('Book $i${!isLogged && i.isOdd ? '(log in first)' : ''}'),
+        ) // normal page
+    ];
   }
+}
+
+class BookScreen extends AppScreen<BookSegment> {
+  BookScreen(BookSegment segment) : super(segment, 'Book ${segment.id}');
+
+  @override
+  List<Widget> buildWidgets(ref, navigator) => [
+        ElevatedButton(
+          onPressed: navigator.toNextBook,
+          child: const Text('Go to next book'),
+        ),
+        ElevatedButton(
+          onPressed: navigator.toHome,
+          child: const Text('Go to Home'),
+        ),
+      ];
+}
+
+const bookCount = 5;
+
+class LoginScreen extends RScreen<AppNavigator, LoginSegment> {
+  const LoginScreen(LoginSegment segment) : super(segment);
+
+  @override
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          title: Text('Login'),
+          leading: IconButton(
+            onPressed: navigator.loginScreenCancel,
+            icon: Icon(Icons.cancel),
+          ),
+        ),
+        body: Center(
+          child: ElevatedButton(onPressed: navigator.loginScreenOK, child: Text('Login')),
+        ),
+      );
 }

@@ -1,10 +1,37 @@
+## 0.41.0
+
+- **Breaking**: ongoingPathProvider renamed to intendedPathProvider
+
+## 0.40.0
+
+- **Breaking**: AsyncSegment<String> mixin
+- documentation
+
+## 0.39.0
+
+- **Breaking**: AsyncSegment<String> mixin
+- documentation
+
+## 0.38.0
+
+- documentation
+
+## 0.37.0
+
+- documentation
+
+## 0.36.0
+
+- **Breaking**: renaming RRoute4Dart to RRouteCore
+- add getScreenTitle parametter to RRoute
+
 ## 0.35.0
 
 - small example fix
 
 ## 0.34.0
 
-- **Breaking**: urlName is mandatory parameter fo RRoute
+- **Breaking**: urlName is mandatory parameter of RRoute
 
 ## 0.30.0
 

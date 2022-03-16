@@ -4,22 +4,21 @@ version: 0.1.0
 publish_to: 'none'
 
 environment:
-  sdk: ">=2.15.0 <3.0.0"
+  sdk: ">=2.16.1 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_hooks:
+  flutter_spinkit:
   hooks_riverpod:
   json_annotation: ^4.4.0
   path:
   riverpod_navigator: 
     path: ../../packages/riverpod_navigator
-  riverpod_navigator_core: 
-    path: ../../packages/riverpod_navigator_core
 
 dev_dependencies: 
-  analyzer: ^3.0.0
+  # analyzer: ^3.0.0
   build_runner:
   flutter_test:
    sdk: flutter
@@ -28,6 +27,7 @@ dev_dependencies:
 
 dependency_overrides:
   analyzer: ^2.1.0
+  test_api: ^0.4.9
 
 flutter:
   uses-material-design: true

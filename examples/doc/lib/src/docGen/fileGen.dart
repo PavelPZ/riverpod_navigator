@@ -417,24 +417,24 @@ class AppNavigator extends RNavigator {
   @override
   FutureOr<void> appNavigationLogic(Ref ref, TypedPath currentPath) {
     final userIsLogged = ref.read(userIsLoggedProvider);
-    final ongoingNotifier = ref.read(ongoingPathProvider.notifier);
+    final intendedNotifier = ref.read(intendedPathProvider.notifier);
 
     if (!userIsLogged) {
-      final pathNeedsLogin = ongoingNotifier.state.any((segment) => needsLogin(segment));
+      final pathNeedsLogin = intendedNotifier.state.any((segment) => needsLogin(segment));
 
       // login needed => redirect to login page
       if (pathNeedsLogin) {
         // parametters for login screen
-        final loggedUrl = pathParser.typedPath2Path(ongoingNotifier.state);
+        final loggedUrl = pathParser.typedPath2Path(intendedNotifier.state);
         var canceledUrl = currentPath.isEmpty || currentPath.last is LoginHomeSegment ? '' : pathParser.typedPath2Path(currentPath);
         // chance to exit login loop
         if (loggedUrl == canceledUrl) canceledUrl = '';
         // redirect to login screen
-        ongoingNotifier.state = [LoginHomeSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
+        intendedNotifier.state = [LoginHomeSegment(loggedUrl: loggedUrl, canceledUrl: canceledUrl)];
       }
     } else {
       // user logged and navigation to Login page => redirect to home
-      if (ongoingNotifier.state.isEmpty || ongoingNotifier.state.last is LoginHomeSegment) ongoingNotifier.state = [HomeSegment()];
+      if (intendedNotifier.state.isEmpty || intendedNotifier.state.last is LoginHomeSegment) intendedNotifier.state = [HomeSegment()];
     }
   }
 ''')) +
@@ -469,7 +469,7 @@ class AppNavigator extends RNavigator {
     if (newPath.isEmpty) newPath = [HomeSegment()];
 
     // change both providers on which the navigation status depends
-    ref.read(ongoingPathProvider.notifier).state = newPath;
+    ref.read(intendedPathProvider.notifier).state = newPath;
     if (!cancel) ref.read(userIsLoggedProvider.notifier).state = true;
 
     return navigationCompleted; // wait for the navigation to end

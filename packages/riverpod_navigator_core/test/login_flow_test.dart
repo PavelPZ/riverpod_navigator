@@ -14,21 +14,22 @@ class TestNavigator extends RNavigatorCore {
 
   @override
   FutureOr<TypedPath> appNavigationLogicCore(
-      TypedPath oldNavigationStack, TypedPath ongoingPath) {
+      TypedPath oldNavigationStack, TypedPath intendedPath) {
     final userIsLogged = ref.read(isLoggedProvider);
 
-    // if user is not logged-in and some of the ongoing screen needs login => redirect to LoginScreen
-    if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
+    // if user is not logged-in and some of the intended screen needs login => redirect to LoginScreen
+    if (!userIsLogged && intendedPath.any((segment) => needsLogin(segment))) {
       return [LoginSegment()];
     }
 
     // user is logged and LogginScreen is going to display => redirect to HomeScreen
-    if (userIsLogged && ongoingPath.any((segment) => segment is LoginSegment)) {
+    if (userIsLogged &&
+        intendedPath.any((segment) => segment is LoginSegment)) {
       return [HomeSegment()];
     }
 
     // no redirection is needed
-    return ongoingPath;
+    return intendedPath;
   }
 
   bool needsLogin(TypedSegment segment) =>
@@ -38,9 +39,11 @@ class TestNavigator extends RNavigatorCore {
 void main() {
   test('test login flow', () async {
     final container = ProviderContainer(
-      overrides: RNavigatorCore.providerOverrides(
-          [HomeSegment()], TestNavigator.new,
-          dependsOn: [isLoggedProvider]),
+      overrides: providerOverrides(
+        [HomeSegment()],
+        TestNavigator.new,
+        dependsOn: [isLoggedProvider],
+      ),
     );
     final navigator = container.read(navigatorProvider);
 
@@ -55,8 +58,8 @@ void main() {
       expect(stringPath, expected);
     }
 
-    Future changeOngoing(TypedPath path, String expected) => changeState(
-          () => container.read(ongoingPathProvider.notifier).state = path,
+    Future changeIntended(TypedPath path, String expected) => changeState(
+          () => container.read(intendedPathProvider.notifier).state = path,
           expected,
         );
 
@@ -65,14 +68,14 @@ void main() {
     //*****************************
 
     // book with even id => load book
-    await changeOngoing([HomeSegment(), BookSegment(id: 2)], 'home/book;id=2');
+    await changeIntended([HomeSegment(), BookSegment(id: 2)], 'home/book;id=2');
 
     // book with odd id => redirect to login
-    await changeOngoing([HomeSegment(), BookSegment(id: 1)], 'login');
+    await changeIntended([HomeSegment(), BookSegment(id: 1)], 'login');
 
     // log in => book loaded
     await changeState(() {
-      container.read(ongoingPathProvider.notifier).state = [
+      container.read(intendedPathProvider.notifier).state = [
         HomeSegment(),
         BookSegment(id: 1)
       ];

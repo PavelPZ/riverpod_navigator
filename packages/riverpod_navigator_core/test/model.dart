@@ -23,8 +23,28 @@ class LoginSegment extends TypedSegment {
   factory LoginSegment.fromUrlPars(UrlPars pars) => LoginSegment();
 }
 
-final routes = <RRoute4Dart>[
-  RRoute4Dart<HomeSegment>('home', HomeSegment.fromUrlPars),
-  RRoute4Dart<BookSegment>('book', BookSegment.fromUrlPars),
-  RRoute4Dart<LoginSegment>('login', LoginSegment.fromUrlPars),
+final routes = <RRouteCore>[
+  RRouteCore<HomeSegment>('home', HomeSegment.fromUrlPars),
+  RRouteCore<BookSegment>('book', BookSegment.fromUrlPars),
+  RRouteCore<LoginSegment>('login', LoginSegment.fromUrlPars),
 ];
+
+class TestSegment extends TypedSegment {
+  const TestSegment({required this.i, this.s, required this.b, this.d});
+
+  factory TestSegment.fromUrlPars(UrlPars pars) => TestSegment(
+        i: pars.getInt('i'),
+        s: pars.getStringNull('s'),
+        b: pars.getBool('b'),
+        d: pars.getDoubleNull('d'),
+      );
+
+  @override
+  void toUrlPars(UrlPars pars) =>
+      pars.setInt('i', i).setString('s', s).setBool('b', b).setDouble('d', d);
+
+  final int i;
+  final String? s;
+  final bool b;
+  final double? d;
+}

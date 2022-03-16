@@ -1,66 +1,76 @@
 part of 'riverpod_navigator_core.dart';
 
-typedef Opening<T extends TypedSegment> = Future<AsyncActionResult> Function(
-    T newPath);
-typedef Replacing<T extends TypedSegment> = Future<AsyncActionResult> Function(
-    T oldPath, T newPath);
-typedef Closing<T extends TypedSegment> = Future<AsyncActionResult> Function(
-    T oldPath);
-typedef AsyncOper = Future<AsyncActionResult> Function();
+/// opening
+typedef Opening<T extends TypedSegment> = Future Function(T sNew);
 
+/// replacing
+typedef Replacing<T extends TypedSegment> = Future Function(T sOld, T sNew);
+
+/// closing
+typedef Closing<T extends TypedSegment> = Future Function(T sOld);
+
+typedef GetFuture = Future Function();
+
+/// rroute's holder
 class RRouter {
-  RRouter(List<RRoute4Dart> routes) {
+  RRouter(List<RRouteCore> routes) {
     for (final r in routes) {
-      if (string2Route.containsKey(r.urlName)) {
-        throw Exception('"${r.urlName}" segmentTypeName already registered.');
+      if (_string2Route.containsKey(r.urlName)) {
+        throw Exception('"${r.urlName}" segment.urlName already registered.');
       }
-      string2Route[r.urlName] = r;
-      if (type2Route.containsKey(r.runtimeType)) {
+      _string2Route[r.urlName] = r;
+
+      if (_type2Route.containsKey(r.segmentType)) {
         throw Exception(
-            '"${r.runtimeType.toString()}" segment.runtimeType already registered.');
+            '"${r.segmentType.toString()}" segment.segmentType already registered.');
       }
-      type2Route[r.segmentType] = r;
+      _type2Route[r.segmentType] = r;
     }
   }
 
-  final string2Route = <String, RRoute4Dart>{};
-  final type2Route = <Type, RRoute4Dart>{};
+  final _string2Route = <String, RRouteCore>{};
+  final _type2Route = <Type, RRouteCore>{};
 
-  R segment2Route<R extends RRoute4Dart>(TypedSegment segment) =>
-      type2Route[segment.runtimeType] as R;
+  R segment2Route<R extends RRouteCore>(TypedSegment segment) =>
+      _type2Route[segment.runtimeType] as R;
 
   bool segmentEq(TypedSegment s1, TypedSegment s2) =>
       segment2Route(s1).toUrl(s1) == segment2Route(s2).toUrl(s2);
 
-  String? toUrl(TypedSegment s) => type2Route[s.runtimeType]!.toUrl(s);
+  String? toUrl(TypedSegment s) => _type2Route[s.runtimeType]!.toUrl(s);
 
-  TypedSegment fromUrlPars(UrlPars pars, String typeName) =>
-      string2Route[typeName]!.fromUrlPars(pars);
+  TypedSegment fromUrlPars(UrlPars pars, String urlName) =>
+      _string2Route[urlName]!.fromUrlPars(pars);
 }
 
-class RRoute4Dart<T extends TypedSegment> {
-  RRoute4Dart(
+/// meta infos for given TypedSegment
+class RRouteCore<T extends TypedSegment> {
+  RRouteCore(
     this.urlName,
     this.fromUrlPars, {
     this.opening,
     this.replacing,
     this.closing,
-  }) : segmentType = T;
-  Opening<T>? opening;
-  Replacing<T>? replacing;
-  Closing<T>? closing;
+    String screenTitle(T segment)?,
+  }) : screenTitle = screenTitle ?? ((_) => T.toString());
+  final Opening<T>? opening;
+  final Replacing<T>? replacing;
+  final Closing<T>? closing;
 
   final FromUrlPars<T> fromUrlPars;
   final String urlName;
-  final Type segmentType;
+  final Type segmentType = T;
+  String Function(T segment) screenTitle;
 
-  AsyncOper? callOpening(TypedSegment newPath) =>
-      opening == null ? null : () => opening!(newPath as T);
-  AsyncOper? callReplacing(TypedSegment oldPath, TypedSegment newPath) =>
-      replacing == null ? null : () => replacing!(oldPath as T, newPath as T);
-  AsyncOper? callClosing(TypedSegment oldPath) =>
-      closing == null ? null : () => closing!(oldPath as T);
+  String getScreenTitle(TypedSegment segment) => screenTitle(segment as T);
+  GetFuture? callOpening(TypedSegment sNew) =>
+      opening == null ? null : () => opening!(sNew as T);
+  GetFuture? callReplacing(TypedSegment sOld, TypedSegment sNew) =>
+      replacing == null ? null : () => replacing!(sOld as T, sNew as T);
+  GetFuture? callClosing(TypedSegment sOld) =>
+      closing == null ? null : () => closing!(sOld as T);
 
+  /// typed-segment to string-segment
   String toUrl(T segment) {
     final map = <String, String>{};
     segment.toUrlPars(map);

@@ -2,12 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
+        overrides: providerOverrides([HomeSegment()], AppNavigator.new),
         child: App(),
       ),
     );
@@ -16,12 +17,15 @@ class App extends ConsumerWidget {
   const App({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
-        title: 'Riverpod Navigator Example',
-        routerDelegate: ref.navigator.routerDelegate,
-        routeInformationParser: ref.navigator.routeInformationParser,
-        debugShowCheckedModeBanner: false,
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final navigator = ref.read(navigatorProvider) as AppNavigator;
+    return MaterialApp.router(
+      title: 'Riverpod Navigator Example',
+      routerDelegate: navigator.routerDelegate,
+      routeInformationParser: navigator.routeInformationParser,
+      debugShowCheckedModeBanner: false,
+    );
+  }
 }
 
 class HomeSegment extends TypedSegment {
@@ -54,23 +58,17 @@ class BooksAuthorsSegment extends TypedSegment {
   factory BooksAuthorsSegment.fromUrlPars(UrlPars pars) => BooksAuthorsSegment();
 }
 
-/// helper extension for screens
-extension WidgetRefApp on WidgetRef {
-  AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
-}
-
-/// helper extension for test
-extension RefApp on Ref {
-  AppNavigator get navigator => read(navigatorProvider) as AppNavigator;
-}
-
 class AppNavigator extends RNavigator {
   /// Constructor for book nested navigator.
   AppNavigator.forBook(Ref ref)
       : super(
           ref,
           [
-            RRoute<BookSegment>('book', BookSegment.fromUrlPars, BookScreen.new),
+            RRoute<BookSegment>(
+              'book',
+              BookSegment.fromUrlPars,
+              BookScreen.new,
+            ),
           ],
         );
 
@@ -79,107 +77,133 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<AuthorSegment>('author', AuthorSegment.fromUrlPars, AuthorScreen.new),
+            RRoute<AuthorSegment>(
+              'author',
+              AuthorSegment.fromUrlPars,
+              AuthorScreen.new,
+            ),
           ],
         );
+
   // ignore: sort_unnamed_constructors_first
   AppNavigator(Ref ref)
       : super(
           ref,
           [
-            RRoute<HomeSegment>('home', HomeSegment.fromUrlPars, HomeScreen.new),
-            RRoute<BookSegment>('book', BookSegment.fromUrlPars, BookScreen.new),
-            RRoute<AuthorSegment>('author', AuthorSegment.fromUrlPars, AuthorScreen.new),
-            RRoute<BooksAuthorsSegment>('books-authors', BooksAuthorsSegment.fromUrlPars, BooksAuthorsScreen.new),
+            RRoute<HomeSegment>(
+              'home',
+              HomeSegment.fromUrlPars,
+              HomeScreen.new,
+            ),
+            RRoute<BookSegment>(
+              'book',
+              BookSegment.fromUrlPars,
+              BookScreen.new,
+            ),
+            RRoute<AuthorSegment>(
+              'author',
+              AuthorSegment.fromUrlPars,
+              AuthorScreen.new,
+            ),
+            RRoute<BooksAuthorsSegment>(
+              'books-authors',
+              BooksAuthorsSegment.fromUrlPars,
+              BooksAuthorsScreen.new,
+            ),
           ],
+          progressIndicatorBuilder: () => const SpinKitCircle(color: Colors.blue, size: 45),
         );
 
   // ******* actions used on the screens
 
-  Future gotoNextBook() => replaceLast<BookSegment>((actualBook) => BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
+  Future toNextBook() => replaceLast<BookSegment>((actualBook) => BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
 
-  Future gotoNextAuthor() =>
+  Future toNextAuthor() =>
       replaceLast<AuthorSegment>((actualAuthor) => AuthorSegment(id: actualAuthor.id == 5 ? 1 : actualAuthor.id + 1));
 }
 
-class HomeScreen extends ConsumerWidget {
-  const HomeScreen(this.segment, {Key? key}) : super(key: key);
+/// common app screen
+abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S> {
+  const AppScreen(S segment, this.screenTitle) : super(segment);
 
-  final HomeSegment segment;
+  final String screenTitle;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => PageHelper<AppNavigator>(
-        title: 'Home',
-        segment: segment,
-        buildChildren: (navigator) => [
-          ElevatedButton(
-            onPressed: () => navigator.navigate([HomeSegment(), BooksAuthorsSegment()]),
-            child: Text('Books & Authors'),
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          title: Text(screenTitle),
+          leading: appBarLeading,
+        ),
+        body: Center(
+          child: Column(
+            children: [
+              for (final w in buildWidgets(navigator)) ...[SizedBox(height: 20), w],
+              SizedBox(height: 20),
+              Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"'),
+            ],
           ),
-          Text('Books', style: TextStyle(fontSize: 32)),
-          for (var i = 1; i <= count; i++)
-            ElevatedButton(
-              onPressed: () => navigator.navigate([HomeSegment(), BookSegment(id: i)]),
-              child: Text('Book $i'),
-            ), // normal page
-          Text('Authors', style: TextStyle(fontSize: 32)),
-          for (var i = 1; i <= count; i++)
-            ElevatedButton(
-              onPressed: () => navigator.navigate([HomeSegment(), AuthorSegment(id: i)]),
-              child: Text('Author $i'),
-            ) // normal page
-        ],
+        ),
       );
+
+  List<Widget> buildWidgets(AppNavigator navigator);
+}
+
+class HomeScreen extends AppScreen<HomeSegment> {
+  const HomeScreen(HomeSegment segment) : super(segment, 'Home');
+
+  @override
+  List<Widget> buildWidgets(navigator) => [
+        ElevatedButton(
+          onPressed: () => navigator.navigate([HomeSegment(), BooksAuthorsSegment()]),
+          child: Text('Books & Authors'),
+        ),
+        Text('Books', style: TextStyle(fontSize: 32)),
+        for (var i = 1; i <= count; i++)
+          ElevatedButton(
+            onPressed: () => navigator.navigate([HomeSegment(), BookSegment(id: i)]),
+            child: Text('Book $i'),
+          ), // normal page
+        Text('Authors', style: TextStyle(fontSize: 32)),
+        for (var i = 1; i <= count; i++)
+          ElevatedButton(
+            onPressed: () => navigator.navigate([HomeSegment(), AuthorSegment(id: i)]),
+            child: Text('Author $i'),
+          ) // normal page
+      ];
 }
 
 const count = 3;
 
-class BookScreen extends ConsumerWidget {
-  const BookScreen(this.book, {Key? key}) : super(key: key);
-
-  final BookSegment book;
+class BookScreen extends AppScreen<BookSegment> {
+  BookScreen(BookSegment segment) : super(segment, 'Book ${segment.id}');
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => PageHelper<AppNavigator>(
-        segment: book,
-        title: 'Book ${book.id}',
-        buildChildren: (navigator) => [
-          ElevatedButton(
-            onPressed: navigator.gotoNextBook,
-            child: const Text('Go to next book'),
-          ),
-        ],
-      );
+  List<Widget> buildWidgets(navigator) => [
+        ElevatedButton(
+          onPressed: navigator.toNextBook,
+          child: const Text('Go to next book'),
+        ),
+      ];
 }
 
-class AuthorScreen extends ConsumerWidget {
-  const AuthorScreen(this.book, {Key? key}) : super(key: key);
-
-  final AuthorSegment book;
+class AuthorScreen extends AppScreen<AuthorSegment> {
+  AuthorScreen(AuthorSegment auhor) : super(auhor, 'Author ${auhor.id}');
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => PageHelper<AppNavigator>(
-        segment: book,
-        title: 'Author ${book.id}',
-        buildChildren: (navigator) => [
-          ElevatedButton(
-            onPressed: navigator.gotoNextAuthor,
-            child: const Text('Go to next author'),
-          ),
-        ],
-      );
+  List<Widget> buildWidgets(navigator) => [
+        ElevatedButton(
+          onPressed: navigator.toNextAuthor,
+          child: const Text('Go to next author'),
+        ),
+      ];
 }
 
 /// TabBarView screen
-class BooksAuthorsScreen extends HookConsumerWidget {
-  /// TabBarView screen
-  const BooksAuthorsScreen(this.booksAuthorsSegment, {Key? key}) : super(key: key);
-
-  /// TabBarView screen
-  final BooksAuthorsSegment booksAuthorsSegment;
+class BooksAuthorsScreen extends RScreenHook<AppNavigator, BooksAuthorsSegment> {
+  const BooksAuthorsScreen(BooksAuthorsSegment booksAuthorsSegment) : super(booksAuthorsSegment);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget buildScreen(ref, navigator, appBarLeading) {
     /// Remembering RestorePath throughout the widget's lifecycle
     /// Note: *We use **flutter_hooks package** to keep RestorePath instance.
     /// The use of flutter_hooks is not mandatory, it can be implemented using the StatefulWidget*.
@@ -189,24 +213,33 @@ class BooksAuthorsScreen extends HookConsumerWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          leading: appBarLeading,
           bottom: const TabBar(
             tabs: [
               Tab(text: 'Books'),
               Tab(text: 'Authors'),
             ],
           ),
-          title: const Text('Books & Authors'),
+          title: Text('Books and Authors'),
         ),
         body: TabBarView(
           children: [
             ProviderScope(
               // The RestorePath class preserves the last state of the navigator.
               // Used during the next navigator initialization.
-              overrides: RNavigatorCore.providerOverrides([BookSegment(id: 2)], AppNavigator.forBook, restorePath: restoreBook),
+              overrides: providerOverrides(
+                [BookSegment(id: 2)],
+                AppNavigator.forBook,
+                restorePath: restoreBook,
+              ),
               child: BooksTab(),
             ),
             ProviderScope(
-              overrides: RNavigatorCore.providerOverrides([AuthorSegment(id: 2)], AppNavigator.forAuthor, restorePath: restoreAuthor),
+              overrides: providerOverrides(
+                [AuthorSegment(id: 2)],
+                AppNavigator.forAuthor,
+                restorePath: restoreAuthor,
+              ),
               child: AuthorTab(),
             ),
           ],
@@ -221,46 +254,14 @@ class BooksTab extends ConsumerWidget {
   const BooksTab({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Router(routerDelegate: ref.navigator.routerDelegate);
+  Widget build(BuildContext context, WidgetRef ref) =>
+      Router(routerDelegate: (ref.read(navigatorProvider) as AppNavigator).routerDelegate);
 }
 
 class AuthorTab extends ConsumerWidget {
   const AuthorTab({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Router(routerDelegate: ref.navigator.routerDelegate);
-}
-
-class PageHelper<N extends RNavigator> extends ConsumerWidget {
-  const PageHelper({Key? key, required this.segment, required this.title, required this.buildChildren}) : super(key: key);
-
-  final TypedSegment segment;
-
-  final String title;
-
-  final List<Widget> Function(N) buildChildren;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final navigator = ref.navigator as N;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: (() {
-            final res = <Widget>[SizedBox(height: 20)];
-            for (final w in buildChildren(navigator)) {
-              res.addAll([w, SizedBox(height: 20)]);
-            }
-            res.addAll([SizedBox(height: 20), Text('Dump actual typed-path: "${navigator.debugSegmentSubpath(segment)}"')]);
-            // if (segment.asyncActionResult != null) res.addAll([SizedBox(height: 20), Text('Async result: "${segment.asyncActionResult}"')]);
-            return res;
-          })(),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) =>
+      Router(routerDelegate: (ref.read(navigatorProvider) as AppNavigator).routerDelegate);
 }

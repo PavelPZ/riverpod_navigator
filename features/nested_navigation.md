@@ -30,41 +30,62 @@ class AppNavigator extends RNavigator {
 
 ```dart
 /// TabBarView screen
-@hcwidget
-Widget booksAuthorsScreen(WidgetRef ref, BooksAuthorsSegment booksAuthorsSegment) {
-  /// Remembering RestorePath throughout the BooksAuthorsScreen's lifecycle
-  /// Note: *We use **flutter_hooks package** to keep RestorePath instance.
-  /// The use of flutter_hooks is optional, you can save restoreBook and restoreAuthor using the StatefulWidget.*
-  final restoreBook = useMemoized(() => RestorePath());
-  final restoreAuthor = useMemoized(() => RestorePath());
-  return DefaultTabController(
-    length: 2,
-    child: Scaffold(
-      appBar: AppBar(
-        bottom: const TabBar(
-          tabs: [
-            Tab(text: 'Books'),
-            Tab(text: 'Authors'),
+class BooksAuthorsScreen extends RScreenHook<AppNavigator, BooksAuthorsSegment> {
+  const BooksAuthorsScreen(BooksAuthorsSegment booksAuthorsSegment) : super(booksAuthorsSegment);
+
+  @override
+  Widget buildScreen(ref, navigator, appBarLeading) {
+    /// Remembering RestorePath throughout the widget's lifecycle
+    /// Note: *We use **flutter_hooks package** to keep RestorePath instance.
+    /// The use of flutter_hooks is not mandatory, it can be implemented using the StatefulWidget*.
+    final restoreBook = useMemoized(() => RestorePath());
+    final restoreAuthor = useMemoized(() => RestorePath());
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: appBarLeading,
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Books'),
+              Tab(text: 'Authors'),
+            ],
+          ),
+          title: Text('Books and Authors'),
+        ),
+        body: TabBarView(
+          children: [
+            ProviderScope(
+              // The RestorePath class preserves the last state of the navigator.
+              // Used during the next navigator initialization.
+              overrides: providerOverrides([BookSegment(id: 2)], AppNavigator.forBook, restorePath: restoreBook),
+              child: BooksTab(),
+            ),
+            ProviderScope(
+              overrides: providerOverrides([AuthorSegment(id: 2)], AppNavigator.forAuthor, restorePath: restoreAuthor),
+              child: AuthorTab(),
+            ),
           ],
         ),
-        title: const Text('Books & Authors'),
       ),
-      body: TabBarView(
-        children: [
-          ProviderScope(
-            // The RestorePath class preserves the last state of the navigator.
-            // Used during the next navigator initialization.
-            overrides: RNavigatorCore.providerOverrides([BookSegment(id: 2)], AppNavigator.forBook, restorePath: restoreBook),
-            child: BooksTab(),
-          ),
-          ProviderScope(
-            overrides: RNavigatorCore.providerOverrides([AuthorSegment(id: 2)], AppNavigator.forAuthor, restorePath: restoreAuthor),
-            child: AuthorTab(),
-          ),
-        ],
-      ),
-    ),
-  );
+    );
+  }
+}
+
+class BooksTab extends ConsumerWidget {
+  const BooksTab({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) =>
+      Router(routerDelegate: (ref.read(navigatorProvider) as AppNavigator).routerDelegate);
+}
+
+class AuthorTab extends ConsumerWidget {
+  const AuthorTab({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) =>
+      Router(routerDelegate: (ref.read(navigatorProvider) as AppNavigator).routerDelegate);
 }
 ```
 

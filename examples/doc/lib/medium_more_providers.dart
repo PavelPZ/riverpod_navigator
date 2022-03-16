@@ -10,8 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 //
 //  How to make login app flow easily
 //
-//  Works for Flutter mobile and Flutter on the Web and desktop.
-//
+
 //*********************************************
 //*********************************************
 
@@ -30,21 +29,21 @@ class AppNavigator extends RRouterDelegate {
   AppNavigator(Ref ref, TypedPath homePath) : super(ref, homePath);
 
   @override
-  TypedPath appNavigationLogic(TypedPath actNavigStack, TypedPath ongoingPath) {
+  TypedPath appNavigationLogic(TypedPath actNavigStack, TypedPath intendedPath) {
     final userIsLogged = ref.read(isLoggedProvider);
 
     // if user is not logged-in and some of the screen in navigations stack needs login => redirect to LoginScreen
-    if (!userIsLogged && ongoingPath.any((segment) => needsLogin(segment))) {
+    if (!userIsLogged && intendedPath.any((segment) => needsLogin(segment))) {
       return [LoginSegment()];
     }
 
     // user is logged and LogginScreen is going to display => redirect to HomeScreen
-    if (userIsLogged && (ongoingPath.isEmpty || ongoingPath.last is LoginSegment)) {
+    if (userIsLogged && (intendedPath.isEmpty || intendedPath.last is LoginSegment)) {
       return [HomeSegment()];
     }
 
     // no redirection is needed
-    return ongoingPath;
+    return intendedPath;
   }
 }
 
@@ -55,9 +54,9 @@ bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.is
 // PROVIDERS
 //*********************************************
 
-final routerDelegateProvider = Provider<AppNavigator>((ref) => AppNavigator(ref, [HomeSegment()]));
+final appNavigatorProvider = Provider<AppNavigator>((ref) => AppNavigator(ref, [HomeSegment()]));
 
-final ongoingPathProvider = StateProvider<TypedPath>((_) => [HomeSegment()]);
+final intendedPathProvider = StateProvider<TypedPath>((_) => [HomeSegment()]);
 final isLoggedProvider = StateProvider<bool>((_) => false);
 
 final navigationStackProvider = StateProvider<TypedPath>((_) => [HomeSegment()]);
@@ -71,13 +70,19 @@ typedef JsonMap = Map<String, dynamic>;
 
 /// Common TypedSegment's ancestor
 abstract class TypedSegment {
-  factory TypedSegment.fromJson(JsonMap json) => json['runtimeType'] == 'BookSegment'
+  factory TypedSegment.fromJson(JsonMap json) => json['rt'] == 'book'
       ? BookSegment(id: json['id'])
-      : json['runtimeType'] == 'LoginSegment'
+      : json['rt'] == 'login'
           ? LoginSegment()
           : HomeSegment();
 
-  JsonMap toJson() => <String, dynamic>{'runtimeType': runtimeType.toString()};
+  JsonMap toJson() => <String, dynamic>{
+        'rt': this is BookSegment
+            ? 'book'
+            : this is LoginSegment
+                ? 'login'
+                : 'home'
+      };
   @override
   String toString() => jsonEncode(toJson());
 }
@@ -107,16 +112,19 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
         title: 'Riverpod Navigator Example',
-        routerDelegate: ref.read(routerDelegateProvider),
+        routerDelegate: ref.read(appNavigatorProvider),
         routeInformationParser: RouteInformationParserImpl(),
         debugShowCheckedModeBanner: false,
       );
 }
 
 //*********************************************
-// RouterDelegate + Defer2NextTick
+// Defer2NextTick
 //*********************************************
 
+/// helper class that solves problem, when two providers (on which navigation depend)
+/// changed during single dart event loop.
+/// In this case, without the [Defer2NextTick.providerChanged], navigation stack will changed twice.
 class Defer2NextTick {
   Defer2NextTick();
 
@@ -131,12 +139,17 @@ class Defer2NextTick {
     scheduleMicrotask(() {
       try {
         final navigationStackNotifier = navigator.ref.read(navigationStackProvider.notifier);
-        final ongoingPathNotifier = navigator.ref.read(ongoingPathProvider.notifier);
-        final newNavigStack = navigator.appNavigationLogic(navigationStackNotifier.state, ongoingPathNotifier.state);
-        // synchronize navigation stack and ongoingPath
+        final intendedPathNotifier = navigator.ref.read(intendedPathProvider.notifier);
+
+        // appNavigationLogic with possible redirects
+        final newNavigStack = navigator.appNavigationLogic(
+          navigationStackNotifier.state,
+          intendedPathNotifier.state,
+        );
+        // synchronize navigation stack and intendedPath
         _ignoreNextProviderChange = true;
         try {
-          ongoingPathNotifier.state = navigationStackNotifier.state = newNavigStack;
+          intendedPathNotifier.state = navigationStackNotifier.state = newNavigStack;
         } finally {
           _ignoreNextProviderChange = false;
         }
@@ -147,13 +160,30 @@ class Defer2NextTick {
   }
 }
 
+//*********************************************
+// Defer2NextTick
+//*********************************************
+
+/// helper class that solves two problems:
+///
+/// 1. two providers (on which navigation depends) change in one tick
+/// eg. if after a successful login:
+///   - change the login state to true
+///   - change the intendedPath state to a screen requiring a login
+///
+/// in this case, without the Defer2NextTick class, [navigationStackProvider] is changed twice
+///
 abstract class RRouterDelegate extends RouterDelegate<TypedPath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<TypedPath> {
   RRouterDelegate(this.ref, this.homePath) {
     defer2NextTick.navigator = this;
-    // listen for "input status" => using defer2NextTick.providerChanged call applicationLogic
-    final unlistens = [ongoingPathProvider, isLoggedProvider].map((e) => ref.listen(e, (_, __) => defer2NextTick.providerChanged())).toList();
+
+    // listen for "input status" => call defer2NextTick.providerChanged => call applicationLogic
+    final unlistens =
+        [intendedPathProvider, isLoggedProvider].map((e) => ref.listen(e, (_, __) => defer2NextTick.providerChanged())).toList();
+
     // listen navigationStackProvider => call notifyListeners which then rebuilds the navigation stack
     unlistens.add(ref.listen(navigationStackProvider, (_, __) => notifyListeners()));
+
     // ignore: avoid_function_literals_in_foreach_calls
     ref.onDispose(() => unlistens.forEach((u) => u()));
   }
@@ -162,7 +192,7 @@ abstract class RRouterDelegate extends RouterDelegate<TypedPath> with ChangeNoti
   final TypedPath homePath;
   final defer2NextTick = Defer2NextTick();
 
-  TypedPath appNavigationLogic(TypedPath actNavigStack, TypedPath ongoingPath);
+  TypedPath appNavigationLogic(TypedPath actNavigStack, TypedPath intendedPath);
 
   @override
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -205,7 +235,7 @@ abstract class RRouterDelegate extends RouterDelegate<TypedPath> with ChangeNoti
     return SynchronousFuture(null);
   }
 
-  void navigate(TypedPath newPath) => ref.read(ongoingPathProvider.notifier).state = newPath;
+  void navigate(TypedPath newPath) => ref.read(intendedPathProvider.notifier).state = newPath;
 
   void replaceLast<T extends TypedSegment>(T Function(T old) replace) {
     final navigationStack = ref.read(navigationStackProvider);
@@ -251,7 +281,7 @@ class LoginButton extends StatelessWidget {
             if (isLoggedNotifier.state) {
               isLoggedNotifier.state = false;
             } else {
-              ref.read(routerDelegateProvider).navigate([LoginSegment()]);
+              ref.read(appNavigatorProvider).navigate([LoginSegment()]);
             }
           },
           child: Text(isLogged ? 'Logout' : 'Login'),
@@ -279,7 +309,7 @@ class HomeScreen extends ConsumerWidget {
                 Consumer(builder: (_, ref, __) {
                   final isLogged = ref.watch(isLoggedProvider);
                   return ElevatedButton(
-                    onPressed: () => ref.read(routerDelegateProvider).navigate([
+                    onPressed: () => ref.read(appNavigatorProvider).navigate([
                       HomeSegment(),
                       BookSegment(id: i),
                     ]),
@@ -310,12 +340,12 @@ class BookScreen extends ConsumerWidget {
             children: [
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () => ref.read(routerDelegateProvider).replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1)),
+                onPressed: () => ref.read(appNavigatorProvider).replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1)),
                 child: const Text('Go to next book'),
               ),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () => ref.read(routerDelegateProvider).navigate([HomeSegment()]),
+                onPressed: () => ref.read(appNavigatorProvider).navigate([HomeSegment()]),
                 child: const Text('Go to home'),
               ),
             ],
@@ -334,7 +364,7 @@ class LoginScreen extends ConsumerWidget {
         appBar: AppBar(
           title: const Text('Login Screen'),
           leading: IconButton(
-            onPressed: () => ref.read(routerDelegateProvider).navigate([HomeSegment()]),
+            onPressed: () => ref.read(appNavigatorProvider).navigate([HomeSegment()]),
             icon: const Icon(Icons.cancel),
           ),
         ),
@@ -345,7 +375,7 @@ class LoginScreen extends ConsumerWidget {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
-                  ref.read(ongoingPathProvider.notifier).state = [HomeSegment()];
+                  ref.read(intendedPathProvider.notifier).state = [HomeSegment()];
                   ref.read(isLoggedProvider.notifier).state = true;
                 },
                 child: const Text('Login'),

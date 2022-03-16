@@ -26,10 +26,10 @@ class LoginSegment extends TypedSegment {
   factory LoginSegment.fromUrlPars(UrlPars pars) => LoginSegment();
 }
 
-final routes = <RRoute4Dart>[
-  RRoute4Dart<HomeSegment>('home', HomeSegment.fromUrlPars),
-  RRoute4Dart<BookSegment>('book', BookSegment.fromUrlPars),
-  RRoute4Dart<LoginSegment>('login', LoginSegment.fromUrlPars),
+final routes = <RRouteCore>[
+  RRouteCore<HomeSegment>('home', HomeSegment.fromUrlPars),
+  RRouteCore<BookSegment>('book', BookSegment.fromUrlPars),
+  RRouteCore<LoginSegment>('login', LoginSegment.fromUrlPars),
 ];
 
 final loginProvider = StateProvider<bool>((_) => false);
@@ -43,15 +43,15 @@ class TestNavigator extends RNavigatorCore {
 
   @override
   FutureOr<TypedPath> appNavigationLogicCore(
-      TypedPath oldNavigationStack, TypedPath ongoingPath) {
+      TypedPath oldNavigationStack, TypedPath intendedPath) {
     if (delayMsec == null) {
       if (isError) throw 'SYNC ERROR';
-      return ongoingPath;
+      return intendedPath;
     } else {
       return Future.delayed(Duration(milliseconds: delayMsec!))
           .then<TypedPath>((value) {
         if (isError) throw 'ASYNC ERROR';
-        return ongoingPath;
+        return intendedPath;
       });
     }
   }
@@ -59,7 +59,7 @@ class TestNavigator extends RNavigatorCore {
 
 Future main() async {
   final container = ProviderContainer(
-      overrides: RNavigatorCore.providerOverrides(
+      overrides: providerOverrides(
     [HomeSegment()],
     TestNavigator.new,
   ));
@@ -70,7 +70,7 @@ Future main() async {
   final p1 = navigator.navigationStack2Url;
   assert(p1 == '{"runtimeType":"HomeSegment"}');
 
-  container.read(ongoingPathProvider.notifier).state = [
+  container.read(intendedPathProvider.notifier).state = [
     HomeSegment(),
     BookSegment(id: 1)
   ];

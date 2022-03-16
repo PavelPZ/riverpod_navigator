@@ -18,10 +18,10 @@ abstract class TypedSegment {}
 /// **typed-path**
 typedef TypedPath = List<TypedSegment>;
 
-/// assigning eg. ref.read(ongoingPathProvider.notifier).state = [HomeSegment(), PageSegment()] causes a new navigation stack to be calculated
-final ongoingPathProvider = StateProvider<TypedPath>((_) => []);
+/// assigning eg. ref.read(intendedPathProvider.notifier).state = [HomeSegment(), PageSegment()] causes a new navigation stack to be calculated
+final intendedPathProvider = StateProvider<TypedPath>((_) => []);
 
-/// assigning eg. ref.read(ongoingPathProvider.notifier).state==false causes a new navigation stack to be calculated
+/// assigning eg. ref.read(intendedPathProvider.notifier).state==false causes a new navigation stack to be calculated
 final userIsLoggedProvider = StateProvider<bool>((_) => false);
 ...
 
@@ -61,7 +61,7 @@ class RRouterDelegate extends RouterDelegate<TypedPath>...
 
 ## 3. And in the middle is RNavigator
 
-RNavigator reacts to changes of the input states (ongoingPathProvider, userIsLoggedProvider in this case) 
+RNavigator reacts to changes of the input states (intendedPathProvider, userIsLoggedProvider in this case) 
 and updates the output state (RRouterDelegate.navigationStack) accordingly.
 
 How is it done?
@@ -71,25 +71,25 @@ class RNavigator {
   RNavigator(Ref ref) {
     ...
     /// Listen to the providers and call "onStateChanged" every time they change.
-    [ongoingPathProvider,userIsLoggedProvider].foreach((provider) => ref.listen(provider, (_,__) => onStateChanged())));
+    [intendedPathProvider,userIsLoggedProvider].foreach((provider) => ref.listen(provider, (_,__) => onStateChanged())));
   }
 
   /// onStateChanged is called whenever providers change
   void onStateChanged() {
-    // get ongoingPath notifier
-    final ongoingPathNotifier = ref.read(ongoingPathProvider.notifier);
+    // get intendedPath notifier
+    final intendedPathNotifier = ref.read(intendedPathProvider.notifier);
     // run app specific application navigation logic here (redirection, login, etc.).
-    final newOngoingPath = appNavigationLogic(ongoingPathNotifier.state);
-    // Flutter Navigator 2.0 to updates the navigation stack according to the ongoingPathProvider state
-    riverpodRouterDelegate.navigationStack = newOngoingPath;
+    final newIntendedPath = appNavigationLogic(intendedPathNotifier.state);
+    // Flutter Navigator 2.0 to updates the navigation stack according to the intendedPathProvider state
+    riverpodRouterDelegate.navigationStack = newIntendedPath;
   }
 
   /// RRouterDelegate is tied to the RNavigator
   final riverpodRouterDelegate = RRouterDelegate();
 
   /// Enter application navigation logic here (redirection, login flow, etc.). 
-  /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or no route guard is required)
-  TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
+  /// No need to override (eg when the navigation status depends only on the intendedPathProvider and no redirects or no route guard is required)
+  TypedPath appNavigationLogic(TypedPath intendedPath) => intendedPath;
 }
 ```
 
@@ -97,17 +97,17 @@ class RNavigator {
 
 ```dart
 @override 
-TypedPath appNavigationLogic(TypedPath ongoingPath) {
+TypedPath appNavigationLogic(TypedPath intendedPath) {
   final userIsLogged = ref.read(userIsLoggedProvider);
 
   // if user is not logged in and there is any PageSegment in navigations stack => redirect to LoginScreen
-  if (!userIsLogged && ongoingPath.any((segment) => segment is PageSegment) return [LoginSegment()];
+  if (!userIsLogged && intendedPath.any((segment) => segment is PageSegment) return [LoginSegment()];
 
   // user is logged and LogginScreen is going to display => redirect to HomeScreen
-  if (userIsLogged && ongoingPath.any((segment) => segment is LoginSegment) return [HomeSegment()];)
+  if (userIsLogged && intendedPath.any((segment) => segment is LoginSegment) return [HomeSegment()];)
 
   // else: no redirection is needed
-  return ongoingPath;
+  return intendedPath;
 }
 ```
 

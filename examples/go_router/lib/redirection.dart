@@ -9,7 +9,7 @@ part 'redirection.g.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [loginInfoProvider]),
+        overrides: providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [loginInfoProvider]),
         child: const App(),
       ),
     );
@@ -68,14 +68,14 @@ class AppNavigator extends RNavigator {
         );
 
   @override
-  TypedPath appNavigationLogic(TypedPath ongoingPath) {
+  TypedPath appNavigationLogic(TypedPath intendedPath) {
     final loginInfo = ref.read(loginInfoProvider.notifier);
 
     final loggedIn = loginInfo.state.isNotEmpty;
-    final loggingIn = ongoingPath.any((segment) => segment is LoginSegment);
+    final loggingIn = intendedPath.any((segment) => segment is LoginSegment);
     if (!loggedIn && !loggingIn) return [LoginSegment()];
     if (loggedIn && loggingIn) return [HomeSegment()];
-    return ongoingPath;
+    return intendedPath;
   }
 
   static const title = 'GoRouter Example: Redirection';

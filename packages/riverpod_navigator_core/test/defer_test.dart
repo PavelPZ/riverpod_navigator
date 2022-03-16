@@ -18,29 +18,24 @@ class TestNavigator extends RNavigatorCore {
 
   @override
   FutureOr<TypedPath> appNavigationLogicCore(
-      TypedPath oldNavigationStack, TypedPath ongoingPath) {
+      TypedPath oldNavigationStack, TypedPath intendedPath) {
     if (delayMsec == null) {
       if (isError) throw 'SYNC ERROR';
-      return ongoingPath;
+      return intendedPath;
     } else {
       return Future.delayed(Duration(milliseconds: delayMsec!))
           .then<TypedPath>((value) {
         if (isError) throw 'ASYNC ERROR';
-        return ongoingPath;
+        return intendedPath;
       });
     }
   }
-
-  // @override
-  // FutureOr<TypedPath> appNavigationLogicCore(TypedPath ongoingPath) async {
-  //   throw 'ASYNC ERROR';
-  // }
 }
 
 void main() {
   test('sync', () async {
     final container = ProviderContainer(
-        overrides: RNavigatorCore.providerOverrides(
+        overrides: providerOverrides(
       [HomeSegment()],
       TestNavigator.new,
     ));
@@ -51,7 +46,7 @@ void main() {
     final p1 = navigator.navigationStack2Url;
     expect(p1, 'home');
 
-    container.read(ongoingPathProvider.notifier).state = [
+    container.read(intendedPathProvider.notifier).state = [
       HomeSegment(),
       BookSegment(id: 1)
     ];
@@ -64,7 +59,7 @@ void main() {
 
   test('sync error', () async {
     final container = ProviderContainer(
-        overrides: RNavigatorCore.providerOverrides(
+        overrides: providerOverrides(
       [HomeSegment()],
       (ref) => TestNavigator(ref, isError: true),
     ));
@@ -85,7 +80,7 @@ void main() {
 
   test('async', () async {
     final container = ProviderContainer(
-        overrides: RNavigatorCore.providerOverrides(
+        overrides: providerOverrides(
       [HomeSegment()],
       (ref) => TestNavigator(ref, delayMsec: 1000),
     ));
@@ -96,7 +91,7 @@ void main() {
     final p1 = navigator.navigationStack2Url;
     expect(p1, 'home');
 
-    container.read(ongoingPathProvider.notifier).state = [
+    container.read(intendedPathProvider.notifier).state = [
       HomeSegment(),
       BookSegment(id: 1)
     ];
@@ -109,7 +104,7 @@ void main() {
 
   test('async, enother event', () async {
     final container = ProviderContainer(
-        overrides: RNavigatorCore.providerOverrides(
+        overrides: providerOverrides(
       [HomeSegment()],
       (ref) => TestNavigator(ref, delayMsec: 1000),
       dependsOn: [loginProvider],
@@ -122,21 +117,21 @@ void main() {
     expect(p1, 'home');
 
     // for (var i = 0; i < 3; i++) {
-    container.read(ongoingPathProvider.notifier).state = [
+    container.read(intendedPathProvider.notifier).state = [
       HomeSegment(),
       BookSegment(id: 1)
     ];
     await container.pump();
 
     await Future.delayed(Duration(milliseconds: 300));
-    container.read(ongoingPathProvider.notifier).state = [HomeSegment()];
+    container.read(intendedPathProvider.notifier).state = [HomeSegment()];
     await Future.delayed(Duration(milliseconds: 300));
-    container.read(ongoingPathProvider.notifier).state = [
+    container.read(intendedPathProvider.notifier).state = [
       HomeSegment(),
       BookSegment(id: 2)
     ];
     container.read(loginProvider.notifier).update((s) => !s);
-    container.read(ongoingPathProvider.notifier).state = [
+    container.read(intendedPathProvider.notifier).state = [
       HomeSegment(),
       BookSegment(id: 3)
     ];
@@ -150,7 +145,7 @@ void main() {
 
   test('async error', () async {
     final container = ProviderContainer(
-        overrides: RNavigatorCore.providerOverrides(
+        overrides: providerOverrides(
       [HomeSegment()],
       (ref) => TestNavigator(ref, delayMsec: 1000, isError: true),
     ));

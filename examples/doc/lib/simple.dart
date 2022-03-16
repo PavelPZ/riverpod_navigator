@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 void main() => runApp(
       ProviderScope(
-        // home=path and navigator constructor are required
-        overrides: RNavigatorCore.providerOverrides(const [HomeSegment()], AppNavigator.new),
+        // home path and navigator constructor are required
+        overrides: providerOverrides(const [HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
     );
 
 class HomeSegment extends TypedSegment {
   const HomeSegment();
+
+  /// used for creating HomeSegment from URL pars
   // ignore: avoid_unused_constructor_parameters
   factory HomeSegment.fromUrlPars(UrlPars pars) => const HomeSegment();
 }
 
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
+
+  /// used for creating BookSegment from URL pars
   factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
+
+  /// used for encoding BookSegment props to URL pars
   @override
   void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 
@@ -30,13 +37,31 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            // 'home' and 'book' strings are used in web URL, e.g. 'home/book;id=2'
-            // fromUrlPars is used to decode URL to segment
-            // HomeScreen.new and BookScreen.new are screens for a given segment
-            RRoute<HomeSegment>('home', HomeSegment.fromUrlPars, HomeScreen.new),
-            RRoute<BookSegment>('book', BookSegment.fromUrlPars, BookScreen.new),
+            /// 'home' and 'book' strings are used in web URL, e.g. 'home/book;id=2'
+            /// fromUrlPars is used to decode URL to segment
+            /// HomeScreen.new and BookScreen.new are screen builders for a given segment
+            RRoute<HomeSegment>(
+              'home',
+              HomeSegment.fromUrlPars,
+              HomeScreen.new,
+            ),
+            RRoute<BookSegment>(
+              'book',
+              BookSegment.fromUrlPars,
+              BookScreen.new,
+            ),
           ],
+          progressIndicatorBuilder: () => const SpinKitCircle(color: Colors.blue, size: 45),
         );
+
+  // It is good practice to place the code for all events specific to navigation in AppNavigator.
+  // These can then be used not only for writing screen widgets, but also for testing.
+
+  /// navigate to next book
+  Future toNextBook() => replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1));
+
+  /// navigate to home
+  Future toHome() => navigate([HomeSegment()]);
 }
 
 class App extends ConsumerWidget {
@@ -54,21 +79,22 @@ class App extends ConsumerWidget {
   }
 }
 
-class HomeScreen extends ConsumerWidget {
-  const HomeScreen(this.segment, {Key? key}) : super(key: key);
-
-  final HomeSegment segment;
+class HomeScreen extends RScreen<AppNavigator, HomeSegment> {
+  const HomeScreen(HomeSegment segment) : super(segment);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-        appBar: AppBar(title: const Text('Home')),
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          title: Text('Home'),
+          leading: appBarLeading,
+        ),
         body: Center(
           child: Column(
             children: [
               for (var i = 1; i < 4; i++) ...[
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () => ref.read(navigatorProvider).navigate([
+                  onPressed: () => navigator.navigate([
                     HomeSegment(),
                     BookSegment(id: i),
                     if (i > 1) BookSegment(id: 10 + i),
@@ -83,25 +109,26 @@ class HomeScreen extends ConsumerWidget {
       );
 }
 
-class BookScreen extends ConsumerWidget {
-  const BookScreen(this.segment, {Key? key}) : super(key: key);
-
-  final BookSegment segment;
+class BookScreen extends RScreen<AppNavigator, BookSegment> {
+  const BookScreen(BookSegment segment) : super(segment);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-        appBar: AppBar(title: Text('Book ${segment.id}')),
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          title: Text('Book ${segment.id}'),
+          leading: appBarLeading,
+        ),
         body: Center(
           child: Column(
             children: [
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () => ref.read(navigatorProvider).replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1)),
+                onPressed: navigator.toNextBook,
                 child: const Text('Go to next book'),
               ),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment()]),
+                onPressed: navigator.toHome,
                 child: const Text('Go to home'),
               ),
             ],

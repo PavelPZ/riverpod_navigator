@@ -8,9 +8,12 @@ part of 'riverpod_navigator_core.dart';
 class RNavigatorCore {
   RNavigatorCore(
     this.ref,
-    List<RRoute4Dart> routes,
-  ) : router = RRouter(routes) {
-    pathParser = PathParser(router);
+    List<RRouteCore> routes, {
+    IPathParser pathParserCreator(RRouter router)?,
+  }) : router = RRouter(routes) {
+    pathParser = pathParserCreator == null
+        ? PathParser(router)
+        : pathParserCreator(router);
 
     // see Defer2NextTick doc
     _defer2NextTick = Defer2NextTick()..navigator = this;
@@ -24,42 +27,86 @@ class RNavigatorCore {
     _defer2NextTick.providerChanged();
   }
 
-  /// Enter application navigation logic here (redirection, login, etc.).
-  /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or route guards are needed)
-  TypedPath appNavigationLogic(TypedPath ongoingPath) => ongoingPath;
-
-  /// Enter application navigation logic here (redirection, login, etc.).
-  /// No need to override (eg when the navigation status depends only on the ongoingPathProvider and no redirects or route guard is needed)
-  FutureOr<TypedPath?> appNavigationLogicCore(
-      TypedPath oldNavigationStack, TypedPath ongoingPath) {
-    final newOngoingPath = appNavigationLogic(ongoingPath);
-
-    // in ongoingPath, when ongoingPath[i] == currentTypedPath[i], set ongoingPath[i] = currentTypedPath[i]
-    final navigationStack = getNavigationStack();
-    eq2Identical(navigationStack, newOngoingPath);
-    // if (newOngoingPath == navigationStack) return null;
-
-    final todo = waitStart(router, navigationStack, newOngoingPath);
-    if (todo.isEmpty) return newOngoingPath;
-    return waitEnd(todo).then((_) => newOngoingPath);
-  }
-
-  void registerProtectedFuture(Future future) =>
-      _defer2NextTick.registerProtectedFuture(future);
-
+  /// home path
   late TypedPath initPath;
+
+  /// router
   final RRouter router;
 
-  late PathParser pathParser;
+  /// path parser
+  late IPathParser pathParser;
 
-  /// Main [RNavigator] method. Provides navigation to newPath.
-  Future<void> navigate(TypedPath newPath) async {
-    ref.read(ongoingPathProvider.notifier).state = newPath;
-    return navigationCompleted;
+  /// for nested navigator: keep state of nested navigator eg. in flutter tabs widget
+  late RestorePath? _restorePath;
+
+  final Ref ref;
+
+  late List<AlwaysAliveProviderListenable> _dependsOn;
+  late List<Function> _unlistens;
+  late Defer2NextTick _defer2NextTick;
+
+  /// Enter application navigation logic here (redirection, login, etc.).
+  /// No need to override, eg. when the navigation status depends only on the intendedPathProvider
+  /// and no redirects or route guards are needed.
+  /// Returns intendedPath or other redirection path.
+  TypedPath appNavigationLogic(TypedPath intendedPath) => intendedPath;
+
+  /// low level app logic
+  FutureOr<TypedPath> appNavigationLogicCore(
+      TypedPath oldNavigationStack, TypedPath intendedPath) {
+    final newIntendedPath = appNavigationLogic(intendedPath);
+
+    final navigationStack = getNavigationStack();
+    // when navigationStack[i] == newIntendedPath[i], set newIntendedPath[i] = navigationStack[i]
+    eq2Identical(navigationStack, newIntendedPath);
+
+    final todo = waitStart(router, navigationStack, newIntendedPath);
+    // no async actions:
+    if (todo.item1.isEmpty && todo.item2.isEmpty) return newIntendedPath;
+    // wait for async actions:
+    return waitEnd(todo).then((_) => newIntendedPath);
   }
 
-  /// When changing navigation state: completed after navigationStackProvider is actual
+  /// Navigation is delayed until [future] is completed.
+  /// This allows the global state to be synchronized
+  /// (for example, when [future] is storing data that can be used by another screen).
+  Future registerProtectedFuture(Future future) {
+    _defer2NextTick.registerProtectedFuture(future);
+    return future;
+  }
+
+  /// Main [RNavigator] method. Provides navigation to the newPath.
+  /// Used in e.g RLinkbutton
+  NavigatePath navigatePath(TypedPath newPath) => NavigatePath(() {
+        ref.read(intendedPathProvider.notifier).state = newPath;
+        return navigationCompleted;
+      }, screenTitle(newPath.last));
+
+  /// Main [RNavigator] method. Provides navigation to the newPath.
+  Future navigate(TypedPath newPath) => navigatePath(newPath).onPressed();
+
+  /// wrap your async actions:
+  /// ```
+  /// setIsNavigating(true);
+  /// try {
+  ///   // async action
+  /// } finally {
+  ///   setIsNavigating(false);
+  /// }
+  /// ```
+  void setIsNavigating(bool isNavigating) => ref
+      .read(isNavigatingProvider.notifier)
+      .update((state) => isNavigating ? state + 1 : state - 1);
+
+  /// When changing navigation state: completed after [navigationStackProvider] is actual
   Future<void> get navigationCompleted => _defer2NextTick.future;
+
+  String screenTitle(TypedSegment segment) =>
+      router.segment2Route(segment).getScreenTitle(segment);
+
+  String get navigationStack2Url => pathParser.toUrl(getNavigationStack());
+  String debugSegmentSubpath(TypedSegment s) =>
+      pathParser.toUrl(segmentSubpath(s));
 
   TypedPath segmentSubpath(TypedSegment s) {
     final navigationStack = getNavigationStack();
@@ -72,18 +119,14 @@ class RNavigatorCore {
     return res;
   }
 
-  String get navigationStack2Url => pathParser.toUrl(getNavigationStack());
-  String debugSegmentSubpath(TypedSegment s) =>
-      pathParser.toUrl(segmentSubpath(s));
-
-  /// Wait for the asynchronous screen actions. The action is waiting in parallel
-  ///- rewrite, when other waiting strategy is needed.
-  static List<Tuple2<AsyncOper, TypedSegment>> waitStart(
+  /// asynchronous screen actions, start
+  static Tuple2<List<GetFuture>, List<GetFuture>> waitStart(
       RRouter router, TypedPath oldPath, TypedPath newPath) {
-    final todo = <Tuple2<AsyncOper, TypedSegment>>[];
-    void add(AsyncOper? oper, TypedSegment segment) {
+    final oldTodo = <GetFuture>[];
+    final newTodo = <GetFuture>[];
+    void add(bool isOld, GetFuture? oper) {
       if (oper == null) return;
-      todo.add(Tuple2(oper, segment));
+      (isOld ? oldTodo : newTodo).add(oper);
     }
 
     // close olds
@@ -91,7 +134,7 @@ class RNavigatorCore {
       final o = oldPath[i];
       final n = i >= newPath.length ? null : newPath[i];
       if (n == null || o.runtimeType != n.runtimeType) {
-        add(router.segment2Route(o).callClosing(o), o);
+        add(true, router.segment2Route(o).callClosing(o));
       } else if (identical(o, n)) {
         continue;
       }
@@ -101,66 +144,43 @@ class RNavigatorCore {
       final n = newPath[i];
       final o = i >= oldPath.length ? null : oldPath[i];
       if (o == null || o.runtimeType != n.runtimeType) {
-        add(router.segment2Route(n).callOpening(n), n);
+        add(false, router.segment2Route(n).callOpening(n));
       } else if (identical(o, n)) {
         continue;
       } else {
         // not identical and the same runtimeType
-        add(router.segment2Route(n).callReplacing(o, n), n);
+        add(false, router.segment2Route(n).callReplacing(o, n));
       }
     }
-    return todo;
+    return Tuple2(oldTodo, newTodo);
   }
 
-  Future waitEnd(List<Tuple2<AsyncOper, TypedSegment>> todo) async {
-    for (final fs in todo) {
-      final asyncRes = await fs.item1();
-      if (fs.item2.asyncHolder == null) throw 'fs.item2.asyncHolder == null';
-      fs.item2.asyncHolder!.value = asyncRes;
+  /// asynchronous screen actions, waiting and collectiong result
+  Future waitEnd(Tuple2<List<GetFuture>, List<GetFuture>> todo) async {
+    // first, close old stack:
+    for (final fs in todo.item1) {
+      await fs();
+    }
+    // than, open new stack:
+    for (final fs in todo.item2) {
+      await fs();
     }
   }
 
   TypedPath getNavigationStack() => ref.read(navigationStackProvider);
 
   void _setdependsOn(List<AlwaysAliveProviderListenable> value) {
-    _dependsOn = [
-      ...value,
-      if (!value.contains(ongoingPathProvider)) ongoingPathProvider
-    ];
+    assert(!value.contains(intendedPathProvider));
+    _dependsOn = [...value, intendedPathProvider];
     assert(_dependsOn.every((p) => p is Override));
 
     // 1. Listen to the riverpod providers. If any change, call _defer2NextTick.start().
-    // 2. [providerChanged] ensures that _runNavigation is called only once the next tick
-    // 3. Add RemoveListener's to unlistens
-    // 4. Use unlistens in ref.onDispose
+    // 2. [_defer2NextTick.providerChanged] ensures that _runNavigation is called only once the next tick
     _unlistens = _dependsOn
         .map((depend) => ref.listen<dynamic>(
             depend, (previous, next) => _defer2NextTick.providerChanged()))
         .toList();
   }
-
-  late List<AlwaysAliveProviderListenable> _dependsOn;
-  late List<Function> _unlistens;
-
-  /// for nested navigator: keep state of nested navigator in flutter tabs widget
-  late RestorePath? _restorePath;
-
-  @protected
-  final Ref ref;
-  late Defer2NextTick _defer2NextTick;
-
-  // /// replaces "eq" segments with "identical" ones
-  // TypedPath eq2Identical(TypedPath oldPath, TypedPath newPath) {
-  //   var pathsEqual = oldPath.length == newPath.length;
-  //   for (var i = 0; i < min(oldPath.length, newPath.length); i++) {
-  //     if (router.segmentEq(oldPath[i], newPath[i])) {
-  //       newPath[i] = oldPath[i]; // "eq"  => "identical"
-  //     } else {
-  //       pathsEqual = false; // same of the segment is not equal
-  //     }
-  //   }
-  //   return pathsEqual ? oldPath : newPath;
-  // }
 
   /// replaces "eq" segments with "identical" ones
   void eq2Identical(TypedPath oldPath, TypedPath newPath) {
@@ -170,45 +190,34 @@ class RNavigatorCore {
       }
     }
   }
+
   // *** common navigation-agnostic app actions ***
 
-  Future<void> pop() {
+  NavigatePath popPath() {
     final navigationStack = getNavigationStack();
-    return navigationStack.length <= 1
-        ? Future.value()
-        : navigate([
-            for (var i = 0; i < navigationStack.length - 1; i++)
-              navigationStack[i]
-          ]);
-  }
-
-  Future<void> push(TypedSegment segment) =>
-      navigate([...getNavigationStack(), segment]);
-
-  Future<void> replaceLast<T extends TypedSegment>(T replace(T old)) {
-    final navigationStack = getNavigationStack();
-    return navigate([
-      for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i],
-      replace(navigationStack.last as T)
+    assert(navigationStack.length > 1);
+    return navigatePath([
+      for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]
     ]);
   }
 
-  static List<Override> providerOverrides(
-    TypedPath initPath,
-    RNavigatorCore navigator(Ref ref), {
-    RestorePath? restorePath,
-    List<AlwaysAliveProviderListenable> dependsOn = const [],
-  }) =>
+  Future<void> pop() => popPath().onPressed();
+
+  NavigatePath replaceLastPath<T extends TypedSegment>(T replace(T old)) {
+    final navigationStack = getNavigationStack();
+    return navigatePath(
       [
-        ...dependsOn.map((e) => e as Override),
-        ongoingPathProvider.overrideWithValue(StateController<TypedPath>(
-            restorePath == null
-                ? initPath
-                : restorePath.getInitialPath(initPath))),
-        navigationStackProvider,
-        navigatorProvider.overrideWithProvider(Provider((ref) => navigator(ref)
-          .._restorePath = restorePath
-          ..initPath = initPath
-          .._setdependsOn(dependsOn))),
-      ];
+        for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i],
+        replace(navigationStack.last as T)
+      ],
+    );
+  }
+
+  Future replaceLast<T extends TypedSegment>(T replace(T old)) =>
+      replaceLastPath<T>(replace).onPressed();
+
+  NavigatePath pushPath(TypedSegment segment) =>
+      navigatePath([...getNavigationStack(), segment]);
+
+  Future<void> push(TypedSegment segment) => pushPath(segment).onPressed();
 }

@@ -4,16 +4,40 @@
 
 - **Strictly typed navigation:** <br>
 you can use ```navigate([HomeSegment(),BookSegment(id: 2)]);``` instead of ```navigate('home/book;id:2');``` in your code
-- **asynchronous navigation**<br>
-is the case when changing the navigation state requires asynchronous actions (such as loading or saving data from the Internet)
-- **multiple providers**<br>
-is the case when the navigation state depends on multiple riverpod providers
+- **asynchronous navigation** ...<br>
+... is the case when changing the navigation state requires asynchronous actions (such as loading or saving data from the Internet)
+- **multiple providers** ...<br>
+... is the case when the navigation state depends on multiple riverpod providers
 - **easier coding:** <br>
-the problem of navigation is reduced to manipulation an immutable collection
+the navigation problem is reduced to manipulating the class collection
 - **better separation of concerns: UI x Model** (thanks to [riverpod](https://riverpod.dev/) :+1:):<br>
 navigation logic can be developed and tested without typing a single flutter widget
 - **nested navigation**<br>
 just use the nested riverpod ```ProviderScope()``` and Flutter ```Router``` widget
+
+## Index
+
+- [Terminology used](#terminology-used)
+- [Simple example](#simple-example)
+  - [Step1 - define classes for the typed-segment](#step1---define-classes-for-the-typed-segment)
+  - [Step2 - configure AppNavigator](#step2---configure-appnavigator)
+  - [Step3 - use the AppNavigator in MaterialApp.router](#step3---use-the-appnavigator-in-materialapprouter)
+  - [Step4 - configure riverpod ProviderScope](#step4---configure-riverpod-providerscope-)
+  - [Step5 - code screen widgets](#step5---code-screen-widgets)
+  - [Running example, source and test code](#and-thats-all)
+- [Development and testing without GUI](#development-and-testing-without-gui)
+- [URL parsing](#url-parsing)
+- [Place navigation events in AppNavigator](#place-navigation-events-in-appnavigator)
+- [Async navigation](#async-navigation)
+  - [Define classes for the typed-segment](#define-classes-for-the-typed-segment)
+  - [Configure AppNavigator](#configure-appnavigator)
+  - [Running example, source and test code](#see)
+- [Other features and examples](#other-features-and-examples)
+  - [Login flow](#login-flow)
+  - [Nested navigation](#nested-navigation)
+- [Installation of examples](#installation-of-examples)
+- [Navigator Data Flow Diagram](#navigator-data-flow-diagram)
+- [Roadmap](#roadmap)
 
 ## Terminology used
 
@@ -37,22 +61,20 @@ Create an application using these simple steps:
 ```dart
 class HomeSegment extends TypedSegment {
   const HomeSegment();
-  // ignore: avoid_unused_constructor_parameters
   factory HomeSegment.fromUrlPars(UrlPars pars) => const HomeSegment();
 }
 
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
   factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
-  @override
-  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 
   final int id;
+  @override
+  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
 }
 ```
 
-Note: *fromUrlPars* and *toUrlPars* helps to convert **typed-segment** to **string-segment** and back.
-This is needed for Flutter on the Web.
+> *fromUrlPars* and *toUrlPars* helps to convert **typed-segment** to **string-segment** and back.
 
 ### Step2 - configure AppNavigator...
 
@@ -64,11 +86,19 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            // 'home' and 'book' strings are used in web URL, e.g. 'home/book;id=2'
-            // fromUrlPars is used to decode web URL string-segment to typed-segment
-            // HomeScreen.new and BookScreen.new are screens for a given segment
-            RRoute<HomeSegment>('home', HomeSegment.fromUrlPars, HomeScreen.new),
-            RRoute<BookSegment>('book', BookSegment.fromUrlPars, BookScreen.new),
+            /// 'home' and 'book' strings are used in web URL, e.g. 'home/book;id=2'
+            /// fromUrlPars is used to decode URL to HomeSegment/BookSegment
+            /// HomeScreen/BookScreen.new are screen builders for a given segment
+            RRoute<HomeSegment>(
+              'home',
+              HomeSegment.fromUrlPars,
+              HomeScreen.new,
+            ),
+            RRoute<BookSegment>(
+              'book',
+              BookSegment.fromUrlPars,
+              BookScreen.new,
+            ),
           ],
         );
 }
@@ -89,85 +119,275 @@ class App extends ConsumerWidget {
       title: 'Riverpod Navigator Example',
       routerDelegate: navigator.routerDelegate,
       routeInformationParser: navigator.routeInformationParser,
-      debugShowCheckedModeBanner: false,
     );
   }
 }
 ```
 
-### Step4 - place and configure riverpod ProviderScope ...
+### Step4 - configure riverpod ProviderScope ...
 
 ... in main entry point
 
 ```dart
 void main() => runApp(
       ProviderScope(
-        // home-path and navigator constructor are required
-        overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new),
+        // [HomeSegment()] as home TypedPath and navigator constructor are required
+        overrides: providerOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
     );
 ```
 
-### And that's all
+### Step5 - code screen widgets
 
-Navigation to a specific screen is performed as follows:
+There are two screen to code: *HomeScreen* and *BookScreen*. 
+Extend this screens from **RScreen** widget.
 
 ```dart
-// navigation to PageScreen
-ElevatedButton(
-  onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment(), PageSegment(title: 'Page')]),
+class BookScreen extends RScreen<AppNavigator, BookSegment> {
+  const BookScreen(BookSegment segment) : super(segment);
 
-// navigation to HomeScreen
-ElevatedButton(
-  onPressed: () => ref.read(navigatorProvider).navigate([HomeSegment()]),
+  @override
+  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+        appBar: AppBar(
+          title: Text('Book ${segment.id}'),
+          /// [appBarLeading] overrides standard back button behavior
+          leading: appBarLeading,
+        ),
+        body: 
+...
 ```
 
-#### See:
+> *RScreen* widget:
+> - replaces the standard Android back button behavior (using Flutter BackButtonListener widget)
+> - will provide appBarLeading icon to replace the standard AppBar back button behavior
+> 
+> This is essential for asynchronous navigation to function properly.
+
+#### And that's all
+
+See:
 
 - [running example](https://pavelpz.github.io/doc_simple/)
 - [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/simple.dart)
 - [test code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/simple_test.dart)
 
-*Note*: The link ```Go to book: [3, 13, 103]``` in the [running example](https://pavelpz.github.io/doc_simple/) would not make much sense in the real Books application.
-It just shows the transition to the stack of four screens:
+> The link ```Go to book: [3, 13, 103]``` in the [running example](https://pavelpz.github.io/doc_simple/) would not make much sense in the real Books application.
+But it shows the navigation to the four-screen navigation stack:
+> 
+> - **string-path** = ```home/book;id=3/book;id=13/book;id=103```. 
+> - **typed-path** = ```[HomeSegment(), BookSegment(id:3), BookSegment(id:13), BookSegment(id:103)]```. 
+> - **navigation-stack** (flutter Navigator.pages) = ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:3))), MaterialPage (child: BookScreen(BookSegment(id:13))), MaterialPage (child: BookScreen(BookSegment(id:103)))]```. 
 
-- **string-path** = ```'home/book;id=3/book;id=13/book;id=103'```. 
-- **typed-path** = ```[HomeSegment(), BookSegment(id:3), BookSegment(id:13), BookSegment(id:103)]```. 
-- **navigation-stack** pages = ```[MaterialPage (child: HomeScreen(HomeSegment())), MaterialPage (child: BookScreen(BookSegment(id:3))), MaterialPage (child: BookScreen(BookSegment(id:13))), MaterialPage (child: BookScreen(BookSegment(id:103)))]```. 
-
-### Development and testing without GUI
+## Development and testing without GUI
 
 Navigation logic can be developed and tested without typing a single flutter widget:
 
 ```dart 
   test('navigation model', () async {
-    final container = ProviderContainer(overrides: RNavigatorCore.providerOverrides([HomeSegment()], AppNavigator.new));
+    final container = ProviderContainer(
+      overrides: providerOverrides([HomeSegment()], AppNavigator.new),
+    );
     final navigator = container.read(navigatorProvider);
-
+    
     Future navigTest(Future action(), String expected) async {
       await action();
       await container.pump();
       expect(navigator.navigationStack2Url, expected);
     }
 
-    await navigTest(() => navigator.navigate([HomeSegment()]), 'home');
-
-    await navigTest(() => navigator.navigate([HomeSegment(), BookSegment(id: 1)]), 'home/book;id=1');
-
-    await navigTest(() => navigator.pop(), 'home');
-
-    await navigTest(() => navigator.push(BookSegment(id: 2)), 'home/book;id=2');
-
-    await navigTest(() => navigator.replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1)), 'home/book;id=3');
+    await navigTest(
+      () => navigator.navigate([HomeSegment(), BookSegment(id: 1)]),
+      'home/book;id=1',
+    );
+    await navigTest(
+      () => navigator.pop(),
+      'home',
+    );
+    await navigTest(
+      () => navigator.push(BookSegment(id: 2)),
+      'home/book;id=2',
+    );
+    await navigTest(
+      () => navigator.replaceLast<BookSegment>((old) => BookSegment(id: old.id + 1)),
+      'home/book;id=3',
+    );
   });
 ```
 
+## URL parsing
+
+> Flutter Navigator 2.0 and its *MaterialApp.router* constructor requires a URL parser (*RouteInformationParser*).
+We use URL syntax, see [section 3.3. of RFC 3986](https://www.ietf.org/rfc/rfc3986.txt), note 
+*For example, one URI producer might use a segment such as "name;v=1.1"..."
+
+Each *TypedSegment* must be converted to *string-segment* and back. 
+The format of *string-segment* is 
+
+```<unique TypedSegment id>[;<property name>=<property value>]*```, e.g. ```book;id=3```.
+
+### fromUrlPars/toUrlPars example:
+
+Instead of directly converting to/from the string, we convert to/from <br>
+```typedef UrlPars = Map<String,String>```
+
+So far, we support the following types of TypedSegment property:<br>
+**int, double, bool, String, int?, double?, bool?, String?**. 
+
+```dart
+class TestSegment extends TypedSegment {
+  const TestSegment({required this.i, this.s, required this.b, this.d});
+
+  factory TestSegment.fromUrlPars(UrlPars pars) => TestSegment(
+        i: pars.getInt('i'),
+        s: pars.getStringNull('s'),
+        b: pars.getBool('b'),
+        d: pars.getDoubleNull('d'),
+      );
+
+  @override
+  void toUrlPars(UrlPars pars) => 
+    pars.setInt('i', i).setString('s', s).setBool('b', b).setDouble('d', d);
+
+  final int i;
+  final String? s;
+  final bool b;
+  final double? d;
+}
+```
+
+After registering *TestSegment* by ```RRoute<TestSegment>('test',TestSegment.fromUrlPars```, the following URL's are correct:
+
+- test;i=1;b=true
+- test;i=2;b=true;d=12.6;s=abcd
+- test;i=2;b=true/test;i=2;b=true;d=12.6;s=abcd/test;i=3;b=false
+
+### Customization
+
+Every aspect of URL conversion can be customized, e.g.
+- support another property type (as a DateTime, providing *getDateTime*, *getDateTimeNull* and *setDateTime* in your own *UrlPars*'s extension)<br>
+See ```extension UrlParsEx on UrlPars``` in 
+[path_parser.dart](https://github.com/PavelPZ/riverpod_navigator/blob/main/packages/riverpod_navigator_core/lib/src/path_parser.dart).
+- rewrite the entire *IPathParser* and use a completely different URL syntax. Then use your parser in AppNavigator:
+
+```
+class AppNavigator extends RNavigator {
+  AppNavigator(Ref ref)
+      : super(
+....
+  	pathParserCreator: (router) => MyPathParser(router),
+...         
+```
+
+## Place navigation events in AppNavigator
+
+It is good practice to place the code for all events (specific to navigation) in AppNavigator.
+These can then be used not only for writing screen widgets, but also for testing.
+
+```dart
+class AppNavigator extends RNavigator {
+  ......
+  /// navigate to next book
+  Future toNextBook() => replaceLast<BookSegment>((last) => BookSegment(id: last.id + 1));
+  /// navigate to home
+  Future toHome() => navigate([HomeSegment()]);
+}
+```
+
+In the screen widget, it is used as follows:
+
+```dart
+...
+ElevatedButton(
+  onPressed: navigator.toNextBook,
+  child: Text('Book $id'),
+), 
+... 
+```
+
+and in the test code as follows:
+
+```dart
+  await navigTest(navigator.toNextBook, 'home/book;id=3');
+```
+
+## Async navigation
+
+Async navigation means that navigation is delayed until the asynchronous actions are performed. These actions for each screen are:
+- **opening** (before opening a new screen)
+- **closing** (before closing the old screen)
+- **replacing** (before replacing the screen with a screen with the same segment type)
+
+The *opening* and *closing* actions can return an asynchronous result that can be used later when building a screen.
+
+### Define classes for the typed-segment 
+
+Apply a ```AsyncSegment``` mixin with appropriate type (```String```) to TypedSegment's.
+
+```dart
+class HomeSegment extends TypedSegment with AsyncSegment<String>{
+  ....
+}
+
+class BookSegment extends TypedSegment  with AsyncSegment<String>{
+  ....
+}
+```
+
+### Configure AppNavigator
+
+Add *opening*, *closing* or *replacing* actions to *RRoute* definition.
+
+```dart
+class AppNavigator extends RNavigator {
+  AppNavigator(Ref ref)
+      : super(
+          ref,
+          [
+            RRoute<HomeSegment>(
+              'home',
+              HomeSegment.fromUrlPars,
+              HomeScreen.new,
+              opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Home.opening', 2000)),
+            ),
+            RRoute<BookSegment>(
+              'book',
+              BookSegment.fromUrlPars,
+              BookScreen.new,
+              opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book ${sNew.id}.opening', 240)),
+              replacing: (sOld, sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book ${sOld.id}=>${sNew.id}.replacing', 800)),
+              closing: (sOld) => Future.delayed(Duration(milliseconds: 500)),
+            ),
+          ],
+        );
+....
+}
+
+// simulates an action such as loading external data or saving to external storage
+Future<String> _simulateAsyncResult(String asyncResult, int msec) async {
+  await Future.delayed(Duration(milliseconds: msec));
+  return '$asyncResult: async result after $msec msec';
+}
+```
+
+### Use the result of an asynchronous action when building the screen
+
+```dart
+...
+Text('Async result: "${segment.asyncValue}"'),
+...
+```
+
+#### See:
+
+- [running example](https://pavelpz.github.io/doc_async/)
+- [source code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/lib/async.dart)
+- [test code](https://github.com/PavelPZ/riverpod_navigator/blob/main/examples/doc/test/async_test.dart)
+
 ## Other features and examples 
 
-- [Async navigation and splash screen](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/async.md)
-- [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
-- [Nested navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/nested_navigation.md)
+- ### [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
+- ### [Nested navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/nested_navigation.md)
 
 ## Installation of examples
 
