@@ -168,7 +168,7 @@ abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S
   final String screenTitle;
 
   @override
-  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+  Widget buildScreen(context, ref, navigator, appBarLeading) => Scaffold(
         appBar: AppBar(
           title: Text(screenTitle),
           leading: appBarLeading,
@@ -232,7 +232,7 @@ class LoginScreen extends RScreen<AppNavigator, LoginSegment> {
   const LoginScreen(LoginSegment segment) : super(segment);
 
   @override
-  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+  Widget buildScreen(context, ref, navigator, appBarLeading) => Scaffold(
         appBar: AppBar(
           title: Text('Login'),
           leading: IconButton(

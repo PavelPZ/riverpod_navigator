@@ -83,7 +83,7 @@ class HomeScreen extends RScreen<AppNavigator, HomeSegment> {
   const HomeScreen(HomeSegment segment) : super(segment);
 
   @override
-  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+  Widget buildScreen(context, ref, navigator, appBarLeading) => Scaffold(
         appBar: AppBar(
           title: Text('Home'),
           leading: appBarLeading,
@@ -113,7 +113,7 @@ class BookScreen extends RScreen<AppNavigator, BookSegment> {
   const BookScreen(BookSegment segment) : super(segment);
 
   @override
-  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+  Widget buildScreen(context, ref, navigator, appBarLeading) => Scaffold(
         appBar: AppBar(
           title: Text('Book ${segment.id}'),
           leading: appBarLeading,

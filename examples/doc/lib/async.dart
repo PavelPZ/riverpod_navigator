@@ -101,7 +101,7 @@ abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S
   final String screenTitle;
 
   @override
-  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+  Widget buildScreen(context, ref, navigator, appBarLeading) => Scaffold(
         appBar: AppBar(
           title: Text(screenTitle),
           leading: appBarLeading,

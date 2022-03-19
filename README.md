@@ -318,7 +318,7 @@ Async navigation means that navigation is delayed until the asynchronous actions
 - **closing** (before closing the old screen)
 - **replacing** (before replacing the screen with a screen with the same segment type)
 
-The *opening* and *closing* actions can return an asynchronous result that can be used later when building a screen.
+The *opening* and *closing* actions can return an asynchronous result that can be used later when building a new screen.
 
 ### Define classes for the typed-segment 
 
@@ -363,7 +363,7 @@ class AppNavigator extends RNavigator {
 ....
 }
 
-// simulates an action such as loading external data or saving to external storage
+// simulates an action such as saving-to/loading-from external storage
 Future<String> _simulateAsyncResult(String asyncResult, int msec) async {
   await Future.delayed(Duration(milliseconds: msec));
   return '$asyncResult: async result after $msec msec';

@@ -43,19 +43,19 @@ mixin BackButtonListenerMixin<N extends RNavigator> on ConsumerWidget {
 
     // fix for nested navigator where rootBackDispatcher is null
     final BackButtonDispatcher? rootBackDispatcher = Router.of(context).backButtonDispatcher;
-    if (rootBackDispatcher == null) return buildScreen(ref, navigator, null);
+    if (rootBackDispatcher == null) return buildScreen(context, ref, navigator, null);
 
     final canPop = navigator.getNavigationStack().length > 1;
     final appBarLeading = canPop ? buildIcon(navigator.onPopRoute) : null;
     return BackButtonListener(
       onBackButtonPressed: () async => canPop,
-      child: buildScreen(ref, navigator, appBarLeading),
+      child: buildScreen(context, ref, navigator, appBarLeading),
     );
   }
 
   IconButton buildIcon(void onPressed()) => IconButton(icon: Icon(Icons.arrow_back), onPressed: onPressed);
 
-  Widget buildScreen(WidgetRef ref, N navigator, IconButton? appBarLeading);
+  Widget buildScreen(BuildContext context, WidgetRef ref, N navigator, IconButton? appBarLeading);
 }
 
 abstract class RScreen<N extends RNavigator, S extends TypedSegment> extends ConsumerWidget with BackButtonListenerMixin<N> {
@@ -72,7 +72,7 @@ abstract class RScreenWithScaffold<N extends RNavigator, S extends TypedSegment>
   const RScreenWithScaffold(S segment) : super(segment);
 
   @override
-  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+  Widget buildScreen(BuildContext context, ref, navigator, appBarLeading) => Scaffold(
         appBar: AppBar(
           title: Text(navigator.screenTitle(segment)),
           leading: appBarLeading,

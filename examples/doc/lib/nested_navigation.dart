@@ -118,8 +118,7 @@ class AppNavigator extends RNavigator {
 
   Future toNextBook() => replaceLast<BookSegment>((actualBook) => BookSegment(id: actualBook.id == 5 ? 1 : actualBook.id + 1));
 
-  Future toNextAuthor() =>
-      replaceLast<AuthorSegment>((actualAuthor) => AuthorSegment(id: actualAuthor.id == 5 ? 1 : actualAuthor.id + 1));
+  Future toNextAuthor() => replaceLast<AuthorSegment>((actualAuthor) => AuthorSegment(id: actualAuthor.id == 5 ? 1 : actualAuthor.id + 1));
 }
 
 /// common app screen
@@ -129,7 +128,7 @@ abstract class AppScreen<S extends TypedSegment> extends RScreen<AppNavigator, S
   final String screenTitle;
 
   @override
-  Widget buildScreen(ref, navigator, appBarLeading) => Scaffold(
+  Widget buildScreen(context, ref, navigator, appBarLeading) => Scaffold(
         appBar: AppBar(
           title: Text(screenTitle),
           leading: appBarLeading,
@@ -203,7 +202,7 @@ class BooksAuthorsScreen extends RScreenHook<AppNavigator, BooksAuthorsSegment> 
   const BooksAuthorsScreen(BooksAuthorsSegment booksAuthorsSegment) : super(booksAuthorsSegment);
 
   @override
-  Widget buildScreen(ref, navigator, appBarLeading) {
+  Widget buildScreen(context, ref, navigator, appBarLeading) {
     /// Remembering RestorePath throughout the widget's lifecycle
     /// Note: *We use **flutter_hooks package** to keep RestorePath instance.
     /// The use of flutter_hooks is not mandatory, it can be implemented using the StatefulWidget*.
@@ -254,14 +253,12 @@ class BooksTab extends ConsumerWidget {
   const BooksTab({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) =>
-      Router(routerDelegate: (ref.read(navigatorProvider) as AppNavigator).routerDelegate);
+  Widget build(BuildContext context, WidgetRef ref) => Router(routerDelegate: (ref.read(navigatorProvider) as AppNavigator).routerDelegate);
 }
 
 class AuthorTab extends ConsumerWidget {
   const AuthorTab({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) =>
-      Router(routerDelegate: (ref.read(navigatorProvider) as AppNavigator).routerDelegate);
+  Widget build(BuildContext context, WidgetRef ref) => Router(routerDelegate: (ref.read(navigatorProvider) as AppNavigator).routerDelegate);
 }
