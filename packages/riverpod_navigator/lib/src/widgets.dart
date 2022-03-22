@@ -36,6 +36,21 @@ class _Screen2PageDefault extends Page {
   }
 }
 
+class BackButtonHandler extends ConsumerWidget {
+  const BackButtonHandler({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final BackButtonDispatcher? rootBackDispatcher = Router.of(context).backButtonDispatcher;
+    if (rootBackDispatcher == null) return child;
+    return BackButtonListener(
+      onBackButtonPressed: () async => ref.read(navigationStackProvider).length > 1,
+      child: child,
+    );
+  }
+}
+
 mixin BackButtonListenerMixin<N extends RNavigator> on ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {

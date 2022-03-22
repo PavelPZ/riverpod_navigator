@@ -39,11 +39,6 @@ class RNavigator extends RNavigatorCore {
     return screen2Page(segment, (segment) => route.buildScreen(segment));
   }
 
-  /// for [Navigator.onPopPage] in [RRouterDelegate.build]
-  bool onPopRoute() {
-    final navigationStack = getNavigationStack();
-    if (navigationStack.length <= 1) return false;
-    navigate([for (var i = 0; i < navigationStack.length - 1; i++) navigationStack[i]]);
-    return true;
-  }
+  IconButton? getAppBarLeading() =>
+      getNavigationStack().length > 1 ? IconButton(icon: Icon(Icons.arrow_back), onPressed: onPopRoute) : null;
 }

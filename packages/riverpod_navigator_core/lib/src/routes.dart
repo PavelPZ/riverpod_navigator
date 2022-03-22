@@ -1,15 +1,15 @@
 part of 'riverpod_navigator_core.dart';
 
 /// opening
-typedef Opening<T extends TypedSegment> = Future Function(T sNew);
+typedef Opening<T extends TypedSegment> = Future? Function(T sNew);
 
 /// replacing
-typedef Replacing<T extends TypedSegment> = Future Function(T sOld, T sNew);
+typedef Replacing<T extends TypedSegment> = Future? Function(T sOld, T sNew);
 
 /// closing
-typedef Closing<T extends TypedSegment> = Future Function(T sOld);
+typedef Closing<T extends TypedSegment> = Future? Function(T sOld);
 
-typedef GetFuture = Future Function();
+typedef GetFuture = Future? Function();
 
 /// rroute's holder
 class RRouter {
@@ -21,8 +21,7 @@ class RRouter {
       _string2Route[r.urlName] = r;
 
       if (_type2Route.containsKey(r.segmentType)) {
-        throw Exception(
-            '"${r.segmentType.toString()}" segment.segmentType already registered.');
+        throw Exception('"${r.segmentType.toString()}" segment.segmentType already registered.');
       }
       _type2Route[r.segmentType] = r;
     }
@@ -31,16 +30,13 @@ class RRouter {
   final _string2Route = <String, RRouteCore>{};
   final _type2Route = <Type, RRouteCore>{};
 
-  R segment2Route<R extends RRouteCore>(TypedSegment segment) =>
-      _type2Route[segment.runtimeType] as R;
+  R segment2Route<R extends RRouteCore>(TypedSegment segment) => _type2Route[segment.runtimeType] as R;
 
-  bool segmentEq(TypedSegment s1, TypedSegment s2) =>
-      segment2Route(s1).toUrl(s1) == segment2Route(s2).toUrl(s2);
+  bool segmentEq(TypedSegment s1, TypedSegment s2) => segment2Route(s1).toUrl(s1) == segment2Route(s2).toUrl(s2);
 
   String? toUrl(TypedSegment s) => _type2Route[s.runtimeType]!.toUrl(s);
 
-  TypedSegment fromUrlPars(UrlPars pars, String urlName) =>
-      _string2Route[urlName]!.fromUrlPars(pars);
+  TypedSegment fromUrlPars(UrlPars pars, String urlName) => _string2Route[urlName]!.fromUrlPars(pars);
 }
 
 /// meta infos for given TypedSegment
@@ -63,21 +59,15 @@ class RRouteCore<T extends TypedSegment> {
   String Function(T segment) screenTitle;
 
   String getScreenTitle(TypedSegment segment) => screenTitle(segment as T);
-  GetFuture? callOpening(TypedSegment sNew) =>
-      opening == null ? null : () => opening!(sNew as T);
-  GetFuture? callReplacing(TypedSegment sOld, TypedSegment sNew) =>
-      replacing == null ? null : () => replacing!(sOld as T, sNew as T);
-  GetFuture? callClosing(TypedSegment sOld) =>
-      closing == null ? null : () => closing!(sOld as T);
+  GetFuture? callOpening(TypedSegment sNew) => opening == null ? null : () => opening!(sNew as T);
+  GetFuture? callReplacing(TypedSegment sOld, TypedSegment sNew) => replacing == null ? null : () => replacing!(sOld as T, sNew as T);
+  GetFuture? callClosing(TypedSegment sOld) => closing == null ? null : () => closing!(sOld as T);
 
   /// typed-segment to string-segment
   String toUrl(T segment) {
     final map = <String, String>{};
     segment.toUrlPars(map);
-    final props = [urlName] +
-        map.entries
-            .map((kv) => '${kv.key}=${Uri.encodeComponent(kv.value)}')
-            .toList();
+    final props = [urlName] + map.entries.map((kv) => '${kv.key}=${Uri.encodeComponent(kv.value)}').toList();
     return props.join(';');
   }
 }
