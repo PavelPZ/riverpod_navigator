@@ -3,7 +3,7 @@ part of 'azure.dart';
 class AzureTables extends Azure {
   AzureTables(Account account) : super._(account, 'tables');
 
-  Future<List<String>> query(Query query) async {
+  Future<List<String>> query(Query? query) async {
     final res = await queryLow(query);
     return List<String>.from(res.map((map) => map['TableName']));
   }

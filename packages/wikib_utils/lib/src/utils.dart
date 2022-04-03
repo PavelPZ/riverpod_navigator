@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'dart:typed_data';
 
+import 'package:tuple/tuple.dart';
 import 'package:wikib_utils/wikb_utils.dart';
+
+Tuple2<int, int> fromIntLow(int i) => Tuple2<int, int>((i >> 27) & 0xf, i & 0x7ffffff);
 
 Future<bool> _connected() => mockConnection != null ? Future.value(mockConnection) : connected();
 
@@ -47,6 +50,18 @@ bool dpCounter(String key, [int? count]) {
     _dbCounter!.update(key, (value) => _dbCounter![key] = value + count!, ifAbsent: () => count!);
   }
   return true;
+}
+
+void setTestResult(String msg) {
+  print(msg);
+  //_writeln?.call(msg);
+}
+
+Future dpDate(Future action()) async {
+  final d = DateTime.now();
+  await action();
+  final dur = DateTime.now().difference(d);
+  print('Duration: ${dur.toString()}');
 }
 
 String dbCounterDump() {

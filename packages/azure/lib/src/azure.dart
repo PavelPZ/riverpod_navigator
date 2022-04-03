@@ -100,7 +100,7 @@ class Azure extends Sender {
   static final nextPartitionPar = msContinuation + nextPartitionName.toLowerCase();
   static final nextRowPar = msContinuation + nextRowName.toLowerCase();
 
-  Future<List<dynamic>> queryLow<T>(Query query, {SendPar? sendPar}) async {
+  Future<List<dynamic>> queryLow<T>(Query? query, {SendPar? sendPar}) async {
     final request = _queryRequest(query: query);
     final res = <dynamic>[];
     var nextPartition = '';

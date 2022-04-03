@@ -9,5 +9,6 @@ environment:
 
 dependencies:
   path:
+  tuple:
 
 dev_dependencies:
