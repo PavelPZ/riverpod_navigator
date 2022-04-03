@@ -23,53 +23,64 @@ class Defer2NextTick {
 
   late RNavigatorCore navigator;
 
+  /// called when changed some of providers on which navigation stack depends
+  void providerChanged() {
+    // jist synchronizing navigation stack and intendedPath
+    if (_intendedPathChanging) return;
+    assert(_p('providerChanged start'));
+    // the following is UNDO-ed in _refreshStack-finally block
+    if (_resultCompleter == null) {
+      navigator
+          .setIsNavigating(true); // notify navigator (e.g. show waiting cursor)
+      _resultCompleter =
+          Completer(); // alow waiting for async navigation completed
+      _resultFuture =
+          _resultCompleter!.future; // _resultCompleter can be changed
+    }
+    // this flag blocks calling _refreshStack's while-cycle more than once
+    _refreshStackWhileCalled = true;
+    // this flag blocks calling scheduleMicrotask(_refreshStack) more than once
+    // UNDO-ed in _refreshStack-finally block
+    if (_refreshStackCalled) return;
+    _refreshStackCalled = true;
+    scheduleMicrotask(_refreshStack);
+  }
+
+  /// async navigation completed
+  Future<void> get asyncNavigationCompleted => _resultFuture ?? Future.value();
+
+  /// refister future which must be completed before the next navigation starts
   void registerProtectedFuture(Future future) {
     _protectedFutures.add(future);
     future.whenComplete(() => _protectedFutures.remove(future));
   }
 
-  final _protectedFutures = <Future>[];
-
-  void providerChanged() {
-    // synchronize navigation stack and intendedPath
-    if (ignoreNextProviderChange) return;
-    assert(_p('providerChanged start'));
-    if (_resultCompleter == null) {
-      navigator.setIsNavigating(true);
-      _resultCompleter = Completer();
-      _resultFuture = _resultCompleter!.future;
-    }
-    _providerChangedCalled = true;
-    if (_isRunning) return;
-    _isRunning = true;
-    scheduleMicrotask(_refreshStack);
-  }
-
   // *********************** private
 
   /// during _refreshStack running, another providerChanged() called
-  var _providerChangedCalled = false;
+  var _refreshStackWhileCalled = false;
 
   /// _refreshStack is running
-  var _isRunning = false;
+  var _refreshStackCalled = false;
 
   /// for intendedPathNotifier.state syncing: ignore providerChanged call
-  var ignoreNextProviderChange = false;
+  var _intendedPathChanging = false;
 
   /// exist till [_refreshStack] is working
   Completer? _resultCompleter;
 
-  /// (last [_resultCompleter]).future.
+  /// registered futures, which must be completed before next navigation starts
+  final _protectedFutures = <Future>[];
+
+  /// last [_resultCompleter].future.
   /// Needed because [_resultCompleter] is set to null at the end of navigation roundtrip
   Future? _resultFuture;
-
-  Future<void> get future => _resultFuture ?? Future.value();
 
   Future _refreshStack() async {
     try {
       try {
-        while (_providerChangedCalled) {
-          _providerChangedCalled = false;
+        while (_refreshStackWhileCalled) {
+          _refreshStackWhileCalled = false;
           final navigationStackNotifier =
               navigator.ref.read(navigationStackProvider.notifier);
           final intendedPathNotifier =
@@ -86,18 +97,18 @@ class Defer2NextTick {
               futureOr is Future<TypedPath?> ? await futureOr : futureOr;
           // during async appNavigationLogicCore state another providerChanged called
           // do not finish _refreshStack but run its while cycle again
-          if (_providerChangedCalled) {
+          if (_refreshStackWhileCalled) {
             assert(_p('_providerChangedCalled'));
             continue;
           }
-          // synchronize stack and intendedPath
-          ignoreNextProviderChange = true;
+          // synchronize navigation stack and intendedPath with appNavigationLogic result
+          _intendedPathChanging = true;
           try {
             intendedPathNotifier.state =
                 navigationStackNotifier.state = newPath;
             assert(_p('synchronized: $newPath'));
           } finally {
-            ignoreNextProviderChange = false;
+            _intendedPathChanging = false;
           }
           // remember last navigation stack for restorePath
           navigator._restorePath?.saveLastKnownStack(newPath);
@@ -109,7 +120,7 @@ class Defer2NextTick {
         _resultCompleter!.completeError(e, s);
       }
     } finally {
-      _isRunning = false;
+      _refreshStackCalled = false;
       _resultCompleter = null;
       navigator.setIsNavigating(false);
     }

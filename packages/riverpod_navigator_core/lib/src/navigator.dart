@@ -99,7 +99,8 @@ class RNavigatorCore {
       .update((state) => isNavigating ? state + 1 : state - 1);
 
   /// When changing navigation state: completed after [navigationStackProvider] is actual
-  Future<void> get navigationCompleted => _defer2NextTick.future;
+  Future<void> get navigationCompleted =>
+      _defer2NextTick.asyncNavigationCompleted;
 
   String screenTitle(TypedSegment segment) =>
       router.segment2Route(segment).getScreenTitle(segment);
