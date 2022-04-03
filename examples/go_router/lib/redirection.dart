@@ -17,32 +17,32 @@ void main() => runApp(
 class HomeSegment extends TypedSegment {
   const HomeSegment();
   // ignore: avoid_unused_constructor_parameters
-  factory HomeSegment.fromUrlPars(UrlPars pars) => HomeSegment();
+  factory HomeSegment.decode(UrlPars pars) => HomeSegment();
 }
 
 class LoginSegment extends TypedSegment {
   const LoginSegment();
   // ignore: avoid_unused_constructor_parameters
-  factory LoginSegment.fromUrlPars(UrlPars pars) => LoginSegment();
+  factory LoginSegment.decode(UrlPars pars) => LoginSegment();
 }
 
 class FamilySegment extends TypedSegment {
   const FamilySegment({required this.fid});
-  factory FamilySegment.fromUrlPars(UrlPars pars) => FamilySegment(fid: pars.getString('fid'));
+  factory FamilySegment.decode(UrlPars pars) => FamilySegment(fid: pars.getString('fid'));
   final String fid;
 
   @override
-  void toUrlPars(UrlPars pars) => pars.setString('fid', fid);
+  void encode(UrlPars pars) => pars.setString('fid', fid);
 }
 
 class PersonSegment extends TypedSegment {
   const PersonSegment({required this.fid, required this.pid});
-  factory PersonSegment.fromUrlPars(UrlPars pars) => PersonSegment(fid: pars.getString('fid'), pid: pars.getString('pid'));
+  factory PersonSegment.decode(UrlPars pars) => PersonSegment(fid: pars.getString('fid'), pid: pars.getString('pid'));
   final String fid;
   final String pid;
 
   @override
-  void toUrlPars(UrlPars pars) => pars.setString('fid', fid)..setString('pid', pid);
+  void encode(UrlPars pars) => pars.setString('fid', fid)..setString('pid', pid);
 }
 
 /// helper extension for screens
@@ -60,10 +60,10 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<HomeSegment>('home', HomeSegment.fromUrlPars, HomeScreen.new),
-            RRoute<LoginSegment>('login', LoginSegment.fromUrlPars, LoginScreen.new),
-            RRoute<FamilySegment>('family', FamilySegment.fromUrlPars, FamilyScreen.new),
-            RRoute<PersonSegment>('person', PersonSegment.fromUrlPars, PersonScreen.new),
+            RRoute<HomeSegment>('home', HomeSegment.decode, HomeScreen.new),
+            RRoute<LoginSegment>('login', LoginSegment.decode, LoginScreen.new),
+            RRoute<FamilySegment>('family', FamilySegment.decode, FamilyScreen.new),
+            RRoute<PersonSegment>('person', PersonSegment.decode, PersonScreen.new),
           ],
         );
 

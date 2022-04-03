@@ -1,0 +1,50 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:path/path.dart' as p;
+
+import 'common.dart';
+
+String getUserDirectoryName([String? part1, String? part2, String? part3]) => p.join(Directory.systemTemp.path, part1, part2, part3);
+
+// String getUserDirectoryName([String part1, String part2, String part3]) =>
+//     //_adjustDir(p.join(Directory.systemTemp.path, part1, part2, part3));
+//     p.join(Directory.systemTemp.path, part1, part2, part3);
+
+// String _adjustDir(String dirName) {
+//   final dir = Directory(dirName);
+//   if (!dir.existsSync()) dir.createSync(recursive: true);
+//   return dirName;
+// }
+
+String getPlatform() => Platform.isAndroid
+    ? Platforms.android
+    : Platform.isFuchsia
+        ? Platforms.fuschia
+        : Platform.isIOS
+            ? Platforms.ios
+            : Platform.isLinux
+                ? Platforms.linux
+                : Platform.isMacOS
+                    ? Platforms.macos
+                    : Platform.isWindows
+                        ? Platforms.windows
+                        : Platforms.unknown;
+
+class Connection {
+  Connection._();
+  static bool get isOnline => true;
+  static StreamSubscription<bool>? listen(void isOnline(bool data)) => null;
+  static void mockSetOnline(bool isOnline) {}
+}
+
+// https://stackoverflow.com/questions/55432287/checking-internet-connection-in-release-mode-does-not-work
+Future<bool> connected() async {
+  try {
+    //final result = await InternetAddress.lookup('google.com');
+    final result = await InternetAddress.lookup('one.one.one.one');
+    return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+  } catch (_) {
+    return false;
+  }
+}

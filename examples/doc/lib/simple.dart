@@ -16,18 +16,18 @@ class HomeSegment extends TypedSegment {
 
   /// used for creating HomeSegment from URL pars
   // ignore: avoid_unused_constructor_parameters
-  factory HomeSegment.fromUrlPars(UrlPars pars) => const HomeSegment();
+  factory HomeSegment.decode(UrlPars pars) => const HomeSegment();
 }
 
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
 
   /// used for creating BookSegment from URL pars
-  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
+  factory BookSegment.decode(UrlPars pars) => BookSegment(id: pars.getInt('id'));
 
   /// used for encoding BookSegment props to URL pars
   @override
-  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
+  void encode(UrlPars pars) => pars.setInt('id', id);
 
   final int id;
 }
@@ -38,16 +38,16 @@ class AppNavigator extends RNavigator {
           ref,
           [
             /// 'home' and 'book' strings are used in web URL, e.g. 'home/book;id=2'
-            /// fromUrlPars is used to decode URL to segment
+            /// decode is used to decode URL to segment
             /// HomeScreen.new and BookScreen.new are screen builders for a given segment
             RRoute<HomeSegment>(
               'home',
-              HomeSegment.fromUrlPars,
+              HomeSegment.decode,
               HomeScreen.new,
             ),
             RRoute<BookSegment>(
               'book',
-              BookSegment.fromUrlPars,
+              BookSegment.decode,
               BookScreen.new,
             ),
           ],

@@ -81,7 +81,7 @@ class PathParser extends IPathParser {
         assert(nameValue.length == 2);
         map[nameValue[0]] = Uri.decodeComponent(nameValue[1]);
       }
-      res.add(router.fromUrlPars(map, properties[0]));
+      res.add(router.decode(map, properties[0]));
     }
     return res;
   }

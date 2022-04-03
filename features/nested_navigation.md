@@ -14,7 +14,7 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<BookSegment>('book', BookSegment.fromUrlPars, BookScreen.new),
+            RRoute<BookSegment>('book', BookSegment.decode, BookScreen.new),
           ],
         );
 
@@ -23,7 +23,7 @@ class AppNavigator extends RNavigator {
       : super(
           ref,
           [
-            RRoute<AuthorSegment>('author', AuthorSegment.fromUrlPars, AuthorScreen.new),
+            RRoute<AuthorSegment>('author', AuthorSegment.decode, AuthorScreen.new),
           ],
         );
 ```

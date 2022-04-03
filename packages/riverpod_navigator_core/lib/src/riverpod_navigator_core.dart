@@ -31,7 +31,7 @@ typedef FromUrlPars<T extends TypedSegment> = T Function(UrlPars pars);
 @immutable
 class TypedSegment {
   const TypedSegment();
-  void toUrlPars(UrlPars pars) {}
+  void encode(UrlPars pars) {}
 
   // /// for async navigation: holds async opening or replacing result
   // AsyncHolder? get asyncHolder => null;

@@ -58,7 +58,9 @@ mixin BackButtonListenerMixin<N extends RNavigator> on ConsumerWidget {
 
     // fix for nested navigator where rootBackDispatcher is null
     final BackButtonDispatcher? rootBackDispatcher = Router.of(context).backButtonDispatcher;
-    if (rootBackDispatcher == null) return buildScreen(context, ref, navigator, null);
+    if (rootBackDispatcher == null) {
+      return buildScreen(context, ref, navigator, null);
+    }
 
     final canPop = navigator.getNavigationStack().length > 1;
     final appBarLeading = canPop ? buildIcon(navigator.onPopRoute) : null;

@@ -3,7 +3,7 @@ part of 'index.dart';
 class RRoute<T extends TypedSegment> extends RRouteCore<T> {
   RRoute(
     String urlName,
-    FromUrlPars<T> fromUrlPars,
+    FromUrlPars<T> decode,
     this.screenBuilder, {
     this.screen2Page,
     String Function(T segment)? screenTitle,
@@ -12,7 +12,7 @@ class RRoute<T extends TypedSegment> extends RRouteCore<T> {
     Closing<T>? closing,
   }) : super(
           urlName,
-          fromUrlPars,
+          decode,
           opening: opening,
           replacing: replacing,
           closing: closing,

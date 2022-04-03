@@ -15,16 +15,16 @@ void main() => runApp(
 class HomeSegment extends TypedSegment with AsyncSegment<String> {
   HomeSegment();
   // ignore: avoid_unused_constructor_parameters
-  factory HomeSegment.fromUrlPars(UrlPars pars) => HomeSegment();
+  factory HomeSegment.decode(UrlPars pars) => HomeSegment();
 }
 
 class BookSegment extends TypedSegment with AsyncSegment<String> {
   BookSegment({required this.id});
-  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
+  factory BookSegment.decode(UrlPars pars) => BookSegment(id: pars.getInt('id'));
   final int id;
 
   @override
-  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
+  void encode(UrlPars pars) => pars.setInt('id', id);
 }
 
 class AppNavigator extends RNavigator {
@@ -34,13 +34,13 @@ class AppNavigator extends RNavigator {
           [
             RRoute<HomeSegment>(
               'home',
-              HomeSegment.fromUrlPars,
+              HomeSegment.decode,
               HomeScreen.new,
               opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Home.opening', 2000)),
             ),
             RRoute<BookSegment>(
               'book',
-              BookSegment.fromUrlPars,
+              BookSegment.decode,
               BookScreen.new,
               opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book ${sNew.id}.opening', 240)),
               replacing: (sOld, sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book ${sOld.id}=>${sNew.id}.replacing', 800)),

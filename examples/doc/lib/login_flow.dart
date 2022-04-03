@@ -32,21 +32,21 @@ class App extends ConsumerWidget {
 class HomeSegment extends TypedSegment {
   const HomeSegment();
   // ignore: avoid_unused_constructor_parameters
-  factory HomeSegment.fromUrlPars(UrlPars pars) => HomeSegment();
+  factory HomeSegment.decode(UrlPars pars) => HomeSegment();
 }
 
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
-  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
+  factory BookSegment.decode(UrlPars pars) => BookSegment(id: pars.getInt('id'));
   final int id;
 
   @override
-  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
+  void encode(UrlPars pars) => pars.setInt('id', id);
 }
 
 class LoginSegment extends TypedSegment {
   const LoginSegment({this.loggedUrl, this.canceledUrl});
-  factory LoginSegment.fromUrlPars(UrlPars pars) => LoginSegment(
+  factory LoginSegment.decode(UrlPars pars) => LoginSegment(
         loggedUrl: pars.getStringNull('loggedUrl'),
         canceledUrl: pars.getStringNull('canceledUrl'),
       );
@@ -54,7 +54,7 @@ class LoginSegment extends TypedSegment {
   final String? canceledUrl;
 
   @override
-  void toUrlPars(UrlPars pars) => pars.setString('loggedUrl', loggedUrl).setString('canceledUrl', canceledUrl);
+  void encode(UrlPars pars) => pars.setString('loggedUrl', loggedUrl).setString('canceledUrl', canceledUrl);
 }
 
 /// !!! there is another provider on which the navigation status depends:
@@ -70,17 +70,17 @@ class AppNavigator extends RNavigator {
           [
             RRoute<HomeSegment>(
               'home',
-              HomeSegment.fromUrlPars,
+              HomeSegment.decode,
               HomeScreen.new,
             ),
             RRoute<BookSegment>(
               'book',
-              BookSegment.fromUrlPars,
+              BookSegment.decode,
               BookScreen.new,
             ),
             RRoute<LoginSegment>(
               'login',
-              LoginSegment.fromUrlPars,
+              LoginSegment.decode,
               LoginScreen.new,
             ),
           ],

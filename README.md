@@ -61,20 +61,20 @@ Create an application using these simple steps:
 ```dart
 class HomeSegment extends TypedSegment {
   const HomeSegment();
-  factory HomeSegment.fromUrlPars(UrlPars pars) => const HomeSegment();
+  factory HomeSegment.decode(UrlPars pars) => const HomeSegment();
 }
 
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
-  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
+  factory BookSegment.decode(UrlPars pars) => BookSegment(id: pars.getInt('id'));
 
   final int id;
   @override
-  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
+  void encode(UrlPars pars) => pars.setInt('id', id);
 }
 ```
 
-> *fromUrlPars* and *toUrlPars* helps to convert **typed-segment** to **string-segment** and back.
+> *encode* and *decncode* helps to convert **typed-segment** to **string-segment** and back.
 
 ### Step2 - configure AppNavigator...
 
@@ -87,16 +87,16 @@ class AppNavigator extends RNavigator {
           ref,
           [
             /// 'home' and 'book' strings are used in web URL, e.g. 'home/book;id=2'
-            /// fromUrlPars is used to decode URL to HomeSegment/BookSegment
+            /// decode is used to decode URL to HomeSegment/BookSegment
             /// HomeScreen/BookScreen.new are screen builders for a given segment
             RRoute<HomeSegment>(
               'home',
-              HomeSegment.fromUrlPars,
+              HomeSegment.decode,
               HomeScreen.new,
             ),
             RRoute<BookSegment>(
               'book',
-              BookSegment.fromUrlPars,
+              BookSegment.decode,
               BookScreen.new,
             ),
           ],
@@ -226,7 +226,7 @@ The format of *string-segment* is
 
 ```<unique TypedSegment id>[;<property name>=<property value>]*```, e.g. ```book;id=3```.
 
-### fromUrlPars/toUrlPars example:
+### encode/decode example:
 
 Instead of directly converting to/from the string, we convert to/from <br>
 ```typedef UrlPars = Map<String,String>```
@@ -238,7 +238,7 @@ So far, we support the following types of TypedSegment property:<br>
 class TestSegment extends TypedSegment {
   const TestSegment({required this.i, this.s, required this.b, this.d});
 
-  factory TestSegment.fromUrlPars(UrlPars pars) => TestSegment(
+  factory TestSegment.decode(UrlPars pars) => TestSegment(
         i: pars.getInt('i'),
         s: pars.getStringNull('s'),
         b: pars.getBool('b'),
@@ -246,7 +246,7 @@ class TestSegment extends TypedSegment {
       );
 
   @override
-  void toUrlPars(UrlPars pars) => 
+  void encode(UrlPars pars) => 
     pars.setInt('i', i).setString('s', s).setBool('b', b).setDouble('d', d);
 
   final int i;
@@ -256,7 +256,7 @@ class TestSegment extends TypedSegment {
 }
 ```
 
-After registering *TestSegment* by ```RRoute<TestSegment>('test',TestSegment.fromUrlPars```, the following URL's are correct:
+After registering *TestSegment* by ```RRoute<TestSegment>('test',TestSegment.decode```, the following URL's are correct:
 
 - test;i=1;b=true
 - test;i=2;b=true;d=12.6;s=abcd
@@ -346,13 +346,13 @@ class AppNavigator extends RNavigator {
           [
             RRoute<HomeSegment>(
               'home',
-              HomeSegment.fromUrlPars,
+              HomeSegment.decode,
               HomeScreen.new,
               opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Home.opening', 2000)),
             ),
             RRoute<BookSegment>(
               'book',
-              BookSegment.fromUrlPars,
+              BookSegment.decode,
               BookScreen.new,
               opening: (sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book ${sNew.id}.opening', 240)),
               replacing: (sOld, sNew) => sNew.setAsyncValue(_simulateAsyncResult('Book ${sOld.id}=>${sNew.id}.replacing', 800)),

@@ -31,31 +31,31 @@ class App extends ConsumerWidget {
 class HomeSegment extends TypedSegment {
   const HomeSegment();
   // ignore: avoid_unused_constructor_parameters
-  factory HomeSegment.fromUrlPars(UrlPars pars) => HomeSegment();
+  factory HomeSegment.decode(UrlPars pars) => HomeSegment();
 }
 
 class BookSegment extends TypedSegment {
   const BookSegment({required this.id});
-  factory BookSegment.fromUrlPars(UrlPars pars) => BookSegment(id: pars.getInt('id'));
+  factory BookSegment.decode(UrlPars pars) => BookSegment(id: pars.getInt('id'));
   final int id;
 
   @override
-  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
+  void encode(UrlPars pars) => pars.setInt('id', id);
 }
 
 class AuthorSegment extends TypedSegment {
   const AuthorSegment({required this.id});
-  factory AuthorSegment.fromUrlPars(UrlPars pars) => AuthorSegment(id: pars.getInt('id'));
+  factory AuthorSegment.decode(UrlPars pars) => AuthorSegment(id: pars.getInt('id'));
   final int id;
 
   @override
-  void toUrlPars(UrlPars pars) => pars.setInt('id', id);
+  void encode(UrlPars pars) => pars.setInt('id', id);
 }
 
 class BooksAuthorsSegment extends TypedSegment {
   const BooksAuthorsSegment();
   // ignore: avoid_unused_constructor_parameters
-  factory BooksAuthorsSegment.fromUrlPars(UrlPars pars) => BooksAuthorsSegment();
+  factory BooksAuthorsSegment.decode(UrlPars pars) => BooksAuthorsSegment();
 }
 
 class AppNavigator extends RNavigator {
@@ -66,7 +66,7 @@ class AppNavigator extends RNavigator {
           [
             RRoute<BookSegment>(
               'book',
-              BookSegment.fromUrlPars,
+              BookSegment.decode,
               BookScreen.new,
             ),
           ],
@@ -79,7 +79,7 @@ class AppNavigator extends RNavigator {
           [
             RRoute<AuthorSegment>(
               'author',
-              AuthorSegment.fromUrlPars,
+              AuthorSegment.decode,
               AuthorScreen.new,
             ),
           ],
@@ -92,22 +92,22 @@ class AppNavigator extends RNavigator {
           [
             RRoute<HomeSegment>(
               'home',
-              HomeSegment.fromUrlPars,
+              HomeSegment.decode,
               HomeScreen.new,
             ),
             RRoute<BookSegment>(
               'book',
-              BookSegment.fromUrlPars,
+              BookSegment.decode,
               BookScreen.new,
             ),
             RRoute<AuthorSegment>(
               'author',
-              AuthorSegment.fromUrlPars,
+              AuthorSegment.decode,
               AuthorScreen.new,
             ),
             RRoute<BooksAuthorsSegment>(
               'books-authors',
-              BooksAuthorsSegment.fromUrlPars,
+              BooksAuthorsSegment.decode,
               BooksAuthorsScreen.new,
             ),
           ],

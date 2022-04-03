@@ -1,6 +1,11 @@
+## 1.0.0
+
+- Navigator successfully used in a private project
+
 ## 0.41.0
 
 - **Breaking**: ongoingPathProvider renamed to intendedPathProvider
+- **Breaking**: renaming to "encode" x "decode"
 
 ## 0.40.0
 
