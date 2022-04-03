@@ -1,3 +1,7 @@
+## 1.0.1
+
+- small doc typo
+
 ## 1.0.0
 
 - Navigator successfully used in a private project
