@@ -1,5 +1,8 @@
 # Riverpod navigation
 
+If you are interested in the motivation why the package was created and a detailed description of what problems it solves, read this MEDIUM article:
+[Simple Flutter navigation with Riverpod](https://medium.com/@pavelzika/simple-flutter-navigation-with-riverpod-c55b627da8a6).
+
 ### Simple but powerful Flutter navigation with [riverpod](https://riverpod.dev/) and Navigator 2.0 that solves the following:
 
 - **Strictly typed navigation:** <br>
