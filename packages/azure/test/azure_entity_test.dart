@@ -82,7 +82,7 @@ void main() {
         ..doubleValue = 0.01;
       await helper.insertOrReplace(model);
       model.data['unicode'] = 'čřŮ\nx';
-      model.binaryValue = utf8.encode('abc'); //utf8.encode('abc');
+      model.binaryValue = utf8.encode('abc');
       await helper.update(model);
       expect(model.eTag!.length > 35, true);
     });

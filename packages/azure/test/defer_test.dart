@@ -10,9 +10,9 @@ Future runTest(int userId, Future action(DebugService st, String getDebugId(int 
   final st = DebugService(Azure.azureAccount(isEmulator), 'defer_$userId');
   Day.mockSet(null);
   mockConnection = null;
-  dpCounterReset();
+  dpCounterInit();
   await action(st, (id) => '$userId.$id');
-  setTestResult('${dbCounterDump()}');
+  dpMsg('${dbCounterDump()}');
 }
 
 void main() {

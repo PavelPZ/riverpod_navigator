@@ -37,7 +37,7 @@ class AzureTables extends Azure {
         if (await exists(tableName)) break;
         await insert(tableName);
       } catch (e) {
-        if (e != ErrorCodes.insertConflict) rethrow;
+        if (e != ErrorCodes.conflict) rethrow;
         //if (e.isNot(AzureErrors.conflict)) rethrow;
         //if (e.reasonPhrase != 'Conflict') rethrow;
       }

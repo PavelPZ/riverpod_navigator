@@ -77,7 +77,7 @@ class DeferStorage {
     Future<AzureRequest?> getBatchRequest() async {
       proxyDefers = await _getDefers(forceWrite);
       if (proxyDefers == null) return null;
-      assert(proxyDefers!.rows.values.length <= 100 && (dp('- $debugId: ${proxyDefers!.etags2.length}')));
+      assert(proxyDefers!.rows.values.length <= 100 && (dpMsg('- $debugId: ${proxyDefers!.etags2.length}')));
       rows = List<DeferRowData>.from(proxyDefers!.rows.values);
       return hook.table.getBatchRequest(partitionKey, rows!, BatchMethod.merge);
     }
@@ -113,7 +113,7 @@ class DeferStorage {
 
       assert(dpCounter('batch_rows', proxyDefers!.rows.values.length));
       await _undefer(proxyDefers!.etags2);
-      assert(dp(debugId == null ? null : '** $debugId: ${proxyDefers!.etags2.length}'));
+      assert(dpMsg(debugId == null ? null : '** $debugId: ${proxyDefers!.etags2.length}'));
     }
   }
 
@@ -201,7 +201,6 @@ class DeferStorage {
   }
 
   Future _toLocal(DeferItem item) {
-    //if (hook.localDeferFile == null) return Future.value();
     return hook.localDeferFile.platformAppend(hook.deferItemToBytes(item));
   }
 

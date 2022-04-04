@@ -57,19 +57,19 @@ Future runRead(int userId) async {
   }
 }
 
-Future testProcSimple() => dpDate(() async {
-      dpCounterReset();
+Future testProcSimple() => dpActionDuration(() async {
+      dpCounterInit();
       final now = DateTime.now();
       await _testProc(9999);
-      setTestResult('${dbCounterDump()}\n${DateTime.now().difference(now)}');
+      dpMsg('${dbCounterDump()}\n${DateTime.now().difference(now)}');
     });
 
-Future testProcMultiUser() => dpDate(() async {
-      dpCounterReset();
+Future testProcMultiUser() => dpActionDuration(() async {
+      dpCounterInit();
       final now = DateTime.now();
       final futures = Iterable.generate(100, (i) => _testProc(i));
       await Future.wait(futures);
-      setTestResult('${dbCounterDump()}\n${DateTime.now().difference(now)}');
+      dpMsg('${dbCounterDump()}\n${DateTime.now().difference(now)}');
     });
 
 class DebugRetries extends IRetries {

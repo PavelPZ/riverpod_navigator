@@ -94,15 +94,4 @@ class DebugStorage extends DeferStorage {
   Future update(DebugMessage msg) {
     return setDefered(msg);
   }
-
-  // @override
-  // Tuple2<String, String> getAzureRowAndPropNames(AzureProxy proxy) => throw UnimplementedError();
-
-  // //********** DUE TO DAILY LIKE DEFERS */
-
-  // @override
-  // AzureProxy defferIdToStorage(ProxyId deferId) => throw UnimplementedError();
-
-  // @override
-  // Future preprocessDefers(ProxyDefers proxyDefers) => throw UnimplementedError();
 }

@@ -40,44 +40,6 @@ Future<bool> waitForConnection(WaitForConnectionPar? par) async {
   return _completer.future;
 }
 
-Map<String, int>? _dbCounter; // = <String, int>{};
-void dpCounterReset([bool? close]) => _dbCounter = close == true ? null : <String, int>{};
-
-//typedef DpCounter = bool Function(String key, [int count]);
-bool dpCounter(String key, [int? count]) {
-  if (_dbCounter != null) {
-    count ??= 1;
-    _dbCounter!.update(key, (value) => _dbCounter![key] = value + count!, ifAbsent: () => count!);
-  }
-  return true;
-}
-
-void setTestResult(String msg) {
-  print(msg);
-  //_writeln?.call(msg);
-}
-
-Future dpDate(Future action()) async {
-  final d = DateTime.now();
-  await action();
-  final dur = DateTime.now().difference(d);
-  print('Duration: ${dur.toString()}');
-}
-
-String dbCounterDump() {
-  if (_dbCounter == null) return '';
-  final sb = StringBuffer();
-  for (final kv in _dbCounter!.entries) {
-    sb.writeln('${kv.key}=${kv.value}, ');
-  }
-  return sb.toString();
-}
-
-bool dp(String? msg, [bool? ignore]) {
-  if (msg != null && ignore != true) print(msg);
-  return true;
-}
-
 class HttpDateException implements Exception {
   HttpDateException(this._msg);
   final String _msg;
@@ -307,9 +269,9 @@ class Day {
 }
 
 abstract class IFileCommon {
-  Future<bool> platformExists();
-  Future platformWriteBytes(List<int> bytes);
-  Future<Uint8List> platformReadBytes();
+  // Future<bool> platformExists();
+  // Future platformWriteBytes(List<int> bytes);
+  // Future<Uint8List> platformReadBytes();
   Future platformDelete();
   // message file operations
   Future platformAppend(List<int> bytes);

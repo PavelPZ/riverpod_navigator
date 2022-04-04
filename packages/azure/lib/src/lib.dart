@@ -108,7 +108,7 @@ class Encoder {
     _validCharDir = Map<int, bool>.fromIterable(_validChars.runes.where((ch) => ch != _d2 && ch != _d4), key: (ch) => ch, value: (ch) => true);
   }
 
-  static const lastKey = '~';
+  // static const lastKey = '~';
   static final keys = Encoder._('~', ';', '!\$&()*+,-.0123456789:;=@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]_abcdefghijklmnopqrstuvwxyz~');
   static final tables = Encoder._('A', 'B', '0123456789abcdefghijklmnopqrstuvwxyz');
 

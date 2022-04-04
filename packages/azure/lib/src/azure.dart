@@ -4,10 +4,8 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
-// import 'package:azure/azure.dart';
 import 'package:tuple/tuple.dart';
 import 'package:wikib_utils/wikb_utils.dart';
-// import 'package:crypto/crypto.dart';
 
 import 'lib.dart';
 import 'model.dart';
@@ -37,7 +35,7 @@ class Azure extends Sender {
   static const _emulatorAccount =
       Account('devstoreaccount1', 'Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==');
   static const _debugCloudAccount =
-      Account('wikibularystorageaccount', 'CtfB3JJOqCRgFeekTaMzNLfVRS2V7ICDoXzvGcK2XFfaV7//nKSoUQ0rJj0tMUPN6+wz1DUSI+NCsTspaLnNyw==');
+      Account('wikibularydata', 'm8so0vlCxtzpPMIu3IeQox+mtlqw4m/a0OALvXkvdgH1/zi5ZJHfmicIfwFAZXbOsZxlb2eDdlLREWKdjh4UWg==');
   static Account azureAccount([bool? isEmulator]) => isEmulator == true ? _emulatorAccount : _debugCloudAccount;
 
   late Account _accountKey;
@@ -62,7 +60,8 @@ class Azure extends Sender {
 
     headers['Authorization'] = strAuthorization;
     headers['x-ms-date'] = dateStr;
-    headers['x-ms-version'] = '2018-03-28';
+    // headers['x-ms-version'] = '2018-03-28';
+    headers['x-ms-version'] = '2021-04-10';
   }
 
   // entity Insert x Update x Delete, ...

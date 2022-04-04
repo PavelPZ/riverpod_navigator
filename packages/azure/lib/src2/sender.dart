@@ -1,12 +1,10 @@
-part of 'azure.dart';
+import 'dart:async';
+import 'package:http/http.dart';
+import 'package:wikib_utils/wikb_utils.dart';
 
-class SendPar {
-  SendPar();
-  SendPar.init({this.debugWriteWaitMsec, this.waitForConnectionPar, this.retries});
-  int? debugWriteWaitMsec; // simulate long-time Http request
-  WaitForConnectionPar? waitForConnectionPar;
-  IRetries? retries;
-  FinalizeResponse? finalizeResponse;
+abstract class IRetries {
+  int nextMSec();
+  Future delay() => Future.delayed(Duration(milliseconds: nextMSec()));
 }
 
 class AzureRequest {
@@ -21,10 +19,6 @@ class AzureRequest {
     return res;
   }
 }
-
-typedef FinishRequest = void Function(AzureRequest req);
-typedef FinalizeResponse<T> = Future<ContinueResult?> Function(AzureResponse<T> resp);
-enum ContinueResult { doBreak, doContinue, doWait, doRethrow }
 
 class AzureResponse<T> {
   // input
@@ -49,6 +43,10 @@ class AzureResponse<T> {
     }
   }
 }
+
+typedef FinishRequest = void Function(AzureRequest req);
+typedef FinalizeResponse<T> = Future<ContinueResult?> Function(AzureResponse<T> resp);
+enum ContinueResult { doBreak, doContinue, doWait, doRethrow }
 
 class ErrorCodes {
   ErrorCodes._();
@@ -101,9 +99,13 @@ final _regExp = RegExp(
   multiLine: true,
 );
 
-class Sender {
-  Future<AzureResponse<T>?> send<T>(AzureRequest? request, SendPar sendPar, {Future<AzureRequest?> getRequest()?}) async {
-    assert(sendPar.finalizeResponse != null);
+abstract class Sender<T> {
+  int debugSimulateLongRequest = 0; // simulate long-time Http request
+  WaitForConnectionPar? waitForConnectionPar;
+  var retries = initRetries;
+  Future<ContinueResult?> finalizeResponse(AzureResponse<T> resp);
+
+  Future<AzureResponse<T>?> send(AzureRequest? request, {Future<AzureRequest?> getRequest()?}) async {
     assert((request == null) != (getRequest == null));
     debugCanceled = false;
     final client = Client();
@@ -116,7 +118,7 @@ class Sender {
         final resp = AzureResponse<T>()..oldRequest = request;
 
         try {
-          final internetOK = await waitForConnection(sendPar.waitForConnectionPar);
+          final internetOK = await waitForConnection(waitForConnectionPar);
           if (debugCanceled) return null;
           if (!internetOK) {
             resp.error = ErrorCodes.noInternet;
@@ -127,8 +129,8 @@ class Sender {
 
             assert(resp.error != ErrorCodes.no || dpCounter('send_ok'));
             if (debugCanceled) return resp;
-            if (sendPar.debugWriteWaitMsec != null) {
-              await Future.delayed(Duration(milliseconds: sendPar.debugWriteWaitMsec!));
+            if (debugSimulateLongRequest > 0) {
+              await Future.delayed(Duration(milliseconds: debugSimulateLongRequest));
             }
             resp.error = ErrorCodes.fromResponse(resp.response!.statusCode);
             resp.errorReason = resp.response!.reasonPhrase;
@@ -142,7 +144,7 @@ class Sender {
         assert(resp.error == ErrorCodes.no || (dpCounter('send_error') && dpCounter(resp.errorReason ?? resp.error.toString())));
 
         resp.result = null;
-        final future = sendPar.finalizeResponse!(resp);
+        final future = finalizeResponse(resp);
         final continueResult = (await future) ?? ContinueResult.doBreak;
 
         switch (continueResult) {
@@ -151,7 +153,6 @@ class Sender {
           case ContinueResult.doContinue:
             continue;
           case ContinueResult.doWait:
-            final retries = sendPar.retries ?? initRetries;
             await retries.delay();
             continue;
           case ContinueResult.doRethrow:
@@ -170,9 +171,11 @@ class Sender {
   var debugCanceled = false;
 }
 
-class DebugRetries extends IRetries {
-  DebugRetries();
-  final _random = Random();
+class RetriesSimple extends IRetries {
+  int baseMsec = 4000;
   @override
-  int nextMSec() => _random.nextInt(120000);
+  int nextMSec() {
+    if (baseMsec > 30000) throw Exception();
+    return baseMsec *= 2;
+  }
 }

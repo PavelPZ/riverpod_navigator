@@ -11,11 +11,11 @@ const isEmulator = false;
 final tables = AzureTables(Azure.azureAccount(isEmulator));
 final random = Random();
 
-Future testProcSimple() => dpDate(() async {
-      dpCounterReset();
+Future testProcSimple() => dpActionDuration(() async {
+      dpCounterInit();
       final now = DateTime.now();
       await _testProc(9999);
-      setTestResult('${dbCounterDump()}\n${DateTime.now().difference(now)}');
+      dpMsg('${dbCounterDump()}\n${DateTime.now().difference(now)}');
     });
 
 Future _testProc(int userId) async {
@@ -43,12 +43,12 @@ Table<T> _create<T extends RowData>(CreateFromMap<T> createFromMap) => Table<T>(
 
 final helper = _create<RowData>(RowData.create);
 
-Future testProcMultiUser() => dpDate(() async {
-      dpCounterReset();
+Future testProcMultiUser() => dpActionDuration(() async {
+      dpCounterInit();
       final now = DateTime.now();
       final futures = Iterable.generate(100, (i) => _testProc(i));
       await Future.wait(futures);
-      setTestResult('${dbCounterDump()}\n${DateTime.now().difference(now)}');
+      dpMsg('${dbCounterDump()}\n${DateTime.now().difference(now)}');
     });
 
 Future runWrite(int userId, {int randomValue = 20000}) async {
@@ -99,22 +99,22 @@ void main() {
     }, skip: true);
 
     test('defer 100 * 25200 props (every 40 bytes)', () async {
-      dpCounterReset();
+      dpCounterInit();
       final now = DateTime.now();
       await Future.wait(Iterable.generate(100, (i) => runWrite(i, randomValue: 60000)));
-      setTestResult('${dbCounterDump()}\n${DateTime.now().difference(now)}');
+      dpMsg('${dbCounterDump()}\n${DateTime.now().difference(now)}');
     }, skip: true);
 
     test('read 100* 25200 props', () async {
-      dpCounterReset();
+      dpCounterInit();
       final now = DateTime.now();
       await Future.wait(Iterable.generate(100, (i) => runRead(i)));
       // 0:00:08.410752, 100/0
-      setTestResult('${dbCounterDump()}\n${DateTime.now().difference(now)}');
+      dpMsg('${dbCounterDump()}\n${DateTime.now().difference(now)}');
     }, skip: true);
 
     test('write 100000 x small writes', () async {
-      dpCounterReset();
+      dpCounterInit();
       final now = DateTime.now();
 
       Future testUser(int userId, int i, DebugService services) async {
@@ -130,7 +130,7 @@ void main() {
         await Future.delayed(Duration(milliseconds: random.nextInt(10000)));
         await Future.wait(Iterable.generate(400, (i) => testUser(userId, i, defers)));
       }));
-      setTestResult('${dbCounterDump()}\n${DateTime.now().difference(now)}');
+      dpMsg('${dbCounterDump()}\n${DateTime.now().difference(now)}');
     }, skip: true);
     /**
 deffer_etag_wrong=1625,
