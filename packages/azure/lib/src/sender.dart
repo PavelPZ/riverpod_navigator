@@ -1,11 +1,15 @@
 part of 'azure.dart';
 
-class SendPar {
-  SendPar({this.debugWriteWaitMsec, this.waitForConnectionPar, this.retries});
-  int? debugWriteWaitMsec; // simulate long-time Http request
-  WaitForConnectionPar? waitForConnectionPar;
-  IRetries? retries;
-  FinalizeResponse? finalizeResponse;
+abstract class IRetries {
+  const IRetries();
+  int nextMSec();
+  Future<int> delay() async {
+    final msecs = nextMSec();
+    if (msecs < 0) return -msecs;
+    print('delayed: $msecs');
+    await Future.delayed(Duration(milliseconds: msecs));
+    return 0;
+  }
 }
 
 class AzureRequest {
@@ -21,10 +25,6 @@ class AzureRequest {
   }
 }
 
-typedef FinishRequest = void Function(AzureRequest req);
-typedef FinalizeResponse<T> = Future<ContinueResult?> Function(AzureResponse<T> resp);
-enum ContinueResult { doBreak, doContinue, doWait, doRethrow }
-
 class AzureResponse<T> {
   // input
   StreamedResponse? response;
@@ -35,38 +35,27 @@ class AzureResponse<T> {
 
   // output
   T? result;
-
-  ContinueResult? standardResponseProcesed() {
-    switch (error) {
-      case ErrorCodes.no:
-        return null;
-      case ErrorCodes.httpSend_errorNo:
-      case ErrorCodes.bussy:
-        return ContinueResult.doWait;
-      default:
-        return ContinueResult.doRethrow;
-    }
-  }
 }
+
+typedef FinishRequest = void Function(AzureRequest req);
+typedef FinalizeResponse<T> = Future<ContinueResult?> Function(AzureResponse<T> resp);
+enum ContinueResult { doBreak, doContinue, doWait, doRethrow }
 
 class ErrorCodes {
   ErrorCodes._();
   static const no = 0;
-  static const notFound = 404;
-  static const conflict = 409;
-  static const eTagConflict = 412;
-  static const bussy = 500;
-  static const noInternet = 600;
-  static const otherHttpSend = 601;
-  static const otherResponseError = 602;
-  static const httpSend_errorNo = 603;
+  static const notFound = 404; // EntityNotFound, TableNotFound
+  static const conflict = 409; // EntityAlreadyExists, TableAlreadyExists, TableBeingDeleted
+  static const eTagConflict = 412; // Precondition Failed
+  static const bussy = 500; // 500, 503, 504
+  static const otherHttpSend = 600; // other statusCode >= 400
 
-// const CLIENT_SEND_ERROR = 600;
-// //const DEVICE_ID_DURING_MERGE = 601;
-// const NO_INTERNET = 602;
-// const NO_INTERNET_MOCK = 603;
+  static const noInternet = 601;
+  static const exception1 = 602;
+  static const exception2 = 603;
+  static const timeout = 604;
 
-  static int fromResponse(int statusCode) {
+  static int computeStatusCode(int statusCode) {
     switch (statusCode) {
       case conflict:
       case notFound:
@@ -77,19 +66,24 @@ class ErrorCodes {
       case 504:
         return bussy;
       default:
-        return statusCode < 400 ? 0 : otherResponseError;
+        return statusCode < 400 ? 0 : otherHttpSend;
     }
   }
 
-  static void fromException(AzureResponse resp, Exception e) {
+  static void statusCodeToResponse(AzureResponse resp) {
+    resp.error = computeStatusCode(resp.response!.statusCode);
+    resp.errorReason = resp.response!.reasonPhrase;
+  }
+
+  static void exceptionToResponse(AzureResponse resp, Exception e) {
     final res = e.toString();
     final match = _regExp.firstMatch(res);
     if (match == null) {
-      resp.error = otherHttpSend;
+      resp.error = exception1;
       resp.errorReason = res;
     } else {
+      resp.error = exception2;
       resp.errorReason = 'errno=${match.group(1)}';
-      resp.error = httpSend_errorNo;
     }
   }
 }
@@ -100,61 +94,100 @@ final _regExp = RegExp(
   multiLine: true,
 );
 
-class Sender {
-  Future<AzureResponse<T>?> send<T>(AzureRequest? request, SendPar sendPar, {Future<AzureRequest?> getRequest()?}) async {
-    assert(sendPar.finalizeResponse != null);
+class SendPar {
+  SendPar({this.retries, this.debugSimulateLongRequest = 0, this.exceptionToResponse});
+  IRetries? retries;
+  final int debugSimulateLongRequest; // simulate long-time Http request
+  final void Function(AzureResponse resp, Exception e)? exceptionToResponse;
+}
+
+abstract class Sender {
+  Future<AzureResponse<T>?> send<T>({
+    AzureRequest? request,
+    Future<AzureRequest?> getRequest()?,
+    required FinalizeResponse<T> finalizeResponse,
+    SendPar? sendPar,
+  }) async {
     assert((request == null) != (getRequest == null));
-    debugCanceled = false;
+    final sp = sendPar ?? SendPar();
+    sp.retries ??= RetriesSimple._instance;
+    _debugCanceled = false;
     final client = Client();
+    AzureResponse<T>? resp;
+
     try {
       while (true) {
-        if (debugCanceled) return null;
+        if (_debugCanceled) return null;
 
-        if (getRequest != null) request = await getRequest();
+        if (getRequest != null) {
+          request = await getRequest();
+          resp ??= AzureResponse<T>();
+        } else {
+          resp = AzureResponse<T>();
+        }
+        resp.oldRequest = request;
+
         if (request == null) return null;
-        final resp = AzureResponse<T>()..oldRequest = request;
 
         try {
-          final internetOK = await waitForConnection(sendPar.waitForConnectionPar);
-          if (debugCanceled) return null;
+          final internetOK = await connectedByOne4();
+          if (_debugCanceled) return null;
           if (!internetOK) {
             resp.error = ErrorCodes.noInternet;
           } else {
             assert(dpCounter('send attempts'));
 
             resp.response = await client.send(request.toHttpRequest());
+            if (_debugCanceled) return resp;
 
-            assert(resp.error != ErrorCodes.no || dpCounter('send_ok'));
-            if (debugCanceled) return resp;
-            if (sendPar.debugWriteWaitMsec != null) {
-              await Future.delayed(Duration(milliseconds: sendPar.debugWriteWaitMsec!));
+            if (sp.debugSimulateLongRequest > 0) {
+              await Future.delayed(Duration(milliseconds: sp.debugSimulateLongRequest));
+              if (_debugCanceled) return resp;
             }
-            resp.error = ErrorCodes.fromResponse(resp.response!.statusCode);
-            resp.errorReason = resp.response!.reasonPhrase;
+            ErrorCodes.statusCodeToResponse(resp);
           }
         } on Exception catch (e) {
-          ErrorCodes.fromException(resp, e);
+          if (!await connectedByOne4()) {
+            resp.error = ErrorCodes.noInternet;
+          } else {
+            ErrorCodes.exceptionToResponse(resp, e);
+          }
         }
 
         assert(resp.error != ErrorCodes.no || resp.response != null);
+
         assert(resp.error != ErrorCodes.no || dpCounter('send_ok'));
         assert(resp.error == ErrorCodes.no || (dpCounter('send_error') && dpCounter(resp.errorReason ?? resp.error.toString())));
 
-        resp.result = null;
-        final future = sendPar.finalizeResponse!(resp);
-        final continueResult = (await future) ?? ContinueResult.doBreak;
+        ContinueResult continueResult;
+        switch (resp.error) {
+          case ErrorCodes.noInternet:
+          case ErrorCodes.bussy:
+            continueResult = ContinueResult.doWait;
+            break;
+          case ErrorCodes.exception1:
+          case ErrorCodes.exception2:
+            continueResult = ContinueResult.doRethrow;
+            break;
+          default:
+            continueResult = (await finalizeResponse(resp)) ?? ContinueResult.doBreak;
+            break;
+        }
 
         switch (continueResult) {
           case ContinueResult.doBreak:
             return resp;
           case ContinueResult.doContinue:
-            continue;
+            continue; // continue due more requests (e.g. multi part query)
           case ContinueResult.doWait:
-            final retries = sendPar.retries ?? initRetries;
-            await retries.delay();
+            final res = await sp.retries!.delay();
+            if (res != 0) {
+              resp.error = res;
+              return Future.error(resp.error);
+            }
+            resp = null; // continue due error
             continue;
           case ContinueResult.doRethrow:
-            // return Future.error(resp.errorDetail ?? resp.error);
             return Future.error(resp.error);
         }
       }
@@ -163,15 +196,21 @@ class Sender {
     }
   }
 
-  static final initRetries = RetriesSimple();
-  void debugCancel() => debugCanceled = true;
+  void debugCancel() => _debugCanceled = true;
 
-  var debugCanceled = false;
+  var _debugCanceled = false;
 }
 
-class DebugRetries extends IRetries {
-  DebugRetries();
-  final _random = Random();
+class RetriesSimple extends IRetries {
+  int baseMsec = 4000;
+  int maxSec = 0;
   @override
-  int nextMSec() => _random.nextInt(120000);
+  int nextMSec() {
+    if (maxSec > 0 && baseMsec > maxSec) {
+      return -ErrorCodes.timeout;
+    }
+    return baseMsec > 30000 ? baseMsec : baseMsec *= 2;
+  }
+
+  static final _instance = RetriesSimple();
 }

@@ -1,4 +1,3 @@
-// copy also in C:\wikibulary\csharp\auth\authLib\lib.cs
 import 'package:http/http.dart';
 
 import '../utils.dart';

@@ -9,6 +9,8 @@ environment:
 
 dependencies:
   # connectivity_plus: ^2.2.1
+  flutter:
+    sdk: flutter
   http:
   path:
   tuple:

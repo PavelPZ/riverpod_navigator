@@ -7,44 +7,52 @@ import 'package:http/http.dart';
 import 'package:tuple/tuple.dart';
 import 'package:wikib_utils/wikb_utils.dart';
 
-import 'lib.dart';
-import 'model.dart';
+// import 'lib.dart';
 
 part 'azure_tables.dart';
 part 'azure_table.dart';
+part 'lib.dart';
+part 'model.dart';
 part 'sender.dart';
 
-class Azure extends Sender {
-  Azure._(Account? account, String table) {
-    final isEmulator = account == null;
-    _account = account ?? _emulatorAccount;
-    _key = base64.decode(_account.key);
+class Account {
+  factory Account({bool? isEmulator}) => isEmulator == true ? _emulatorAccount : _debugCloudAccount;
+  Account._(this.name, this.keyStr) : _isEmulator = null {
+    key = base64.decode(keyStr);
+  }
+  final bool? _isEmulator;
+  bool get isEmulator => _isEmulator == true;
+  final String name;
+  final String keyStr;
+  late Uint8List key;
 
-    final host = isEmulator ? 'http://127.0.0.1:10002' : 'https://${_account.name}.table.core.windows.net';
-    batchInnerUri = host + (isEmulator ? '/${_account.name}/$table' : '/$table');
+  static final _emulatorAccount =
+      Account._('devstoreaccount1', 'Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==');
+  static final _debugCloudAccount =
+      Account._('wikibularydata', 'm8so0vlCxtzpPMIu3IeQox+mtlqw4m/a0OALvXkvdgH1/zi5ZJHfmicIfwFAZXbOsZxlb2eDdlLREWKdjh4UWg==');
+  static Account azureAccount([bool? isEmulator]) => isEmulator == true ? _emulatorAccount : _debugCloudAccount;
+}
+
+class Azure extends Sender {
+  Azure._(String table, {bool? isEmulator}) {
+    _account = Account(isEmulator: isEmulator);
+
+    final host = _account.isEmulator ? 'http://127.0.0.1:10002' : 'https://${_account.name}.table.core.windows.net';
+    batchInnerUri = host + (_account.isEmulator ? '/${_account.name}/$table' : '/$table');
 
     for (var idx = 0; idx < 2; idx++) {
       final signatureTable = idx == 1 ? '\$batch' : table;
       final slashAcountTable = '/${_account.name}/$signatureTable';
-      _signaturePart[idx] = (isEmulator ? '/${_account.name}' : '') + slashAcountTable; // second part of signature
-      _uri[idx] = host + (isEmulator ? slashAcountTable : '/$signatureTable');
+      _signaturePart[idx] = (_account.isEmulator ? '/${_account.name}' : '') + slashAcountTable; // second part of signature
+      _uri[idx] = host + (_account.isEmulator ? slashAcountTable : '/$signatureTable');
     }
   }
 
-  //************* PRIVATE  */
-  static const _emulatorAccount =
-      Account('devstoreaccount1', 'Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==');
-  static const _debugCloudAccount =
-      Account('wikibularydata', 'm8so0vlCxtzpPMIu3IeQox+mtlqw4m/a0OALvXkvdgH1/zi5ZJHfmicIfwFAZXbOsZxlb2eDdlLREWKdjh4UWg==');
-  static Account azureAccount([bool? isEmulator]) => isEmulator == true ? _emulatorAccount : _debugCloudAccount;
-
   late Account _account;
-  late Uint8List _key;
   // 1..for entity batch, 0..others
   final _signaturePart = ['', ''];
   final _uri = ['', ''];
   String? batchInnerUri;
-  //static var mockError = false;
 
   // https://stackoverflow.com/questions/26066640/windows-azure-rest-api-sharedkeylite-authentication-storage-emulator
   // https://docs.microsoft.com/cs-cz/rest/api/storageservices/authorize-with-shared-key
@@ -53,7 +61,7 @@ class Azure extends Sender {
     final String dateStr = HttpDate.format(DateTime.now());
     final String signature = '$dateStr\n${_signaturePart[idx ?? 0]}${uriAppend ?? ''}';
     final toHash = utf8.encode(signature);
-    final hmacSha256 = Hmac(sha256, _key); // HMAC-SHA256
+    final hmacSha256 = Hmac(sha256, _account.key); // HMAC-SHA256
     final token = base64.encode(hmacSha256.convert(toHash).bytes);
     // Authorization header
     final String strAuthorization = 'SharedKeyLite ${_account.name}:$token';
@@ -65,14 +73,13 @@ class Azure extends Sender {
   }
 
   // entity Insert x Update x Delete, ...
-  Future _writeRowRequest(RowData data, String method, {/*String eTag,*/ SendPar? sendPar}) async {
+  Future _writeRowRequest(RowData data, String method, {SendPar? sendPar}) async {
     final res = await _writeBytesRequest(data.toJsonBytes(), method, eTag: data.eTag, sendPar: sendPar, uriAppend: data.keyUrlPart());
     data.eTag = res;
   }
 
   Future<String?> _writeBytesRequest(List<int>? bytes, String method,
       {String? eTag, SendPar? sendPar, String? uriAppend, void finishHttpRequest(AzureRequest req)?}) async {
-    sendPar ??= SendPar();
     final String uri = _uri[0] + (uriAppend ?? '');
     // Web request
     final request = AzureRequest(method, Uri.parse(uri));
@@ -83,13 +90,14 @@ class Azure extends Sender {
     if (bytes != null) request.bodyBytes = bytes;
     if (finishHttpRequest != null) finishHttpRequest(request);
 
-    sendPar.finalizeResponse ??= (resp) {
-      final continueResult = resp.standardResponseProcesed();
-      if (continueResult != null) return Future.value(continueResult);
-      resp.result = resp.response!.headers['etag'];
-      return Future.value(ContinueResult.doBreak);
-    };
-    final sendRes = await send<String>(request, sendPar);
+    final sendRes = await send<String>(
+        request: request,
+        sendPar: sendPar,
+        finalizeResponse: (resp) {
+          if (resp.error != ErrorCodes.no) return Future.value(ContinueResult.doRethrow);
+          resp.result = resp.response!.headers['etag'];
+          return Future.value(ContinueResult.doBreak);
+        });
     return sendRes?.result;
   }
 
@@ -101,11 +109,9 @@ class Azure extends Sender {
 
   Future<List<dynamic>> queryLow<T>(Query? query, {SendPar? sendPar}) async {
     final request = _queryRequest(query: query);
-    final res = <dynamic>[];
     var nextPartition = '';
     var nextRow = '';
     final oldUrl = request.uri.toString();
-    sendPar ??= SendPar();
 
     Future<AzureRequest> getRequest() {
       if (nextPartition == '' && nextRow == '') return Future.value(request);
@@ -116,25 +122,21 @@ class Azure extends Sender {
       return Future.value(request);
     }
 
-    while (true) {
-      sendPar.finalizeResponse ??= (resp) async {
-        final continueResult = resp.standardResponseProcesed();
-        if (continueResult != null) return continueResult;
-        final resStr = await resp.response!.stream.bytesToString();
-        final resList = jsonDecode(resStr)['value'];
-        assert(resList != null);
-        res.addAll(resList);
-        nextPartition = resp.response!.headers[nextPartitionPar] ?? '';
-        nextRow = resp.response!.headers[nextRowPar] ?? '';
-        resp.result = nextPartition != '' || nextRow != '';
-        return ContinueResult.doBreak;
-      };
+    final resp = await send<List<dynamic>>(
+        sendPar: sendPar,
+        getRequest: getRequest,
+        finalizeResponse: (resp) async {
+          if (resp.error != ErrorCodes.no) return ContinueResult.doRethrow;
+          final resStr = await resp.response!.stream.bytesToString();
+          final resList = jsonDecode(resStr)['value'];
+          assert(resList != null);
+          (resp.result ??= <dynamic>[]).addAll(resList);
+          nextPartition = resp.response!.headers[nextPartitionPar] ?? '';
+          nextRow = resp.response!.headers[nextRowPar] ?? '';
+          return nextPartition == '' && nextRow == '' ? ContinueResult.doBreak : ContinueResult.doContinue;
+        });
 
-      final sendRes = await send<bool>(null, sendPar, getRequest: getRequest);
-
-      if (sendRes?.result != true) break;
-    }
-    return res;
+    return resp!.result!;
   }
 
   // entity x table query
@@ -148,12 +150,6 @@ class Azure extends Sender {
     request.headers['Accept'] = 'application/json;odata=nometadata';
     return request;
   }
-}
-
-class Account {
-  const Account(this.name, this.key);
-  final String name;
-  final String key;
 }
 
 enum QO { eq, gt, ge, lt, le, ne }

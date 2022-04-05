@@ -1,7 +1,7 @@
 part of 'azure.dart';
 
 class Tables extends Azure {
-  Tables(Account account) : super._(account, 'tables');
+  Tables({bool? isEmulator}) : super._('tables', isEmulator: isEmulator);
 
   Future<List<String>> query(Query? query) async {
     final res = await queryLow(query);

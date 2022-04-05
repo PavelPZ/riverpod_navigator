@@ -1,7 +1,4 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
-import 'lib.dart';
+part of 'azure.dart';
 
 class Key {
   Key(String? partition, String? row)

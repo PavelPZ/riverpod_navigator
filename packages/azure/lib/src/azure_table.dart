@@ -3,7 +3,7 @@ part of 'azure.dart';
 typedef CreateFromMap<T extends RowData> = T Function(Map<String, dynamic> map);
 
 class Table<T extends RowData> extends Azure {
-  Table(Account account, String table, {this.createFromMap = RowData.create}) : super._(account, table); // azure server
+  Table(String table, {bool? isEmulator, this.createFromMap = RowData.create}) : super._(table, isEmulator: isEmulator); // azure server
 
   Future<List<T>> query(Query query, {SendPar? sendPar}) async {
     final res = await queryLow(query, sendPar: sendPar);
@@ -15,24 +15,24 @@ class Table<T extends RowData> extends Azure {
   Future<T?> read(Key key, {SendPar? sendPar}) async {
     final tup = await readLow(key, sendPar: sendPar);
     final res = tup == null ? null : (createFromMap(tup.item1)..eTag = tup.item2);
-    return res as T;
+    return res as T?;
   }
 
   Future<Tuple2<Map<String, dynamic>, String>?> readLow(Key key, {SendPar? sendPar}) async {
     final request = _queryRequest(key: key);
-    sendPar ??= SendPar();
 
-    sendPar.finalizeResponse ??= (resp) async {
-      if (resp.error == ErrorCodes.notFound) return ContinueResult.doBreak; // => doBreak with null result
-      final continueResult = resp.standardResponseProcesed();
-      if (continueResult != null) return continueResult;
-      final json = await resp.response!.stream.bytesToString();
-      final map = jsonDecode(json);
-      resp.result = Tuple2<Map<String, dynamic>, String>(map, resp.response!.headers['etag']!);
-      return ContinueResult.doBreak;
-    };
-    final res = await send<Tuple2<Map<String, dynamic>, String>>(request, sendPar);
-    return res!.result!;
+    final res = await send<Tuple2<Map<String, dynamic>, String>>(
+        request: request,
+        sendPar: sendPar,
+        finalizeResponse: (resp) async {
+          if (resp.error == ErrorCodes.notFound) return ContinueResult.doBreak; // => doBreak with null result
+          if (resp.error != ErrorCodes.no) return ContinueResult.doRethrow;
+          final json = await resp.response!.stream.bytesToString();
+          final map = jsonDecode(json);
+          resp.result = Tuple2<Map<String, dynamic>, String>(map, resp.response!.headers['etag']!);
+          return ContinueResult.doBreak;
+        });
+    return res!.result;
   }
 
   // rethrowExceptionDuringSend=true => response.statusCode == 500 or 503 raises exception
@@ -85,29 +85,24 @@ class Table<T extends RowData> extends Azure {
   }
 
   Future runBatch(String partitionKey, List<RowData> data, BatchMethod defaultMethod, SendPar? sendPar) async {
-    sendPar ??= SendPar();
     for (var i = 0; i < data.length; i += 100) {
       final request = getBatchRequest(
         partitionKey,
         List<RowData>.from(data.skip(i).take(100)),
         defaultMethod,
       );
-      sendPar.finalizeResponse ??= (resp) async {
-        final continueResult = resp.standardResponseProcesed();
-        if (continueResult != null) {
-          return Future.value(continueResult);
-        }
-        // reponse OK, parse response string:
-        final respStr = await resp.response!.stream.bytesToString();
-        resp.error = ErrorCodes.fromResponse(finishBatchRows(respStr, data));
-        // batch error:
-        // if (resp.error == ErrorCodes.bussy) return ContinueResult.doWait;
-        if (resp.error != ErrorCodes.no) return ContinueResult.doRethrow;
-        resp.result = respStr;
-        return ContinueResult.doBreak;
-      };
-      final sendRes = await send<String>(request, sendPar);
-      // if (sendRes.error == 0) sendRes.error = finishBatchRows(sendRes.result, data);
+      final sendRes = await send<String>(
+          request: request,
+          sendPar: sendPar,
+          finalizeResponse: (resp) async {
+            if (resp.error != ErrorCodes.no) return ContinueResult.doRethrow;
+            // reponse OK, parse response string:
+            final respStr = await resp.response!.stream.bytesToString();
+            resp.error = ErrorCodes.computeStatusCode(finishBatchRows(respStr, data));
+            if (resp.error != ErrorCodes.no) return ContinueResult.doRethrow;
+            resp.result = respStr;
+            return ContinueResult.doBreak;
+          });
       if (sendRes!.error >= 400) throw sendRes;
     }
   }
