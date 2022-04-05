@@ -178,13 +178,14 @@ abstract class Sender {
           case ContinueResult.doBreak:
             return resp;
           case ContinueResult.doContinue:
-            continue;
+            continue; // continue due more requests (e.g. multi part query)
           case ContinueResult.doWait:
             final res = await sp.retries!.delay();
             if (res != 0) {
               resp.error = res;
               return Future.error(resp.error);
             }
+            resp = null; // continue due error
             continue;
           case ContinueResult.doRethrow:
             return Future.error(resp.error);
