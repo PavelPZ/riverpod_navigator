@@ -2,20 +2,19 @@
 
 import 'dart:math';
 
-import 'package:azure/azure.dart';
+import 'package:azure/azure2.dart';
 import 'package:test/test.dart';
 
 const isEmulator = false;
 
 const tableName = 'users';
 
-Table<T> _create<T extends RowData>(CreateFromMap<T> createFromMap) =>
-    Table<T>(Azure.azureAccount(isEmulator), tableName, createFromMap: createFromMap);
+Table<T> _create<T extends RowData>(CreateFromMap<T> createFromMap) => Table<T>(tableName, isEmulator: isEmulator, createFromMap: createFromMap);
 
-final helper = _create<RowData>(RowData.create);
-final customHelper = _create<CustomModel>(CustomModel.create);
-final deferHelper = _create<DeferRowData>(DeferRowData.create);
-final tables = Tables(Azure.azureAccount(isEmulator));
+final table = _create<RowData>(RowData.create);
+final customTable = _create<CustomModel>(CustomModel.create);
+// final deferHelper = _create<DeferRowData>(DeferRowData.create);
+final tables = Tables(isEmulator: isEmulator);
 
 final random = Random();
 

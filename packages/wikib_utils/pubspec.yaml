@@ -8,6 +8,8 @@ environment:
 
 
 dependencies:
+  # connectivity_plus: ^2.2.1
+  http:
   path:
   tuple:
 

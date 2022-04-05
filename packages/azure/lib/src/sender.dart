@@ -1,8 +1,7 @@
 part of 'azure.dart';
 
 class SendPar {
-  SendPar();
-  SendPar.init({this.debugWriteWaitMsec, this.waitForConnectionPar, this.retries});
+  SendPar({this.debugWriteWaitMsec, this.waitForConnectionPar, this.retries});
   int? debugWriteWaitMsec; // simulate long-time Http request
   WaitForConnectionPar? waitForConnectionPar;
   IRetries? retries;

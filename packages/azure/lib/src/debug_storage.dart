@@ -27,7 +27,7 @@ const DAILY = 2;
 String dailyRowKey(int id) => '!${id ~/ 252}';
 
 class DebugService extends DeferHook {
-  DebugService(Account account, String partitionKey) : table = Table<DeferRowData>(account, 'users', DeferRowData.create) {
+  DebugService(Account account, String partitionKey) : table = Table<DeferRowData>(account, 'users', createFromMap: DeferRowData.create) {
     rstorage = DebugStorage(this);
     rstorage.setPartitionKey(partitionKey);
   }

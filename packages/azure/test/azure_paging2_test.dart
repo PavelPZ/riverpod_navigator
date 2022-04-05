@@ -1,13 +1,14 @@
 @Timeout(Duration(seconds: 3600))
 
-import 'package:azure/azure.dart';
+import 'package:azure/azure2.dart';
 import 'package:test/test.dart';
 
-import 'azure_lib.dart';
+import 'azure_lib2.dart';
 
 Future writeHuge(String tableName, String partitionKey) async {
-  await tables.insert(tableName);
-  final table = Table<RowData>(Azure.azureAccount(isEmulator), tableName, createFromMap: RowData.create);
+  await tables.recreate(tableName);
+  //await tables.insert(tableName);
+  final table = Table<RowData>(tableName, isEmulator: isEmulator);
 
   Future write100(int base) {
     final futures = Iterable.generate(100, (i) => table.insertOrReplace(RowData.fromKeys(partitionKey, 'r${base + i}')));
@@ -24,11 +25,11 @@ const tableName = 'huge';
 void main() {
   group('paging', () {
     test('write huge', () async {
-      await writeHuge(tableName, 'huge');
+      await writeHuge(tableName, tableName);
     }, skip: true);
     test('query huge', () async {
-      final table = Table<RowData>(Azure.azureAccount(isEmulator), tableName);
-      final q = await table.query(Query.partition('huge'));
+      final table = Table<RowData>(tableName, isEmulator: isEmulator);
+      final q = await table.query(Query.partition(tableName));
       expect(q.length, 2100);
     }, skip: false);
   });

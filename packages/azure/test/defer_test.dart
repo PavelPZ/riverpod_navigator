@@ -96,7 +96,7 @@ void main() {
         await Future.delayed(Duration(seconds: 2));
         await st.rstorage.update(msg);
         v.add(st.rstorage.debugDefers[0]!.version); // 2: v2
-        final f = st.rstorage.flush(debugId: getDebugId(0), forceWrite: false, sendPar: SendPar.init(debugWriteWaitMsec: 3000));
+        final f = st.rstorage.flush(debugId: getDebugId(0), forceWrite: false, sendPar: SendPar(debugWriteWaitMsec: 3000));
         v.add(msg.version!); // 3: still v1, flush not finished
 
         await Future.delayed(Duration(seconds: 2));

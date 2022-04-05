@@ -15,7 +15,7 @@ void main() {
       mockConnection = false;
       final fres3 = helper.read(
         Key('Q01', 'R02'),
-        sendPar: SendPar.init(waitForConnectionPar: WaitForConnectionPar(1, 3)),
+        sendPar: SendPar(waitForConnectionPar: WaitForConnectionPar(1, 3)),
       );
       await Future.delayed(Duration(seconds: 2));
       mockConnection = true;
@@ -27,7 +27,7 @@ void main() {
       try {
         await helper.read(
           Key('Q01', 'R02'),
-          sendPar: SendPar.init(waitForConnectionPar: WaitForConnectionPar(1, 2)),
+          sendPar: SendPar(waitForConnectionPar: WaitForConnectionPar(1, 2)),
         );
         expect(false, true);
       } catch (err) {

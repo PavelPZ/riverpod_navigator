@@ -8,10 +8,11 @@ import 'package:wikib_utils/wikb_utils.dart';
 
 const isEmulator = false;
 
-Table<T> _create<T extends RowData>(CreateFromMap<T> createFromMap) => Table<T>(Azure.azureAccount(isEmulator), 'users', createFromMap);
+Table<T> _create<T extends RowData>(CreateFromMap<T> createFromMap) =>
+    Table<T>(Azure.azureAccount(isEmulator), 'users', createFromMap: createFromMap);
 
 final helper = _create<RowData>(RowData.create);
-final tables = AzureTables(Azure.azureAccount(isEmulator));
+final tables = Tables(Azure.azureAccount(isEmulator));
 final random = Random();
 
 Future _testProc(int userId) async {
@@ -43,7 +44,7 @@ Future runWrite(int userId, {int randomValue = 20000}) async {
   }
   try {
     await Future.delayed(Duration(milliseconds: random.nextInt(randomValue)));
-    await services.rstorage.flush(debugId: userId.toString(), sendPar: SendPar.init(retries: DebugRetries(randomValue: randomValue)));
+    await services.rstorage.flush(debugId: userId.toString(), sendPar: SendPar(retries: DebugRetries(randomValue: randomValue)));
   } catch (e) {}
 }
 
