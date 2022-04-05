@@ -10,8 +10,8 @@ dependencies:
   crypto:
   http:
   tuple:
-  wikib_utils:
-    path: ../wikib_utils 
+  utils:
+    path: ../utils 
 
 dev_dependencies:
   test: 

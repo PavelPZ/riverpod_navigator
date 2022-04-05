@@ -25,7 +25,7 @@
 			"path": "packages\\azure"
 		},
 		{
-			"path": "packages\\wikib_utils"
+			"path": "packages\\utils"
 		}
 	],
 	"settings": {

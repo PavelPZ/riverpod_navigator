@@ -3,7 +3,7 @@ import 'dart:html';
 
 import 'package:path/path.dart' as p;
 
-import 'common.dart';
+import 'common.dart_';
 
 String getUserDirectoryName([String? part1, String? part2, String? part3]) => p.join(part1!, part2, part3);
 

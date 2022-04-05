@@ -2,7 +2,7 @@
 
 import 'package:azure/azure.dart';
 import 'package:test/test.dart';
-import 'package:wikib_utils/wikb_utils.dart';
+import 'package:utils/utils.dart';
 
 import 'azure_lib.dart';
 

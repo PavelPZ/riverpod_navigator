@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
 import 'package:tuple/tuple.dart';
-import 'package:wikib_utils/wikb_utils.dart';
+import 'package:utils/utils.dart';
 
 // import 'lib.dart';
 
