@@ -5,20 +5,22 @@ import 'package:test/test.dart';
 
 import 'azure_lib.dart';
 
+const testtableName = 'testtable';
+
 void main() {
   group('tables', () {
     test('recreate', () async {
-      await tables.forceInsert('testtable');
-      await tables.recreate('testtable');
-      await tables.delete('testtable');
+      await tables.forceInsert(testtableName);
+      await tables.recreate(testtableName);
+      await tables.delete(testtableName);
     }, skip: true);
     test('create and delete', () async {
-      await tables.forceInsert('testtable');
+      await tables.forceInsert(testtableName);
       var exists = await tables.exists(tableName);
       expect(exists, true);
 
-      await tables.delete('testtable');
-      exists = await tables.exists(tableName);
+      await tables.delete(testtableName);
+      exists = await tables.exists(testtableName);
       expect(exists, false);
     }, skip: true);
     test('query all', () async {

@@ -11,7 +11,15 @@ class Tables extends Azure {
   // https://docs.microsoft.com/en-us/rest/api/storageservices/delete-table
   // Note that deleting a table is likely to take at least 40 seconds to complete.
   // If an operation is attempted against the table while it was being deleted, the service returns status code 409 (Conflict),
-  Future delete(String tableName) => _writeBytesRequest(null, 'DELETE', uriAppend: '(\'$tableName\')');
+  Future delete(String tableName) {
+    return _writeBytesRequest(null, 'DELETE', uriAppend: '(\'$tableName\')');
+    // final now = DateTime.now();
+    // while (true) {
+    //   await Future.delayed(Duration(seconds: 5));
+    //   if (!await exists(tableName)) break;
+    //   if (DateTime.now().difference(now).inSeconds > 45) throw Exception();
+    // }
+  }
 
   Future<bool> exists(String tableName) async {
     final all = await query(Query(filter: '${Q('TableName', '$tableName')}'));
