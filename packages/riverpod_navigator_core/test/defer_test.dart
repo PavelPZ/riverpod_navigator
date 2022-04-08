@@ -10,21 +10,18 @@ import 'model.dart';
 final loginProvider = StateProvider<bool>((_) => false);
 
 class TestNavigator extends RNavigatorCore {
-  TestNavigator(Ref ref, {this.delayMsec, this.isError = false})
-      : super(ref, routes);
+  TestNavigator(Ref ref, {this.delayMsec, this.isError = false}) : super(ref, routes);
 
   final int? delayMsec;
   final bool isError;
 
   @override
-  FutureOr<TypedPath> appNavigationLogicCore(
-      TypedPath oldNavigationStack, TypedPath intendedPath) {
+  FutureOr<TypedPath> appNavigationLogicCore(TypedPath oldNavigationStack, TypedPath intendedPath) {
     if (delayMsec == null) {
       if (isError) throw 'SYNC ERROR';
       return intendedPath;
     } else {
-      return Future.delayed(Duration(milliseconds: delayMsec!))
-          .then<TypedPath>((value) {
+      return Future.delayed(Duration(milliseconds: delayMsec!)).then<TypedPath>((value) {
         if (isError) throw 'ASYNC ERROR';
         return intendedPath;
       });
@@ -35,7 +32,7 @@ class TestNavigator extends RNavigatorCore {
 void main() {
   test('sync', () async {
     final container = ProviderContainer(
-        overrides: providerOverrides(
+        overrides: riverpodNavigatorOverrides(
       [HomeSegment()],
       TestNavigator.new,
     ));
@@ -46,10 +43,7 @@ void main() {
     final p1 = navigator.navigationStack2Url;
     expect(p1, 'home');
 
-    container.read(intendedPathProvider.notifier).state = [
-      HomeSegment(),
-      BookSegment(id: 1)
-    ];
+    container.read(intendedPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 1)];
     await container.pump();
     await navigator.navigationCompleted;
     final p2 = navigator.navigationStack2Url;
@@ -59,7 +53,7 @@ void main() {
 
   test('sync error', () async {
     final container = ProviderContainer(
-        overrides: providerOverrides(
+        overrides: riverpodNavigatorOverrides(
       [HomeSegment()],
       (ref) => TestNavigator(ref, isError: true),
     ));
@@ -80,7 +74,7 @@ void main() {
 
   test('async', () async {
     final container = ProviderContainer(
-        overrides: providerOverrides(
+        overrides: riverpodNavigatorOverrides(
       [HomeSegment()],
       (ref) => TestNavigator(ref, delayMsec: 1000),
     ));
@@ -91,10 +85,7 @@ void main() {
     final p1 = navigator.navigationStack2Url;
     expect(p1, 'home');
 
-    container.read(intendedPathProvider.notifier).state = [
-      HomeSegment(),
-      BookSegment(id: 1)
-    ];
+    container.read(intendedPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 1)];
     await container.pump();
     await navigator.navigationCompleted;
     final p2 = navigator.navigationStack2Url;
@@ -104,7 +95,7 @@ void main() {
 
   test('async, enother event', () async {
     final container = ProviderContainer(
-        overrides: providerOverrides(
+        overrides: riverpodNavigatorOverrides(
       [HomeSegment()],
       (ref) => TestNavigator(ref, delayMsec: 1000),
       dependsOn: [loginProvider],
@@ -117,24 +108,15 @@ void main() {
     expect(p1, 'home');
 
     // for (var i = 0; i < 3; i++) {
-    container.read(intendedPathProvider.notifier).state = [
-      HomeSegment(),
-      BookSegment(id: 1)
-    ];
+    container.read(intendedPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 1)];
     await container.pump();
 
     await Future.delayed(Duration(milliseconds: 300));
     container.read(intendedPathProvider.notifier).state = [HomeSegment()];
     await Future.delayed(Duration(milliseconds: 300));
-    container.read(intendedPathProvider.notifier).state = [
-      HomeSegment(),
-      BookSegment(id: 2)
-    ];
+    container.read(intendedPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 2)];
     container.read(loginProvider.notifier).update((s) => !s);
-    container.read(intendedPathProvider.notifier).state = [
-      HomeSegment(),
-      BookSegment(id: 3)
-    ];
+    container.read(intendedPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 3)];
 
     await navigator.navigationCompleted;
     final p3 = navigator.navigationStack2Url;
@@ -145,7 +127,7 @@ void main() {
 
   test('async error', () async {
     final container = ProviderContainer(
-        overrides: providerOverrides(
+        overrides: riverpodNavigatorOverrides(
       [HomeSegment()],
       (ref) => TestNavigator(ref, delayMsec: 1000, isError: true),
     ));

@@ -13,8 +13,7 @@ class TestNavigator extends RNavigatorCore {
   TestNavigator(Ref ref) : super(ref, routes);
 
   @override
-  FutureOr<TypedPath> appNavigationLogicCore(
-      TypedPath oldNavigationStack, TypedPath intendedPath) {
+  FutureOr<TypedPath> appNavigationLogicCore(TypedPath oldNavigationStack, TypedPath intendedPath) {
     final userIsLogged = ref.read(isLoggedProvider);
 
     // if user is not logged-in and some of the intended screen needs login => redirect to LoginScreen
@@ -23,8 +22,7 @@ class TestNavigator extends RNavigatorCore {
     }
 
     // user is logged and LogginScreen is going to display => redirect to HomeScreen
-    if (userIsLogged &&
-        intendedPath.any((segment) => segment is LoginSegment)) {
+    if (userIsLogged && intendedPath.any((segment) => segment is LoginSegment)) {
       return [HomeSegment()];
     }
 
@@ -32,14 +30,13 @@ class TestNavigator extends RNavigatorCore {
     return intendedPath;
   }
 
-  bool needsLogin(TypedSegment segment) =>
-      segment is BookSegment && segment.id.isOdd;
+  bool needsLogin(TypedSegment segment) => segment is BookSegment && segment.id.isOdd;
 }
 
 void main() {
   test('test login flow', () async {
     final container = ProviderContainer(
-      overrides: providerOverrides(
+      overrides: riverpodNavigatorOverrides(
         [HomeSegment()],
         TestNavigator.new,
         dependsOn: [isLoggedProvider],
@@ -75,20 +72,15 @@ void main() {
 
     // log in => book loaded
     await changeState(() {
-      container.read(intendedPathProvider.notifier).state = [
-        HomeSegment(),
-        BookSegment(id: 1)
-      ];
+      container.read(intendedPathProvider.notifier).state = [HomeSegment(), BookSegment(id: 1)];
       container.read(isLoggedProvider.notifier).state = true;
     }, 'home/book;id=1');
 
     // logoff => redirect to login
-    await changeState(
-        () => container.read(isLoggedProvider.notifier).state = false, 'login');
+    await changeState(() => container.read(isLoggedProvider.notifier).state = false, 'login');
 
     // login screen visible. When set login state to true => redirect to home
-    await changeState(
-        () => container.read(isLoggedProvider.notifier).state = true, 'home');
+    await changeState(() => container.read(isLoggedProvider.notifier).state = true, 'home');
 
     return;
   });
