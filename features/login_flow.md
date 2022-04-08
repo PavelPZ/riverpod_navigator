@@ -14,7 +14,7 @@ void main() => runApp(
       ProviderScope(
         /// Navigation stack depends on isLoggedProvider too.
         /// Add dependsOn: [isLoggedProvider]
-        overrides: providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [isLoggedProvider]),
+        overrides: riverpodNavigatorOverrides([HomeSegment()], AppNavigator.new, dependsOn: [isLoggedProvider]),
         child: const App(),
       ),
     );

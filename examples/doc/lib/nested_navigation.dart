@@ -8,7 +8,7 @@ import 'package:riverpod_navigator/riverpod_navigator.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: providerOverrides([HomeSegment()], AppNavigator.new),
+        overrides: riverpodNavigatorOverrides([HomeSegment()], AppNavigator.new),
         child: App(),
       ),
     );
@@ -226,7 +226,7 @@ class BooksAuthorsScreen extends RScreenHook<AppNavigator, BooksAuthorsSegment> 
             ProviderScope(
               // The RestorePath class preserves the last state of the navigator.
               // Used during the next navigator initialization.
-              overrides: providerOverrides(
+              overrides: riverpodNavigatorOverrides(
                 [BookSegment(id: 2)],
                 AppNavigator.forBook,
                 restorePath: restoreBook,
@@ -234,7 +234,7 @@ class BooksAuthorsScreen extends RScreenHook<AppNavigator, BooksAuthorsSegment> 
               child: BooksTab(),
             ),
             ProviderScope(
-              overrides: providerOverrides(
+              overrides: riverpodNavigatorOverrides(
                 [AuthorSegment(id: 2)],
                 AppNavigator.forAuthor,
                 restorePath: restoreAuthor,

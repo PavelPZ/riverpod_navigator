@@ -1,3 +1,8 @@
+## 1.0.2
+
+- **Breaking**: rename providerOverrides to riverpodNavigatorOverrides
+- [issues 12](https://github.com/PavelPZ/riverpod_navigator/issues/12)
+
 ## 1.0.1
 
 - small doc typo

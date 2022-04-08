@@ -58,11 +58,11 @@ class BooksAuthorsScreen extends RScreenHook<AppNavigator, BooksAuthorsSegment> 
             ProviderScope(
               // The RestorePath class preserves the last state of the navigator.
               // Used during the next navigator initialization.
-              overrides: providerOverrides([BookSegment(id: 2)], AppNavigator.forBook, restorePath: restoreBook),
+              overrides: riverpodNavigatorOverrides([BookSegment(id: 2)], AppNavigator.forBook, restorePath: restoreBook),
               child: BooksTab(),
             ),
             ProviderScope(
-              overrides: providerOverrides([AuthorSegment(id: 2)], AppNavigator.forAuthor, restorePath: restoreAuthor),
+              overrides: riverpodNavigatorOverrides([AuthorSegment(id: 2)], AppNavigator.forAuthor, restorePath: restoreAuthor),
               child: AuthorTab(),
             ),
           ],

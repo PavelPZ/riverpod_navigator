@@ -7,7 +7,7 @@ part 'main.g.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: providerOverrides([Page1Segment()], AppNavigator.new),
+        overrides: riverpodNavigatorOverrides([Page1Segment()], AppNavigator.new),
         child: const App(),
       ),
     );

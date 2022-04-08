@@ -135,7 +135,7 @@ class App extends ConsumerWidget {
 void main() => runApp(
       ProviderScope(
         // [HomeSegment()] as home TypedPath and navigator constructor are required
-        overrides: providerOverrides([HomeSegment()], AppNavigator.new),
+        overrides: riverpodNavigatorOverrides([HomeSegment()], AppNavigator.new),
         child: const App(),
       ),
     );
@@ -189,7 +189,7 @@ Navigation logic can be developed and tested without typing a single flutter wid
 ```dart 
   test('navigation model', () async {
     final container = ProviderContainer(
-      overrides: providerOverrides([HomeSegment()], AppNavigator.new),
+      overrides: riverpodNavigatorOverrides([HomeSegment()], AppNavigator.new),
     );
     final navigator = container.read(navigatorProvider);
     

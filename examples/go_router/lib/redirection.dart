@@ -9,7 +9,7 @@ part 'redirection.g.dart';
 
 void main() => runApp(
       ProviderScope(
-        overrides: providerOverrides([HomeSegment()], AppNavigator.new, dependsOn: [loginInfoProvider]),
+        overrides: riverpodNavigatorOverrides([HomeSegment()], AppNavigator.new, dependsOn: [loginInfoProvider]),
         child: const App(),
       ),
     );

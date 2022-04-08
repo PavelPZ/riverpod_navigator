@@ -4,7 +4,7 @@ import 'package:riverpod_navigator_core/riverpod_navigator_core.dart';
 import 'package:test/test.dart';
 
 ProviderContainer createContainer() {
-  final res = ProviderContainer(overrides: providerOverrides([HomeSegment()], AppNavigator.new));
+  final res = ProviderContainer(overrides: riverpodNavigatorOverrides([HomeSegment()], AppNavigator.new));
   addTearDown(res.dispose);
   return res;
 }
