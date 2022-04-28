@@ -142,6 +142,7 @@ class NestedNavigator extends RNavigator {
             ),
           ],
         );
+
   String getDeepUrl({required int tabId}) => pathParser.toUrl([
         HomeSegment(
           tabId: 1,
@@ -161,7 +162,14 @@ Widget moreTab(WidgetRef ref) => Router(routerDelegate: (ref.read(navigatorProvi
 Widget profileScreen(WidgetRef ref, ProfileSegment segment) {
   final navig = ref.read(navigatorProvider) as NestedNavigator;
   return Center(
-    child: Column(children: [Text('PROFILE SCREEN'), Text(navig.getDeepUrl(tabId: 1))]),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('PROFILE SCREEN'),
+        SizedBox(height: 20),
+        Text(navig.getDeepUrl(tabId: 1)),
+      ],
+    ),
   );
 }
 
@@ -169,6 +177,15 @@ Widget profileScreen(WidgetRef ref, ProfileSegment segment) {
 Widget moreScreen(WidgetRef ref, MoreSegment segment) {
   final navig = ref.read(navigatorProvider) as NestedNavigator;
   return Center(
-    child: Column(children: [Text('MORE SCREEN'), Text(navig.getDeepUrl(tabId: 1))]),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('MORE SCREEN'),
+        SizedBox(height: 20),
+        Text(
+          navig.getDeepUrl(tabId: 1),
+        )
+      ],
+    ),
   );
 }
