@@ -46,11 +46,12 @@ class ProfileScreen extends ConsumerWidget {
       profileScreen(_ref, segment);
 }
 
-class MoreScreen extends StatelessWidget {
+class MoreScreen extends ConsumerWidget {
   const MoreScreen(this.segment, {Key? key}) : super(key: key);
 
   final MoreSegment segment;
 
   @override
-  Widget build(BuildContext _context) => moreScreen(segment);
+  Widget build(BuildContext _context, WidgetRef _ref) =>
+      moreScreen(_ref, segment);
 }

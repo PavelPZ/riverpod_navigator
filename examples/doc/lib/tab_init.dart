@@ -49,14 +49,6 @@ class AppNavigator extends RNavigator {
           ],
           progressIndicatorBuilder: () => const SpinKitCircle(color: Colors.blue, size: 45),
         );
-
-  String getDeepUrl(int tabId, {TypedPath? profilePath, TypedPath? morePath}) => pathParser.toUrl([
-        HomeSegment(
-          tabId: tabId,
-          profilePath: profilePath == null ? null : pathParser.toUrl(profilePath),
-          morePath: morePath == null ? null : pathParser.toUrl(morePath),
-        )
-      ]);
 }
 
 @cwidget
@@ -112,6 +104,8 @@ Widget homeScreen(HomeSegment segment) => Consumer(builder: (_, ref, ___) {
       );
     });
 
+// ============== NESTED navigators
+
 class ProfileSegment extends TypedSegment {
   const ProfileSegment();
   // ignore: avoid_unused_constructor_parameters
@@ -148,6 +142,13 @@ class NestedNavigator extends RNavigator {
             ),
           ],
         );
+  String getDeepUrl({required int tabId}) => pathParser.toUrl([
+        HomeSegment(
+          tabId: 1,
+          profilePath: tabId == 0 ? pathParser.toUrl(ref.read(navigationStackProvider)) : null,
+          morePath: tabId == 1 ? pathParser.toUrl(ref.read(navigationStackProvider)) : null,
+        )
+      ]);
 }
 
 @cwidget
@@ -157,7 +158,17 @@ Widget profileTab(WidgetRef ref) => Router(routerDelegate: (ref.read(navigatorPr
 Widget moreTab(WidgetRef ref) => Router(routerDelegate: (ref.read(navigatorProvider) as NestedNavigator).routerDelegate);
 
 @cwidget
-Widget profileScreen(WidgetRef ref, ProfileSegment segment) => Center(child: Text('PROFILE SCREEN'));
+Widget profileScreen(WidgetRef ref, ProfileSegment segment) {
+  final navig = ref.read(navigatorProvider) as NestedNavigator;
+  return Center(
+    child: Column(children: [Text('PROFILE SCREEN'), Text(navig.getDeepUrl(tabId: 1))]),
+  );
+}
 
-@swidget
-Widget moreScreen(MoreSegment segment) => Center(child: Text('MORE SCREEN'));
+@cwidget
+Widget moreScreen(WidgetRef ref, MoreSegment segment) {
+  final navig = ref.read(navigatorProvider) as NestedNavigator;
+  return Center(
+    child: Column(children: [Text('MORE SCREEN'), Text(navig.getDeepUrl(tabId: 1))]),
+  );
+}
