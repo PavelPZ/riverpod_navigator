@@ -12,12 +12,17 @@ class RNavigator extends RNavigatorCore {
     NavigatorWraperBuilder? navigatorWraperBuilder,
     SplashBuilder? splashBuilder,
     WidgetBuilder? progressIndicatorBuilder,
+    InitAppWithRef initAppWithRef,
   })  : navigatorWraperBuilder = navigatorWraperBuilder ?? NavigatorWraper.new,
         splashBuilder = splashBuilder ?? SplashScreen.new,
         progressIndicatorBuilder =
             progressIndicatorBuilder ?? CircularProgressIndicator.new,
         routerDelegate = RRouterDelegate(),
-        super(ref, routes) {
+        super(
+          ref,
+          routes,
+          initAppWithRef: initAppWithRef,
+        ) {
     routeInformationParser = RouteInformationParserImpl(pathParser);
 
     routerDelegate.navigator = this;
@@ -25,7 +30,7 @@ class RNavigator extends RNavigatorCore {
       navigationStackProvider,
       (_, __) => routerDelegate.doNotifyListeners(),
     );
-    ref.onDispose(callInDispose);
+    ref.onDispose(callInDispose.close);
   }
 
   final NavigatorWraperBuilder navigatorWraperBuilder;

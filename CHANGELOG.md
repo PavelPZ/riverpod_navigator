@@ -1,3 +1,6 @@
+## 1.0.3
+- depends on riverpod 2.0.0-dev.5
+
 ## 1.0.2
 
 - **Breaking**: rename providerOverrides to riverpodNavigatorOverrides

@@ -1,5 +1,7 @@
 part of 'riverpod_navigator_core.dart';
 
+typedef InitAppWithRef = Future Function()?;
+
 // ********************************************
 //   RNavigator
 // ********************************************
@@ -10,6 +12,7 @@ class RNavigatorCore {
     this.ref,
     List<RRouteCore> routes, {
     IPathParser pathParserCreator(RRouter router)?,
+    this.initAppWithRef,
   }) : router = RRouter(routes) {
     pathParser = pathParserCreator == null
         ? PathParser(router)
@@ -20,7 +23,7 @@ class RNavigatorCore {
 
     ref.onDispose(() {
       // ignore: avoid_function_literals_in_foreach_calls
-      _unlistens.forEach((f) => f());
+      _unlistens.forEach((f) => f.close());
     });
 
     // start navigation
@@ -40,9 +43,10 @@ class RNavigatorCore {
   late RestorePath? _restorePath;
 
   final Ref ref;
+  InitAppWithRef initAppWithRef;
 
   late List<AlwaysAliveProviderListenable> _dependsOn;
-  late List<Function> _unlistens;
+  late List<ProviderSubscription> _unlistens;
   late Defer2NextTick _defer2NextTick;
 
   /// Enter application navigation logic here (redirection, login, etc.).
@@ -53,10 +57,10 @@ class RNavigatorCore {
 
   /// low level app logic
   FutureOr<TypedPath> appNavigationLogicCore(
-      TypedPath oldNavigationStack, TypedPath intendedPath) {
+      TypedPath navigationStack, TypedPath intendedPath) {
     final newIntendedPath = appNavigationLogic(intendedPath);
 
-    final navigationStack = getNavigationStack();
+    // final navigationStack = getNavigationStack();
     // when navigationStack[i] == newIntendedPath[i], set newIntendedPath[i] = navigationStack[i]
     eq2Identical(navigationStack, newIntendedPath);
 
@@ -158,6 +162,10 @@ class RNavigatorCore {
 
   /// asynchronous screen actions, waiting and collectiong result
   Future waitEnd(Tuple2<List<GetFuture>, List<GetFuture>> todo) async {
+    if (initAppWithRef != null) {
+      await initAppWithRef!();
+      initAppWithRef = null;
+    }
     // first, close old stack:
     for (final fs in todo.item1) {
       await fs();

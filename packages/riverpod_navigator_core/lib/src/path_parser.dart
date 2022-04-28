@@ -19,8 +19,7 @@ extension UrlParsEx on UrlPars {
   String? getStringNull(String name) => _getNull<String>(name, (v) => v);
   int? getIntNull(String name) => _getNull<int>(name, (v) => int.parse(v));
   bool? getBoolNull(String name) => _getNull<bool>(name, (v) => v == 'true');
-  double? getDoubleNull(String name) =>
-      _getNull<double>(name, (v) => double.parse(v));
+  double? getDoubleNull(String name) => _getNull<double>(name, (v) => double.parse(v));
 
   UrlPars _set<T>(String name, T? value) {
     if (value != null) this[name] = value.toString();
@@ -52,7 +51,7 @@ abstract class IPathParser {
   String toUrl(TypedPath typedPath);
 
   /// TypedPath => String path
-  TypedPath fromUrl(String? path);
+  TypedPath? fromUrl(String? path);
 }
 
 /// Path parser
@@ -61,14 +60,13 @@ class PathParser extends IPathParser {
 
   /// String path => TypedPath
   @override
-  String toUrl(TypedPath typedPath) =>
-      typedPath.map((s) => router.toUrl(s)).join('/');
+  String toUrl(TypedPath typedPath) => typedPath.map((s) => router.toUrl(s)).join('/');
 
   /// TypedPath => String path
   @override
-  TypedPath fromUrl(String? path) {
+  TypedPath? fromUrl(String? path) {
+    if (path == null || path.isEmpty) return null;
     final res = <TypedSegment>[];
-    if (path == null || path.isEmpty) return res;
     final segments = path.split('/').where((s) => s.isNotEmpty).toList();
     if (segments.isEmpty) return res;
     for (final segment in segments) {
@@ -83,6 +81,6 @@ class PathParser extends IPathParser {
       }
       res.add(router.decode(map, properties[0]));
     }
-    return res;
+    return res.isEmpty ? null : res;
   }
 }

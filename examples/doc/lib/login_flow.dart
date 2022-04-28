@@ -148,7 +148,7 @@ class AppNavigator extends RNavigator {
     // get return path
     final loginHomeSegment = navigationStack.last as LoginSegment;
     var returnPath = pathParser.fromUrl(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
-    if (returnPath.isEmpty) returnPath = [HomeSegment()];
+    returnPath ??= [HomeSegment()];
 
     // start navigating to a return path
     ref.read(intendedPathProvider.notifier).state = returnPath;

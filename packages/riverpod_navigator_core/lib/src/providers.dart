@@ -21,7 +21,7 @@ final isNavigatingProvider = StateProvider<int>((_) => 0);
 /// initialize providers
 List<Override> riverpodNavigatorOverrides(
   TypedPath initPath,
-  RNavigatorCore navigator(Ref ref), {
+  RNavigatorCore createNavigator(Ref ref), {
   RestorePath? restorePath,
   List<AlwaysAliveProviderListenable> dependsOn = const [],
 }) =>
@@ -35,7 +35,7 @@ List<Override> riverpodNavigatorOverrides(
       navigationStackProvider,
       isNavigatingProvider,
       navigatorProvider.overrideWithProvider(
-        Provider((ref) => navigator(ref)
+        Provider((ref) => createNavigator(ref)
           .._restorePath = restorePath
           ..initPath = initPath
           .._setdependsOn(dependsOn)),

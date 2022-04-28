@@ -92,7 +92,7 @@ class RRouterDelegate extends RouterDelegate<TypedPath>
   RRouterDelegate(this.ref, this.homePath) {
     final unlisten =
         ref.listen(navigationStackProvider, (_, __) => notifyListeners());
-    ref.onDispose(unlisten);
+    ref.onDispose(unlisten.close);
   }
 
   final Ref ref;

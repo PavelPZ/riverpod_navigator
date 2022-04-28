@@ -178,14 +178,13 @@ abstract class RRouterDelegate extends RouterDelegate<TypedPath> with ChangeNoti
     defer2NextTick.navigator = this;
 
     // listen for "input status" => call defer2NextTick.providerChanged => call applicationLogic
-    final unlistens =
-        [intendedPathProvider, isLoggedProvider].map((e) => ref.listen(e, (_, __) => defer2NextTick.providerChanged())).toList();
+    final unlistens = [intendedPathProvider, isLoggedProvider].map((e) => ref.listen(e, (_, __) => defer2NextTick.providerChanged())).toList();
 
     // listen navigationStackProvider => call notifyListeners which then rebuilds the navigation stack
     unlistens.add(ref.listen(navigationStackProvider, (_, __) => notifyListeners()));
 
     // ignore: avoid_function_literals_in_foreach_calls
-    ref.onDispose(() => unlistens.forEach((u) => u()));
+    ref.onDispose(() => unlistens.forEach((u) => u.close()));
   }
 
   final Ref ref;

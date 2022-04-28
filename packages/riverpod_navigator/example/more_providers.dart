@@ -169,7 +169,7 @@ abstract class RRouterDelegate extends RouterDelegate<TypedPath>
     unlistens
         .add(ref.listen(navigationStackProvider, (_, __) => notifyListeners()));
     // ignore: avoid_function_literals_in_foreach_calls
-    ref.onDispose(() => unlistens.forEach((u) => u()));
+    ref.onDispose(() => unlistens.forEach((u) => u.close()));
   }
 
   final Ref ref;

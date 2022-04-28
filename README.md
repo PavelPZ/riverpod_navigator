@@ -391,6 +391,8 @@ Text('Async result: "${segment.asyncValue}"'),
 
 - ### [Login flow](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/login_flow.md)
 - ### [Nested navigation](https://github.com/PavelPZ/riverpod_navigator/blob/main/features/nested_navigation.md)
+- ### Navigate to Tab
+
 
 ## Installation of examples
 
