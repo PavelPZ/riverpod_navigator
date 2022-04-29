@@ -1,3 +1,6 @@
+## 1.0.5
+- global url parser
+
 ## 1.0.4
 - global route directory
 
