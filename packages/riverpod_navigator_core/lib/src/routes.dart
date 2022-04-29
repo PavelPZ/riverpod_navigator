@@ -17,14 +17,18 @@ class RRouter {
     for (final r in routes) {
       final rrr = _string2Route[r.urlName];
       if (rrr != null) {
-        if (rrr.segmentType != r.segmentType) throw Exception('"${r.urlName}" segment.urlName already registered.');
+        if (rrr.segmentType != r.segmentType) {
+          throw Exception('"${r.urlName}" segment.urlName already registered.');
+        }
       } else {
         _string2Route[r.urlName] = r;
       }
 
       final rr = _type2Route[r.segmentType];
       if (rr != null) {
-        if (rr.segmentType != r.segmentType) throw Exception('"${r.segmentType.toString()}" segment.segmentType already registered.');
+        if (rr.segmentType != r.segmentType) {
+          throw Exception('"${r.segmentType.toString()}" segment.segmentType already registered.');
+        }
       } else {
         _type2Route[r.segmentType] = r;
       }
@@ -35,11 +39,11 @@ class RRouter {
 
   R segment2Route<R extends RRouteCore>(TypedSegment segment) => _type2Route[segment.runtimeType] as R;
 
-  bool segmentEq(TypedSegment s1, TypedSegment s2) => segment2Route(s1).toUrl(s1) == segment2Route(s2).toUrl(s2);
+  bool segmentEq(TypedSegment s1, TypedSegment s2) => segment2Route(s1).segment2String(s1) == segment2Route(s2).segment2String(s2);
 
-  String? toUrl(TypedSegment s) => _type2Route[s.runtimeType]!.toUrl(s);
+  // String? toUrl(TypedSegment s) => _type2Route[s.runtimeType]!.toUrl(s);
 
-  TypedSegment decode(UrlPars pars, String urlName) => _string2Route[urlName]!.decode(pars);
+  // TypedSegment decode(UrlPars pars, String urlName) => _string2Route[urlName]!.decode(pars);
 }
 
 final _type2Route = <Type, RRouteCore>{};
@@ -70,10 +74,34 @@ class RRouteCore<T extends TypedSegment> {
   GetFuture? callClosing(TypedSegment sOld) => closing == null ? null : () => closing!(sOld as T);
 
   /// typed-segment to string-segment
-  String toUrl(T segment) {
+  String segment2String(T segment) {
     final map = <String, String>{};
     segment.encode(map);
     final props = [urlName] + map.entries.map((kv) => '${kv.key}=${Uri.encodeComponent(kv.value)}').toList();
     return props.join(';');
   }
+}
+
+String? segment2String(TypedSegment s) => _type2Route[s.runtimeType]!.segment2String(s);
+TypedSegment map2Segment(UrlPars pars, String urlName) => _string2Route[urlName]!.decode(pars);
+String path2String(TypedPath typedPath) => typedPath.map((s) => segment2String(s)).join('/');
+TypedPath? string2Path(String? path) {
+  if (path == null || path.isEmpty) return null;
+  final res = <TypedSegment>[];
+  final segments = path.split('/').where((s) => s.isNotEmpty).toList();
+  if (segments.isEmpty) return res;
+  for (final segment in segments) {
+    final map = <String, String>{};
+    final properties = segment.split(';');
+    assert(properties[0].isNotEmpty);
+    for (final par in properties.skip(1)) {
+      assert(par.isNotEmpty);
+      final nameValue = par.split('=');
+      assert(nameValue.length == 2);
+      map[nameValue[0]] = Uri.decodeComponent(nameValue[1]);
+    }
+    // res.add(_router.decode(map, properties[0]));
+    res.add(map2Segment(map, properties[0]));
+  }
+  return res.isEmpty ? null : res;
 }

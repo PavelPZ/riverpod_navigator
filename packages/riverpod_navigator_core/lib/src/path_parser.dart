@@ -43,10 +43,6 @@ extension UrlParsEx on UrlPars {
 // ********************************************
 
 abstract class IPathParser {
-  IPathParser(this.router);
-
-  final RRouter router;
-
   /// String path => TypedPath
   String toUrl(TypedPath typedPath);
 
@@ -56,31 +52,12 @@ abstract class IPathParser {
 
 /// Path parser
 class PathParser extends IPathParser {
-  PathParser(RRouter router) : super(router);
-
   /// String path => TypedPath
   @override
-  String toUrl(TypedPath typedPath) => typedPath.map((s) => router.toUrl(s)).join('/');
+  // String toUrl(TypedPath typedPath) => typedPath.map((s) => _router.toUrl(s)).join('/');
+  String toUrl(TypedPath typedPath) => path2String(typedPath);
 
   /// TypedPath => String path
   @override
-  TypedPath? fromUrl(String? path) {
-    if (path == null || path.isEmpty) return null;
-    final res = <TypedSegment>[];
-    final segments = path.split('/').where((s) => s.isNotEmpty).toList();
-    if (segments.isEmpty) return res;
-    for (final segment in segments) {
-      final map = <String, String>{};
-      final properties = segment.split(';');
-      assert(properties[0].isNotEmpty);
-      for (final par in properties.skip(1)) {
-        assert(par.isNotEmpty);
-        final nameValue = par.split('=');
-        assert(nameValue.length == 2);
-        map[nameValue[0]] = Uri.decodeComponent(nameValue[1]);
-      }
-      res.add(router.decode(map, properties[0]));
-    }
-    return res.isEmpty ? null : res;
-  }
+  TypedPath? fromUrl(String? path) => string2Path(path);
 }

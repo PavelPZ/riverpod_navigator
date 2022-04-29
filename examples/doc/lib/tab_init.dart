@@ -143,11 +143,11 @@ class NestedNavigator extends RNavigator {
           ],
         );
 
-  String getDeepUrl({required int tabId}) => pathParser.toUrl([
+  String getDeepUrl({required int tabId}) => path2String([
         HomeSegment(
-          tabId: 1,
-          profilePath: tabId == 0 ? pathParser.toUrl(ref.read(navigationStackProvider)) : null,
-          morePath: tabId == 1 ? pathParser.toUrl(ref.read(navigationStackProvider)) : null,
+          tabId: tabId,
+          profilePath: tabId == 0 ? path2String(ref.read(navigationStackProvider)) : null,
+          morePath: tabId == 1 ? path2String(ref.read(navigationStackProvider)) : null,
         )
       ]);
 }
@@ -167,7 +167,7 @@ Widget profileScreen(WidgetRef ref, ProfileSegment segment) {
       children: [
         Text('PROFILE SCREEN'),
         SizedBox(height: 20),
-        Text(navig.getDeepUrl(tabId: 1)),
+        Text(navig.getDeepUrl(tabId: 0)),
       ],
     ),
   );
@@ -182,9 +182,7 @@ Widget moreScreen(WidgetRef ref, MoreSegment segment) {
       children: [
         Text('MORE SCREEN'),
         SizedBox(height: 20),
-        Text(
-          navig.getDeepUrl(tabId: 1),
-        )
+        Text(navig.getDeepUrl(tabId: 1)),
       ],
     ),
   );
