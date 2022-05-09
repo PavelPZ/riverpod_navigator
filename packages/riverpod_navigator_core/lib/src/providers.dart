@@ -23,6 +23,7 @@ List<Override> riverpodNavigatorOverrides(
   TypedPath initPath,
   RNavigatorCore createNavigator(Ref ref), {
   RestorePath? restorePath,
+  String? initPathAsString,
   List<AlwaysAliveProviderListenable> dependsOn = const [],
 }) =>
     [
@@ -34,10 +35,13 @@ List<Override> riverpodNavigatorOverrides(
       ),
       navigationStackProvider,
       isNavigatingProvider,
-      navigatorProvider.overrideWithProvider(
-        Provider((ref) => createNavigator(ref)
-          .._restorePath = restorePath
-          ..initPath = initPath
-          .._setdependsOn(dependsOn)),
-      ),
+      navigatorProvider.overrideWithProvider(Provider((ref) {
+        final res = createNavigator(ref);
+        res._restorePath = restorePath;
+        res.initPath = initPathAsString == null
+            ? initPath
+            : string2Path(initPathAsString)!;
+        res._setdependsOn(dependsOn);
+        return res;
+      })),
     ];

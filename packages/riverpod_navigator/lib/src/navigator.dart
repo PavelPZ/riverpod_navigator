@@ -13,6 +13,7 @@ class RNavigator extends RNavigatorCore {
     SplashBuilder? splashBuilder,
     WidgetBuilder? progressIndicatorBuilder,
     InitAppWithRef initAppWithRef,
+    this.onPathChanged,
   })  : navigatorWraperBuilder = navigatorWraperBuilder ?? NavigatorWraper.new,
         splashBuilder = splashBuilder ?? SplashScreen.new,
         progressIndicatorBuilder =
@@ -26,10 +27,10 @@ class RNavigator extends RNavigatorCore {
     routeInformationParser = RouteInformationParserImpl(pathParser);
 
     routerDelegate.navigator = this;
-    final callInDispose = ref.listen(
-      navigationStackProvider,
-      (_, __) => routerDelegate.doNotifyListeners(),
-    );
+    final callInDispose = ref.listen(navigationStackProvider, (_, __) {
+      routerDelegate.doNotifyListeners();
+      onPathChanged?.call(ref.read(navigationStackProvider));
+    });
     ref.onDispose(callInDispose.close);
   }
 
@@ -38,6 +39,7 @@ class RNavigator extends RNavigatorCore {
   final WidgetBuilder progressIndicatorBuilder;
   final RRouterDelegate routerDelegate;
   late RouteInformationParserImpl routeInformationParser;
+  final void Function(TypedPath path)? onPathChanged;
 
   Page segment2Page(TypedSegment segment) {
     final route = router.segment2Route<RRoute>(segment);

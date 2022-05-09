@@ -16,6 +16,7 @@ dependencies:
   json_annotation: 
   path:
   riverpod_navigator: 
+  shared_preferences:
 
 dev_dependencies: 
   # analyzer:

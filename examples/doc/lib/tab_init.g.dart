@@ -13,13 +13,14 @@ class App extends ConsumerWidget {
   Widget build(BuildContext _context, WidgetRef _ref) => app(_ref);
 }
 
-class HomeScreen extends HookWidget {
+class HomeScreen extends HookConsumerWidget {
   const HomeScreen(this.segment, {Key? key}) : super(key: key);
 
   final HomeSegment segment;
 
   @override
-  Widget build(BuildContext _context) => homeScreen(segment);
+  Widget build(BuildContext _context, WidgetRef _ref) =>
+      homeScreen(_ref, segment);
 }
 
 class ProfileTab extends ConsumerWidget {

@@ -1,3 +1,6 @@
+## 1.0.6
+- riverpodNavigatorOverrides: new initPathAsString parameter
+
 ## 1.0.5
 - global url parser
 

@@ -3,22 +3,45 @@
 //************************************************ */
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_navigator/riverpod_navigator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // flutter pub run build_runner watch --delete-conflicting-outputs
 part 'tab_init.g.dart';
 
-void main() => runApp(
-      ProviderScope(
-        // home path and navigator constructor are required
-        overrides: riverpodNavigatorOverrides(const [HomeSegment()], AppNavigator.new),
-        child: const App(),
-      ),
-    );
+class NestedUrls {
+  NestedUrls(this.sharedPreferences);
+  final SharedPreferences sharedPreferences;
+  void setProfilePath(String value) => sharedPreferences.setString('profilePath', value);
+  void setMorePath(String value) => sharedPreferences.setString('morePath', value);
+  void setTabId(int value) => sharedPreferences.setInt('tabId', value);
+}
+
+final nestedUrlsProvider = Provider<NestedUrls>((_) => throw UnimplementedError());
+
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final sharedPreferences = await SharedPreferences.getInstance();
+  final homeSegment = HomeSegment(
+    tabId: sharedPreferences.getInt('tabId'),
+    profilePath: sharedPreferences.getString('profilePath'),
+    morePath: sharedPreferences.getString('morePath'),
+  );
+  runApp(
+    ProviderScope(
+      // home path and navigator constructor are required
+      overrides: [
+        ...riverpodNavigatorOverrides([homeSegment], AppNavigator.new),
+        nestedUrlsProvider.overrideWithValue(NestedUrls(sharedPreferences)),
+      ],
+      child: const App(),
+    ),
+  );
+}
 
 class HomeSegment extends TypedSegment {
   const HomeSegment({this.tabId, this.profilePath, this.morePath});
@@ -62,48 +85,49 @@ Widget app(WidgetRef ref) {
   );
 }
 
-@hwidget
-Widget homeScreen(HomeSegment segment) => Consumer(builder: (_, ref, ___) {
-      // read main navigation stack and navigator:
-      final homeSegment = ref.read(navigationStackProvider).last as HomeSegment;
-      final navigator = ref.read(navigatorProvider);
-      // decode profilePath and morePath (from string to typed path):
-      final profilePath = navigator.pathParser.fromUrl(homeSegment.profilePath);
-      final morePath = navigator.pathParser.fromUrl(homeSegment.morePath);
-      return DefaultTabController(
-        initialIndex: homeSegment.tabId ?? 0,
-        length: 2,
-        child: Scaffold(
-            appBar: AppBar(
-              title: Text('Home'),
-              bottom: const TabBar(
-                tabs: [
-                  Tab(text: 'Profile'),
-                  Tab(text: 'More'),
-                ],
-              ),
-            ),
-            body: TabBarView(
-              children: [
-                ProviderScope(
-                  overrides: riverpodNavigatorOverrides(
-                    profilePath ?? [ProfileSegment()],
-                    NestedNavigator.forProfile,
-                  ),
-                  child: ProfileTab(),
-                ),
-                ProviderScope(
-                  overrides: riverpodNavigatorOverrides(
-                    morePath ?? [MoreSegment()],
-                    NestedNavigator.forMore,
-                  ),
-                  child: MoreTab(),
-                ),
-              ],
-            )),
-      );
-    });
+@hcwidget
+Widget homeScreen(WidgetRef ref, HomeSegment segment) {
+  final tinkerMixin = useSingleTickerProvider();
+  final tabController = useMemoized(() => TabController(vsync: tinkerMixin, length: 2, initialIndex: segment.tabId ?? 0), []);
+  tabController.addListener(() => ref.read(nestedUrlsProvider).setTabId(tabController.index));
 
+  // read HomeSegment:
+  final homeSegment = ref.read(navigationStackProvider).last as HomeSegment;
+
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('Home'),
+      bottom: TabBar(
+        controller: tabController,
+        tabs: const [
+          Tab(text: 'Profile'),
+          Tab(text: 'More'),
+        ],
+      ),
+    ),
+    body: TabBarView(
+      controller: tabController,
+      children: [
+        ProviderScope(
+          overrides: riverpodNavigatorOverrides(
+            [ProfileSegment()],
+            NestedNavigator.forProfile,
+            initPathAsString: homeSegment.profilePath,
+          ),
+          child: ProfileTab(),
+        ),
+        ProviderScope(
+          overrides: riverpodNavigatorOverrides(
+            [MoreSegment()],
+            NestedNavigator.forMore,
+            initPathAsString: homeSegment.morePath,
+          ),
+          child: MoreTab(),
+        ),
+      ],
+    ),
+  );
+}
 // ============== NESTED navigators
 
 class ProfileSegment extends TypedSegment {
@@ -129,6 +153,7 @@ class NestedNavigator extends RNavigator {
               ProfileScreen.new,
             ),
           ],
+          onPathChanged: (path) => ref.read(nestedUrlsProvider).setProfilePath(path2String(path)),
         );
 
   NestedNavigator.forMore(Ref ref)
@@ -141,6 +166,7 @@ class NestedNavigator extends RNavigator {
               MoreScreen.new,
             ),
           ],
+          onPathChanged: (path) => ref.read(nestedUrlsProvider).setMorePath(path2String(path)),
         );
 
   String getDeepUrl({required int tabId}) => path2String([
