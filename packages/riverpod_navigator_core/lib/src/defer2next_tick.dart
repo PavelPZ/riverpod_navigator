@@ -30,12 +30,9 @@ class Defer2NextTick {
     assert(_p('providerChanged start'));
     // the following is UNDO-ed in _refreshStack-finally block
     if (_resultCompleter == null) {
-      navigator
-          .setIsNavigating(true); // notify navigator (e.g. show waiting cursor)
-      _resultCompleter =
-          Completer(); // alow waiting for async navigation completed
-      _resultFuture =
-          _resultCompleter!.future; // _resultCompleter can be changed
+      navigator.setIsNavigating(true); // notify navigator (e.g. show waiting cursor)
+      _resultCompleter = Completer(); // alow waiting for async navigation completed
+      _resultFuture = _resultCompleter!.future; // _resultCompleter can be changed
     }
     // this flag blocks calling _refreshStack's while-cycle more than once
     _refreshStackWhileCalled = true;
@@ -81,20 +78,16 @@ class Defer2NextTick {
       try {
         while (_refreshStackWhileCalled) {
           _refreshStackWhileCalled = false;
-          final navigationStackNotifier =
-              navigator.ref.read(navigationStackProvider.notifier);
-          final intendedPathNotifier =
-              navigator.ref.read(intendedPathProvider.notifier);
+          final navigationStackNotifier = navigator.ref.read(navigationStackProvider.notifier);
+          final intendedPathNotifier = navigator.ref.read(intendedPathProvider.notifier);
           assert(_p('appLogic start'));
           if (_protectedFutures.isNotEmpty) {
             await Future.wait(_protectedFutures);
           }
           assert(_p('_protectedFutures'));
           assert(_protectedFutures.isEmpty);
-          final futureOr = navigator.appNavigationLogicCore(
-              navigationStackNotifier.state, intendedPathNotifier.state);
-          final newPath =
-              futureOr is Future<TypedPath?> ? await futureOr : futureOr;
+          final futureOr = navigator.appNavigationLogicCore(navigationStackNotifier.state, intendedPathNotifier.state);
+          final newPath = futureOr is Future<TypedPath?> ? await futureOr : futureOr;
           // during async appNavigationLogicCore state another providerChanged called
           // do not finish _refreshStack but run its while cycle again
           if (_refreshStackWhileCalled) {
@@ -104,8 +97,7 @@ class Defer2NextTick {
           // synchronize navigation stack and intendedPath with appNavigationLogic result
           _intendedPathChanging = true;
           try {
-            intendedPathNotifier.state =
-                navigationStackNotifier.state = newPath;
+            intendedPathNotifier.state = navigationStackNotifier.state = newPath;
             assert(_p('synchronized: $newPath'));
           } finally {
             _intendedPathChanging = false;

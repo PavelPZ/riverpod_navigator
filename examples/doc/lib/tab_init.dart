@@ -131,9 +131,11 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) {
 // ============== NESTED navigators
 
 class ProfileSegment extends TypedSegment {
-  const ProfileSegment();
-  // ignore: avoid_unused_constructor_parameters
-  factory ProfileSegment.decode(UrlPars pars) => ProfileSegment();
+  const ProfileSegment({this.counter = 0});
+  factory ProfileSegment.decode(UrlPars pars) => ProfileSegment(counter: pars.getIntNull('counter') ?? 0);
+  final int counter;
+  @override
+  void encode(UrlPars pars) => pars.setInt('counter', counter);
 }
 
 class MoreSegment extends TypedSegment {
@@ -192,6 +194,8 @@ Widget profileScreen(WidgetRef ref, ProfileSegment segment) {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text('PROFILE SCREEN'),
+        SizedBox(height: 20),
+        ElevatedButton(onPressed: () => navig.navigate([ProfileSegment(counter: segment.counter + 1)]), child: Text('Counter: ${segment.counter}')),
         SizedBox(height: 20),
         Text(navig.getDeepUrl(tabId: 0)),
       ],

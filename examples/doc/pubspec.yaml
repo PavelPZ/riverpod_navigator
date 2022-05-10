@@ -12,10 +12,11 @@ dependencies:
   flutter_hooks:
   flutter_spinkit:
   functional_widget_annotation:
-  hooks_riverpod: 2.0.0-dev.5
+  hooks_riverpod: 2.0.0-dev.6
   json_annotation: 
   path:
   riverpod_navigator: 
+    path: ../../packages/riverpod_navigator
   shared_preferences:
 
 dev_dependencies: 
@@ -25,9 +26,9 @@ dev_dependencies:
   json_serializable:
   test:
 
-dependency_overrides:
-  riverpod_navigator: 
-    path: ../../packages/riverpod_navigator
+# dependency_overrides:
+#   riverpod_navigator: 
+#     path: ../../packages/riverpod_navigator
 
 flutter:
   uses-material-design: true

@@ -3,14 +3,13 @@ part of 'riverpod_navigator_core.dart';
 /// provider for app specific RNavigatorCore
 ///
 /// initializes in [ProviderScope] or [ProviderContainer] .overrides
-final navigatorProvider =
-    Provider<RNavigatorCore>((_) => throw UnimplementedError());
+final navigatorProvider = Provider<RNavigatorCore>((_) => throw UnimplementedError());
 
 /// intended TypedPath provider
 ///
 /// initializes in [ProviderScope] or [ProviderContainer] overrides
-final intendedPathProvider =
-    StateProvider<TypedPath>((_) => throw UnimplementedError());
+// final intendedPathProvider = StateProvider<TypedPath>((_) => throw UnimplementedError());
+final intendedPathProvider = StateProvider<TypedPath>((_) => []);
 
 /// navigationStackProvider
 final navigationStackProvider = StateProvider<TypedPath>((_) => []);
@@ -28,20 +27,14 @@ List<Override> riverpodNavigatorOverrides(
 }) =>
     [
       ...dependsOn.map((e) => e as Override),
-      intendedPathProvider.overrideWithValue(
-        StateController<TypedPath>(
-          restorePath == null ? initPath : restorePath.getInitialPath(initPath),
-        ),
-      ),
+      intendedPathProvider,
       navigationStackProvider,
       isNavigatingProvider,
       navigatorProvider.overrideWithProvider(Provider((ref) {
         final res = createNavigator(ref);
         res._restorePath = restorePath;
-        res.initPath = initPathAsString == null
-            ? initPath
-            : string2Path(initPathAsString)!;
         res._setdependsOn(dependsOn);
+        Future.microtask(() => res.navigate(initPathAsString == null ? initPath : string2Path(initPathAsString)!));
         return res;
       })),
     ];
