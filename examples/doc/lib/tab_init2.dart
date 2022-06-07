@@ -104,8 +104,11 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) {
   final navigator = ref.read(navigatorProvider) as AppNavigator;
 
   final tinkerMixin = useSingleTickerProvider();
-  final tabController = useMemoized(() => TabController(vsync: tinkerMixin, length: 2, initialIndex: segment.tabId ?? 0), []);
-  tabController.addListener(() => navigator.changeTab(tabController.index));
+  final tabController = useMemoized(() {
+    final tc = TabController(vsync: tinkerMixin, length: 2, initialIndex: segment.tabId ?? 0);
+    tc.addListener(() => navigator.changeTab(tc.index));
+    return tc;
+  }, []);
 
   // read HomeSegment:
   final homeSegment = ref.read(navigationStackProvider).last as HomeSegment;
