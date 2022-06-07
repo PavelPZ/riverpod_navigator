@@ -1,6 +1,9 @@
+## 1.0.8
+- riverpod ^2.0.0-dev.9 dependency
+
 ## 1.0.7
 - issues #20
-- riverpod ^2.0.0-dev.6 dependencyn
+- riverpod ^2.0.0-dev.6 dependency
 
 ## 1.0.6
 - riverpodNavigatorOverrides: new initPathAsString parameter

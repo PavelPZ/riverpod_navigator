@@ -3,7 +3,8 @@ part of 'riverpod_navigator_core.dart';
 /// provider for app specific RNavigatorCore
 ///
 /// initializes in [ProviderScope] or [ProviderContainer] .overrides
-final navigatorProvider = Provider<RNavigatorCore>((_) => throw UnimplementedError());
+final navigatorProvider =
+    Provider<RNavigatorCore>((_) => throw UnimplementedError());
 
 /// intended TypedPath provider
 ///
@@ -34,7 +35,8 @@ List<Override> riverpodNavigatorOverrides(
         final res = createNavigator(ref);
         res._restorePath = restorePath;
         res._setdependsOn(dependsOn);
-        Future.microtask(() => res.navigate(initPathStr != null ? string2Path(initPathStr)! : initPath));
+        Future.microtask(() => res.navigate(
+            initPathStr != null ? string2Path(initPathStr)! : initPath));
         return res;
       })),
     ];

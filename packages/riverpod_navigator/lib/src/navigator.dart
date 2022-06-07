@@ -16,7 +16,8 @@ class RNavigator extends RNavigatorCore {
     onPathChanged(TypedPath path)?,
   })  : navigatorWraperBuilder = navigatorWraperBuilder ?? NavigatorWraper.new,
         splashBuilder = splashBuilder ?? SplashScreen.new,
-        progressIndicatorBuilder = progressIndicatorBuilder ?? CircularProgressIndicator.new,
+        progressIndicatorBuilder =
+            progressIndicatorBuilder ?? CircularProgressIndicator.new,
         routerDelegate = RRouterDelegate(),
         super(
           ref,
@@ -62,5 +63,7 @@ class RNavigator extends RNavigatorCore {
     return screen2Page(segment, (segment) => route.buildScreen(segment));
   }
 
-  IconButton? getAppBarLeading() => getNavigationStack().length > 1 ? IconButton(icon: Icon(Icons.arrow_back), onPressed: onPopRoute) : null;
+  IconButton? getAppBarLeading() => getNavigationStack().length > 1
+      ? IconButton(icon: Icon(Icons.arrow_back), onPressed: onPopRoute)
+      : null;
 }
