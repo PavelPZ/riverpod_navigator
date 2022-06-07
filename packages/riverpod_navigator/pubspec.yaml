@@ -14,7 +14,7 @@ dependencies:
   flutter_hooks: ^0.18.2
   flutter_spinkit: ^5.1.0
 
-  hooks_riverpod: ^2.0.0-dev.7
+  hooks_riverpod: ^2.0.0-dev.9
 
   meta: ^1.7.0
   riverpod_navigator_core: # 1.0.7
