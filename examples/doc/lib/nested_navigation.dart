@@ -63,7 +63,7 @@ class AppNavigator extends RNavigator {
   AppNavigator.forBook(Ref ref)
       : super(
           ref,
-          [
+          routes: [
             RRoute<BookSegment>(
               'book',
               BookSegment.decode,
@@ -76,7 +76,7 @@ class AppNavigator extends RNavigator {
   AppNavigator.forAuthor(Ref ref)
       : super(
           ref,
-          [
+          routes: [
             RRoute<AuthorSegment>(
               'author',
               AuthorSegment.decode,
@@ -89,7 +89,7 @@ class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          [
+          routes: [
             RRoute<HomeSegment>(
               'home',
               HomeSegment.decode,

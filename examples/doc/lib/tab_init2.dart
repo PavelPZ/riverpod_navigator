@@ -11,32 +11,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // flutter pub run build_runner watch --delete-conflicting-outputs
-part 'tab_init.g.dart';
+part 'tab_init2.g.dart';
 
-class NestedUrls {
-  NestedUrls(this.sharedPreferences);
-  final SharedPreferences sharedPreferences;
-  void setProfilePath(String value) => sharedPreferences.setString('profilePath', value);
-  void setMorePath(String value) => sharedPreferences.setString('morePath', value);
-  void setTabId(int value) => sharedPreferences.setInt('tabId', value);
-}
-
-final nestedUrlsProvider = Provider<NestedUrls>((_) => throw UnimplementedError());
+final sharedPreferencesProvider = Provider<SharedPreferences>((_) => throw UnimplementedError());
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final sharedPreferences = await SharedPreferences.getInstance();
-  final homeSegment = HomeSegment(
-    tabId: sharedPreferences.getInt('tabId'),
-    profilePath: sharedPreferences.getString('profilePath'),
-    morePath: sharedPreferences.getString('morePath'),
-  );
+  final initPathStr = sharedPreferences.getString('homeSegment');
   runApp(
     ProviderScope(
       // home path and navigator constructor are required
       overrides: [
-        ...riverpodNavigatorOverrides([homeSegment], AppNavigator.new),
-        nestedUrlsProvider.overrideWithValue(NestedUrls(sharedPreferences)),
+        ...riverpodNavigatorOverrides([HomeSegment()], AppNavigator.new, initPathStr: initPathStr),
+        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
       ],
       child: const App(),
     ),
@@ -81,7 +69,23 @@ class AppNavigator extends RNavigator {
             ),
           ],
           progressIndicatorBuilder: () => const SpinKitCircle(color: Colors.blue, size: 45),
+          onPathChanged: (path) => ref.read(sharedPreferencesProvider).setString('homeSegment', path2String(path)),
         );
+
+  void changeTab(int tabId) {
+    final homeSegment = getNavigationStack().last as HomeSegment;
+    navigate([HomeSegment(tabId: tabId, profilePath: homeSegment.profilePath, morePath: homeSegment.morePath)]);
+  }
+
+  void changeProfilePath(TypedPath profilePath) {
+    final homeSegment = getNavigationStack().last as HomeSegment;
+    navigate([HomeSegment(tabId: homeSegment.tabId, profilePath: path2String(profilePath), morePath: homeSegment.morePath)]);
+  }
+
+  void changeMorePath(TypedPath morePath) {
+    final homeSegment = getNavigationStack().last as HomeSegment;
+    navigate([HomeSegment(tabId: homeSegment.tabId, profilePath: homeSegment.profilePath, morePath: path2String(morePath))]);
+  }
 }
 
 @cwidget
@@ -97,9 +101,11 @@ Widget app(WidgetRef ref) {
 
 @hcwidget
 Widget homeScreen(WidgetRef ref, HomeSegment segment) {
+  final navigator = ref.read(navigatorProvider) as AppNavigator;
+
   final tinkerMixin = useSingleTickerProvider();
   final tabController = useMemoized(() => TabController(vsync: tinkerMixin, length: 2, initialIndex: segment.tabId ?? 0), []);
-  tabController.addListener(() => ref.read(nestedUrlsProvider).setTabId(tabController.index));
+  tabController.addListener(() => navigator.changeTab(tabController.index));
 
   // read HomeSegment:
   final homeSegment = ref.read(navigationStackProvider).last as HomeSegment;
@@ -124,14 +130,14 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) {
         ProviderScope(
           overrides: riverpodNavigatorOverrides(
             homeSegment.profilePath == null ? [ProfileSegment()] : string2Path(homeSegment.profilePath)!,
-            NestedNavigator.forProfile,
+            (ref) => NestedNavigator.forProfile(ref, navigator),
           ),
           child: ProfileTab(),
         ),
         ProviderScope(
           overrides: riverpodNavigatorOverrides(
             homeSegment.morePath == null ? [MoreSegment()] : string2Path(homeSegment.morePath)!,
-            NestedNavigator.forMore,
+            (ref) => NestedNavigator.forMore(ref, navigator),
           ),
           child: MoreTab(),
         ),
@@ -158,17 +164,9 @@ class MoreSegment extends TypedSegment {
 }
 
 class NestedNavigator extends RNavigator {
-  NestedNavigator.forProfile(Ref ref)
-      : super.nested(
-          ref,
-          onPathChanged: (path) => ref.read(nestedUrlsProvider).setProfilePath(path2String(path)),
-        );
-
-  NestedNavigator.forMore(Ref ref)
-      : super.nested(
-          ref,
-          onPathChanged: (path) => ref.read(nestedUrlsProvider).setMorePath(path2String(path)),
-        );
+  NestedNavigator.forProfile(Ref ref, this.rootNavigator) : super.nested(ref);
+  NestedNavigator.forMore(Ref ref, this.rootNavigator) : super.nested(ref);
+  final AppNavigator rootNavigator;
 }
 
 @cwidget
@@ -186,7 +184,9 @@ Widget profileScreen(WidgetRef ref, ProfileSegment segment) {
       children: [
         Text('PROFILE SCREEN'),
         SizedBox(height: 20),
-        ElevatedButton(onPressed: () => navig.navigate([ProfileSegment(counter: segment.counter + 1)]), child: Text('Counter: ${segment.counter}')),
+        ElevatedButton(
+            onPressed: () => navig.rootNavigator.changeProfilePath([ProfileSegment(counter: segment.counter + 1)]),
+            child: Text('Counter: ${segment.counter}')),
         SizedBox(height: 20),
         Text(getDeepUrl(ref, tabId: 0)),
       ],
@@ -203,7 +203,9 @@ Widget moreScreen(WidgetRef ref, MoreSegment segment) {
       children: [
         Text('MORE SCREEN'),
         SizedBox(height: 20),
-        ElevatedButton(onPressed: () => navig.navigate([MoreSegment(counter: segment.counter + 1)]), child: Text('Counter: ${segment.counter}')),
+        ElevatedButton(
+            onPressed: () => navig.rootNavigator.changeMorePath([MoreSegment(counter: segment.counter + 1)]),
+            child: Text('Counter: ${segment.counter}')),
         SizedBox(height: 20),
         Text(getDeepUrl(ref, tabId: 1)),
       ],

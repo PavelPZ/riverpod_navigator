@@ -36,7 +36,7 @@ class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          [
+          routes: [
             /// 'home' and 'book' strings are used in web URL, e.g. 'home/book;id=2'
             /// decode is used to decode URL to segment
             /// HomeScreen.new and BookScreen.new are screen builders for a given segment

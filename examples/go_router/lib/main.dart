@@ -38,7 +38,7 @@ class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          [
+          routes: [
             RRoute<Page1Segment>('page2', Page1Segment.decode, Page1Screen.new),
             RRoute<Page2Segment>('page2', Page2Segment.decode, Page2Screen.new),
           ],

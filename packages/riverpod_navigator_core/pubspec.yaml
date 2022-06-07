@@ -6,11 +6,11 @@ repository: https://github.com/PavelPZ/riverpod_navigator
 publish_to: 'none'
 
 environment:
-  sdk: ">=2.16.1 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
   meta: ^1.7.0
-  riverpod: ^2.0.0-dev.6
+  riverpod: ^2.0.0-dev.7
   tuple: ^2.0.0
 
 dev_dependencies: 

@@ -7,21 +7,21 @@ part of 'index.dart';
 /// Helper singleton class for navigating to [TypedPath]
 class RNavigator extends RNavigatorCore {
   RNavigator(
-    Ref ref,
-    List<RRoute> routes, {
+    Ref ref, {
+    required List<RRoute> routes,
     NavigatorWraperBuilder? navigatorWraperBuilder,
     SplashBuilder? splashBuilder,
     WidgetBuilder? progressIndicatorBuilder,
     InitAppWithRef initAppWithRef,
-    this.onPathChanged,
+    onPathChanged(TypedPath path)?,
   })  : navigatorWraperBuilder = navigatorWraperBuilder ?? NavigatorWraper.new,
         splashBuilder = splashBuilder ?? SplashScreen.new,
-        progressIndicatorBuilder =
-            progressIndicatorBuilder ?? CircularProgressIndicator.new,
+        progressIndicatorBuilder = progressIndicatorBuilder ?? CircularProgressIndicator.new,
         routerDelegate = RRouterDelegate(),
         super(
           ref,
           routes,
+          onPathChanged: onPathChanged,
           initAppWithRef: initAppWithRef,
         ) {
     routeInformationParser = RouteInformationParserImpl(pathParser);
@@ -33,13 +33,28 @@ class RNavigator extends RNavigatorCore {
     });
     ref.onDispose(callInDispose.close);
   }
+  RNavigator.nested(
+    Ref ref, {
+    NavigatorWraperBuilder? navigatorWraperBuilder,
+    SplashBuilder? splashBuilder,
+    WidgetBuilder? progressIndicatorBuilder,
+    InitAppWithRef initAppWithRef,
+    void onPathChanged(TypedPath path)?,
+  }) : this(
+          ref,
+          routes: [],
+          navigatorWraperBuilder: navigatorWraperBuilder,
+          splashBuilder: splashBuilder,
+          progressIndicatorBuilder: progressIndicatorBuilder,
+          initAppWithRef: initAppWithRef,
+          onPathChanged: onPathChanged,
+        );
 
   final NavigatorWraperBuilder navigatorWraperBuilder;
   final SplashBuilder splashBuilder;
   final WidgetBuilder progressIndicatorBuilder;
   final RRouterDelegate routerDelegate;
   late RouteInformationParserImpl routeInformationParser;
-  final void Function(TypedPath path)? onPathChanged;
 
   Page segment2Page(TypedSegment segment) {
     final route = router.segment2Route<RRoute>(segment);
@@ -47,7 +62,5 @@ class RNavigator extends RNavigatorCore {
     return screen2Page(segment, (segment) => route.buildScreen(segment));
   }
 
-  IconButton? getAppBarLeading() => getNavigationStack().length > 1
-      ? IconButton(icon: Icon(Icons.arrow_back), onPressed: onPopRoute)
-      : null;
+  IconButton? getAppBarLeading() => getNavigationStack().length > 1 ? IconButton(icon: Icon(Icons.arrow_back), onPressed: onPopRoute) : null;
 }

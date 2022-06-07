@@ -59,7 +59,7 @@ class AppNavigator extends RNavigator {
   AppNavigator(Ref ref)
       : super(
           ref,
-          [
+          routes: [
             RRoute<HomeSegment>('home', HomeSegment.decode, HomeScreen.new),
             RRoute<LoginSegment>('login', LoginSegment.decode, LoginScreen.new),
             RRoute<FamilySegment>('family', FamilySegment.decode, FamilyScreen.new),
