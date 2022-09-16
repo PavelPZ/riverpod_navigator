@@ -33,21 +33,26 @@ class RRouterDelegate extends RouterDelegate<TypedPath>
 
   @override
   Future<void> setNewRoutePath(TypedPath configuration) {
-    // if (configuration.isEmpty) configuration = navigator.initPath;
+    if (configuration.isEmpty) return Future.value();
+    //configuration = navigator.initPath;
     return navigator.navigate(configuration);
   }
 
   void doNotifyListeners() => notifyListeners();
 }
 
-class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
+class RouteInformationParserImpl extends RouteInformationParser<TypedPath> {
   RouteInformationParserImpl(this._pathParser);
 
   final IPathParser _pathParser;
 
   @override
   Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
-      Future.value(_pathParser.fromUrl(routeInformation.location) ?? []);
+      SynchronousFuture(_pathParser.fromUrl(routeInformation.location) ?? []);
+
+  // @override
+  // Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
+  //     Future.value(_pathParser.fromUrl(routeInformation.location) ?? []);
 
   @override
   RouteInformation restoreRouteInformation(TypedPath configuration) =>

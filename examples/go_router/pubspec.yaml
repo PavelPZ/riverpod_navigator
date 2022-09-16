@@ -12,10 +12,10 @@ dependencies:
   flutter:
     sdk: flutter
 
-  hooks_riverpod: ^1.0.0
+  hooks_riverpod:  ^2.0.0-dev.9
   json_annotation: ^4.4.0
   meta: ^1.7.0
-  riverpod: ^1.0.0
+  riverpod:  ^2.0.0-dev.9
   riverpod_navigator:
     path: ../../packages/riverpod_navigator
   riverpod_navigator_core:
@@ -35,4 +35,4 @@ flutter:
   uses-material-design: true
 
 dependency_overrides:
-  analyzer: ^2.1.0
+  # analyzer: ^2.1.0

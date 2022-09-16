@@ -35,8 +35,14 @@ List<Override> riverpodNavigatorOverrides(
         final res = createNavigator(ref);
         res._restorePath = restorePath;
         res._setdependsOn(dependsOn);
-        Future.microtask(() => res.navigate(
-            initPathStr != null ? string2Path(initPathStr)! : initPath));
+        Future.microtask(() {
+          var path = initPathStr != null ? string2Path(initPathStr)! : initPath;
+          path = res._restorePath != null
+              ? res._restorePath!.getInitialPath(path)
+              : path;
+          res.navigate(path);
+        });
+        //initPathStr != null ? string2Path(initPathStr)! : initPath));
         return res;
       })),
     ];

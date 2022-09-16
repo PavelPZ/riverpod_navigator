@@ -150,10 +150,10 @@ class RRouterDelegate extends RouterDelegate<TypedPath>
 // Path Parser
 //*********************************************
 
-class RouteInformationParserImpl implements RouteInformationParser<TypedPath> {
+class RouteInformationParserImpl extends RouteInformationParser<TypedPath> {
   @override
   Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
-      Future.value(path2TypedPath(routeInformation.location));
+      SynchronousFuture(path2TypedPath(routeInformation.location));
 
   @override
   RouteInformation restoreRouteInformation(TypedPath configuration) =>
