@@ -1,3 +1,7 @@
+## 1.0.9
+- Flutter 3.3.0
+- Error on startup "Unhandled Exception: Bad state: No element"
+
 ## 1.0.8
 - riverpod ^2.0.0-dev.9 dependency
 
