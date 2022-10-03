@@ -1,6 +1,6 @@
 name: riverpod_navigator
 description: Simple but powerfull Flutter navigation with riverpod and Navigator 2.0
-version: 1.0.9
+version: 1.0.10
 homepage: https://github.com/PavelPZ/riverpod_navigator
 repository: https://github.com/PavelPZ/riverpod_navigator
 # publish_to: 'none'
@@ -15,10 +15,10 @@ dependencies:
   flutter_hooks: ^0.18.2
   flutter_spinkit: ^5.1.0
 
-  hooks_riverpod: ^2.0.0-dev.9
+  hooks_riverpod: ^2.0.2
 
   meta: ^1.7.0
-  riverpod_navigator_core: 1.0.9
+  riverpod_navigator_core: 1.0.10
     # path: ../riverpod_navigator_core 
 
 dev_dependencies: 
