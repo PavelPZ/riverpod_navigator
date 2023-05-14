@@ -23,7 +23,7 @@ Future main() async {
     ProviderScope(
       // home path and navigator constructor are required
       overrides: [
-        ...riverpodNavigatorOverrides([HomeSegment()], AppNavigator.new, initPathStr: initPathStr),
+        ...riverpodNavigatorOverrides([HomeSegment()], AppNavigator.new, initPath: initPathStr == null ? null : Uri.tryParse(initPathStr)),
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
       ],
       child: const App(),
@@ -35,16 +35,16 @@ class HomeSegment extends TypedSegment {
   const HomeSegment({this.tabId, this.profilePath, this.morePath});
   factory HomeSegment.decode(UrlPars pars) => HomeSegment(
         tabId: pars.getIntNull('tabId'),
-        profilePath: pars.getStringNull('profilePath'),
-        morePath: pars.getStringNull('morePath'),
+        profilePath: pars.getUriNull('profilePath'),
+        morePath: pars.getUriNull('morePath'),
       );
 
   final int? tabId;
-  final String? profilePath;
-  final String? morePath;
+  final Uri? profilePath;
+  final Uri? morePath;
 
   @override
-  void encode(UrlPars pars) => pars.setInt('tabId', tabId).setString('profilePath', profilePath).setString('morePath', morePath);
+  void encode(UrlPars pars) => pars.setInt('tabId', tabId).setUri('profilePath', profilePath).setUri('morePath', morePath);
 }
 
 class AppNavigator extends RNavigator {
@@ -69,7 +69,7 @@ class AppNavigator extends RNavigator {
             ),
           ],
           progressIndicatorBuilder: () => const SpinKitCircle(color: Colors.blue, size: 45),
-          onPathChanged: (path) => ref.read(sharedPreferencesProvider).setString('homeSegment', path2String(path)),
+          onPathChanged: (path) => ref.read(sharedPreferencesProvider).setString('homeSegment', path2Uri(path).toString()),
         );
 
   void changeTab(int tabId) {
@@ -79,12 +79,12 @@ class AppNavigator extends RNavigator {
 
   void changeProfilePath(TypedPath profilePath) {
     final homeSegment = getNavigationStack().last as HomeSegment;
-    navigate([HomeSegment(tabId: homeSegment.tabId, profilePath: path2String(profilePath), morePath: homeSegment.morePath)]);
+    navigate([HomeSegment(tabId: homeSegment.tabId, profilePath: path2Uri(profilePath), morePath: homeSegment.morePath)]);
   }
 
   void changeMorePath(TypedPath morePath) {
     final homeSegment = getNavigationStack().last as HomeSegment;
-    navigate([HomeSegment(tabId: homeSegment.tabId, profilePath: homeSegment.profilePath, morePath: path2String(morePath))]);
+    navigate([HomeSegment(tabId: homeSegment.tabId, profilePath: homeSegment.profilePath, morePath: path2Uri(morePath))]);
   }
 }
 
@@ -132,14 +132,14 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) {
       children: [
         ProviderScope(
           overrides: riverpodNavigatorOverrides(
-            homeSegment.profilePath == null ? [ProfileSegment()] : string2Path(homeSegment.profilePath)!,
+            homeSegment.profilePath == null ? [ProfileSegment()] : uri2Path(homeSegment.profilePath!),
             (ref) => NestedNavigator.forProfile(ref, navigator),
           ),
           child: ProfileTab(),
         ),
         ProviderScope(
           overrides: riverpodNavigatorOverrides(
-            homeSegment.morePath == null ? [MoreSegment()] : string2Path(homeSegment.morePath)!,
+            homeSegment.morePath == null ? [MoreSegment()] : uri2Path(homeSegment.morePath!),
             (ref) => NestedNavigator.forMore(ref, navigator),
           ),
           child: MoreTab(),
@@ -191,7 +191,7 @@ Widget profileScreen(WidgetRef ref, ProfileSegment segment) {
             onPressed: () => navig.rootNavigator.changeProfilePath([ProfileSegment(counter: segment.counter + 1)]),
             child: Text('Counter: ${segment.counter}')),
         SizedBox(height: 20),
-        Text(getDeepUrl(ref, tabId: 0)),
+        Text(getDeepUrl(ref, tabId: 0).toString()),
       ],
     ),
   );
@@ -210,16 +210,16 @@ Widget moreScreen(WidgetRef ref, MoreSegment segment) {
             onPressed: () => navig.rootNavigator.changeMorePath([MoreSegment(counter: segment.counter + 1)]),
             child: Text('Counter: ${segment.counter}')),
         SizedBox(height: 20),
-        Text(getDeepUrl(ref, tabId: 1)),
+        Text(getDeepUrl(ref, tabId: 1).toString()),
       ],
     ),
   );
 }
 
-String getDeepUrl(WidgetRef ref, {required int tabId}) => path2String([
+Uri getDeepUrl(WidgetRef ref, {required int tabId}) => path2Uri([
       HomeSegment(
         tabId: tabId,
-        profilePath: tabId == 0 ? path2String(ref.read(navigationStackProvider)) : null,
-        morePath: tabId == 1 ? path2String(ref.read(navigationStackProvider)) : null,
+        profilePath: tabId == 0 ? path2Uri(ref.read(navigationStackProvider)) : null,
+        morePath: tabId == 1 ? path2Uri(ref.read(navigationStackProvider)) : null,
       )
     ]);

@@ -123,8 +123,8 @@ abstract class RScreenWithScaffold<N extends RNavigator, S extends TypedSegment>
 /// when async navigation is computed:
 /// 1. AbsorbPointer for screen
 /// 2. when computation is longer than 250msec, display CircularProgressIndicator
-class NavigatorWraper extends ConsumerWidget {
-  const NavigatorWraper(this.navigator, this.navigatorWidget);
+class NavigatorWrapper extends ConsumerWidget {
+  const NavigatorWrapper(this.navigator, this.navigatorWidget);
 
   final Navigator navigatorWidget;
   final RNavigator navigator;

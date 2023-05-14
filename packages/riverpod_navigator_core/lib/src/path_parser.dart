@@ -10,6 +10,7 @@ extension UrlParsEx on UrlPars {
   UrlPars setString(String name, String? value) => _set<String>(name, value);
   UrlPars setBool(String name, bool? value) => _set<bool>(name, value);
   UrlPars setDouble(String name, double? value) => _set<double>(name, value);
+  UrlPars setUri(String name, Uri? value) => _set<Uri>(name, value);
 
   String getString(String name) => _get<String>(name, (v) => v);
   int getInt(String name) => _get<int>(name, (v) => int.parse(v));
@@ -21,6 +22,7 @@ extension UrlParsEx on UrlPars {
   bool? getBoolNull(String name) => _getNull<bool>(name, (v) => v == 'true');
   double? getDoubleNull(String name) =>
       _getNull<double>(name, (v) => double.parse(v));
+  Uri? getUriNull(String name) => _getNull<Uri>(name, (v) => Uri.parse(v));
 
   UrlPars _set<T>(String name, T? value) {
     if (value != null) this[name] = value.toString();
@@ -45,10 +47,10 @@ extension UrlParsEx on UrlPars {
 
 abstract class IPathParser {
   /// String path => TypedPath
-  String toUrl(TypedPath typedPath);
+  Uri toUrl(TypedPath typedPath);
 
   /// TypedPath => String path
-  TypedPath? fromUrl(String? path);
+  TypedPath? fromUrl(Uri path);
 }
 
 /// Path parser
@@ -56,9 +58,9 @@ class PathParser extends IPathParser {
   /// String path => TypedPath
   @override
   // String toUrl(TypedPath typedPath) => typedPath.map((s) => _router.toUrl(s)).join('/');
-  String toUrl(TypedPath typedPath) => path2String(typedPath);
+  Uri toUrl(TypedPath typedPath) => path2Uri(typedPath);
 
   /// TypedPath => String path
   @override
-  TypedPath? fromUrl(String? path) => string2Path(path);
+  TypedPath? fromUrl(Uri path) => uri2Path(path);
 }

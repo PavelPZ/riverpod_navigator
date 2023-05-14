@@ -16,7 +16,7 @@ class RRouterDelegate extends RouterDelegate<TypedPath>
 
     return navigationStack.isEmpty
         ? navigator.splashBuilder(navigator)
-        : navigator.navigatorWraperBuilder(
+        : navigator.navigatorWrapperBuilder(
             navigator,
             Navigator(
                 key: navigatorKey,
@@ -48,7 +48,7 @@ class RouteInformationParserImpl extends RouteInformationParser<TypedPath> {
 
   @override
   Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
-      SynchronousFuture(_pathParser.fromUrl(routeInformation.location) ?? []);
+      SynchronousFuture(_pathParser.fromUrl(routeInformation.uri) ?? []);
 
   // @override
   // Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
@@ -56,5 +56,5 @@ class RouteInformationParserImpl extends RouteInformationParser<TypedPath> {
 
   @override
   RouteInformation restoreRouteInformation(TypedPath configuration) =>
-      RouteInformation(location: _pathParser.toUrl(configuration));
+      RouteInformation(uri: _pathParser.toUrl(configuration));
 }

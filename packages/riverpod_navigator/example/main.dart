@@ -153,23 +153,22 @@ class RRouterDelegate extends RouterDelegate<TypedPath>
 class RouteInformationParserImpl extends RouteInformationParser<TypedPath> {
   @override
   Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
-      SynchronousFuture(path2TypedPath(routeInformation.location));
+      SynchronousFuture(path2TypedPath(routeInformation.uri));
 
   @override
   RouteInformation restoreRouteInformation(TypedPath configuration) =>
-      RouteInformation(location: typedPath2Path(configuration));
+      RouteInformation(uri: typedPath2Path(configuration));
 
-  static String typedPath2Path(TypedPath typedPath) => typedPath
+  static Uri typedPath2Path(TypedPath typedPath) => Uri(pathSegments: typedPath
       .map((s) => Uri.encodeComponent(jsonEncode(s.toJson())))
-      .join('/');
+  );
 
   static String debugTypedPath2Path(TypedPath typedPath) =>
       typedPath.map((s) => jsonEncode(s.toJson())).join('/');
 
-  static TypedPath path2TypedPath(String? path) {
-    if (path == null || path.isEmpty) return [];
+  static TypedPath path2TypedPath(Uri path) {
     return [
-      for (final s in path.split('/'))
+      for (final s in path.pathSegments)
         if (s.isNotEmpty) TypedSegment.fromJson(jsonDecode(Uri.decodeFull(s)))
     ];
   }

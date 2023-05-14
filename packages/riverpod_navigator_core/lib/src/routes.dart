@@ -92,16 +92,26 @@ class RRouteCore<T extends TypedSegment> {
   }
 }
 
-String? segment2String(TypedSegment s) =>
+String segment2String(TypedSegment s) =>
     _type2Route[s.runtimeType]!.segment2String(s);
 TypedSegment map2Segment(UrlPars pars, String urlName) =>
     _string2Route[urlName]!.decode(pars);
+
+@Deprecated('use path2Uri')
 String path2String(TypedPath typedPath) =>
     typedPath.map((s) => segment2String(s)).join('/');
-TypedPath? string2Path(String? path) {
-  if (path == null || path.isEmpty) return null;
+
+Uri path2Uri(TypedPath typedPath) =>
+    Uri(pathSegments: typedPath.map((s) => segment2String(s)));
+
+@Deprecated('use uri2Path')
+TypedPath? string2Path(String? path){
+  if(path == null || path.isEmpty) return null;
+  return uri2Path(Uri.parse(path));
+}
+TypedPath uri2Path(Uri path) {
   final res = <TypedSegment>[];
-  final segments = path.split('/').where((s) => s.isNotEmpty).toList();
+  final segments = path.pathSegments.where((s) => s.isNotEmpty).toList();
   if (segments.isEmpty) return res;
   for (final segment in segments) {
     final map = <String, String>{};
@@ -116,5 +126,5 @@ TypedPath? string2Path(String? path) {
     // res.add(_router.decode(map, properties[0]));
     res.add(map2Segment(map, properties[0]));
   }
-  return res.isEmpty ? null : res;
+  return res.isEmpty ? [] : res;
 }

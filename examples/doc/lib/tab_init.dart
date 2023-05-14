@@ -16,8 +16,8 @@ part 'tab_init.g.dart';
 class NestedUrls {
   NestedUrls(this.sharedPreferences);
   final SharedPreferences sharedPreferences;
-  void setProfilePath(String value) => sharedPreferences.setString('profilePath', value);
-  void setMorePath(String value) => sharedPreferences.setString('morePath', value);
+  void setProfilePath(Uri value) => sharedPreferences.setString('profilePath', value.toString());
+  void setMorePath(Uri value) => sharedPreferences.setString('morePath', value.toString());
   void setTabId(int value) => sharedPreferences.setInt('tabId', value);
 }
 
@@ -26,10 +26,12 @@ final nestedUrlsProvider = Provider<NestedUrls>((_) => throw UnimplementedError(
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final sharedPreferences = await SharedPreferences.getInstance();
+  final pPath = sharedPreferences.getString('profilePath');
+  final mPath = sharedPreferences.getString('morePath');
   final homeSegment = HomeSegment(
     tabId: sharedPreferences.getInt('tabId'),
-    profilePath: sharedPreferences.getString('profilePath'),
-    morePath: sharedPreferences.getString('morePath'),
+    profilePath: pPath != null ? Uri.tryParse(pPath) : null,
+    morePath: mPath != null ? Uri.tryParse(mPath) : null,
   );
   runApp(
     ProviderScope(
@@ -47,16 +49,16 @@ class HomeSegment extends TypedSegment {
   const HomeSegment({this.tabId, this.profilePath, this.morePath});
   factory HomeSegment.decode(UrlPars pars) => HomeSegment(
         tabId: pars.getIntNull('tabId'),
-        profilePath: pars.getStringNull('profilePath'),
-        morePath: pars.getStringNull('morePath'),
+        profilePath: pars.getUriNull('profilePath'),
+        morePath: pars.getUriNull('morePath'),
       );
 
   final int? tabId;
-  final String? profilePath;
-  final String? morePath;
+  final Uri? profilePath;
+  final Uri? morePath;
 
   @override
-  void encode(UrlPars pars) => pars.setInt('tabId', tabId).setString('profilePath', profilePath).setString('morePath', morePath);
+  void encode(UrlPars pars) => pars.setInt('tabId', tabId).setUri('profilePath', profilePath).setUri('morePath', morePath);
 }
 
 class AppNavigator extends RNavigator {
@@ -123,14 +125,14 @@ Widget homeScreen(WidgetRef ref, HomeSegment segment) {
       children: [
         ProviderScope(
           overrides: riverpodNavigatorOverrides(
-            homeSegment.profilePath == null ? [ProfileSegment()] : string2Path(homeSegment.profilePath)!,
+            homeSegment.profilePath == null ? [ProfileSegment()] : uri2Path(homeSegment.profilePath!),
             NestedNavigator.forProfile,
           ),
           child: ProfileTab(),
         ),
         ProviderScope(
           overrides: riverpodNavigatorOverrides(
-            homeSegment.morePath == null ? [MoreSegment()] : string2Path(homeSegment.morePath)!,
+            homeSegment.morePath == null ? [MoreSegment()] : uri2Path(homeSegment.morePath!),
             NestedNavigator.forMore,
           ),
           child: MoreTab(),
@@ -161,13 +163,13 @@ class NestedNavigator extends RNavigator {
   NestedNavigator.forProfile(Ref ref)
       : super.nested(
           ref,
-          onPathChanged: (path) => ref.read(nestedUrlsProvider).setProfilePath(path2String(path)),
+          onPathChanged: (path) => ref.read(nestedUrlsProvider).setProfilePath(path2Uri(path)),
         );
 
   NestedNavigator.forMore(Ref ref)
       : super.nested(
           ref,
-          onPathChanged: (path) => ref.read(nestedUrlsProvider).setMorePath(path2String(path)),
+          onPathChanged: (path) => ref.read(nestedUrlsProvider).setMorePath(path2Uri(path)),
         );
 }
 
@@ -188,7 +190,7 @@ Widget profileScreen(WidgetRef ref, ProfileSegment segment) {
         SizedBox(height: 20),
         ElevatedButton(onPressed: () => navig.navigate([ProfileSegment(counter: segment.counter + 1)]), child: Text('Counter: ${segment.counter}')),
         SizedBox(height: 20),
-        Text(getDeepUrl(ref, tabId: 0)),
+        Text(getDeepUrl(ref, tabId: 0).toString()),
       ],
     ),
   );
@@ -205,16 +207,16 @@ Widget moreScreen(WidgetRef ref, MoreSegment segment) {
         SizedBox(height: 20),
         ElevatedButton(onPressed: () => navig.navigate([MoreSegment(counter: segment.counter + 1)]), child: Text('Counter: ${segment.counter}')),
         SizedBox(height: 20),
-        Text(getDeepUrl(ref, tabId: 1)),
+        Text(getDeepUrl(ref, tabId: 1).toString()),
       ],
     ),
   );
 }
 
-String getDeepUrl(WidgetRef ref, {required int tabId}) => path2String([
+Uri getDeepUrl(WidgetRef ref, {required int tabId}) => path2Uri([
       HomeSegment(
         tabId: tabId,
-        profilePath: tabId == 0 ? path2String(ref.read(navigationStackProvider)) : null,
-        morePath: tabId == 1 ? path2String(ref.read(navigationStackProvider)) : null,
+        profilePath: tabId == 0 ? path2Uri(ref.read(navigationStackProvider)) : null,
+        morePath: tabId == 1 ? path2Uri(ref.read(navigationStackProvider)) : null,
       )
     ]);

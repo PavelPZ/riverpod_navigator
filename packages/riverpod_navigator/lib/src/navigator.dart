@@ -9,12 +9,14 @@ class RNavigator extends RNavigatorCore {
   RNavigator(
     Ref ref, {
     required List<RRoute> routes,
-    NavigatorWraperBuilder? navigatorWraperBuilder,
+    @Deprecated('Use navigatorWrapperBuilder instead')
+    NavigatorWrapperBuilder? navigatorWraperBuilder,
+    NavigatorWrapperBuilder? navigatorWrapperBuilder,
     SplashBuilder? splashBuilder,
     WidgetBuilder? progressIndicatorBuilder,
     InitAppWithRef initAppWithRef,
     onPathChanged(TypedPath path)?,
-  })  : navigatorWraperBuilder = navigatorWraperBuilder ?? NavigatorWraper.new,
+  })  : navigatorWrapperBuilder = navigatorWraperBuilder ?? navigatorWrapperBuilder ?? NavigatorWrapper.new,
         splashBuilder = splashBuilder ?? SplashScreen.new,
         progressIndicatorBuilder =
             progressIndicatorBuilder ?? CircularProgressIndicator.new,
@@ -36,7 +38,9 @@ class RNavigator extends RNavigatorCore {
   }
   RNavigator.nested(
     Ref ref, {
-    NavigatorWraperBuilder? navigatorWraperBuilder,
+    @Deprecated('Use navigatorWrapperBuilder instead')
+    NavigatorWrapperBuilder? navigatorWraperBuilder,
+    NavigatorWrapperBuilder? navigatorWrapperBuilder,
     SplashBuilder? splashBuilder,
     WidgetBuilder? progressIndicatorBuilder,
     InitAppWithRef initAppWithRef,
@@ -44,14 +48,14 @@ class RNavigator extends RNavigatorCore {
   }) : this(
           ref,
           routes: [],
-          navigatorWraperBuilder: navigatorWraperBuilder,
+          navigatorWrapperBuilder: navigatorWraperBuilder ?? navigatorWrapperBuilder,
           splashBuilder: splashBuilder,
           progressIndicatorBuilder: progressIndicatorBuilder,
           initAppWithRef: initAppWithRef,
           onPathChanged: onPathChanged,
         );
 
-  final NavigatorWraperBuilder navigatorWraperBuilder;
+  final NavigatorWrapperBuilder navigatorWrapperBuilder;
   final SplashBuilder splashBuilder;
   final WidgetBuilder progressIndicatorBuilder;
   final RRouterDelegate routerDelegate;

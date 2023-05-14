@@ -20,9 +20,11 @@ final isNavigatingProvider = StateProvider<int>((_) => 0);
 
 /// initialize providers
 List<Override> riverpodNavigatorOverrides(
-  TypedPath initPath,
+  TypedPath path,
   RNavigatorCore createNavigator(Ref ref), {
+  @Deprecated('use initPath')
   String? initPathStr,
+  Uri? initPath,
   RestorePath? restorePath,
   List<AlwaysAliveProviderListenable> dependsOn = const [],
 }) =>
@@ -31,18 +33,19 @@ List<Override> riverpodNavigatorOverrides(
       intendedPathProvider,
       navigationStackProvider,
       isNavigatingProvider,
-      navigatorProvider.overrideWithProvider(Provider((ref) {
+      navigatorProvider.overrideWith((ref) {
         final res = createNavigator(ref);
         res._restorePath = restorePath;
-        res._setdependsOn(dependsOn);
+        res._setDependsOn(dependsOn);
         Future.microtask(() {
-          var path = initPathStr != null ? string2Path(initPathStr)! : initPath;
-          path = res._restorePath != null
-              ? res._restorePath!.getInitialPath(path)
-              : path;
-          res.navigate(path);
+          // ignore: deprecated_member_use_from_same_package
+          var p = initPathStr != null ? string2Path(initPathStr)! : initPath != null ? uri2Path(initPath) : path;
+          p = res._restorePath != null
+              ? res._restorePath!.getInitialPath(p)
+              : p;
+          res.navigate(p);
         });
         //initPathStr != null ? string2Path(initPathStr)! : initPath));
         return res;
-      })),
+      }),
     ];

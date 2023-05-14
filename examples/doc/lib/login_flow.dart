@@ -47,14 +47,14 @@ class BookSegment extends TypedSegment {
 class LoginSegment extends TypedSegment {
   const LoginSegment({this.loggedUrl, this.canceledUrl});
   factory LoginSegment.decode(UrlPars pars) => LoginSegment(
-        loggedUrl: pars.getStringNull('loggedUrl'),
-        canceledUrl: pars.getStringNull('canceledUrl'),
+        loggedUrl: pars.getUriNull('loggedUrl'),
+        canceledUrl: pars.getUriNull('canceledUrl'),
       );
-  final String? loggedUrl;
-  final String? canceledUrl;
+  final Uri? loggedUrl;
+  final Uri? canceledUrl;
 
   @override
-  void encode(UrlPars pars) => pars.setString('loggedUrl', loggedUrl).setString('canceledUrl', canceledUrl);
+  void encode(UrlPars pars) => pars.setUri('loggedUrl', loggedUrl).setUri('canceledUrl', canceledUrl);
 }
 
 /// !!! there is another provider on which the navigation status depends:
@@ -97,9 +97,9 @@ class AppNavigator extends RNavigator {
     if (!userIsLogged && intendedPath.any((segment) => needsLogin(segment))) {
       // prepare URLs for confirmation or cancel cases on the login screen
       final loggedUrl = pathParser.toUrl(intendedPath);
-      var canceledUrl = navigationStack.isEmpty || navigationStack.last is LoginSegment ? '' : pathParser.toUrl(navigationStack);
+      var canceledUrl = navigationStack.isEmpty || navigationStack.last is LoginSegment ? Uri() : pathParser.toUrl(navigationStack);
       if (loggedUrl == canceledUrl) {
-        canceledUrl = ''; // chance to exit login loop
+        canceledUrl = Uri(); // chance to exit login loop
       }
 
       // redirect to login screen
@@ -147,7 +147,7 @@ class AppNavigator extends RNavigator {
 
     // get return path
     final loginHomeSegment = navigationStack.last as LoginSegment;
-    var returnPath = pathParser.fromUrl(cancel ? loginHomeSegment.canceledUrl : loginHomeSegment.loggedUrl);
+    var returnPath = pathParser.fromUrl(cancel ? loginHomeSegment.canceledUrl! : loginHomeSegment.loggedUrl!);
     returnPath ??= [HomeSegment()];
 
     // start navigating to a return path
