@@ -121,10 +121,10 @@ class RNavigatorCore {
       router.segment2Route(segment).getScreenTitle(segment);
 
   ///@nodoc
-  String get navigationStack2Url => pathParser.toUrl(getNavigationStack());
+  Uri get navigationStack2Url => pathParser.toUrl(getNavigationStack());
 
   ///@nodoc
-  String debugSegmentSubpath(TypedSegment s) =>
+  Uri debugSegmentSubpath(TypedSegment s) =>
       pathParser.toUrl(segmentSubpath(s));
 
   ///@nodoc
@@ -139,6 +139,7 @@ class RNavigatorCore {
     return res;
   }
 
+  // TODO: Replace with Dart Tuple
   /// asynchronous screen actions, start
   static Tuple2<List<GetFuture>, List<GetFuture>> waitStart(
       RRouter router, TypedPath oldPath, TypedPath newPath) {
@@ -175,7 +176,7 @@ class RNavigatorCore {
     return Tuple2(oldTodo, newTodo);
   }
 
-  /// asynchronous screen actions, waiting and collectiong result
+  /// asynchronous screen actions, waiting and collecting result
   Future waitEnd(Tuple2<List<GetFuture>, List<GetFuture>> todo) async {
     if (initAppWithRef != null) {
       await initAppWithRef!();
@@ -194,7 +195,7 @@ class RNavigatorCore {
   ///@nodoc
   TypedPath getNavigationStack() => ref.read(navigationStackProvider);
 
-  void _setdependsOn(List<AlwaysAliveProviderListenable> value) {
+  void _setDependsOn(List<AlwaysAliveProviderListenable> value) {
     assert(!value.contains(intendedPathProvider));
     _dependsOn = [...value, intendedPathProvider];
     assert(_dependsOn.every((p) => p is Override));

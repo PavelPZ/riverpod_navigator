@@ -12,27 +12,26 @@ dependencies:
   flutter:
     sdk: flutter
 
-  hooks_riverpod:  ^2.0.0-dev.9
-  json_annotation: ^4.4.0
-  meta: ^1.7.0
-  riverpod:  ^2.0.0-dev.9
-  riverpod_navigator:
-    path: ../../packages/riverpod_navigator
-  riverpod_navigator_core:
-    path: ../../packages/riverpod_navigator_core
-  tuple: ^2.0.0
+  hooks_riverpod:  ^2.3.6
+  json_annotation: ^4.8.1
+  meta: ^1.9.1
+  riverpod_navigator: ^1.0.10
+  riverpod:  ^2.3.6
 
 dev_dependencies: 
-  build_runner:
+  build_runner: ^2.4.4
   flutter_test:
     sdk: flutter
-  functional_widget:
-  json_serializable:
-  mockito:
-  test:
+  functional_widget: ^0.10.1
+  json_serializable: ^6.6.2
+  mockito: ^5.4.0
+  test: ^1.24.2
 
 flutter:
   uses-material-design: true
 
 dependency_overrides:
-  # analyzer: ^2.1.0
+  riverpod_navigator:
+    path: ../../packages/riverpod_navigator
+  riverpod_navigator_core:
+    path: ../../packages/riverpod_navigator_core

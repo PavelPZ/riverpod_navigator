@@ -33,12 +33,12 @@ class AppNavigator extends RRouterDelegate {
       TypedPath actNavigStack, TypedPath intendedPath) {
     final userIsLogged = ref.read(isLoggedProvider);
 
-    // if user is not logged-in and some of the screen in navigations stack needs login => redirect to LoginScreen
+    // if user is not logged-in and some of the screen in the navigation stack needs login => redirect to LoginScreen
     if (!userIsLogged && intendedPath.any((segment) => needsLogin(segment))) {
       return [LoginSegment()];
     }
 
-    // user is logged and LogginScreen is going to display => redirect to HomeScreen
+    // user is logged and LoginScreen is going to display => redirect to HomeScreen
     if (userIsLogged &&
         (intendedPath.isEmpty || intendedPath.last is LoginSegment)) {
       return [HomeSegment()];
@@ -270,23 +270,22 @@ abstract class RRouterDelegate extends RouterDelegate<TypedPath>
 class RouteInformationParserImpl extends RouteInformationParser<TypedPath> {
   @override
   Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
-      Future.value(path2TypedPath(routeInformation.location));
+      Future.value(path2TypedPath(routeInformation.uri));
 
   @override
   RouteInformation restoreRouteInformation(TypedPath configuration) =>
-      RouteInformation(location: typedPath2Path(configuration));
+      RouteInformation(uri: typedPath2Path(configuration));
 
-  static String typedPath2Path(TypedPath typedPath) => typedPath
+  static Uri typedPath2Path(TypedPath typedPath) => Uri(pathSegments: typedPath
       .map((s) => Uri.encodeComponent(jsonEncode(s.toJson())))
-      .join('/');
+  );
 
   static String debugTypedPath2Path(TypedPath typedPath) =>
       typedPath.map((s) => jsonEncode(s.toJson())).join('/');
 
-  static TypedPath path2TypedPath(String? path) {
-    if (path == null || path.isEmpty) return [];
+  static TypedPath path2TypedPath(Uri path) {
     return [
-      for (final s in path.split('/'))
+      for (final s in path.pathSegments)
         if (s.isNotEmpty) TypedSegment.fromJson(jsonDecode(Uri.decodeFull(s)))
     ];
   }

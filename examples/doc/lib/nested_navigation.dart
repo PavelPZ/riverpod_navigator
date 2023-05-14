@@ -186,7 +186,7 @@ class BookScreen extends AppScreen<BookSegment> {
 }
 
 class AuthorScreen extends AppScreen<AuthorSegment> {
-  AuthorScreen(AuthorSegment auhor) : super(auhor, 'Author ${auhor.id}');
+  AuthorScreen(AuthorSegment author) : super(author, 'Author ${author.id}');
 
   @override
   List<Widget> buildWidgets(navigator) => [
