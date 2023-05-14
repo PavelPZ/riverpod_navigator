@@ -23,7 +23,7 @@ Future main() async {
     ProviderScope(
       // home path and navigator constructor are required
       overrides: [
-        ...riverpodNavigatorOverrides([HomeSegment()], AppNavigator.new, initPathStr: initPathStr == null ? null : Uri.tryParse(initPathStr)),
+        ...riverpodNavigatorOverrides([HomeSegment()], AppNavigator.new, initPath: initPathStr == null ? null : Uri.tryParse(initPathStr)),
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
       ],
       child: const App(),
