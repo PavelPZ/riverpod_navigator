@@ -48,11 +48,7 @@ class RouteInformationParserImpl extends RouteInformationParser<TypedPath> {
 
   @override
   Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
-      SynchronousFuture(_pathParser.fromUrl(routeInformation.location) ?? []);
-
-  // @override
-  // Future<TypedPath> parseRouteInformation(RouteInformation routeInformation) =>
-  //     Future.value(_pathParser.fromUrl(routeInformation.location) ?? []);
+      Future.value(_pathParser.fromUrl(routeInformation.location) ?? []);
 
   @override
   RouteInformation restoreRouteInformation(TypedPath configuration) =>
